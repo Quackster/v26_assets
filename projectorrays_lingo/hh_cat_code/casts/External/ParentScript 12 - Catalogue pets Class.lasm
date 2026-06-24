@@ -1,0 +1,1218 @@
+property pPageData, pSmallImg, pSelectedOrderNum, pSelectedColorNum, pSelectedProduct, pLastProductNum, pNumOfColorBoxies, pCurrentProductNum, pPetTemplateObj, pPetRacesList, pNameCheckPending, pDefinitions
+
+on construct me
+  [  0] pushsymb 37 ............................. <#catalogue>
+  [  2] pusharglist 1 ........................... <#catalogue>
+  [  4] extcall 36 .............................. <getThread(#catalogue)>
+  [  6] pusharglist 1 ........................... <getThread(#catalogue)>
+  [  8] objcall 38 .............................. <getThread(#catalogue).getInterface()>
+  [ 10] pusharglist 1 ........................... <getThread(#catalogue).getInterface()>
+  [ 12] objcall 39 .............................. <getThread(#catalogue).getInterface().getCatalogWindow()>
+  [ 14] setlocal 0 .............................. tCataloguePage = getThread(#catalogue).getInterface().getCatalogWindow()
+  [ 16] getlocal 0 .............................. <tCataloguePage>
+  [ 18] not ..................................... <not tCataloguePage>
+  [ 19] jmpifz [ 38] ............................ if not tCataloguePage then
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pushcons 0 .............................. <"Couldn't access catalogue window!">
+  [ 26] pushsymb 0 .............................. <#construct>
+  [ 28] pushsymb 35 ............................. <#major>
+  [ 30] pusharglist 4 ........................... <me, "Couldn't access catalogue window!", #construct, #major>
+  [ 32] extcall 34 .............................. <error(me, "Couldn't access catalogue window!", #construct, #major)>
+  [ 34] pusharglistnoret 1 ...................... <error(me, "Couldn't access catalogue window!", #construct, #major)>
+  [ 36] extcall 27 .............................. return error(me, "Couldn't access catalogue window!", #construct, #major)
+  [ 38] pushcons 1 .............................. <"fuse.object.classes">
+  [ 40] pushcons 2 .............................. <RETURN>
+  [ 42] pushcons 3 .............................. <"pet">
+  [ 44] pusharglist 3 ........................... <"fuse.object.classes", RETURN, "pet">
+  [ 46] extcall 675 ............................. <readValueFromField("fuse.object.classes", RETURN, "pet")>
+  [ 49] pusharglist 1 ........................... <readValueFromField("fuse.object.classes", RETURN, "pet")>
+  [ 51] extcall 99 .............................. <value(readValueFromField("fuse.object.classes", RETURN, "pet"))>
+  [ 53] setlocal 1 .............................. tPetClass = value(readValueFromField("fuse.object.classes", RETURN, "pet"))
+  [ 55] pushsymb 677 ............................ <#temp>
+  [ 58] getlocal 1 .............................. <tPetClass>
+  [ 60] pusharglist 2 ........................... <#temp, tPetClass>
+  [ 62] extcall 197 ............................. <createObject(#temp, tPetClass)>
+  [ 64] setprop 676 ............................. pPetTemplateObj = createObject(#temp, tPetClass)
+  [ 67] pusharglist 0 ........................... <[:]>
+  [ 69] pushproplist ............................ <[:]>
+  [ 70] setprop 649 ............................. pPageData = [:]
+  [ 73] pusharglist 0 ........................... <[:]>
+  [ 75] pushproplist ............................ <[:]>
+  [ 76] setprop 678 ............................. pPetRacesList = [:]
+  [ 79] pushcons 4 .............................. <"pet.definitions">
+  [ 81] pusharglist 1 ........................... <"pet.definitions">
+  [ 83] extcall 87 .............................. <getmemnum("pet.definitions")>
+  [ 85] pusharglist 1 ........................... <getmemnum("pet.definitions")>
+  [ 87] extcall 48 .............................. <member(getmemnum("pet.definitions"))>
+  [ 89] getobjprop 49 ........................... <member(getmemnum("pet.definitions")).text>
+  [ 91] setlocal 2 .............................. tPetDEfText = member(getmemnum("pet.definitions")).text
+  [ 93] getlocal 2 .............................. <tPetDEfText>
+  [ 95] pushcons 2 .............................. <RETURN>
+  [ 97] pushcons 5 .............................. <EMPTY>
+  [ 99] pusharglist 3 ........................... <tPetDEfText, RETURN, EMPTY>
+  [101] extcall 239 ............................. <replaceChunks(tPetDEfText, RETURN, EMPTY)>
+  [103] setlocal 2 .............................. tPetDEfText = replaceChunks(tPetDEfText, RETURN, EMPTY)
+  [105] getlocal 2 .............................. <tPetDEfText>
+  [107] pusharglist 1 ........................... <tPetDEfText>
+  [109] extcall 99 .............................. <value(tPetDEfText)>
+  [111] setlocal 3 .............................. pPetDefinitions = value(tPetDEfText)
+  [113] getlocal 3 .............................. <pPetDefinitions>
+  [115] pusharglist 1 ........................... <pPetDefinitions>
+  [117] extcall 32 .............................. <ilk(pPetDefinitions)>
+  [119] pushsymb 33 ............................. <#propList>
+  [121] nteq .................................... <ilk(pPetDefinitions) <> #propList>
+  [122] jmpifz [148] ............................ if ilk(pPetDefinitions) <> #propList then
+  [125] pusharglist 0 ........................... <[:]>
+  [127] pushproplist ............................ <[:]>
+  [128] setlocal 3 .............................. pPetDefinitions = [:]
+  [130] getparam 0 .............................. <me>
+  [132] pushcons 6 .............................. <"Pet definitions has invalid data!">
+  [134] getparam 0 .............................. <me>
+  [136] pusharglist 1 ........................... <me>
+  [138] objcall 208 ............................. <me.getID()>
+  [140] pushsymb 0 .............................. <#construct>
+  [142] pushsymb 35 ............................. <#major>
+  [144] pusharglistnoret 5 ...................... <me, "Pet definitions has invalid data!", me.getID(), #construct, #major>
+  [146] extcall 34 .............................. error(me, "Pet definitions has invalid data!", me.getID(), #construct, #major)
+  [148] pushzero ................................ <0>
+  [149] setlocal 4 .............................. i = 0
+  [151] pushint8 1 .............................. <1>
+  [153] jmpifz [511] ............................ repeat while 1
+  [156] getlocal 3 .............................. <pPetDefinitions>
+  [158] getlocal 4 .............................. <i>
+  [160] pusharglist 1 ........................... <i>
+  [162] extcall 57 .............................. <string(i)>
+  [164] pusharglist 2 ........................... <pPetDefinitions, string(i)>
+  [166] objcall 128 ............................. <pPetDefinitions.getaProp(string(i))>
+  [168] pusharglist 0 ........................... <>
+  [170] extcall 244 ............................. <VOID>
+  [172] nteq .................................... <pPetDefinitions.getaProp(string(i)) <> VOID>
+  [173] setlocal 5 .............................. tRaceDefExists = pPetDefinitions.getaProp(string(i)) <> VOID
+  [175] pushcons 7 .............................. <"pet_race_">
+  [177] getlocal 4 .............................. <i>
+  [179] joinstr ................................. <"pet_race_" & i>
+  [180] pushcons 8 .............................. <"_000">
+  [182] joinstr ................................. <"pet_race_" & i & "_000">
+  [183] pusharglist 1 ........................... <"pet_race_" & i & "_000">
+  [185] extcall 289 ............................. <textExists("pet_race_" & i & "_000")>
+  [188] setlocal 6 .............................. tRaceTextExists = textExists("pet_race_" & i & "_000")
+  [190] getlocal 5 .............................. <tRaceDefExists>
+  [192] getlocal 6 .............................. <tRaceTextExists>
+  [194] and ..................................... <tRaceDefExists and tRaceTextExists>
+  [195] jmpifz [498] ............................ if tRaceDefExists and tRaceTextExists then / else
+  [198] getlocal 4 .............................. <i>
+  [200] pusharglist 1 ........................... <i>
+  [202] extcall 57 .............................. <string(i)>
+  [204] setlocal 7 .............................. tPetType = string(i)
+  [206] pusharglist 0 ........................... <[]>
+  [208] pushlist ................................ <[]>
+  [209] setlocal 8 .............................. tTempRaces = []
+  [211] getlocal 8 .............................. <tTempRaces>
+  [213] pushcons 9 .............................. <"000">
+  [215] pusharglistnoret 2 ...................... <tTempRaces, "000">
+  [217] objcall 19 .............................. tTempRaces.add("000")
+  [219] pushint8 1 .............................. <1>
+  [221] setlocal 9 .............................. f = 1
+  [223] pushint8 1 .............................. <1>
+  [225] jmpifz [495] ............................ repeat while 1
+  [228] getlocal 9 .............................. <f>
+  [230] pusharglist 1 ........................... <f>
+  [232] extcall 57 .............................. <string(f)>
+  [234] getobjprop 308 .......................... <string(f).length>
+  [237] pushint8 1 .............................. <1>
+  [239] eq ...................................... <string(f).length = 1>
+  [240] jmpifz [253] ............................ if string(f).length = 1 then / else
+  [243] pushcons 10 ............................. <"00">
+  [245] getlocal 9 .............................. <f>
+  [247] joinstr ................................. <"00" & f>
+  [248] setlocal 10 ............................. tTemp = "00" & f
+  [250] jmp [286]
+  [253] getlocal 9 .............................. <f>
+  [255] pusharglist 1 ........................... <f>
+  [257] extcall 57 .............................. <string(f)>
+  [259] getobjprop 308 .......................... <string(f).length>
+  [262] pushint8 2 .............................. <2>
+  [264] eq ...................................... <string(f).length = 2>
+  [265] jmpifz [278] ............................ if string(f).length = 2 then / else
+  [268] pushcons 11 ............................. <"0">
+  [270] getlocal 9 .............................. <f>
+  [272] joinstr ................................. <"0" & f>
+  [273] setlocal 10 ............................. tTemp = "0" & f
+  [275] jmp [286]
+  [278] getlocal 9 .............................. <f>
+  [280] pusharglist 1 ........................... <f>
+  [282] extcall 57 .............................. <string(f)>
+  [284] setlocal 10 ............................. tTemp = string(f)
+  [286] pushcons 7 .............................. <"pet_race_">
+  [288] getlocal 4 .............................. <i>
+  [290] joinstr ................................. <"pet_race_" & i>
+  [291] pushcons 12 ............................. <"_">
+  [293] joinstr ................................. <"pet_race_" & i & "_">
+  [294] getlocal 10 ............................. <tTemp>
+  [296] joinstr ................................. <"pet_race_" & i & "_" & tTemp>
+  [297] pusharglist 1 ........................... <"pet_race_" & i & "_" & tTemp>
+  [299] extcall 289 ............................. <textExists("pet_race_" & i & "_" & tTemp)>
+  [302] jmpifz [316] ............................ if textExists("pet_race_" & i & "_" & tTemp) then / else
+  [305] getlocal 8 .............................. <tTempRaces>
+  [307] getlocal 10 ............................. <tTemp>
+  [309] pusharglistnoret 2 ...................... <tTempRaces, tTemp>
+  [311] objcall 19 .............................. tTempRaces.add(tTemp)
+  [313] jmp [485]
+  [316] pusharglist 0 ........................... <[]>
+  [318] pushlist ................................ <[]>
+  [319] setlocal 11 ............................. tColorList = []
+  [321] getlocal 3 .............................. <pPetDefinitions>
+  [323] getlocal 7 .............................. <tPetType>
+  [325] pusharglist 2 ........................... <pPetDefinitions, tPetType>
+  [327] objcall 40 .............................. <pPetDefinitions[tPetType]>
+  [329] pushsymb 679 ............................ <#colorid>
+  [332] pusharglist 2 ........................... <pPetDefinitions[tPetType], #colorid>
+  [334] objcall 40 .............................. <pPetDefinitions[tPetType][#colorid]>
+  [336] setlocal 12 ............................. tPetColorId = pPetDefinitions[tPetType][#colorid]
+  [338] pushcons 13 ............................. <"petColors_">
+  [340] getlocal 12 ............................. <tPetColorId>
+  [342] joinstr ................................. <"petColors_" & tPetColorId>
+  [343] pusharglist 1 ........................... <"petColors_" & tPetColorId>
+  [345] extcall 86 .............................. <memberExists("petColors_" & tPetColorId)>
+  [347] jmpifz [442] ............................ if memberExists("petColors_" & tPetColorId) then / else
+  [350] pushcons 13 ............................. <"petColors_">
+  [352] getlocal 12 ............................. <tPetColorId>
+  [354] joinstr ................................. <"petColors_" & tPetColorId>
+  [355] pusharglist 1 ........................... <"petColors_" & tPetColorId>
+  [357] extcall 87 .............................. <getmemnum("petColors_" & tPetColorId)>
+  [359] pusharglist 1 ........................... <getmemnum("petColors_" & tPetColorId)>
+  [361] extcall 48 .............................. <member(getmemnum("petColors_" & tPetColorId))>
+  [363] getobjprop 49 ........................... <member(getmemnum("petColors_" & tPetColorId)).text>
+  [365] setlocal 13 ............................. tColorTxt = member(getmemnum("petColors_" & tPetColorId)).text
+  [367] pushint8 1 .............................. <1>
+  [369] setlocal 14
+  [371] getlocal 14
+  [373] getlocal 13 ............................. <tColorTxt>
+  [375] pushsymb 24 ............................. <#line>
+  [377] pusharglist 2 ........................... <tColorTxt, #line>
+  [379] objcall 25 .............................. <tColorTxt.line.count>
+  [381] lteq
+  [382] jmpifz [439] ............................ repeat with tLine = 1 to tColorTxt.line.count
+  [385] getlocal 13 ............................. <tColorTxt>
+  [387] pushsymb 24 ............................. <#line>
+  [389] getlocal 14 ............................. <tLine>
+  [391] pusharglist 3 ........................... <tColorTxt, #line, tLine>
+  [393] objcall 121 ............................. <tColorTxt.line[tLine]>
+  [395] getobjprop 308 .......................... <tColorTxt.line[tLine].length>
+  [398] pushint8 7 .............................. <7>
+  [400] eq ...................................... <tColorTxt.line[tLine].length = 7>
+  [401] jmpifz [430] ............................ if tColorTxt.line[tLine].length = 7 then
+  [404] getlocal 11 ............................. <tColorList>
+  [406] getlocal 13 ............................. <tColorTxt>
+  [408] pushsymb 24 ............................. <#line>
+  [410] getlocal 14 ............................. <tLine>
+  [412] pusharglist 3 ........................... <tColorTxt, #line, tLine>
+  [414] objcall 121 ............................. <tColorTxt.line[tLine]>
+  [416] pushsymb 122 ............................ <#char>
+  [418] pushint8 2 .............................. <2>
+  [420] pushint8 7 .............................. <7>
+  [422] pusharglist 4 ........................... <tColorTxt.line[tLine], #char, 2, 7>
+  [424] objcall 26 .............................. <tColorTxt.line[tLine].char[2..7]>
+  [426] pusharglistnoret 2 ...................... <tColorList, tColorTxt.line[tLine].char[2..7]>
+  [428] objcall 19 .............................. tColorList.add(tColorTxt.line[tLine].char[2..7])
+  [430] pushint8 1
+  [432] getlocal 14
+  [434] add
+  [435] setlocal 14
+  [437] endrepeat [371]
+  [439] jmp [462]
+  [442] getparam 0 .............................. <me>
+  [444] pushcons 14 ............................. <"Couldn't find pet colors member!">
+  [446] getlocal 12 ............................. <tPetColorId>
+  [448] joinpadstr .............................. <"Couldn't find pet colors member!" && tPetColorId>
+  [449] pushsymb 0 .............................. <#construct>
+  [451] pushsymb 35 ............................. <#major>
+  [453] pusharglistnoret 4 ...................... <me, "Couldn't find pet colors member!" && tPetColorId, #construct, #major>
+  [455] extcall 34 .............................. error(me, "Couldn't find pet colors member!" && tPetColorId, #construct, #major)
+  [457] pushzero ................................ <0>
+  [458] pusharglistnoret 1 ...................... <0>
+  [460] extcall 27 .............................. return 0
+  [462] getprop 678 ............................. <pPetRacesList>
+  [465] getlocal 7 .............................. <tPetType>
+  [467] pushcons 15 ............................. <"races">
+  [469] getlocal 8 .............................. <tTempRaces>
+  [471] pushcons 16 ............................. <"colors">
+  [473] getlocal 11 ............................. <tColorList>
+  [475] pusharglist 4 ........................... <["races": tTempRaces, "colors": tColorList]>
+  [477] pushproplist ............................ <["races": tTempRaces, "colors": tColorList]>
+  [478] pusharglistnoret 3 ...................... <pPetRacesList, tPetType, ["races": tTempRaces, "colors": tColorList]>
+  [480] objcall 50 .............................. pPetRacesList[tPetType] = ["races": tTempRaces, "colors": tColorList]
+  [482] jmp [495] ............................... exit repeat
+  [485] getlocal 9 .............................. <f>
+  [487] pushint8 1 .............................. <1>
+  [489] add ..................................... <f + 1>
+  [490] setlocal 9 .............................. f = f + 1
+  [492] endrepeat [223]
+  [495] jmp [501]
+  [498] jmp [511] ............................... exit repeat
+  [501] getlocal 4 .............................. <i>
+  [503] pushint8 1 .............................. <1>
+  [505] add ..................................... <i + 1>
+  [506] setlocal 4 .............................. i = i + 1
+  [508] endrepeat [151]
+  [511] getparam 0 .............................. <me>
+  [513] pushint8 1 .............................. <1>
+  [515] pusharglistnoret 2 ...................... <me, 1>
+  [517] objcall 498 ............................. me.regMsgList(1)
+  [520] pushint8 1 .............................. <1>
+  [522] pusharglistnoret 1 ...................... <1>
+  [524] extcall 27 .............................. return 1
+  [526] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 498 ............................. me.regMsgList(0)
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 27 .............................. return 1
+  [ 14] ret
+end
+
+on define me, tPageProps
+  [  0] getparam 1 .............................. <tPageProps>
+  [  2] getobjprop 32 ........................... <tPageProps.ilk>
+  [  4] pushsymb 33 ............................. <#propList>
+  [  6] nteq .................................... <tPageProps.ilk <> #propList>
+  [  7] jmpifz [ 26] ............................ if tPageProps.ilk <> #propList then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 17 ............................. <"Incorrect Catalogue page data">
+  [ 14] pushsymb 1 .............................. <#define>
+  [ 16] pushsymb 35 ............................. <#major>
+  [ 18] pusharglist 4 ........................... <me, "Incorrect Catalogue page data", #define, #major>
+  [ 20] extcall 34 .............................. <error(me, "Incorrect Catalogue page data", #define, #major)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Incorrect Catalogue page data", #define, #major)>
+  [ 24] extcall 27 .............................. return error(me, "Incorrect Catalogue page data", #define, #major)
+  [ 26] getparam 1 .............................. <tPageProps>
+  [ 28] pushcons 18 ............................. <"productList">
+  [ 30] pusharglist 2 ........................... <tPageProps, "productList">
+  [ 32] objcall 40 .............................. <tPageProps["productList"]>
+  [ 34] pusharglist 1 ........................... <tPageProps["productList"]>
+  [ 36] extcall 41 .............................. <voidp(tPageProps["productList"])>
+  [ 38] not ..................................... <not voidp(tPageProps["productList"])>
+  [ 39] jmpifz [356] ............................ if not voidp(tPageProps["productList"]) then
+  [ 42] getparam 1 .............................. <tPageProps>
+  [ 44] pushcons 18 ............................. <"productList">
+  [ 46] pusharglist 2 ........................... <tPageProps, "productList">
+  [ 48] objcall 40 .............................. <tPageProps["productList"]>
+  [ 50] setlocal 0 .............................. tProducts = tPageProps["productList"]
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] setlocal 1
+  [ 56] getlocal 1
+  [ 58] getlocal 0 .............................. <tProducts>
+  [ 60] getobjprop 25 ........................... <tProducts.count>
+  [ 62] lteq
+  [ 63] jmpifz [356] ............................ repeat with f = 1 to tProducts.count
+  [ 66] getlocal 0 .............................. <tProducts>
+  [ 68] getlocal 1 .............................. <f>
+  [ 70] pusharglist 2 ........................... <tProducts, f>
+  [ 72] objcall 40 .............................. <tProducts[f]>
+  [ 74] pushcons 19 ............................. <"purchaseCode">
+  [ 76] pusharglist 2 ........................... <tProducts[f], "purchaseCode">
+  [ 78] objcall 40 .............................. <tProducts[f]["purchaseCode"]>
+  [ 80] pusharglist 1 ........................... <tProducts[f]["purchaseCode"]>
+  [ 82] extcall 41 .............................. <voidp(tProducts[f]["purchaseCode"])>
+  [ 84] not ..................................... <not voidp(tProducts[f]["purchaseCode"])>
+  [ 85] jmpifz [346] ............................ if not voidp(tProducts[f]["purchaseCode"]) then
+  [ 88] getlocal 0 .............................. <tProducts>
+  [ 90] getlocal 1 .............................. <f>
+  [ 92] pusharglist 2 ........................... <tProducts, f>
+  [ 94] objcall 40 .............................. <tProducts[f]>
+  [ 96] pushcons 19 ............................. <"purchaseCode">
+  [ 98] pusharglist 2 ........................... <tProducts[f], "purchaseCode">
+  [100] objcall 40 .............................. <tProducts[f]["purchaseCode"]>
+  [102] setlocal 2 .............................. tPurchaseCode = tProducts[f]["purchaseCode"]
+  [104] getlocal 2 .............................. <tPurchaseCode>
+  [106] pushsymb 122 ............................ <#char>
+  [108] getlocal 2 .............................. <tPurchaseCode>
+  [110] getobjprop 308 .......................... <tPurchaseCode.length>
+  [113] pusharglist 3 ........................... <tPurchaseCode, #char, tPurchaseCode.length>
+  [115] objcall 26 .............................. <tPurchaseCode.char[tPurchaseCode.length]>
+  [117] setlocal 3 .............................. tPetType = tPurchaseCode.char[tPurchaseCode.length]
+  [119] pushint8 1 .............................. <1>
+  [121] setlocal 4
+  [123] getlocal 4
+  [125] pushint8 5 .............................. <5>
+  [127] lteq
+  [128] jmpifz [346] ............................ repeat with tPetCount = 1 to 5
+  [131] getprop 678 ............................. <pPetRacesList>
+  [134] getlocal 3 .............................. <tPetType>
+  [136] pusharglist 2 ........................... <pPetRacesList, tPetType>
+  [138] objcall 40 .............................. <pPetRacesList[tPetType]>
+  [140] pusharglist 1 ........................... <pPetRacesList[tPetType]>
+  [142] extcall 41 .............................. <voidp(pPetRacesList[tPetType])>
+  [144] not ..................................... <not voidp(pPetRacesList[tPetType])>
+  [145] jmpifz [337] ............................ if not voidp(pPetRacesList[tPetType]) then
+  [148] getprop 678 ............................. <pPetRacesList>
+  [151] getlocal 3 .............................. <tPetType>
+  [153] pusharglist 2 ........................... <pPetRacesList, tPetType>
+  [155] objcall 40 .............................. <pPetRacesList[tPetType]>
+  [157] pushcons 15 ............................. <"races">
+  [159] pusharglist 2 ........................... <pPetRacesList[tPetType], "races">
+  [161] objcall 40 .............................. <pPetRacesList[tPetType]["races"]>
+  [163] getobjprop 25 ........................... <pPetRacesList[tPetType]["races"].count>
+  [165] setlocal 5 .............................. tCount = pPetRacesList[tPetType]["races"].count
+  [167] getlocal 5 .............................. <tCount>
+  [169] pushzero ................................ <0>
+  [170] gt ...................................... <tCount > 0>
+  [171] jmpifz [205] ............................ if tCount > 0 then / else
+  [174] getprop 678 ............................. <pPetRacesList>
+  [177] getlocal 3 .............................. <tPetType>
+  [179] pusharglist 2 ........................... <pPetRacesList, tPetType>
+  [181] objcall 40 .............................. <pPetRacesList[tPetType]>
+  [183] pushcons 15 ............................. <"races">
+  [185] pusharglist 2 ........................... <pPetRacesList[tPetType], "races">
+  [187] objcall 40 .............................. <pPetRacesList[tPetType]["races"]>
+  [189] getlocal 5 .............................. <tCount>
+  [191] pusharglist 1 ........................... <tCount>
+  [193] extcall 690 ............................. <random(tCount)>
+  [196] pusharglist 2 ........................... <pPetRacesList[tPetType]["races"], random(tCount)>
+  [198] objcall 40 .............................. <pPetRacesList[tPetType]["races"][random(tCount)]>
+  [200] setlocal 6 .............................. tPetRace = pPetRacesList[tPetType]["races"][random(tCount)]
+  [202] jmp [209]
+  [205] pushcons 5 .............................. <EMPTY>
+  [207] setlocal 6 .............................. tPetRace = EMPTY
+  [209] getprop 678 ............................. <pPetRacesList>
+  [212] getlocal 3 .............................. <tPetType>
+  [214] pusharglist 2 ........................... <pPetRacesList, tPetType>
+  [216] objcall 40 .............................. <pPetRacesList[tPetType]>
+  [218] pushcons 16 ............................. <"colors">
+  [220] pusharglist 2 ........................... <pPetRacesList[tPetType], "colors">
+  [222] objcall 40 .............................. <pPetRacesList[tPetType]["colors"]>
+  [224] getobjprop 25 ........................... <pPetRacesList[tPetType]["colors"].count>
+  [226] setlocal 5 .............................. tCount = pPetRacesList[tPetType]["colors"].count
+  [228] getlocal 5 .............................. <tCount>
+  [230] pushzero ................................ <0>
+  [231] gt ...................................... <tCount > 0>
+  [232] jmpifz [266] ............................ if tCount > 0 then / else
+  [235] getprop 678 ............................. <pPetRacesList>
+  [238] getlocal 3 .............................. <tPetType>
+  [240] pusharglist 2 ........................... <pPetRacesList, tPetType>
+  [242] objcall 40 .............................. <pPetRacesList[tPetType]>
+  [244] pushcons 16 ............................. <"colors">
+  [246] pusharglist 2 ........................... <pPetRacesList[tPetType], "colors">
+  [248] objcall 40 .............................. <pPetRacesList[tPetType]["colors"]>
+  [250] getlocal 5 .............................. <tCount>
+  [252] pusharglist 1 ........................... <tCount>
+  [254] extcall 690 ............................. <random(tCount)>
+  [257] pusharglist 2 ........................... <pPetRacesList[tPetType]["colors"], random(tCount)>
+  [259] objcall 40 .............................. <pPetRacesList[tPetType]["colors"][random(tCount)]>
+  [261] setlocal 7 .............................. tColor = pPetRacesList[tPetType]["colors"][random(tCount)]
+  [263] jmp [270]
+  [266] pushcons 5 .............................. <EMPTY>
+  [268] setlocal 7 .............................. tColor = EMPTY
+  [270] getlocal 0 .............................. <tProducts>
+  [272] getlocal 1 .............................. <f>
+  [274] pusharglist 2 ........................... <tProducts, f>
+  [276] objcall 40 .............................. <tProducts[f]>
+  [278] pusharglist 1 ........................... <tProducts[f]>
+  [280] objcall 51 .............................. <tProducts[f].duplicate()>
+  [282] setlocal 8 .............................. tProductData = tProducts[f].duplicate()
+  [284] getlocal 8 .............................. <tProductData>
+  [286] pushcons 20 ............................. <"petType">
+  [288] getlocal 3 .............................. <tPetType>
+  [290] pusharglistnoret 3 ...................... <tProductData, "petType", tPetType>
+  [292] objcall 503 ............................. tProductData.addProp("petType", tPetType)
+  [295] getlocal 8 .............................. <tProductData>
+  [297] pushcons 21 ............................. <"petRace">
+  [299] getlocal 6 .............................. <tPetRace>
+  [301] pusharglistnoret 3 ...................... <tProductData, "petRace", tPetRace>
+  [303] objcall 503 ............................. tProductData.addProp("petRace", tPetRace)
+  [306] getlocal 8 .............................. <tProductData>
+  [308] pushcons 22 ............................. <"petColor">
+  [310] getlocal 7 .............................. <tColor>
+  [312] pusharglistnoret 3 ...................... <tProductData, "petColor", tColor>
+  [314] objcall 503 ............................. tProductData.addProp("petColor", tColor)
+  [317] getprop 649 ............................. <pPageData>
+  [320] pushcons 23 ............................. <"pet_">
+  [322] getlocal 3 .............................. <tPetType>
+  [324] joinstr ................................. <"pet_" & tPetType>
+  [325] pushcons 12 ............................. <"_">
+  [327] joinstr ................................. <"pet_" & tPetType & "_">
+  [328] getlocal 4 .............................. <tPetCount>
+  [330] joinstr ................................. <"pet_" & tPetType & "_" & tPetCount>
+  [331] getlocal 8 .............................. <tProductData>
+  [333] pusharglistnoret 3 ...................... <pPageData, "pet_" & tPetType & "_" & tPetCount, tProductData>
+  [335] objcall 50 .............................. pPageData["pet_" & tPetType & "_" & tPetCount] = tProductData
+  [337] pushint8 1
+  [339] getlocal 4
+  [341] add
+  [342] setlocal 4
+  [344] endrepeat [123]
+  [346] pushint8 1
+  [348] getlocal 1
+  [350] add
+  [351] setlocal 1
+  [353] endrepeat [ 56]
+  [356] getparam 0 .............................. <me>
+  [358] pushint8 1 .............................. <1>
+  [360] pusharglistnoret 2 ...................... <me, 1>
+  [362] localcall 6 ............................. selectProduct(me, 1)
+  [364] ret
+end
+
+on petNameApproved me
+  [  0] getprop 235 ............................. <pSelectedProduct>
+  [  2] getobjprop 32 ........................... <pSelectedProduct.ilk>
+  [  4] pushsymb 33 ............................. <#propList>
+  [  6] eq ...................................... <pSelectedProduct.ilk = #propList>
+  [  7] jmpifz [ 26] ............................ if pSelectedProduct.ilk = #propList then
+  [ 10] pushsymb 37 ............................. <#catalogue>
+  [ 12] pusharglist 1 ........................... <#catalogue>
+  [ 14] extcall 36 .............................. <getThread(#catalogue)>
+  [ 16] pusharglist 1 ........................... <getThread(#catalogue)>
+  [ 18] objcall 150 ............................. <getThread(#catalogue).getComponent()>
+  [ 20] getprop 235 ............................. <pSelectedProduct>
+  [ 22] pusharglistnoret 2 ...................... <getThread(#catalogue).getComponent(), pSelectedProduct>
+  [ 24] objcall 151 ............................. getThread(#catalogue).getComponent().checkProductOrder(pSelectedProduct)
+  [ 26] ret
+end
+
+on petNameUnacceptable me
+  [  0] pushsymb 37 ............................. <#catalogue>
+  [  2] pusharglist 1 ........................... <#catalogue>
+  [  4] extcall 36 .............................. <getThread(#catalogue)>
+  [  6] pusharglist 1 ........................... <getThread(#catalogue)>
+  [  8] objcall 38 .............................. <getThread(#catalogue).getInterface()>
+  [ 10] pusharglist 1 ........................... <getThread(#catalogue).getInterface()>
+  [ 12] objcall 39 .............................. <getThread(#catalogue).getInterface().getCatalogWindow()>
+  [ 14] setlocal 0 .............................. tWndObj = getThread(#catalogue).getInterface().getCatalogWindow()
+  [ 16] getlocal 0 .............................. <tWndObj>
+  [ 18] pushcons 24 ............................. <"dedication_text">
+  [ 20] pusharglist 2 ........................... <tWndObj, "dedication_text">
+  [ 22] objcall 42 .............................. <tWndObj.elementExists("dedication_text")>
+  [ 24] jmpifz [ 41] ............................ if tWndObj.elementExists("dedication_text") then
+  [ 27] getlocal 0 .............................. <tWndObj>
+  [ 29] pushcons 24 ............................. <"dedication_text">
+  [ 31] pusharglist 2 ........................... <tWndObj, "dedication_text">
+  [ 33] objcall 43 .............................. <tWndObj.getElement("dedication_text")>
+  [ 35] pushcons 5 .............................. <EMPTY>
+  [ 37] pusharglistnoret 2 ...................... <tWndObj.getElement("dedication_text"), EMPTY>
+  [ 39] objcall 101 ............................. tWndObj.getElement("dedication_text").setText(EMPTY)
+  [ 41] pushsymb 512 ............................ <#alert>
+  [ 44] pushsymb 513 ............................ <#Msg>
+  [ 47] pushcons 25 ............................. <"catalog_pet_unacceptable">
+  [ 49] pushsymb 348 ............................ <#id>
+  [ 52] pushcons 26 ............................. <"ctlg_petunacceptable">
+  [ 54] pusharglist 4 ........................... <[#Msg: "catalog_pet_unacceptable", #id: "ctlg_petunacceptable"]>
+  [ 56] pushproplist ............................ <[#Msg: "catalog_pet_unacceptable", #id: "ctlg_petunacceptable"]>
+  [ 57] pusharglist 2 ........................... <#alert, [#Msg: "catalog_pet_unacceptable", #id: "ctlg_petunacceptable"]>
+  [ 59] extcall 225 ............................. <executeMessage(#alert, [#Msg: "catalog_pet_unacceptable", #id: "ctlg_petunacceptable"])>
+  [ 61] pusharglistnoret 1 ...................... <executeMessage(#alert, [#Msg: "catalog_pet_unacceptable", #id: "ctlg_petunacceptable"])>
+  [ 63] extcall 27 .............................. return executeMessage(#alert, [#Msg: "catalog_pet_unacceptable", #id: "ctlg_petunacceptable"])
+  [ 65] ret
+end
+
+on definePet me, tProps
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tdata = [:]
+  [  5] getlocal 0 .............................. <tdata>
+  [  7] pushsymb 240 ............................ <#name>
+  [  9] pushcons 27 ............................. <"PetTemplate">
+  [ 11] pusharglistnoret 3 ...................... <tdata, #name, "PetTemplate">
+  [ 13] objcall 50 .............................. tdata[#name] = "PetTemplate"
+  [ 15] getlocal 0 .............................. <tdata>
+  [ 17] pushsymb 349 ............................ <#class>
+  [ 20] pushcons 28 ............................. <"Pet Class">
+  [ 22] pusharglistnoret 3 ...................... <tdata, #class, "Pet Class">
+  [ 24] objcall 50 .............................. tdata[#class] = "Pet Class"
+  [ 26] getlocal 0 .............................. <tdata>
+  [ 28] pushsymb 351 ............................ <#direction>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] pusharglist 3 ........................... <[1, 1, 1]>
+  [ 39] pushlist ................................ <[1, 1, 1]>
+  [ 40] pusharglistnoret 3 ...................... <tdata, #direction, [1, 1, 1]>
+  [ 42] objcall 50 .............................. tdata[#direction] = [1, 1, 1]
+  [ 44] getlocal 0 .............................. <tdata>
+  [ 46] pushsymb 693 ............................ <#x>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] pusharglistnoret 3 ...................... <tdata, #x, 1>
+  [ 53] objcall 50 .............................. tdata[#x] = 1
+  [ 55] getlocal 0 .............................. <tdata>
+  [ 57] pushsymb 694 ............................ <#y>
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] pusharglistnoret 3 ...................... <tdata, #y, 1>
+  [ 64] objcall 50 .............................. tdata[#y] = 1
+  [ 66] getlocal 0 .............................. <tdata>
+  [ 68] pushsymb 695 ............................ <#h>
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglistnoret 3 ...................... <tdata, #h, 1>
+  [ 75] objcall 50 .............................. tdata[#h] = 1
+  [ 77] getlocal 0 .............................. <tdata>
+  [ 79] pushsymb 696 ............................ <#figure>
+  [ 82] getparam 1 .............................. <tProps>
+  [ 84] pushcons 20 ............................. <"petType">
+  [ 86] pusharglist 2 ........................... <tProps, "petType">
+  [ 88] objcall 40 .............................. <tProps["petType"]>
+  [ 90] getparam 1 .............................. <tProps>
+  [ 92] pushcons 21 ............................. <"petRace">
+  [ 94] pusharglist 2 ........................... <tProps, "petRace">
+  [ 96] objcall 40 .............................. <tProps["petRace"]>
+  [ 98] joinpadstr .............................. <tProps["petType"] && tProps["petRace"]>
+  [ 99] getparam 1 .............................. <tProps>
+  [101] pushcons 22 ............................. <"petColor">
+  [103] pusharglist 2 ........................... <tProps, "petColor">
+  [105] objcall 40 .............................. <tProps["petColor"]>
+  [107] joinpadstr .............................. <tProps["petType"] && tProps["petRace"] && tProps["petColor"]>
+  [108] pusharglistnoret 3 ...................... <tdata, #figure, tProps["petType"] && tProps["petRace"] && tProps["petColor"]>
+  [110] objcall 50 .............................. tdata[#figure] = tProps["petType"] && tProps["petRace"] && tProps["petColor"]
+  [112] getprop 676 ............................. <pPetTemplateObj>
+  [115] pusharglist 1 ........................... <pPetTemplateObj>
+  [117] extcall 41 .............................. <voidp(pPetTemplateObj)>
+  [119] not ..................................... <not voidp(pPetTemplateObj)>
+  [120] jmpifz [142] ............................ if not voidp(pPetTemplateObj) then / else
+  [123] getprop 676 ............................. <pPetTemplateObj>
+  [126] getlocal 0 .............................. <tdata>
+  [128] pusharglistnoret 2 ...................... <pPetTemplateObj, tdata>
+  [130] objcall 697 ............................. pPetTemplateObj.setup(tdata)
+  [133] pushint8 1 .............................. <1>
+  [135] pusharglistnoret 1 ...................... <1>
+  [137] extcall 27 .............................. return 1
+  [139] jmp [147]
+  [142] pushzero ................................ <0>
+  [143] pusharglistnoret 1 ...................... <0>
+  [145] extcall 27 .............................. return 0
+  [147] ret
+end
+
+on selectProduct me, tOrderNum
+  [  0] pushsymb 37 ............................. <#catalogue>
+  [  2] pusharglist 1 ........................... <#catalogue>
+  [  4] extcall 36 .............................. <getThread(#catalogue)>
+  [  6] pusharglist 1 ........................... <getThread(#catalogue)>
+  [  8] objcall 38 .............................. <getThread(#catalogue).getInterface()>
+  [ 10] pusharglist 1 ........................... <getThread(#catalogue).getInterface()>
+  [ 12] objcall 39 .............................. <getThread(#catalogue).getInterface().getCatalogWindow()>
+  [ 14] setlocal 0 .............................. tCataloguePage = getThread(#catalogue).getInterface().getCatalogWindow()
+  [ 16] getlocal 0 .............................. <tCataloguePage>
+  [ 18] not ..................................... <not tCataloguePage>
+  [ 19] jmpifz [ 38] ............................ if not tCataloguePage then
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pushcons 0 .............................. <"Couldn't access catalogue window!">
+  [ 26] pushsymb 182 ............................ <#selectProduct>
+  [ 28] pushsymb 35 ............................. <#major>
+  [ 30] pusharglist 4 ........................... <me, "Couldn't access catalogue window!", #selectProduct, #major>
+  [ 32] extcall 34 .............................. <error(me, "Couldn't access catalogue window!", #selectProduct, #major)>
+  [ 34] pusharglistnoret 1 ...................... <error(me, "Couldn't access catalogue window!", #selectProduct, #major)>
+  [ 36] extcall 27 .............................. return error(me, "Couldn't access catalogue window!", #selectProduct, #major)
+  [ 38] getlocal 0 .............................. <tCataloguePage>
+  [ 40] setlocal 1 .............................. tWndObj = tCataloguePage
+  [ 42] getparam 1 .............................. <tOrderNum>
+  [ 44] pusharglist 1 ........................... <tOrderNum>
+  [ 46] extcall 397 ............................. <integerp(tOrderNum)>
+  [ 49] not ..................................... <not integerp(tOrderNum)>
+  [ 50] jmpifz [ 69] ............................ if not integerp(tOrderNum) then
+  [ 53] getparam 0 .............................. <me>
+  [ 55] pushcons 29 ............................. <"Incorrect value">
+  [ 57] pushsymb 182 ............................ <#selectProduct>
+  [ 59] pushsymb 35 ............................. <#major>
+  [ 61] pusharglist 4 ........................... <me, "Incorrect value", #selectProduct, #major>
+  [ 63] extcall 34 .............................. <error(me, "Incorrect value", #selectProduct, #major)>
+  [ 65] pusharglistnoret 1 ...................... <error(me, "Incorrect value", #selectProduct, #major)>
+  [ 67] extcall 27 .............................. return error(me, "Incorrect value", #selectProduct, #major)
+  [ 69] getprop 649 ............................. <pPageData>
+  [ 72] pusharglist 1 ........................... <pPageData>
+  [ 74] extcall 41 .............................. <voidp(pPageData)>
+  [ 76] jmpifz [ 95] ............................ if voidp(pPageData) then
+  [ 79] getparam 0 .............................. <me>
+  [ 81] pushcons 30 ............................. <"product not found">
+  [ 83] pushsymb 182 ............................ <#selectProduct>
+  [ 85] pushsymb 35 ............................. <#major>
+  [ 87] pusharglist 4 ........................... <me, "product not found", #selectProduct, #major>
+  [ 89] extcall 34 .............................. <error(me, "product not found", #selectProduct, #major)>
+  [ 91] pusharglistnoret 1 ...................... <error(me, "product not found", #selectProduct, #major)>
+  [ 93] extcall 27 .............................. return error(me, "product not found", #selectProduct, #major)
+  [ 95] getprop 649 ............................. <pPageData>
+  [ 98] getobjprop 25 ........................... <pPageData.count>
+  [100] pushzero ................................ <0>
+  [101] eq ...................................... <pPageData.count = 0>
+  [102] jmpifz [109] ............................ if pPageData.count = 0 then
+  [105] pusharglistnoret 0 ...................... <>
+  [107] extcall 27 .............................. return 
+  [109] getparam 1 .............................. <tOrderNum>
+  [111] getprop 649 ............................. <pPageData>
+  [114] getobjprop 25 ........................... <pPageData.count>
+  [116] gt ...................................... <tOrderNum > pPageData.count>
+  [117] jmpifz [124] ............................ if tOrderNum > pPageData.count then
+  [120] pusharglistnoret 0 ...................... <>
+  [122] extcall 27 .............................. return 
+  [124] getprop 649 ............................. <pPageData>
+  [127] getparam 1 .............................. <tOrderNum>
+  [129] pusharglist 2 ........................... <pPageData, tOrderNum>
+  [131] objcall 40 .............................. <pPageData[tOrderNum]>
+  [133] pushint8 1 .............................. <1>
+  [135] pusharglist 2 ........................... <pPageData[tOrderNum], 1>
+  [137] objcall 40 .............................. <pPageData[tOrderNum][1]>
+  [139] pusharglist 1 ........................... <pPageData[tOrderNum][1]>
+  [141] extcall 41 .............................. <voidp(pPageData[tOrderNum][1])>
+  [143] jmpifz [150] ............................ if voidp(pPageData[tOrderNum][1]) then
+  [146] pusharglistnoret 0 ...................... <>
+  [148] extcall 27 .............................. return 
+  [150] getprop 649 ............................. <pPageData>
+  [153] getparam 1 .............................. <tOrderNum>
+  [155] pusharglist 2 ........................... <pPageData, tOrderNum>
+  [157] objcall 40 .............................. <pPageData[tOrderNum]>
+  [159] setprop 235 ............................. pSelectedProduct = pPageData[tOrderNum]
+  [161] pushint8 1 .............................. <1>
+  [163] setprop 651 ............................. pSelectedColorNum = 1
+  [166] getparam 1 .............................. <tOrderNum>
+  [168] setprop 650 ............................. pSelectedOrderNum = tOrderNum
+  [171] getparam 0 .............................. <me>
+  [173] getprop 235 ............................. <pSelectedProduct>
+  [175] pusharglist 2 ........................... <me, pSelectedProduct>
+  [177] objcall 673 ............................. <me.definePet(pSelectedProduct)>
+  [180] pushint8 1 .............................. <1>
+  [182] eq ...................................... <me.definePet(pSelectedProduct) = 1>
+  [183] jmpifz [379] ............................ if me.definePet(pSelectedProduct) = 1 then
+  [186] pushcons 31 ............................. <"ctlg_teaserimg_1">
+  [188] setlocal 2 .............................. tElemID = "ctlg_teaserimg_1"
+  [190] getlocal 1 .............................. <tWndObj>
+  [192] getlocal 2 .............................. <tElemID>
+  [194] pusharglist 2 ........................... <tWndObj, tElemID>
+  [196] objcall 42 .............................. <tWndObj.elementExists(tElemID)>
+  [198] jmpifz [379] ............................ if tWndObj.elementExists(tElemID) then
+  [201] getlocal 1 .............................. <tWndObj>
+  [203] getlocal 2 .............................. <tElemID>
+  [205] pusharglist 2 ........................... <tWndObj, tElemID>
+  [207] objcall 43 .............................. <tWndObj.getElement(tElemID)>
+  [209] setlocal 3 .............................. tElem = tWndObj.getElement(tElemID)
+  [211] getprop 676 ............................. <pPetTemplateObj>
+  [214] pusharglist 1 ........................... <pPetTemplateObj>
+  [216] objcall 347 ............................. <pPetTemplateObj.getPicture()>
+  [219] setlocal 4 .............................. tImage = pPetTemplateObj.getPicture()
+  [221] getlocal 4 .............................. <tImage>
+  [223] getobjprop 32 ........................... <tImage.ilk>
+  [225] pushsymb 89 ............................. <#image>
+  [227] eq ...................................... <tImage.ilk = #image>
+  [228] jmpifz [379] ............................ if tImage.ilk = #image then
+  [231] getlocal 3 .............................. <tElem>
+  [233] pushsymb 89 ............................. <#image>
+  [235] pusharglist 2 ........................... <tElem, #image>
+  [237] objcall 90 .............................. <tElem.getProperty(#image)>
+  [239] setlocal 5 .............................. tDestImg = tElem.getProperty(#image)
+  [241] getlocal 4 .............................. <tImage>
+  [243] setlocal 6 .............................. tSourceImg = tImage
+  [245] getlocal 5 .............................. <tDestImg>
+  [247] getlocal 5 .............................. <tDestImg>
+  [249] getobjprop 91 ........................... <tDestImg.rect>
+  [251] pushint16 255 ........................... <255>
+  [254] pushint16 255 ........................... <255>
+  [257] pushint16 255 ........................... <255>
+  [260] pusharglist 3 ........................... <255, 255, 255>
+  [262] extcall 54 .............................. <rgb(255, 255, 255)>
+  [264] pusharglistnoret 3 ...................... <tDestImg, tDestImg.rect, rgb(255, 255, 255)>
+  [266] objcall 309 ............................. tDestImg.fill(tDestImg.rect, rgb(255, 255, 255))
+  [269] getlocal 6 .............................. <tSourceImg>
+  [271] getobjprop 91 ........................... <tSourceImg.rect>
+  [273] pushint8 2 .............................. <2>
+  [275] mul ..................................... <tSourceImg.rect * 2>
+  [276] setlocal 7 .............................. tSourceRect = tSourceImg.rect * 2
+  [278] getlocal 5 .............................. <tDestImg>
+  [280] getobjprop 91 ........................... <tDestImg.rect>
+  [282] getlocal 7 .............................. <tSourceRect>
+  [284] sub ..................................... <tDestImg.rect - tSourceRect>
+  [285] setlocal 8 .............................. tdestrect = tDestImg.rect - tSourceRect
+  [287] pushint8 14 ............................. <14>
+  [289] pushint8 7 .............................. <7>
+  [291] inv ..................................... <-7>
+  [292] pushint8 14 ............................. <14>
+  [294] pushint8 7 .............................. <7>
+  [296] inv ..................................... <-7>
+  [297] pusharglist 4 ........................... <14, -7, 14, -7>
+  [299] extcall 91 .............................. <rect(14, -7, 14, -7)>
+  [301] setlocal 9 .............................. tMargins = rect(14, -7, 14, -7)
+  [303] getlocal 8 .............................. <tdestrect>
+  [305] getobjprop 130 .......................... <tdestrect.width>
+  [307] pushint8 2 .............................. <2>
+  [309] div ..................................... <tdestrect.width / 2>
+  [310] getlocal 8 .............................. <tdestrect>
+  [312] getobjprop 131 .......................... <tdestrect.height>
+  [314] pushint8 2 .............................. <2>
+  [316] div ..................................... <tdestrect.height / 2>
+  [317] getlocal 7 .............................. <tSourceRect>
+  [319] getobjprop 130 .......................... <tSourceRect.width>
+  [321] getlocal 8 .............................. <tdestrect>
+  [323] getobjprop 130 .......................... <tdestrect.width>
+  [325] pushint8 2 .............................. <2>
+  [327] div ..................................... <tdestrect.width / 2>
+  [328] add ..................................... <tSourceRect.width + (tdestrect.width / 2)>
+  [329] getlocal 8 .............................. <tdestrect>
+  [331] getobjprop 131 .......................... <tdestrect.height>
+  [333] pushint8 2 .............................. <2>
+  [335] div ..................................... <tdestrect.height / 2>
+  [336] getlocal 7 .............................. <tSourceRect>
+  [338] getobjprop 131 .......................... <tSourceRect.height>
+  [340] add ..................................... <(tdestrect.height / 2) + tSourceRect.height>
+  [341] pusharglist 4 ........................... <tdestrect.width / 2, tdestrect.height / 2, tSourceRect.width + (tdestrect.width / 2), (tdestrect.height / 2) + tSourceRect.height>
+  [343] extcall 91 .............................. <rect(tdestrect.width / 2, tdestrect.height / 2, tSourceRect.width + (tdestrect.width / 2), (tdestrect.height / 2) + tSourceRect.height)>
+  [345] getlocal 9 .............................. <tMargins>
+  [347] add ..................................... <rect(tdestrect.width / 2, tdestrect.height / 2, tSourceRect.width + (tdestrect.width / 2), (tdestrect.height / 2) + tSourceRect.height) + tMargins>
+  [348] setlocal 8 .............................. tdestrect = rect(tdestrect.width / 2, tdestrect.height / 2, tSourceRect.width + (tdestrect.width / 2), (tdestrect.height / 2) + tSourceRect.height) + tMargins
+  [350] getlocal 5 .............................. <tDestImg>
+  [352] getlocal 6 .............................. <tSourceImg>
+  [354] getlocal 8 .............................. <tdestrect>
+  [356] getlocal 6 .............................. <tSourceImg>
+  [358] getobjprop 91 ........................... <tSourceImg.rect>
+  [360] pushsymb 94 ............................. <#ink>
+  [362] pushint8 36 ............................. <36>
+  [364] pusharglist 2 ........................... <[#ink: 36]>
+  [366] pushproplist ............................ <[#ink: 36]>
+  [367] pusharglistnoret 5 ...................... <tDestImg, tSourceImg, tdestrect, tSourceImg.rect, [#ink: 36]>
+  [369] objcall 96 .............................. tDestImg.copyPixels(tSourceImg, tdestrect, tSourceImg.rect, [#ink: 36])
+  [371] getlocal 3 .............................. <tElem>
+  [373] getlocal 5 .............................. <tDestImg>
+  [375] pusharglistnoret 2 ...................... <tElem, tDestImg>
+  [377] objcall 97 .............................. tElem.feedImage(tDestImg)
+  [379] getlocal 1 .............................. <tWndObj>
+  [381] pushcons 32 ............................. <"ctlg_text_2">
+  [383] pusharglist 2 ........................... <tWndObj, "ctlg_text_2">
+  [385] objcall 42 .............................. <tWndObj.elementExists("ctlg_text_2")>
+  [387] jmpifz [433] ............................ if tWndObj.elementExists("ctlg_text_2") then
+  [390] pushcons 7 .............................. <"pet_race_">
+  [392] getprop 235 ............................. <pSelectedProduct>
+  [394] pushcons 20 ............................. <"petType">
+  [396] pusharglist 2 ........................... <pSelectedProduct, "petType">
+  [398] objcall 40 .............................. <pSelectedProduct["petType"]>
+  [400] joinstr ................................. <"pet_race_" & pSelectedProduct["petType"]>
+  [401] pushcons 12 ............................. <"_">
+  [403] joinstr ................................. <"pet_race_" & pSelectedProduct["petType"] & "_">
+  [404] getprop 235 ............................. <pSelectedProduct>
+  [406] pushcons 21 ............................. <"petRace">
+  [408] pusharglist 2 ........................... <pSelectedProduct, "petRace">
+  [410] objcall 40 .............................. <pSelectedProduct["petRace"]>
+  [412] joinstr ................................. <"pet_race_" & pSelectedProduct["petType"] & "_" & pSelectedProduct["petRace"]>
+  [413] pusharglist 1 ........................... <"pet_race_" & pSelectedProduct["petType"] & "_" & pSelectedProduct["petRace"]>
+  [415] extcall 100 ............................. <getText("pet_race_" & pSelectedProduct["petType"] & "_" & pSelectedProduct["petRace"])>
+  [417] setlocal 10 ............................. tText = getText("pet_race_" & pSelectedProduct["petType"] & "_" & pSelectedProduct["petRace"])
+  [419] getlocal 1 .............................. <tWndObj>
+  [421] pushcons 32 ............................. <"ctlg_text_2">
+  [423] pusharglist 2 ........................... <tWndObj, "ctlg_text_2">
+  [425] objcall 43 .............................. <tWndObj.getElement("ctlg_text_2")>
+  [427] getlocal 10 ............................. <tText>
+  [429] pusharglistnoret 2 ...................... <tWndObj.getElement("ctlg_text_2"), tText>
+  [431] objcall 101 ............................. tWndObj.getElement("ctlg_text_2").setText(tText)
+  [433] getprop 235 ............................. <pSelectedProduct>
+  [435] pushcons 33 ............................. <"price">
+  [437] pusharglist 2 ........................... <pSelectedProduct, "price">
+  [439] objcall 40 .............................. <pSelectedProduct["price"]>
+  [441] pusharglist 1 ........................... <pSelectedProduct["price"]>
+  [443] extcall 41 .............................. <voidp(pSelectedProduct["price"])>
+  [445] not ..................................... <not voidp(pSelectedProduct["price"])>
+  [446] jmpifz [533] ............................ if not voidp(pSelectedProduct["price"]) then
+  [449] getlocal 1 .............................. <tWndObj>
+  [451] pushcons 34 ............................. <"ctlg_price_1">
+  [453] pusharglist 2 ........................... <tWndObj, "ctlg_price_1">
+  [455] objcall 42 .............................. <tWndObj.elementExists("ctlg_price_1")>
+  [457] jmpifz [533] ............................ if tWndObj.elementExists("ctlg_price_1") then
+  [460] getprop 235 ............................. <pSelectedProduct>
+  [462] pushcons 33 ............................. <"price">
+  [464] pusharglist 2 ........................... <pSelectedProduct, "price">
+  [466] objcall 40 .............................. <pSelectedProduct["price"]>
+  [468] pusharglist 1 ........................... <pSelectedProduct["price"]>
+  [470] extcall 99 .............................. <value(pSelectedProduct["price"])>
+  [472] pushint8 1 .............................. <1>
+  [474] gt ...................................... <value(pSelectedProduct["price"]) > 1>
+  [475] jmpifz [500] ............................ if value(pSelectedProduct["price"]) > 1 then / else
+  [478] getprop 235 ............................. <pSelectedProduct>
+  [480] pushcons 33 ............................. <"price">
+  [482] pusharglist 2 ........................... <pSelectedProduct, "price">
+  [484] objcall 40 .............................. <pSelectedProduct["price"]>
+  [486] pushcons 35 ............................. <"credits">
+  [488] pushcons 35 ............................. <"credits">
+  [490] pusharglist 2 ........................... <"credits", "credits">
+  [492] extcall 100 ............................. <getText("credits", "credits")>
+  [494] joinpadstr .............................. <pSelectedProduct["price"] && getText("credits", "credits")>
+  [495] setlocal 10 ............................. tText = pSelectedProduct["price"] && getText("credits", "credits")
+  [497] jmp [519]
+  [500] getprop 235 ............................. <pSelectedProduct>
+  [502] pushcons 33 ............................. <"price">
+  [504] pusharglist 2 ........................... <pSelectedProduct, "price">
+  [506] objcall 40 .............................. <pSelectedProduct["price"]>
+  [508] pushcons 36 ............................. <"credit">
+  [510] pushcons 36 ............................. <"credit">
+  [512] pusharglist 2 ........................... <"credit", "credit">
+  [514] extcall 100 ............................. <getText("credit", "credit")>
+  [516] joinpadstr .............................. <pSelectedProduct["price"] && getText("credit", "credit")>
+  [517] setlocal 10 ............................. tText = pSelectedProduct["price"] && getText("credit", "credit")
+  [519] getlocal 1 .............................. <tWndObj>
+  [521] pushcons 34 ............................. <"ctlg_price_1">
+  [523] pusharglist 2 ........................... <tWndObj, "ctlg_price_1">
+  [525] objcall 43 .............................. <tWndObj.getElement("ctlg_price_1")>
+  [527] getlocal 10 ............................. <tText>
+  [529] pusharglistnoret 2 ...................... <tWndObj.getElement("ctlg_price_1"), tText>
+  [531] objcall 101 ............................. tWndObj.getElement("ctlg_price_1").setText(tText)
+  [533] getlocal 1 .............................. <tWndObj>
+  [535] pushcons 37 ............................. <"ctlg_buy_button">
+  [537] pusharglist 2 ........................... <tWndObj, "ctlg_buy_button">
+  [539] objcall 42 .............................. <tWndObj.elementExists("ctlg_buy_button")>
+  [541] jmpifz [560] ............................ if tWndObj.elementExists("ctlg_buy_button") then
+  [544] getlocal 1 .............................. <tWndObj>
+  [546] pushcons 37 ............................. <"ctlg_buy_button">
+  [548] pusharglist 2 ........................... <tWndObj, "ctlg_buy_button">
+  [550] objcall 43 .............................. <tWndObj.getElement("ctlg_buy_button")>
+  [552] pushsymb 44 ............................. <#visible>
+  [554] pushint8 1 .............................. <1>
+  [556] pusharglistnoret 3 ...................... <tWndObj.getElement("ctlg_buy_button"), #visible, 1>
+  [558] objcall 45 .............................. tWndObj.getElement("ctlg_buy_button").setProperty(#visible, 1)
+  [560] getprop 650 ............................. <pSelectedOrderNum>
+  [563] setprop 287 ............................. pLastProductNum = pSelectedOrderNum
+  [566] ret
+end
+
+on nextProduct me
+  [  0] getprop 649 ............................. <pPageData>
+  [  3] getobjprop 32 ........................... <pPageData.ilk>
+  [  5] pushsymb 33 ............................. <#propList>
+  [  7] nteq .................................... <pPageData.ilk <> #propList>
+  [  8] jmpifz [ 28] ............................ if pPageData.ilk <> #propList then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 38 ............................. <"Incorrect data">
+  [ 15] pushsymb 658 ............................ <#nextProduct>
+  [ 18] pushsymb 35 ............................. <#major>
+  [ 20] pusharglist 4 ........................... <me, "Incorrect data", #nextProduct, #major>
+  [ 22] extcall 34 .............................. <error(me, "Incorrect data", #nextProduct, #major)>
+  [ 24] pusharglistnoret 1 ...................... <error(me, "Incorrect data", #nextProduct, #major)>
+  [ 26] extcall 27 .............................. return error(me, "Incorrect data", #nextProduct, #major)
+  [ 28] getprop 287 ............................. <pLastProductNum>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] add ..................................... <pLastProductNum + 1>
+  [ 34] setlocal 0 .............................. tNext = pLastProductNum + 1
+  [ 36] getlocal 0 .............................. <tNext>
+  [ 38] getprop 649 ............................. <pPageData>
+  [ 41] getobjprop 25 ........................... <pPageData.count>
+  [ 43] gt ...................................... <tNext > pPageData.count>
+  [ 44] jmpifz [ 54] ............................ if tNext > pPageData.count then
+  [ 47] getprop 649 ............................. <pPageData>
+  [ 50] getobjprop 25 ........................... <pPageData.count>
+  [ 52] setlocal 0 .............................. tNext = pPageData.count
+  [ 54] getlocal 0 .............................. <tNext>
+  [ 56] setprop 650 ............................. pSelectedOrderNum = tNext
+  [ 59] getparam 0 .............................. <me>
+  [ 61] getlocal 0 .............................. <tNext>
+  [ 63] pusharglistnoret 2 ...................... <me, tNext>
+  [ 65] localcall 6 ............................. selectProduct(me, tNext)
+  [ 67] ret
+end
+
+on prevProduct me
+  [  0] getprop 649 ............................. <pPageData>
+  [  3] getobjprop 32 ........................... <pPageData.ilk>
+  [  5] pushsymb 33 ............................. <#propList>
+  [  7] nteq .................................... <pPageData.ilk <> #propList>
+  [  8] jmpifz [ 28] ............................ if pPageData.ilk <> #propList then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 38 ............................. <"Incorrect data">
+  [ 15] pushsymb 668 ............................ <#prewProduct>
+  [ 18] pushsymb 35 ............................. <#major>
+  [ 20] pusharglist 4 ........................... <me, "Incorrect data", #prewProduct, #major>
+  [ 22] extcall 34 .............................. <error(me, "Incorrect data", #prewProduct, #major)>
+  [ 24] pusharglistnoret 1 ...................... <error(me, "Incorrect data", #prewProduct, #major)>
+  [ 26] extcall 27 .............................. return error(me, "Incorrect data", #prewProduct, #major)
+  [ 28] getprop 287 ............................. <pLastProductNum>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] sub ..................................... <pLastProductNum - 1>
+  [ 34] setlocal 0 .............................. tPrev = pLastProductNum - 1
+  [ 36] getlocal 0 .............................. <tPrev>
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] lt ...................................... <tPrev < 1>
+  [ 41] jmpifz [ 48] ............................ if tPrev < 1 then
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] setlocal 0 .............................. tPrev = 1
+  [ 48] getlocal 0 .............................. <tPrev>
+  [ 50] setprop 650 ............................. pSelectedOrderNum = tPrev
+  [ 53] getparam 0 .............................. <me>
+  [ 55] getlocal 0 .............................. <tPrev>
+  [ 57] pusharglistnoret 2 ...................... <me, tPrev>
+  [ 59] localcall 6 ............................. selectProduct(me, tPrev)
+  [ 61] ret
+end
+
+on eventProc me, tEvent, tSprID, tProp
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 148 ............................ <#mouseUp>
+  [  4] eq ...................................... <tEvent = #mouseUp>
+  [  5] jmpifz [ 21] ............................ if tEvent = #mouseUp then
+  [  8] getparam 2 .............................. <tSprID>
+  [ 10] pushcons 39 ............................. <"close">
+  [ 12] eq ...................................... <tSprID = "close">
+  [ 13] jmpifz [ 21] ............................ if tSprID = "close" then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 27 .............................. return 0
+  [ 21] getparam 1 .............................. <tEvent>
+  [ 23] pushsymb 149 ............................ <#mouseDown>
+  [ 25] eq ...................................... <tEvent = #mouseDown>
+  [ 26] jmpifz [383] ............................ if tEvent = #mouseDown then
+  [ 29] getparam 2 .............................. <tSprID>
+  [ 31] pushcons 37 ............................. <"ctlg_buy_button">
+  [ 33] eq ...................................... <tSprID = "ctlg_buy_button">
+  [ 34] jmpifz [325] ............................ if tSprID = "ctlg_buy_button" then / else
+  [ 37] pushsymb 37 ............................. <#catalogue>
+  [ 39] pusharglist 1 ........................... <#catalogue>
+  [ 41] extcall 36 .............................. <getThread(#catalogue)>
+  [ 43] pusharglist 1 ........................... <getThread(#catalogue)>
+  [ 45] objcall 38 .............................. <getThread(#catalogue).getInterface()>
+  [ 47] pusharglist 1 ........................... <getThread(#catalogue).getInterface()>
+  [ 49] objcall 39 .............................. <getThread(#catalogue).getInterface().getCatalogWindow()>
+  [ 51] setlocal 0 .............................. tWndObj = getThread(#catalogue).getInterface().getCatalogWindow()
+  [ 53] pushcons 5 .............................. <EMPTY>
+  [ 55] setlocal 1 .............................. tText = EMPTY
+  [ 57] getlocal 0 .............................. <tWndObj>
+  [ 59] pushcons 24 ............................. <"dedication_text">
+  [ 61] pusharglist 2 ........................... <tWndObj, "dedication_text">
+  [ 63] objcall 42 .............................. <tWndObj.elementExists("dedication_text")>
+  [ 65] jmpifz [ 94] ............................ if tWndObj.elementExists("dedication_text") then
+  [ 68] getlocal 0 .............................. <tWndObj>
+  [ 70] pushcons 24 ............................. <"dedication_text">
+  [ 72] pusharglist 2 ........................... <tWndObj, "dedication_text">
+  [ 74] objcall 43 .............................. <tWndObj.getElement("dedication_text")>
+  [ 76] pusharglist 1 ........................... <tWndObj.getElement("dedication_text")>
+  [ 78] objcall 100 ............................. <tWndObj.getElement("dedication_text").getText()>
+  [ 80] setlocal 1 .............................. tText = tWndObj.getElement("dedication_text").getText()
+  [ 82] getlocal 1 .............................. <tText>
+  [ 84] pushcons 2 .............................. <RETURN>
+  [ 86] pushcons 40 ............................. <"\\r">
+  [ 88] pusharglist 3 ........................... <tText, RETURN, "\\r">
+  [ 90] extcall 239 ............................. <replaceChunks(tText, RETURN, "\\r")>
+  [ 92] setlocal 1 .............................. tText = replaceChunks(tText, RETURN, "\\r")
+  [ 94] getlocal 1 .............................. <tText>
+  [ 96] getobjprop 308 .......................... <tText.length>
+  [ 99] pushint8 1 .............................. <1>
+  [101] lt ...................................... <tText.length < 1>
+  [102] jmpifz [132] ............................ if tText.length < 1 then / else
+  [105] pushsymb 512 ............................ <#alert>
+  [108] pushsymb 513 ............................ <#Msg>
+  [111] pushcons 41 ............................. <"catalog_give_petname">
+  [113] pushsymb 348 ............................ <#id>
+  [116] pushcons 42 ............................. <"ctlg_petmsg">
+  [118] pusharglist 4 ........................... <[#Msg: "catalog_give_petname", #id: "ctlg_petmsg"]>
+  [120] pushproplist ............................ <[#Msg: "catalog_give_petname", #id: "ctlg_petmsg"]>
+  [121] pusharglist 2 ........................... <#alert, [#Msg: "catalog_give_petname", #id: "ctlg_petmsg"]>
+  [123] extcall 225 ............................. <executeMessage(#alert, [#Msg: "catalog_give_petname", #id: "ctlg_petmsg"])>
+  [125] pusharglistnoret 1 ...................... <executeMessage(#alert, [#Msg: "catalog_give_petname", #id: "ctlg_petmsg"])>
+  [127] extcall 27 .............................. return executeMessage(#alert, [#Msg: "catalog_give_petname", #id: "ctlg_petmsg"])
+  [129] jmp [167]
+  [132] getlocal 1 .............................. <tText>
+  [134] getobjprop 308 .......................... <tText.length>
+  [137] pushint8 15 ............................. <15>
+  [139] gt ...................................... <tText.length > 15>
+  [140] jmpifz [167] ............................ if tText.length > 15 then
+  [143] pushsymb 512 ............................ <#alert>
+  [146] pushsymb 513 ............................ <#Msg>
+  [149] pushcons 43 ............................. <"catalog_pet_name_length">
+  [151] pushsymb 348 ............................ <#id>
+  [154] pushcons 42 ............................. <"ctlg_petmsg">
+  [156] pusharglist 4 ........................... <[#Msg: "catalog_pet_name_length", #id: "ctlg_petmsg"]>
+  [158] pushproplist ............................ <[#Msg: "catalog_pet_name_length", #id: "ctlg_petmsg"]>
+  [159] pusharglist 2 ........................... <#alert, [#Msg: "catalog_pet_name_length", #id: "ctlg_petmsg"]>
+  [161] extcall 225 ............................. <executeMessage(#alert, [#Msg: "catalog_pet_name_length", #id: "ctlg_petmsg"])>
+  [163] pusharglistnoret 1 ...................... <executeMessage(#alert, [#Msg: "catalog_pet_name_length", #id: "ctlg_petmsg"])>
+  [165] extcall 27 .............................. return executeMessage(#alert, [#Msg: "catalog_pet_name_length", #id: "ctlg_petmsg"])
+  [167] getlocal 1 .............................. <tText>
+  [169] pushsymb 122 ............................ <#char>
+  [171] pushint8 1 .............................. <1>
+  [173] pushint8 15 ............................. <15>
+  [175] pusharglist 4 ........................... <tText, #char, 1, 15>
+  [177] objcall 26 .............................. <tText.char[1..15]>
+  [179] setlocal 1 .............................. tText = tText.char[1..15]
+  [181] getlocal 1 .............................. <tText>
+  [183] pushint8 1 .............................. <1>
+  [185] pusharglist 2 ........................... <tText, 1>
+  [187] extcall 444 ............................. <convertSpecialChars(tText, 1)>
+  [190] setlocal 1 .............................. tText = convertSpecialChars(tText, 1)
+  [192] getprop 235 ............................. <pSelectedProduct>
+  [194] getobjprop 32 ........................... <pSelectedProduct.ilk>
+  [196] pushsymb 33 ............................. <#propList>
+  [198] nteq .................................... <pSelectedProduct.ilk <> #propList>
+  [199] jmpifz [218] ............................ if pSelectedProduct.ilk <> #propList then
+  [202] getparam 0 .............................. <me>
+  [204] pushcons 44 ............................. <"incorrect Selected Product Data">
+  [206] pushsymb 5 .............................. <#eventProc>
+  [208] pushsymb 35 ............................. <#major>
+  [210] pusharglist 4 ........................... <me, "incorrect Selected Product Data", #eventProc, #major>
+  [212] extcall 34 .............................. <error(me, "incorrect Selected Product Data", #eventProc, #major)>
+  [214] pusharglistnoret 1 ...................... <error(me, "incorrect Selected Product Data", #eventProc, #major)>
+  [216] extcall 27 .............................. return error(me, "incorrect Selected Product Data", #eventProc, #major)
+  [218] pushint8 2 .............................. <2>
+  [220] pusharglist 1 ........................... <2>
+  [222] extcall 579 ............................. <numToChar(2)>
+  [225] getprop 235 ............................. <pSelectedProduct>
+  [227] pushcons 21 ............................. <"petRace">
+  [229] pusharglist 2 ........................... <pSelectedProduct, "petRace">
+  [231] objcall 40 .............................. <pSelectedProduct["petRace"]>
+  [233] joinstr ................................. <numToChar(2) & pSelectedProduct["petRace"]>
+  [234] pushint8 2 .............................. <2>
+  [236] pusharglist 1 ........................... <2>
+  [238] extcall 579 ............................. <numToChar(2)>
+  [241] joinstr ................................. <numToChar(2) & pSelectedProduct["petRace"] & numToChar(2)>
+  [242] getprop 235 ............................. <pSelectedProduct>
+  [244] pushcons 22 ............................. <"petColor">
+  [246] pusharglist 2 ........................... <pSelectedProduct, "petColor">
+  [248] objcall 40 .............................. <pSelectedProduct["petColor"]>
+  [250] joinstr ................................. <numToChar(2) & pSelectedProduct["petRace"] & numToChar(2) & pSelectedProduct["petColor"]>
+  [251] setlocal 2 .............................. tPet = numToChar(2) & pSelectedProduct["petRace"] & numToChar(2) & pSelectedProduct["petColor"]
+  [253] getprop 235 ............................. <pSelectedProduct>
+  [255] pushcons 45 ............................. <"extra_parm">
+  [257] getlocal 1 .............................. <tText>
+  [259] getlocal 2 .............................. <tPet>
+  [261] joinstr ................................. <tText & tPet>
+  [262] pusharglistnoret 3 ...................... <pSelectedProduct, "extra_parm", tText & tPet>
+  [264] objcall 50 .............................. pSelectedProduct["extra_parm"] = tText & tPet
+  [266] pushcons 46 ............................. <"connection.info.id">
+  [268] pushsymb 699 ............................ <#Info>
+  [271] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [273] extcall 360 ............................. <getVariable("connection.info.id", #Info)>
+  [276] pusharglist 1 ........................... <getVariable("connection.info.id", #Info)>
+  [278] extcall 445 ............................. <connectionExists(getVariable("connection.info.id", #Info))>
+  [281] jmpifz [322] ............................ if connectionExists(getVariable("connection.info.id", #Info)) then
+  [284] pushint8 1 .............................. <1>
+  [286] setprop 700 ............................. pNameCheckPending = 1
+  [289] pushcons 46 ............................. <"connection.info.id">
+  [291] pushsymb 699 ............................ <#Info>
+  [294] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [296] extcall 360 ............................. <getVariable("connection.info.id", #Info)>
+  [299] pusharglist 1 ........................... <getVariable("connection.info.id", #Info)>
+  [301] extcall 446 ............................. <getConnection(getVariable("connection.info.id", #Info))>
+  [304] pushcons 47 ............................. <"APPROVENAME">
+  [306] pushsymb 57 ............................. <#string>
+  [308] getlocal 1 .............................. <tText>
+  [310] pushsymb 47 ............................. <#integer>
+  [312] pushint8 1 .............................. <1>
+  [314] pusharglist 4 ........................... <[#string: tText, #integer: 1]>
+  [316] pushproplist ............................ <[#string: tText, #integer: 1]>
+  [317] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id", #Info)), "APPROVENAME", [#string: tText, #integer: 1]>
+  [319] objcall 447 ............................. getConnection(getVariable("connection.info.id", #Info)).send("APPROVENAME", [#string: tText, #integer: 1])
+  [322] jmp [383]
+  [325] getparam 2 .............................. <tSprID>
+  [327] pushcons 48 ............................. <"ctlg_nextmodel_button">
+  [329] eq ...................................... <tSprID = "ctlg_nextmodel_button">
+  [330] jmpifz [343] ............................ if tSprID = "ctlg_nextmodel_button" then / else
+  [333] getparam 0 .............................. <me>
+  [335] pusharglistnoret 1 ...................... <me>
+  [337] objcall 658 ............................. me.nextProduct()
+  [340] jmp [383]
+  [343] getparam 2 .............................. <tSprID>
+  [345] pushcons 49 ............................. <"ctlg_prevmodel_button">
+  [347] eq ...................................... <tSprID = "ctlg_prevmodel_button">
+  [348] jmpifz [361] ............................ if tSprID = "ctlg_prevmodel_button" then / else
+  [351] getparam 0 .............................. <me>
+  [353] pusharglistnoret 1 ...................... <me>
+  [355] objcall 659 ............................. me.prevProduct()
+  [358] jmp [383]
+  [361] getparam 2 .............................. <tSprID>
+  [363] pushcons 50 ............................. <"ctlg_text_3">
+  [365] eq ...................................... <tSprID = "ctlg_text_3">
+  [366] jmpifz [378] ............................ if tSprID = "ctlg_text_3" then / else
+  [369] pushcons 51 ............................. <"TODO >>> link">
+  [371] pusharglistnoret 1 ...................... <"TODO >>> link">
+  [373] extcall 129 ............................. put "TODO >>> link"
+  [375] jmp [383]
+  [378] pushzero ................................ <0>
+  [379] pusharglistnoret 1 ...................... <0>
+  [381] extcall 27 .............................. return 0
+  [383] pushint8 1 .............................. <1>
+  [385] pusharglistnoret 1 ...................... <1>
+  [387] extcall 27 .............................. return 1
+  [389] ret
+end
+
+on handle_nameapproved me, tMsg
+  [  0] getprop 700 ............................. <pNameCheckPending>
+  [  3] not ..................................... <not pNameCheckPending>
+  [  4] jmpifz [ 13] ............................ if not pNameCheckPending then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 27 .............................. return 1
+  [ 13] pushzero ................................ <0>
+  [ 14] setprop 700 ............................. pNameCheckPending = 0
+  [ 17] getparam 1 .............................. <tMsg>
+  [ 19] getchainedprop 510 ...................... <tMsg.connection>
+  [ 22] getparam 1 .............................. <tMsg>
+  [ 24] pusharglist 2 ........................... <tMsg.connection, tMsg>
+  [ 26] objcall 511 ............................. <tMsg.connection.GetIntFrom(tMsg)>
+  [ 29] setlocal 0 .............................. tParm = tMsg.connection.GetIntFrom(tMsg)
+  [ 31] getlocal 0 .............................. <tParm>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <tParm = 0>
+  [ 35] jmpifz [ 48] ............................ if tParm = 0 then / else
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pusharglistnoret 1 ...................... <me>
+  [ 42] objcall 671 ............................. me.petNameApproved()
+  [ 45] jmp [ 55]
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglistnoret 1 ...................... <me>
+  [ 52] objcall 672 ............................. me.petNameUnacceptable()
+  [ 55] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint8 36 ............................. <36>
+  [  9] pushsymb 674 ............................ <#handle_nameapproved>
+  [ 12] pusharglistnoret 3 ...................... <tMsgs, 36, #handle_nameapproved>
+  [ 14] objcall 525 ............................. tMsgs.setaProp(36, #handle_nameapproved)
+  [ 17] pusharglist 0 ........................... <[:]>
+  [ 19] pushproplist ............................ <[:]>
+  [ 20] setlocal 1 .............................. tCmds = [:]
+  [ 22] getlocal 1 .............................. <tCmds>
+  [ 24] pushcons 47 ............................. <"APPROVENAME">
+  [ 26] pushint8 42 ............................. <42>
+  [ 28] pusharglistnoret 3 ...................... <tCmds, "APPROVENAME", 42>
+  [ 30] objcall 525 ............................. tCmds.setaProp("APPROVENAME", 42)
+  [ 33] getparam 1 .............................. <tBool>
+  [ 35] jmpifz [ 81] ............................ if tBool then / else
+  [ 38] pushcons 46 ............................. <"connection.info.id">
+  [ 40] pusharglist 1 ........................... <"connection.info.id">
+  [ 42] extcall 360 ............................. <getVariable("connection.info.id")>
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 208 ............................. <me.getID()>
+  [ 51] getlocal 0 .............................. <tMsgs>
+  [ 53] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [ 55] extcall 526 ............................. registerListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [ 58] pushcons 46 ............................. <"connection.info.id">
+  [ 60] pusharglist 1 ........................... <"connection.info.id">
+  [ 62] extcall 360 ............................. <getVariable("connection.info.id")>
+  [ 65] getparam 0 .............................. <me>
+  [ 67] pusharglist 1 ........................... <me>
+  [ 69] objcall 208 ............................. <me.getID()>
+  [ 71] getlocal 1 .............................. <tCmds>
+  [ 73] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [ 75] extcall 527 ............................. registerCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [ 78] jmp [121]
+  [ 81] pushcons 46 ............................. <"connection.info.id">
+  [ 83] pusharglist 1 ........................... <"connection.info.id">
+  [ 85] extcall 360 ............................. <getVariable("connection.info.id")>
+  [ 88] getparam 0 .............................. <me>
+  [ 90] pusharglist 1 ........................... <me>
+  [ 92] objcall 208 ............................. <me.getID()>
+  [ 94] getlocal 0 .............................. <tMsgs>
+  [ 96] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [ 98] extcall 528 ............................. unregisterListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [101] pushcons 46 ............................. <"connection.info.id">
+  [103] pusharglist 1 ........................... <"connection.info.id">
+  [105] extcall 360 ............................. <getVariable("connection.info.id")>
+  [108] getparam 0 .............................. <me>
+  [110] pusharglist 1 ........................... <me>
+  [112] objcall 208 ............................. <me.getID()>
+  [114] getlocal 1 .............................. <tCmds>
+  [116] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [118] extcall 529 ............................. unregisterCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [121] pushint8 1 .............................. <1>
+  [123] pusharglistnoret 1 ...................... <1>
+  [125] extcall 27 .............................. return 1
+  [127] ret
+end

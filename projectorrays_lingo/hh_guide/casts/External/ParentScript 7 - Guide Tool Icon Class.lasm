@@ -1,0 +1,190 @@
+property pSpriteId, pIconSprite, pIconLoc, pFlashTimeoutID
+
+on construct me
+  [  0] pushcons 0 .............................. <"guide_tool_icon_sprite">
+  [  2] setprop 75 .............................. pSpriteId = "guide_tool_icon_sprite"
+  [  4] pusharglist 0 ........................... <>
+  [  6] extcall 42 .............................. <VOID>
+  [  8] setprop 76 .............................. pIconSprite = VOID
+  [ 10] pushcons 1 .............................. <"guidetool.icon.loc">
+  [ 12] pusharglist 1 ........................... <"guidetool.icon.loc">
+  [ 14] extcall 67 .............................. <getVariable("guidetool.icon.loc")>
+  [ 16] pusharglist 1 ........................... <getVariable("guidetool.icon.loc")>
+  [ 18] extcall 160 ............................. <value(getVariable("guidetool.icon.loc"))>
+  [ 20] setprop 77 .............................. pIconLoc = value(getVariable("guidetool.icon.loc"))
+  [ 22] pushcons 2 .............................. <"guide_tool_icon_flash">
+  [ 24] setprop 96 .............................. pFlashTimeoutID = "guide_tool_icon_flash"
+  [ 26] ret
+end
+
+on deconstruct me
+  [  0] getprop 76 .............................. <pIconSprite>
+  [  2] getobjprop 79 ........................... <pIconSprite.ilk>
+  [  4] pushsymb 80 ............................. <#sprite>
+  [  6] eq ...................................... <pIconSprite.ilk = #sprite>
+  [  7] jmpifz [ 18] ............................ if pIconSprite.ilk = #sprite then
+  [ 10] getprop 76 .............................. <pIconSprite>
+  [ 12] getobjprop 82 ........................... <pIconSprite.spriteNum>
+  [ 14] pusharglistnoret 1 ...................... <pIconSprite.spriteNum>
+  [ 16] extcall 81 .............................. releaseSprite(pIconSprite.spriteNum)
+  [ 18] ret
+end
+
+on show me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] pusharglist 1 ........................... <tstate>
+  [  4] extcall 83 .............................. <voidp(tstate)>
+  [  6] jmpifz [ 13] ............................ if voidp(tstate) then
+  [  9] pushcons 3 .............................. <"normal">
+  [ 11] setparam 1 .............................. tstate = "normal"
+  [ 13] getprop 76 .............................. <pIconSprite>
+  [ 15] getobjprop 79 ........................... <pIconSprite.ilk>
+  [ 17] pushsymb 80 ............................. <#sprite>
+  [ 19] nteq .................................... <pIconSprite.ilk <> #sprite>
+  [ 20] jmpifz [ 51] ............................ if pIconSprite.ilk <> #sprite then
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglist 1 ........................... <me>
+  [ 27] objcall 15 .............................. <me.getID()>
+  [ 29] pusharglist 1 ........................... <me.getID()>
+  [ 31] extcall 84 .............................. <reserveSprite(me.getID())>
+  [ 33] pusharglist 1 ........................... <reserveSprite(me.getID())>
+  [ 35] extcall 80 .............................. <sprite(reserveSprite(me.getID()))>
+  [ 37] setprop 76 .............................. pIconSprite = sprite(reserveSprite(me.getID()))
+  [ 39] getprop 76 .............................. <pIconSprite>
+  [ 41] pushzero ................................ <0>
+  [ 42] eq ...................................... <pIconSprite = 0>
+  [ 43] jmpifz [ 51] ............................ if pIconSprite = 0 then
+  [ 46] pushzero ................................ <0>
+  [ 47] pusharglistnoret 1 ...................... <0>
+  [ 49] extcall 16 .............................. return 0
+  [ 51] getprop 76 .............................. <pIconSprite>
+  [ 53] pushcons 4 .............................. <"guide_tool_icon_normal">
+  [ 55] pusharglist 1 ........................... <"guide_tool_icon_normal">
+  [ 57] extcall 49 .............................. <member("guide_tool_icon_normal")>
+  [ 59] setobjprop 49 ........................... pIconSprite.member = member("guide_tool_icon_normal")
+  [ 61] getprop 76 .............................. <pIconSprite>
+  [ 63] pushint8 8 .............................. <8>
+  [ 65] setobjprop 85 ........................... pIconSprite.ink = 8
+  [ 67] getprop 76 .............................. <pIconSprite>
+  [ 69] getprop 77 .............................. <pIconLoc>
+  [ 71] setobjprop 86 ........................... pIconSprite.loc = pIconLoc
+  [ 73] getprop 76 .............................. <pIconSprite>
+  [ 75] pushint32 200000000 ..................... <200000000>
+  [ 80] setobjprop 87 ........................... pIconSprite.locZ = 200000000
+  [ 82] getprop 76 .............................. <pIconSprite>
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] setobjprop 24 ........................... pIconSprite.visible = 1
+  [ 88] getprop 76 .............................. <pIconSprite>
+  [ 90] getobjprop 82 ........................... <pIconSprite.spriteNum>
+  [ 92] getprop 75 .............................. <pSpriteId>
+  [ 94] pusharglistnoret 2 ...................... <pIconSprite.spriteNum, pSpriteId>
+  [ 96] extcall 88 .............................. setEventBroker(pIconSprite.spriteNum, pSpriteId)
+  [ 98] getprop 76 .............................. <pIconSprite>
+  [100] pushsymb 74 ............................. <#eventProcIcon>
+  [102] getparam 0 .............................. <me>
+  [104] pusharglist 1 ........................... <me>
+  [106] objcall 15 .............................. <me.getID()>
+  [108] pushsymb 37 ............................. <#mouseUp>
+  [110] pusharglistnoret 4 ...................... <pIconSprite, #eventProcIcon, me.getID(), #mouseUp>
+  [112] objcall 38 .............................. pIconSprite.registerProcedure(#eventProcIcon, me.getID(), #mouseUp)
+  [114] getprop 76 .............................. <pIconSprite>
+  [116] pushcons 5 .............................. <"cursor.finger">
+  [118] pusharglistnoret 2 ...................... <pIconSprite, "cursor.finger">
+  [120] objcall 89 .............................. pIconSprite.setcursor("cursor.finger")
+  [122] pushint8 1 .............................. <1>
+  [124] pusharglistnoret 1 ...................... <1>
+  [126] extcall 16 .............................. return 1
+  [128] ret
+end
+
+on hide me
+  [  0] getprop 76 .............................. <pIconSprite>
+  [  2] getobjprop 79 ........................... <pIconSprite.ilk>
+  [  4] pushsymb 80 ............................. <#sprite>
+  [  6] eq ...................................... <pIconSprite.ilk = #sprite>
+  [  7] jmpifz [ 15] ............................ if pIconSprite.ilk = #sprite then
+  [ 10] getprop 76 .............................. <pIconSprite>
+  [ 12] pushzero ................................ <0>
+  [ 13] setobjprop 24 ........................... pIconSprite.visible = 0
+  [ 15] ret
+end
+
+on setFlashing me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] pushint8 1 .............................. <1>
+  [  4] eq ...................................... <tstate = 1>
+  [  5] jmpifz [ 43] ............................ if tstate = 1 then / else
+  [  8] getprop 96 .............................. <pFlashTimeoutID>
+  [ 10] pusharglist 1 ........................... <pFlashTimeoutID>
+  [ 12] extcall 39 .............................. <timeoutExists(pFlashTimeoutID)>
+  [ 14] not ..................................... <not timeoutExists(pFlashTimeoutID)>
+  [ 15] jmpifz [ 40] ............................ if not timeoutExists(pFlashTimeoutID) then
+  [ 18] getprop 96 .............................. <pFlashTimeoutID>
+  [ 20] pushint16 500 ........................... <500>
+  [ 23] pushsymb 97 ............................. <#updateFlash>
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglist 1 ........................... <me>
+  [ 29] objcall 15 .............................. <me.getID()>
+  [ 31] pusharglist 0 ........................... <>
+  [ 33] extcall 42 .............................. <VOID>
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 6 ...................... <pFlashTimeoutID, 500, #updateFlash, me.getID(), VOID, 0>
+  [ 38] extcall 41 .............................. createTimeout(pFlashTimeoutID, 500, #updateFlash, me.getID(), VOID, 0)
+  [ 40] jmp [ 78]
+  [ 43] getprop 96 .............................. <pFlashTimeoutID>
+  [ 45] pusharglist 1 ........................... <pFlashTimeoutID>
+  [ 47] extcall 39 .............................. <timeoutExists(pFlashTimeoutID)>
+  [ 49] jmpifz [ 58] ............................ if timeoutExists(pFlashTimeoutID) then
+  [ 52] getprop 96 .............................. <pFlashTimeoutID>
+  [ 54] pusharglistnoret 1 ...................... <pFlashTimeoutID>
+  [ 56] extcall 40 .............................. removeTimeout(pFlashTimeoutID)
+  [ 58] getprop 76 .............................. <pIconSprite>
+  [ 60] getobjprop 79 ........................... <pIconSprite.ilk>
+  [ 62] pushsymb 80 ............................. <#sprite>
+  [ 64] eq ...................................... <pIconSprite.ilk = #sprite>
+  [ 65] jmpifz [ 78] ............................ if pIconSprite.ilk = #sprite then
+  [ 68] getprop 76 .............................. <pIconSprite>
+  [ 70] pushcons 4 .............................. <"guide_tool_icon_normal">
+  [ 72] pusharglist 1 ........................... <"guide_tool_icon_normal">
+  [ 74] extcall 49 .............................. <member("guide_tool_icon_normal")>
+  [ 76] setobjprop 49 ........................... pIconSprite.member = member("guide_tool_icon_normal")
+  [ 78] ret
+end
+
+on updateFlash me
+  [  0] getprop 76 .............................. <pIconSprite>
+  [  2] getobjprop 79 ........................... <pIconSprite.ilk>
+  [  4] pushsymb 80 ............................. <#sprite>
+  [  6] nteq .................................... <pIconSprite.ilk <> #sprite>
+  [  7] jmpifz [ 15] ............................ if pIconSprite.ilk <> #sprite then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 16 .............................. return 0
+  [ 15] getprop 76 .............................. <pIconSprite>
+  [ 17] getchainedprop 49 ....................... <pIconSprite.member>
+  [ 19] getobjprop 98 ........................... <pIconSprite.member.name>
+  [ 21] setlocal 0 .............................. tMemName = pIconSprite.member.name
+  [ 23] getlocal 0 .............................. <tMemName>
+  [ 25] pushcons 4 .............................. <"guide_tool_icon_normal">
+  [ 27] eq ...................................... <tMemName = "guide_tool_icon_normal">
+  [ 28] jmpifz [ 44] ............................ if tMemName = "guide_tool_icon_normal" then / else
+  [ 31] getprop 76 .............................. <pIconSprite>
+  [ 33] pushcons 6 .............................. <"guide_tool_icon_black">
+  [ 35] pusharglist 1 ........................... <"guide_tool_icon_black">
+  [ 37] extcall 49 .............................. <member("guide_tool_icon_black")>
+  [ 39] setobjprop 49 ........................... pIconSprite.member = member("guide_tool_icon_black")
+  [ 41] jmp [ 54]
+  [ 44] getprop 76 .............................. <pIconSprite>
+  [ 46] pushcons 4 .............................. <"guide_tool_icon_normal">
+  [ 48] pusharglist 1 ........................... <"guide_tool_icon_normal">
+  [ 50] extcall 49 .............................. <member("guide_tool_icon_normal")>
+  [ 52] setobjprop 49 ........................... pIconSprite.member = member("guide_tool_icon_normal")
+  [ 54] ret
+end
+
+on eventProcIcon me, tEvent, tSprID, tProp
+  [  0] pushsymb 3 .............................. <#toggleGuideTool>
+  [  2] pusharglistnoret 1 ...................... <#toggleGuideTool>
+  [  4] extcall 90 .............................. executeMessage(#toggleGuideTool)
+  [  6] ret
+end

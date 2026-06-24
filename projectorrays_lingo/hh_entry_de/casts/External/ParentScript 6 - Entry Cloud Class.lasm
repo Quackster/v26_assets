@@ -1,0 +1,685 @@
+property pSprite, pTurnPoint, pVertDir, pImg, pLoc, pTurnPointList, pCurrentTurnPoint, pCloudDir, pMemName, pCloudMember
+
+on define me, tsprite, tCount
+  [  0] getparam 1 .............................. <tsprite>
+  [  2] setprop 2 ............................... pSprite = tsprite
+  [  4] pushcons 0 .............................. <"entrycloud_">
+  [  6] getparam 2 .............................. <tCount>
+  [  8] joinstr ................................. <"entrycloud_" & tCount>
+  [  9] pusharglist 1 ........................... <"entrycloud_" & tCount>
+  [ 11] extcall 195 ............................. <memberExists("entrycloud_" & tCount)>
+  [ 13] jmpifz [ 34] ............................ if memberExists("entrycloud_" & tCount) then / else
+  [ 16] pushcons 0 .............................. <"entrycloud_">
+  [ 18] getparam 2 .............................. <tCount>
+  [ 20] joinstr ................................. <"entrycloud_" & tCount>
+  [ 21] pusharglist 1 ........................... <"entrycloud_" & tCount>
+  [ 23] extcall 16 .............................. <getmemnum("entrycloud_" & tCount)>
+  [ 25] pusharglist 1 ........................... <getmemnum("entrycloud_" & tCount)>
+  [ 27] extcall 10 .............................. <member(getmemnum("entrycloud_" & tCount))>
+  [ 29] setprop 196 ............................. pCloudMember = member(getmemnum("entrycloud_" & tCount))
+  [ 31] jmp [ 51]
+  [ 34] pushcons 0 .............................. <"entrycloud_">
+  [ 36] getparam 2 .............................. <tCount>
+  [ 38] joinstr ................................. <"entrycloud_" & tCount>
+  [ 39] pushsymb 198 ............................ <#bitmap>
+  [ 41] pusharglist 2 ........................... <"entrycloud_" & tCount, #bitmap>
+  [ 43] extcall 197 ............................. <createMember("entrycloud_" & tCount, #bitmap)>
+  [ 45] pusharglist 1 ........................... <createMember("entrycloud_" & tCount, #bitmap)>
+  [ 47] extcall 10 .............................. <member(createMember("entrycloud_" & tCount, #bitmap))>
+  [ 49] setprop 196 ............................. pCloudMember = member(createMember("entrycloud_" & tCount, #bitmap))
+  [ 51] getprop 196 ............................. <pCloudMember>
+  [ 53] getobjprop 167 .......................... <pCloudMember.image>
+  [ 55] setprop 199 ............................. pImg = pCloudMember.image
+  [ 57] getmovieprop 200 ........................ <the itemDelimiter>
+  [ 59] setlocal 0 .............................. tTemp = the itemDelimiter
+  [ 61] pushcons 1 .............................. <"_">
+  [ 63] setmovieprop 200 ........................ the itemDelimiter = "_"
+  [ 65] getprop 2 ............................... <pSprite>
+  [ 67] getchainedprop 10 ....................... <pSprite.member>
+  [ 69] getchainedprop 11 ....................... <pSprite.member.name>
+  [ 71] pushsymb 202 ............................ <#item>
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] getprop 2 ............................... <pSprite>
+  [ 77] getchainedprop 10 ....................... <pSprite.member>
+  [ 79] getchainedprop 11 ....................... <pSprite.member.name>
+  [ 81] pushsymb 202 ............................ <#item>
+  [ 83] pusharglist 2 ........................... <pSprite.member.name, #item>
+  [ 85] objcall 8 ............................... <pSprite.member.name.item.count>
+  [ 87] pushint8 1 .............................. <1>
+  [ 89] sub ..................................... <pSprite.member.name.item.count - 1>
+  [ 90] pusharglist 4 ........................... <pSprite.member.name, #item, 1, pSprite.member.name.item.count - 1>
+  [ 92] objcall 15 .............................. <pSprite.member.name.item[1..pSprite.member.name.item.count - 1]>
+  [ 94] setprop 201 ............................. pMemName = pSprite.member.name.item[1..pSprite.member.name.item.count - 1]
+  [ 96] getprop 2 ............................... <pSprite>
+  [ 98] getchainedprop 10 ....................... <pSprite.member>
+  [100] getchainedprop 11 ....................... <pSprite.member.name>
+  [102] pushsymb 202 ............................ <#item>
+  [104] getprop 2 ............................... <pSprite>
+  [106] getchainedprop 10 ....................... <pSprite.member>
+  [108] getchainedprop 11 ....................... <pSprite.member.name>
+  [110] pushsymb 202 ............................ <#item>
+  [112] pusharglist 2 ........................... <pSprite.member.name, #item>
+  [114] objcall 8 ............................... <pSprite.member.name.item.count>
+  [116] pusharglist 3 ........................... <pSprite.member.name, #item, pSprite.member.name.item.count>
+  [118] objcall 15 .............................. <pSprite.member.name.item[pSprite.member.name.item.count]>
+  [120] setlocal 1 .............................. tdir = pSprite.member.name.item[pSprite.member.name.item.count]
+  [122] getlocal 0 .............................. <tTemp>
+  [124] setmovieprop 200 ........................ the itemDelimiter = tTemp
+  [126] getlocal 1 .............................. <tdir>
+  [128] pushcons 2 .............................. <"left">
+  [130] eq ...................................... <tdir = "left">
+  [131] jmpifz [142] ............................ if tdir = "left" then / else
+  [134] pushint8 1 .............................. <1>
+  [136] inv ..................................... <-1>
+  [137] setprop 203 ............................. pVertDir = -1
+  [139] jmp [146]
+  [142] pushint8 1 .............................. <1>
+  [144] setprop 203 ............................. pVertDir = 1
+  [146] pushint16 330 ........................... <330>
+  [149] pusharglist 1 ........................... <[330]>
+  [151] pushlist ................................ <[330]>
+  [152] setprop 204 ............................. pTurnPointList = [330]
+  [154] pushzero ................................ <0>
+  [155] setprop 205 ............................. pCurrentTurnPoint = 0
+  [157] getparam 0 .............................. <me>
+  [159] pusharglistnoret 1 ...................... <me>
+  [161] localcall 2 ............................. initCloud(me)
+  [163] getprop 2 ............................... <pSprite>
+  [165] getprop 196 ............................. <pCloudMember>
+  [167] setobjprop 10 ........................... pSprite.member = pCloudMember
+  [169] getprop 2 ............................... <pSprite>
+  [171] getprop 196 ............................. <pCloudMember>
+  [173] getobjprop 17 ........................... <pCloudMember.width>
+  [175] setobjprop 17 ........................... pSprite.width = pCloudMember.width
+  [177] getprop 2 ............................... <pSprite>
+  [179] getprop 196 ............................. <pCloudMember>
+  [181] getobjprop 18 ........................... <pCloudMember.height>
+  [183] setobjprop 18 ........................... pSprite.height = pCloudMember.height
+  [185] getparam 0 .............................. <me>
+  [187] pusharglistnoret 1 ...................... <me>
+  [189] localcall 1 ............................. getFirstTurnPoint(me)
+  [191] getprop 203 ............................. <pVertDir>
+  [193] setprop 206 ............................. pCloudDir = pVertDir
+  [195] pushint8 1 .............................. <1>
+  [197] pusharglistnoret 1 ...................... <1>
+  [199] extcall 5 ............................... return 1
+  [201] ret
+end
+
+on getFirstTurnPoint me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 204 ............................. <pTurnPointList>
+  [  8] getobjprop 8 ............................ <pTurnPointList.count>
+  [ 10] lteq
+  [ 11] jmpifz [ 56] ............................ repeat with f = 1 to pTurnPointList.count
+  [ 14] getprop 2 ............................... <pSprite>
+  [ 16] getobjprop 78 ........................... <pSprite.right>
+  [ 18] getprop 204 ............................. <pTurnPointList>
+  [ 20] getlocal 0 .............................. <f>
+  [ 22] pusharglist 2 ........................... <pTurnPointList, f>
+  [ 24] objcall 9 ............................... <pTurnPointList[f]>
+  [ 26] lt ...................................... <pSprite.right < pTurnPointList[f]>
+  [ 27] jmpifz [ 47] ............................ if pSprite.right < pTurnPointList[f] then
+  [ 30] getlocal 0 .............................. <f>
+  [ 32] setprop 205 ............................. pCurrentTurnPoint = f
+  [ 34] getprop 204 ............................. <pTurnPointList>
+  [ 36] getlocal 0 .............................. <f>
+  [ 38] pusharglist 2 ........................... <pTurnPointList, f>
+  [ 40] objcall 9 ............................... <pTurnPointList[f]>
+  [ 42] setprop 208 ............................. pTurnPoint = pTurnPointList[f]
+  [ 44] jmp [ 56] ............................... exit repeat
+  [ 47] pushint8 1
+  [ 49] getlocal 0
+  [ 51] add
+  [ 52] setlocal 0
+  [ 54] endrepeat [  4]
+  [ 56] ret
+end
+
+on initCloud me
+  [  0] getprop 2 ............................... <pSprite>
+  [  2] getobjprop 79 ........................... <pSprite.left>
+  [  4] pusharglist 0 ........................... <>
+  [  6] thebuiltin 210 .......................... <the stageRight>
+  [  8] pusharglist 0 ........................... <>
+  [ 10] thebuiltin 211 .......................... <the stageLeft>
+  [ 12] sub ..................................... <the stageRight - the stageLeft>
+  [ 13] gt ...................................... <pSprite.left > (the stageRight - the stageLeft)>
+  [ 14] jmpifz [ 83] ............................ if pSprite.left > (the stageRight - the stageLeft) then
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] inv ..................................... <-1>
+  [ 20] setprop 203 ............................. pVertDir = -1
+  [ 22] getprop 2 ............................... <pSprite>
+  [ 24] pushint8 40 ............................. <40>
+  [ 26] inv ..................................... <-40>
+  [ 27] setobjprop 212 .......................... pSprite.locH = -40
+  [ 29] getprop 2 ............................... <pSprite>
+  [ 31] pushint16 200 ........................... <200>
+  [ 34] pushint8 30 ............................. <30>
+  [ 36] pusharglist 1 ........................... <30>
+  [ 38] extcall 4 ............................... <random(30)>
+  [ 40] sub ..................................... <200 - random(30)>
+  [ 41] setobjprop 77 ........................... pSprite.locV = 200 - random(30)
+  [ 43] getprop 201 ............................. <pMemName>
+  [ 45] pushsymb 13 ............................. <#char>
+  [ 47] pushint8 1 .............................. <1>
+  [ 49] getprop 201 ............................. <pMemName>
+  [ 51] getobjprop 14 ........................... <pMemName.length>
+  [ 53] pushint8 1 .............................. <1>
+  [ 55] sub ..................................... <pMemName.length - 1>
+  [ 56] pusharglist 4 ........................... <pMemName, #char, 1, pMemName.length - 1>
+  [ 58] objcall 15 .............................. <pMemName.char[1..pMemName.length - 1]>
+  [ 60] pushint8 2 .............................. <2>
+  [ 62] pusharglist 1 ........................... <2>
+  [ 64] extcall 4 ............................... <random(2)>
+  [ 66] joinstr ................................. <pMemName.char[1..pMemName.length - 1] & random(2)>
+  [ 67] setprop 201 ............................. pMemName = pMemName.char[1..pMemName.length - 1] & random(2)
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] setprop 205 ............................. pCurrentTurnPoint = 1
+  [ 73] getprop 204 ............................. <pTurnPointList>
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] pusharglist 2 ........................... <pTurnPointList, 1>
+  [ 79] objcall 9 ............................... <pTurnPointList[1]>
+  [ 81] setprop 208 ............................. pTurnPoint = pTurnPointList[1]
+  [ 83] getprop 203 ............................. <pVertDir>
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] inv ..................................... <-1>
+  [ 88] eq ...................................... <pVertDir = -1>
+  [ 89] jmpifz [ 99] ............................ if pVertDir = -1 then / else
+  [ 92] pushcons 2 .............................. <"left">
+  [ 94] setlocal 0 .............................. tdir = "left"
+  [ 96] jmp [103]
+  [ 99] pushcons 3 .............................. <"right">
+  [101] setlocal 0 .............................. tdir = "right"
+  [103] getprop 201 ............................. <pMemName>
+  [105] pushcons 1 .............................. <"_">
+  [107] joinstr ................................. <pMemName & "_">
+  [108] getlocal 0 .............................. <tdir>
+  [110] joinstr ................................. <pMemName & "_" & tdir>
+  [111] pusharglist 1 ........................... <pMemName & "_" & tdir>
+  [113] extcall 16 .............................. <getmemnum(pMemName & "_" & tdir)>
+  [115] pusharglist 1 ........................... <getmemnum(pMemName & "_" & tdir)>
+  [117] extcall 10 .............................. <member(getmemnum(pMemName & "_" & tdir))>
+  [119] getchainedprop 167 ...................... <member(getmemnum(pMemName & "_" & tdir)).image>
+  [121] pusharglist 1 ........................... <member(getmemnum(pMemName & "_" & tdir)).image>
+  [123] objcall 110 ............................. <member(getmemnum(pMemName & "_" & tdir)).image.duplicate()>
+  [125] setlocal 1 .............................. tTempImg = member(getmemnum(pMemName & "_" & tdir)).image.duplicate()
+  [127] getprop 196 ............................. <pCloudMember>
+  [129] getlocal 1 .............................. <tTempImg>
+  [131] getobjprop 17 ........................... <tTempImg.width>
+  [133] pushint8 60 ............................. <60>
+  [135] pushint8 8 .............................. <8>
+  [137] pusharglist 3 ........................... <tTempImg.width, 60, 8>
+  [139] extcall 167 ............................. <image(tTempImg.width, 60, 8)>
+  [141] setobjprop 167 .......................... pCloudMember.image = image(tTempImg.width, 60, 8)
+  [143] getprop 196 ............................. <pCloudMember>
+  [145] getchainedprop 167 ...................... <pCloudMember.image>
+  [147] getobjprop 213 .......................... <pCloudMember.image.rect>
+  [149] getlocal 1 .............................. <tTempImg>
+  [151] getobjprop 213 .......................... <tTempImg.rect>
+  [153] sub ..................................... <pCloudMember.image.rect - tTempImg.rect>
+  [154] setlocal 2 .............................. tdestrect = pCloudMember.image.rect - tTempImg.rect
+  [156] getlocal 2 .............................. <tdestrect>
+  [158] getobjprop 17 ........................... <tdestrect.width>
+  [160] pushint8 2 .............................. <2>
+  [162] div ..................................... <tdestrect.width / 2>
+  [163] getlocal 2 .............................. <tdestrect>
+  [165] getobjprop 18 ........................... <tdestrect.height>
+  [167] pushint8 2 .............................. <2>
+  [169] div ..................................... <tdestrect.height / 2>
+  [170] getlocal 1 .............................. <tTempImg>
+  [172] getobjprop 17 ........................... <tTempImg.width>
+  [174] getlocal 2 .............................. <tdestrect>
+  [176] getobjprop 17 ........................... <tdestrect.width>
+  [178] pushint8 2 .............................. <2>
+  [180] div ..................................... <tdestrect.width / 2>
+  [181] add ..................................... <tTempImg.width + (tdestrect.width / 2)>
+  [182] getlocal 2 .............................. <tdestrect>
+  [184] getobjprop 18 ........................... <tdestrect.height>
+  [186] pushint8 2 .............................. <2>
+  [188] div ..................................... <tdestrect.height / 2>
+  [189] getlocal 1 .............................. <tTempImg>
+  [191] getobjprop 18 ........................... <tTempImg.height>
+  [193] add ..................................... <(tdestrect.height / 2) + tTempImg.height>
+  [194] pusharglist 4 ........................... <tdestrect.width / 2, tdestrect.height / 2, tTempImg.width + (tdestrect.width / 2), (tdestrect.height / 2) + tTempImg.height>
+  [196] extcall 213 ............................. <rect(tdestrect.width / 2, tdestrect.height / 2, tTempImg.width + (tdestrect.width / 2), (tdestrect.height / 2) + tTempImg.height)>
+  [198] setlocal 2 .............................. tdestrect = rect(tdestrect.width / 2, tdestrect.height / 2, tTempImg.width + (tdestrect.width / 2), (tdestrect.height / 2) + tTempImg.height)
+  [200] getprop 196 ............................. <pCloudMember>
+  [202] getchainedprop 167 ...................... <pCloudMember.image>
+  [204] getlocal 1 .............................. <tTempImg>
+  [206] getlocal 2 .............................. <tdestrect>
+  [208] getlocal 1 .............................. <tTempImg>
+  [210] getobjprop 213 .......................... <tTempImg.rect>
+  [212] pushsymb 214 ............................ <#ink>
+  [214] pushint8 8 .............................. <8>
+  [216] pusharglist 2 ........................... <[#ink: 8]>
+  [218] pushproplist ............................ <[#ink: 8]>
+  [219] pusharglistnoret 5 ...................... <pCloudMember.image, tTempImg, tdestrect, tTempImg.rect, [#ink: 8]>
+  [221] objcall 215 ............................. pCloudMember.image.copyPixels(tTempImg, tdestrect, tTempImg.rect, [#ink: 8])
+  [223] getprop 2 ............................... <pSprite>
+  [225] getobjprop 217 .......................... <pSprite.loc>
+  [227] setprop 216 ............................. pLoc = pSprite.loc
+  [229] getprop 2 ............................... <pSprite>
+  [231] getlocal 1 .............................. <tTempImg>
+  [233] getobjprop 17 ........................... <tTempImg.width>
+  [235] setobjprop 17 ........................... pSprite.width = tTempImg.width
+  [237] ret
+end
+
+on getNextTurnPoint me
+  [  0] getprop 205 ............................. <pCurrentTurnPoint>
+  [  2] pushint8 1 .............................. <1>
+  [  4] add ..................................... <pCurrentTurnPoint + 1>
+  [  5] setprop 205 ............................. pCurrentTurnPoint = pCurrentTurnPoint + 1
+  [  7] getprop 205 ............................. <pCurrentTurnPoint>
+  [  9] getprop 204 ............................. <pTurnPointList>
+  [ 11] getobjprop 8 ............................ <pTurnPointList.count>
+  [ 13] gt ...................................... <pCurrentTurnPoint > pTurnPointList.count>
+  [ 14] jmpifz [ 23] ............................ if pCurrentTurnPoint > pTurnPointList.count then
+  [ 17] getprop 204 ............................. <pTurnPointList>
+  [ 19] getobjprop 8 ............................ <pTurnPointList.count>
+  [ 21] setprop 205 ............................. pCurrentTurnPoint = pTurnPointList.count
+  [ 23] getprop 204 ............................. <pTurnPointList>
+  [ 25] getprop 205 ............................. <pCurrentTurnPoint>
+  [ 27] pusharglist 2 ........................... <pTurnPointList, pCurrentTurnPoint>
+  [ 29] objcall 9 ............................... <pTurnPointList[pCurrentTurnPoint]>
+  [ 31] setprop 208 ............................. pTurnPoint = pTurnPointList[pCurrentTurnPoint]
+  [ 33] ret
+end
+
+on update me
+  [  0] getprop 2 ............................... <pSprite>
+  [  2] getobjprop 78 ........................... <pSprite.right>
+  [  4] getprop 208 ............................. <pTurnPoint>
+  [  6] gt ...................................... <pSprite.right > pTurnPoint>
+  [  7] getprop 2 ............................... <pSprite>
+  [  9] getobjprop 79 ........................... <pSprite.left>
+  [ 11] getprop 208 ............................. <pTurnPoint>
+  [ 13] lteq .................................... <pSprite.left <= pTurnPoint>
+  [ 14] and ..................................... <(pSprite.right > pTurnPoint) and (pSprite.left <= pTurnPoint)>
+  [ 15] jmpifz [ 27] ............................ if (pSprite.right > pTurnPoint) and (pSprite.left <= pTurnPoint) then
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglistnoret 1 ...................... <me>
+  [ 22] objcall 194 ............................. me.turn()
+  [ 24] pushzero ................................ <0>
+  [ 25] setprop 203 ............................. pVertDir = 0
+  [ 27] getprop 2 ............................... <pSprite>
+  [ 29] getobjprop 79 ........................... <pSprite.left>
+  [ 31] getprop 208 ............................. <pTurnPoint>
+  [ 33] eq ...................................... <pSprite.left = pTurnPoint>
+  [ 34] jmpifz [ 51] ............................ if pSprite.left = pTurnPoint then
+  [ 37] getprop 206 ............................. <pCloudDir>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] inv ..................................... <-1>
+  [ 42] mul ..................................... <pCloudDir * -1>
+  [ 43] setprop 203 ............................. pVertDir = pCloudDir * -1
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglistnoret 1 ...................... <me>
+  [ 49] localcall 3 ............................. getNextTurnPoint(me)
+  [ 51] getprop 216 ............................. <pLoc>
+  [ 53] getprop 216 ............................. <pLoc>
+  [ 55] getobjprop 212 .......................... <pLoc.locH>
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] add ..................................... <pLoc.locH + 1>
+  [ 60] setobjprop 212 .......................... pLoc.locH = pLoc.locH + 1
+  [ 62] getprop 216 ............................. <pLoc>
+  [ 64] getobjprop 212 .......................... <pLoc.locH>
+  [ 66] pushint8 2 .............................. <2>
+  [ 68] mod ..................................... <pLoc.locH mod 2>
+  [ 69] pushzero ................................ <0>
+  [ 70] eq ...................................... <(pLoc.locH mod 2) = 0>
+  [ 71] jmpifz [ 85] ............................ if (pLoc.locH mod 2) = 0 then
+  [ 74] getprop 216 ............................. <pLoc>
+  [ 76] getprop 216 ............................. <pLoc>
+  [ 78] getobjprop 77 ........................... <pLoc.locV>
+  [ 80] getprop 203 ............................. <pVertDir>
+  [ 82] add ..................................... <pLoc.locV + pVertDir>
+  [ 83] setobjprop 77 ........................... pLoc.locV = pLoc.locV + pVertDir
+  [ 85] getprop 2 ............................... <pSprite>
+  [ 87] getprop 216 ............................. <pLoc>
+  [ 89] setobjprop 217 .......................... pSprite.loc = pLoc
+  [ 91] getprop 2 ............................... <pSprite>
+  [ 93] getobjprop 79 ........................... <pSprite.left>
+  [ 95] pusharglist 0 ........................... <>
+  [ 97] thebuiltin 210 .......................... <the stageRight>
+  [ 99] pusharglist 0 ........................... <>
+  [101] thebuiltin 211 .......................... <the stageLeft>
+  [103] sub ..................................... <the stageRight - the stageLeft>
+  [104] pushint8 30 ............................. <30>
+  [106] add ..................................... <the stageRight - the stageLeft + 30>
+  [107] gt ...................................... <pSprite.left > (the stageRight - the stageLeft + 30)>
+  [108] jmpifz [117] ............................ if pSprite.left > (the stageRight - the stageLeft + 30) then
+  [111] getparam 0 .............................. <me>
+  [113] pusharglistnoret 1 ...................... <me>
+  [115] objcall 191 ............................. me.initCloud()
+  [117] ret
+end
+
+on checkCloud me
+  [  0] getprop 2 ............................... <pSprite>
+  [  2] getobjprop 212 .......................... <pSprite.locH>
+  [  4] getprop 208 ............................. <pTurnPoint>
+  [  6] gt ...................................... <pSprite.locH > pTurnPoint>
+  [  7] jmpifz [ 19] ............................ if pSprite.locH > pTurnPoint then / else
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 194 ............................. me.turn()
+  [ 16] jmp [ 29]
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] inv ..................................... <-1>
+  [ 22] setprop 203 ............................. pVertDir = -1
+  [ 24] getprop 2 ............................... <pSprite>
+  [ 26] pushzero ................................ <0>
+  [ 27] setobjprop 220 .......................... pSprite.flipH = 0
+  [ 29] ret
+end
+
+on turn me
+  [  0] getprop 203 ............................. <pVertDir>
+  [  2] pushzero ................................ <0>
+  [  3] nteq .................................... <pVertDir <> 0>
+  [  4] jmpifz [ 11] ............................ if pVertDir <> 0 then
+  [  7] getprop 203 ............................. <pVertDir>
+  [  9] setprop 206 ............................. pCloudDir = pVertDir
+  [ 11] getprop 206 ............................. <pCloudDir>
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] inv ..................................... <-1>
+  [ 16] eq ...................................... <pCloudDir = -1>
+  [ 17] jmpifz [282] ............................ if pCloudDir = -1 then / else
+  [ 20] getprop 199 ............................. <pImg>
+  [ 22] getprop 199 ............................. <pImg>
+  [ 24] getobjprop 213 .......................... <pImg.rect>
+  [ 26] pushint16 255 ........................... <255>
+  [ 29] pushint16 255 ........................... <255>
+  [ 32] pushint16 255 ........................... <255>
+  [ 35] pusharglist 3 ........................... <255, 255, 255>
+  [ 37] extcall 221 ............................. <rgb(255, 255, 255)>
+  [ 39] pusharglistnoret 3 ...................... <pImg, pImg.rect, rgb(255, 255, 255)>
+  [ 41] objcall 222 ............................. pImg.fill(pImg.rect, rgb(255, 255, 255))
+  [ 43] getprop 201 ............................. <pMemName>
+  [ 45] pushcons 4 .............................. <"_left">
+  [ 47] joinstr ................................. <pMemName & "_left">
+  [ 48] pusharglist 1 ........................... <pMemName & "_left">
+  [ 50] extcall 16 .............................. <getmemnum(pMemName & "_left")>
+  [ 52] pusharglist 1 ........................... <getmemnum(pMemName & "_left")>
+  [ 54] extcall 10 .............................. <member(getmemnum(pMemName & "_left"))>
+  [ 56] getobjprop 167 .......................... <member(getmemnum(pMemName & "_left")).image>
+  [ 58] setlocal 0 .............................. tImg = member(getmemnum(pMemName & "_left")).image
+  [ 60] getprop 2 ............................... <pSprite>
+  [ 62] getobjprop 78 ........................... <pSprite.right>
+  [ 64] getprop 208 ............................. <pTurnPoint>
+  [ 66] sub ..................................... <pSprite.right - pTurnPoint>
+  [ 67] setlocal 1 .............................. tWidth = pSprite.right - pTurnPoint
+  [ 69] getlocal 1 .............................. <tWidth>
+  [ 71] inv ..................................... <-tWidth>
+  [ 72] pushint8 2 .............................. <2>
+  [ 74] div ..................................... <-tWidth / 2>
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] sub ..................................... <(-tWidth / 2) - 1>
+  [ 78] setlocal 2 .............................. tHeigth = (-tWidth / 2) - 1
+  [ 80] getlocal 0 .............................. <tImg>
+  [ 82] getobjprop 213 .......................... <tImg.rect>
+  [ 84] pushzero ................................ <0>
+  [ 85] pushzero ................................ <0>
+  [ 86] getlocal 1 .............................. <tWidth>
+  [ 88] pushzero ................................ <0>
+  [ 89] pusharglist 4 ........................... <0, 0, tWidth, 0>
+  [ 91] extcall 213 ............................. <rect(0, 0, tWidth, 0)>
+  [ 93] sub ..................................... <tImg.rect - rect(0, 0, tWidth, 0)>
+  [ 94] setlocal 3 .............................. tSource = tImg.rect - rect(0, 0, tWidth, 0)
+  [ 96] getlocal 3 .............................. <tSource>
+  [ 98] pushzero ................................ <0>
+  [ 99] getprop 199 ............................. <pImg>
+  [101] getobjprop 18 ........................... <pImg.height>
+  [103] pushint8 2 .............................. <2>
+  [105] div ..................................... <pImg.height / 2>
+  [106] getlocal 3 .............................. <tSource>
+  [108] getobjprop 18 ........................... <tSource.height>
+  [110] pushint8 2 .............................. <2>
+  [112] div ..................................... <tSource.height / 2>
+  [113] sub ..................................... <(pImg.height / 2) - (tSource.height / 2)>
+  [114] getlocal 2 .............................. <tHeigth>
+  [116] add ..................................... <(pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [117] pushzero ................................ <0>
+  [118] getprop 199 ............................. <pImg>
+  [120] getobjprop 18 ........................... <pImg.height>
+  [122] pushint8 2 .............................. <2>
+  [124] div ..................................... <pImg.height / 2>
+  [125] getlocal 3 .............................. <tSource>
+  [127] getobjprop 18 ........................... <tSource.height>
+  [129] pushint8 2 .............................. <2>
+  [131] div ..................................... <tSource.height / 2>
+  [132] sub ..................................... <(pImg.height / 2) - (tSource.height / 2)>
+  [133] getlocal 2 .............................. <tHeigth>
+  [135] add ..................................... <(pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [136] pusharglist 4 ........................... <0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [138] extcall 213 ............................. <rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)>
+  [140] add ..................................... <tSource + rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)>
+  [141] setlocal 4 .............................. tdestrect = tSource + rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)
+  [143] getprop 199 ............................. <pImg>
+  [145] getlocal 0 .............................. <tImg>
+  [147] getlocal 4 .............................. <tdestrect>
+  [149] getlocal 3 .............................. <tSource>
+  [151] pushsymb 214 ............................ <#ink>
+  [153] pushint8 8 .............................. <8>
+  [155] pusharglist 2 ........................... <[#ink: 8]>
+  [157] pushproplist ............................ <[#ink: 8]>
+  [158] pusharglistnoret 5 ...................... <pImg, tImg, tdestrect, tSource, [#ink: 8]>
+  [160] objcall 215 ............................. pImg.copyPixels(tImg, tdestrect, tSource, [#ink: 8])
+  [162] getprop 201 ............................. <pMemName>
+  [164] pushcons 5 .............................. <"_right">
+  [166] joinstr ................................. <pMemName & "_right">
+  [167] pusharglist 1 ........................... <pMemName & "_right">
+  [169] extcall 16 .............................. <getmemnum(pMemName & "_right")>
+  [171] pusharglist 1 ........................... <getmemnum(pMemName & "_right")>
+  [173] extcall 10 .............................. <member(getmemnum(pMemName & "_right"))>
+  [175] getobjprop 167 .......................... <member(getmemnum(pMemName & "_right")).image>
+  [177] setlocal 0 .............................. tImg = member(getmemnum(pMemName & "_right")).image
+  [179] getlocal 0 .............................. <tImg>
+  [181] getobjprop 17 ........................... <tImg.width>
+  [183] getlocal 1 .............................. <tWidth>
+  [185] sub ..................................... <tImg.width - tWidth>
+  [186] setlocal 1 .............................. tWidth = tImg.width - tWidth
+  [188] getlocal 1 .............................. <tWidth>
+  [190] inv ..................................... <-tWidth>
+  [191] pushint8 2 .............................. <2>
+  [193] div ..................................... <-tWidth / 2>
+  [194] setlocal 2 .............................. tHeigth = -tWidth / 2
+  [196] getlocal 1 .............................. <tWidth>
+  [198] pushzero ................................ <0>
+  [199] getlocal 0 .............................. <tImg>
+  [201] getobjprop 17 ........................... <tImg.width>
+  [203] getlocal 0 .............................. <tImg>
+  [205] getobjprop 18 ........................... <tImg.height>
+  [207] pusharglist 4 ........................... <tWidth, 0, tImg.width, tImg.height>
+  [209] extcall 213 ............................. <rect(tWidth, 0, tImg.width, tImg.height)>
+  [211] setlocal 3 .............................. tSource = rect(tWidth, 0, tImg.width, tImg.height)
+  [213] getlocal 3 .............................. <tSource>
+  [215] pushzero ................................ <0>
+  [216] getprop 199 ............................. <pImg>
+  [218] getobjprop 18 ........................... <pImg.height>
+  [220] pushint8 2 .............................. <2>
+  [222] div ..................................... <pImg.height / 2>
+  [223] getlocal 3 .............................. <tSource>
+  [225] getobjprop 18 ........................... <tSource.height>
+  [227] pushint8 2 .............................. <2>
+  [229] div ..................................... <tSource.height / 2>
+  [230] sub ..................................... <(pImg.height / 2) - (tSource.height / 2)>
+  [231] getlocal 2 .............................. <tHeigth>
+  [233] add ..................................... <(pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [234] pushzero ................................ <0>
+  [235] getprop 199 ............................. <pImg>
+  [237] getobjprop 18 ........................... <pImg.height>
+  [239] pushint8 2 .............................. <2>
+  [241] div ..................................... <pImg.height / 2>
+  [242] getlocal 3 .............................. <tSource>
+  [244] getobjprop 18 ........................... <tSource.height>
+  [246] pushint8 2 .............................. <2>
+  [248] div ..................................... <tSource.height / 2>
+  [249] sub ..................................... <(pImg.height / 2) - (tSource.height / 2)>
+  [250] getlocal 2 .............................. <tHeigth>
+  [252] add ..................................... <(pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [253] pusharglist 4 ........................... <0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [255] extcall 213 ............................. <rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)>
+  [257] add ..................................... <tSource + rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)>
+  [258] setlocal 5 .............................. tDest = tSource + rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)
+  [260] getprop 199 ............................. <pImg>
+  [262] getlocal 0 .............................. <tImg>
+  [264] getlocal 5 .............................. <tDest>
+  [266] getlocal 3 .............................. <tSource>
+  [268] pushsymb 214 ............................ <#ink>
+  [270] pushint8 8 .............................. <8>
+  [272] pusharglist 2 ........................... <[#ink: 8]>
+  [274] pushproplist ............................ <[#ink: 8]>
+  [275] pusharglistnoret 5 ...................... <pImg, tImg, tDest, tSource, [#ink: 8]>
+  [277] objcall 215 ............................. pImg.copyPixels(tImg, tDest, tSource, [#ink: 8])
+  [279] jmp [539]
+  [282] getprop 199 ............................. <pImg>
+  [284] getprop 199 ............................. <pImg>
+  [286] getobjprop 213 .......................... <pImg.rect>
+  [288] pushint16 255 ........................... <255>
+  [291] pushint16 255 ........................... <255>
+  [294] pushint16 255 ........................... <255>
+  [297] pusharglist 3 ........................... <255, 255, 255>
+  [299] extcall 221 ............................. <rgb(255, 255, 255)>
+  [301] pusharglistnoret 3 ...................... <pImg, pImg.rect, rgb(255, 255, 255)>
+  [303] objcall 222 ............................. pImg.fill(pImg.rect, rgb(255, 255, 255))
+  [305] getprop 201 ............................. <pMemName>
+  [307] pushcons 5 .............................. <"_right">
+  [309] joinstr ................................. <pMemName & "_right">
+  [310] pusharglist 1 ........................... <pMemName & "_right">
+  [312] extcall 16 .............................. <getmemnum(pMemName & "_right")>
+  [314] pusharglist 1 ........................... <getmemnum(pMemName & "_right")>
+  [316] extcall 10 .............................. <member(getmemnum(pMemName & "_right"))>
+  [318] getobjprop 167 .......................... <member(getmemnum(pMemName & "_right")).image>
+  [320] setlocal 0 .............................. tImg = member(getmemnum(pMemName & "_right")).image
+  [322] getprop 2 ............................... <pSprite>
+  [324] getobjprop 78 ........................... <pSprite.right>
+  [326] getprop 208 ............................. <pTurnPoint>
+  [328] sub ..................................... <pSprite.right - pTurnPoint>
+  [329] setlocal 1 .............................. tWidth = pSprite.right - pTurnPoint
+  [331] getlocal 1 .............................. <tWidth>
+  [333] pushint8 2 .............................. <2>
+  [335] div ..................................... <tWidth / 2>
+  [336] pushint8 1 .............................. <1>
+  [338] add ..................................... <(tWidth / 2) + 1>
+  [339] setlocal 2 .............................. tHeigth = (tWidth / 2) + 1
+  [341] getlocal 0 .............................. <tImg>
+  [343] getobjprop 213 .......................... <tImg.rect>
+  [345] pushzero ................................ <0>
+  [346] pushzero ................................ <0>
+  [347] getlocal 1 .............................. <tWidth>
+  [349] pushzero ................................ <0>
+  [350] pusharglist 4 ........................... <0, 0, tWidth, 0>
+  [352] extcall 213 ............................. <rect(0, 0, tWidth, 0)>
+  [354] sub ..................................... <tImg.rect - rect(0, 0, tWidth, 0)>
+  [355] setlocal 3 .............................. tSource = tImg.rect - rect(0, 0, tWidth, 0)
+  [357] getlocal 3 .............................. <tSource>
+  [359] pushzero ................................ <0>
+  [360] getprop 199 ............................. <pImg>
+  [362] getobjprop 18 ........................... <pImg.height>
+  [364] pushint8 2 .............................. <2>
+  [366] div ..................................... <pImg.height / 2>
+  [367] getlocal 3 .............................. <tSource>
+  [369] getobjprop 18 ........................... <tSource.height>
+  [371] pushint8 2 .............................. <2>
+  [373] div ..................................... <tSource.height / 2>
+  [374] sub ..................................... <(pImg.height / 2) - (tSource.height / 2)>
+  [375] getlocal 2 .............................. <tHeigth>
+  [377] add ..................................... <(pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [378] pushzero ................................ <0>
+  [379] getprop 199 ............................. <pImg>
+  [381] getobjprop 18 ........................... <pImg.height>
+  [383] pushint8 2 .............................. <2>
+  [385] div ..................................... <pImg.height / 2>
+  [386] getlocal 3 .............................. <tSource>
+  [388] getobjprop 18 ........................... <tSource.height>
+  [390] pushint8 2 .............................. <2>
+  [392] div ..................................... <tSource.height / 2>
+  [393] sub ..................................... <(pImg.height / 2) - (tSource.height / 2)>
+  [394] getlocal 2 .............................. <tHeigth>
+  [396] add ..................................... <(pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [397] pusharglist 4 ........................... <0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [399] extcall 213 ............................. <rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)>
+  [401] add ..................................... <tSource + rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)>
+  [402] setlocal 4 .............................. tdestrect = tSource + rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)
+  [404] getprop 199 ............................. <pImg>
+  [406] getlocal 0 .............................. <tImg>
+  [408] getlocal 4 .............................. <tdestrect>
+  [410] getlocal 3 .............................. <tSource>
+  [412] pushsymb 214 ............................ <#ink>
+  [414] pushint8 8 .............................. <8>
+  [416] pusharglist 2 ........................... <[#ink: 8]>
+  [418] pushproplist ............................ <[#ink: 8]>
+  [419] pusharglistnoret 5 ...................... <pImg, tImg, tdestrect, tSource, [#ink: 8]>
+  [421] objcall 215 ............................. pImg.copyPixels(tImg, tdestrect, tSource, [#ink: 8])
+  [423] getprop 201 ............................. <pMemName>
+  [425] pushcons 4 .............................. <"_left">
+  [427] joinstr ................................. <pMemName & "_left">
+  [428] pusharglist 1 ........................... <pMemName & "_left">
+  [430] extcall 16 .............................. <getmemnum(pMemName & "_left")>
+  [432] pusharglist 1 ........................... <getmemnum(pMemName & "_left")>
+  [434] extcall 10 .............................. <member(getmemnum(pMemName & "_left"))>
+  [436] getobjprop 167 .......................... <member(getmemnum(pMemName & "_left")).image>
+  [438] setlocal 0 .............................. tImg = member(getmemnum(pMemName & "_left")).image
+  [440] getlocal 0 .............................. <tImg>
+  [442] getobjprop 17 ........................... <tImg.width>
+  [444] getlocal 1 .............................. <tWidth>
+  [446] sub ..................................... <tImg.width - tWidth>
+  [447] setlocal 1 .............................. tWidth = tImg.width - tWidth
+  [449] getlocal 1 .............................. <tWidth>
+  [451] pushint8 2 .............................. <2>
+  [453] div ..................................... <tWidth / 2>
+  [454] setlocal 2 .............................. tHeigth = tWidth / 2
+  [456] getlocal 1 .............................. <tWidth>
+  [458] pushzero ................................ <0>
+  [459] getlocal 0 .............................. <tImg>
+  [461] getobjprop 17 ........................... <tImg.width>
+  [463] getlocal 0 .............................. <tImg>
+  [465] getobjprop 18 ........................... <tImg.height>
+  [467] pusharglist 4 ........................... <tWidth, 0, tImg.width, tImg.height>
+  [469] extcall 213 ............................. <rect(tWidth, 0, tImg.width, tImg.height)>
+  [471] setlocal 3 .............................. tSource = rect(tWidth, 0, tImg.width, tImg.height)
+  [473] getlocal 3 .............................. <tSource>
+  [475] pushzero ................................ <0>
+  [476] getprop 199 ............................. <pImg>
+  [478] getobjprop 18 ........................... <pImg.height>
+  [480] pushint8 2 .............................. <2>
+  [482] div ..................................... <pImg.height / 2>
+  [483] getlocal 3 .............................. <tSource>
+  [485] getobjprop 18 ........................... <tSource.height>
+  [487] pushint8 2 .............................. <2>
+  [489] div ..................................... <tSource.height / 2>
+  [490] sub ..................................... <(pImg.height / 2) - (tSource.height / 2)>
+  [491] getlocal 2 .............................. <tHeigth>
+  [493] add ..................................... <(pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [494] pushzero ................................ <0>
+  [495] getprop 199 ............................. <pImg>
+  [497] getobjprop 18 ........................... <pImg.height>
+  [499] pushint8 2 .............................. <2>
+  [501] div ..................................... <pImg.height / 2>
+  [502] getlocal 3 .............................. <tSource>
+  [504] getobjprop 18 ........................... <tSource.height>
+  [506] pushint8 2 .............................. <2>
+  [508] div ..................................... <tSource.height / 2>
+  [509] sub ..................................... <(pImg.height / 2) - (tSource.height / 2)>
+  [510] getlocal 2 .............................. <tHeigth>
+  [512] add ..................................... <(pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [513] pusharglist 4 ........................... <0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth>
+  [515] extcall 213 ............................. <rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)>
+  [517] add ..................................... <tSource + rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)>
+  [518] setlocal 5 .............................. tDest = tSource + rect(0, (pImg.height / 2) - (tSource.height / 2) + tHeigth, 0, (pImg.height / 2) - (tSource.height / 2) + tHeigth)
+  [520] getprop 199 ............................. <pImg>
+  [522] getlocal 0 .............................. <tImg>
+  [524] getlocal 5 .............................. <tDest>
+  [526] getlocal 3 .............................. <tSource>
+  [528] pushsymb 214 ............................ <#ink>
+  [530] pushint8 8 .............................. <8>
+  [532] pusharglist 2 ........................... <[#ink: 8]>
+  [534] pushproplist ............................ <[#ink: 8]>
+  [535] pusharglistnoret 5 ...................... <pImg, tImg, tDest, tSource, [#ink: 8]>
+  [537] objcall 215 ............................. pImg.copyPixels(tImg, tDest, tSource, [#ink: 8])
+  [539] ret
+end

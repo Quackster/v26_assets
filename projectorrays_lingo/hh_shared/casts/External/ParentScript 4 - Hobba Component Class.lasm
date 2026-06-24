@@ -1,0 +1,668 @@
+property pCryDataBase
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 232 ............................. pCryDataBase = [:]
+  [  5] pushsymb 233 ............................ <#sendCallForHelp>
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 1 ........................... <me>
+  [ 11] objcall 17 .............................. <me.getID()>
+  [ 13] pushsymb 230 ............................ <#send_cryForHelp>
+  [ 15] pusharglistnoret 3 ...................... <#sendCallForHelp, me.getID(), #send_cryForHelp>
+  [ 17] extcall 15 .............................. registerMessage(#sendCallForHelp, me.getID(), #send_cryForHelp)
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] pusharglistnoret 1 ...................... <1>
+  [ 23] extcall 18 .............................. return 1
+  [ 25] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 232 ............................. pCryDataBase = [:]
+  [  5] pushsymb 233 ............................ <#sendCallForHelp>
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 1 ........................... <me>
+  [ 11] objcall 17 .............................. <me.getID()>
+  [ 13] pusharglistnoret 2 ...................... <#sendCallForHelp, me.getID()>
+  [ 15] extcall 20 .............................. unregisterMessage(#sendCallForHelp, me.getID())
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] pusharglistnoret 1 ...................... <1>
+  [ 21] extcall 18 .............................. return 1
+  [ 23] ret
+end
+
+on getPendingCFHs me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 26 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 199 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 10] setlocal 0 .............................. tConnection = getConnection(getVariable("connection.info.id"))
+  [ 12] getlocal 0 .............................. <tConnection>
+  [ 14] not ..................................... <not tConnection>
+  [ 15] jmpifz [ 30] ............................ if not tConnection then
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pushcons 1 .............................. <"Connection not found.">
+  [ 22] pushsymb 234 ............................ <#showDialog>
+  [ 24] pushsymb 154 ............................ <#major>
+  [ 26] pusharglistnoret 4 ...................... <me, "Connection not found.", #showDialog, #major>
+  [ 28] extcall 153 ............................. error(me, "Connection not found.", #showDialog, #major)
+  [ 30] getlocal 0 .............................. <tConnection>
+  [ 32] pushcons 2 .............................. <"GET_PENDING_CALLS_FOR_HELP">
+  [ 34] pusharglistnoret 2 ...................... <tConnection, "GET_PENDING_CALLS_FOR_HELP">
+  [ 36] objcall 200 ............................. tConnection.send("GET_PENDING_CALLS_FOR_HELP")
+  [ 38] ret
+end
+
+on receive_cryforhelp me, tMsg
+  [  0] getprop 232 ............................. <pCryDataBase>
+  [  2] getparam 1 .............................. <tMsg>
+  [  4] pushsymb 236 ............................ <#cry_id>
+  [  6] pusharglist 2 ........................... <tMsg, #cry_id>
+  [  8] objcall 42 .............................. <tMsg[#cry_id]>
+  [ 10] getparam 1 .............................. <tMsg>
+  [ 12] pusharglistnoret 3 ...................... <pCryDataBase, tMsg[#cry_id], tMsg>
+  [ 14] objcall 194 ............................. pCryDataBase[tMsg[#cry_id]] = tMsg
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 237 ............................. <me.getInterface()>
+  [ 22] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 24] objcall 57 .............................. me.getInterface().ShowAlert()
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglist 1 ........................... <me>
+  [ 30] objcall 237 ............................. <me.getInterface()>
+  [ 32] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 34] objcall 65 .............................. me.getInterface().updateCryWnd()
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 1 ...................... <1>
+  [ 40] extcall 18 .............................. return 1
+  [ 42] ret
+end
+
+on receive_pickedCry me, tMsg
+  [  0] getprop 232 ............................. <pCryDataBase>
+  [  2] getparam 1 .............................. <tMsg>
+  [  4] pushsymb 236 ............................ <#cry_id>
+  [  6] pusharglist 2 ........................... <tMsg, #cry_id>
+  [  8] objcall 42 .............................. <tMsg[#cry_id]>
+  [ 10] pusharglist 2 ........................... <pCryDataBase, tMsg[#cry_id]>
+  [ 12] objcall 42 .............................. <pCryDataBase[tMsg[#cry_id]]>
+  [ 14] pusharglist 1 ........................... <pCryDataBase[tMsg[#cry_id]]>
+  [ 16] extcall 34 .............................. <voidp(pCryDataBase[tMsg[#cry_id]])>
+  [ 18] jmpifz [ 26] ............................ if voidp(pCryDataBase[tMsg[#cry_id]]) then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 18 .............................. return 0
+  [ 26] getprop 232 ............................. <pCryDataBase>
+  [ 28] getparam 1 .............................. <tMsg>
+  [ 30] pushsymb 236 ............................ <#cry_id>
+  [ 32] pusharglist 2 ........................... <tMsg, #cry_id>
+  [ 34] objcall 42 .............................. <tMsg[#cry_id]>
+  [ 36] pusharglist 2 ........................... <pCryDataBase, tMsg[#cry_id]>
+  [ 38] objcall 42 .............................. <pCryDataBase[tMsg[#cry_id]]>
+  [ 40] getparam 1 .............................. <tMsg>
+  [ 42] pushsymb 149 ............................ <#picker>
+  [ 44] pusharglist 2 ........................... <tMsg, #picker>
+  [ 46] objcall 42 .............................. <tMsg[#picker]>
+  [ 48] setobjprop 149 .......................... pCryDataBase[tMsg[#cry_id]].picker = tMsg[#picker]
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglist 1 ........................... <me>
+  [ 54] objcall 237 ............................. <me.getInterface()>
+  [ 56] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 58] objcall 65 .............................. me.getInterface().updateCryWnd()
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] pusharglistnoret 1 ...................... <1>
+  [ 64] extcall 18 .............................. return 1
+  [ 66] ret
+end
+
+on deleteCry me, tID
+  [  0] getprop 232 ............................. <pCryDataBase>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglistnoret 2 ...................... <pCryDataBase, tID>
+  [  6] objcall 238 ............................. pCryDataBase.deleteProp(tID)
+  [  8] getprop 232 ............................. <pCryDataBase>
+  [ 10] getobjprop 125 .......................... <pCryDataBase.count>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <pCryDataBase.count = 0>
+  [ 14] jmpifz [ 27] ............................ if pCryDataBase.count = 0 then
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglist 1 ........................... <me>
+  [ 21] objcall 237 ............................. <me.getInterface()>
+  [ 23] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 25] objcall 60 .............................. me.getInterface().hideAlert()
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglist 1 ........................... <me>
+  [ 31] objcall 237 ............................. <me.getInterface()>
+  [ 33] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 35] objcall 65 .............................. me.getInterface().updateCryWnd()
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 18 .............................. return 1
+  [ 43] ret
+end
+
+on send_changeCfhType me, tCryID, tCategoryNum
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 26 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 240 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [ 11] jmpifz [ 19] ............................ if not connectionExists(getVariable("connection.info.id")) then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 18 .............................. return 0
+  [ 19] getparam 2 .............................. <tCategoryNum>
+  [ 21] pushint8 2 .............................. <2>
+  [ 23] eq ...................................... <tCategoryNum = 2>
+  [ 24] jmpifz [ 47] ............................ if tCategoryNum = 2 then / else
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] setlocal 0 .............................. tNewCategory = 1
+  [ 31] pushsymb 242 ............................ <#alert>
+  [ 33] pushsymb 141 ............................ <#Msg>
+  [ 35] pushcons 3 .............................. <"hobba_sent_to_moderators">
+  [ 37] pusharglist 2 ........................... <[#Msg: "hobba_sent_to_moderators"]>
+  [ 39] pushproplist ............................ <[#Msg: "hobba_sent_to_moderators"]>
+  [ 40] pusharglistnoret 2 ...................... <#alert, [#Msg: "hobba_sent_to_moderators"]>
+  [ 42] extcall 241 ............................. executeMessage(#alert, [#Msg: "hobba_sent_to_moderators"])
+  [ 44] jmp [ 94]
+  [ 47] getparam 2 .............................. <tCategoryNum>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] eq ...................................... <tCategoryNum = 1>
+  [ 52] jmpifz [ 75] ............................ if tCategoryNum = 1 then / else
+  [ 55] pushint8 2 .............................. <2>
+  [ 57] setlocal 0 .............................. tNewCategory = 2
+  [ 59] pushsymb 242 ............................ <#alert>
+  [ 61] pushsymb 141 ............................ <#Msg>
+  [ 63] pushcons 4 .............................. <"hobba_sent_to_helpers">
+  [ 65] pusharglist 2 ........................... <[#Msg: "hobba_sent_to_helpers"]>
+  [ 67] pushproplist ............................ <[#Msg: "hobba_sent_to_helpers"]>
+  [ 68] pusharglistnoret 2 ...................... <#alert, [#Msg: "hobba_sent_to_helpers"]>
+  [ 70] extcall 241 ............................. executeMessage(#alert, [#Msg: "hobba_sent_to_helpers"])
+  [ 72] jmp [ 94]
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pushcons 5 .............................. <"Original category number illegal:">
+  [ 79] getparam 2 .............................. <tCategoryNum>
+  [ 81] joinpadstr .............................. <"Original category number illegal:" && tCategoryNum>
+  [ 82] pushsymb 214 ............................ <#send_changeCfhType>
+  [ 84] pushsymb 154 ............................ <#major>
+  [ 86] pusharglist 4 ........................... <me, "Original category number illegal:" && tCategoryNum, #send_changeCfhType, #major>
+  [ 88] extcall 153 ............................. <error(me, "Original category number illegal:" && tCategoryNum, #send_changeCfhType, #major)>
+  [ 90] pusharglistnoret 1 ...................... <error(me, "Original category number illegal:" && tCategoryNum, #send_changeCfhType, #major)>
+  [ 92] extcall 18 .............................. return error(me, "Original category number illegal:" && tCategoryNum, #send_changeCfhType, #major)
+  [ 94] pushcons 0 .............................. <"connection.info.id">
+  [ 96] pusharglist 1 ........................... <"connection.info.id">
+  [ 98] extcall 26 .............................. <getVariable("connection.info.id")>
+  [100] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [102] extcall 199 ............................. <getConnection(getVariable("connection.info.id"))>
+  [104] pushcons 6 .............................. <"CHANGECALLCATEGORY">
+  [106] pushsymb 198 ............................ <#string>
+  [108] getparam 1 .............................. <tCryID>
+  [110] pushsymb 25 ............................. <#integer>
+  [112] getlocal 0 .............................. <tNewCategory>
+  [114] pusharglist 4 ........................... <[#string: tCryID, #integer: tNewCategory]>
+  [116] pushproplist ............................ <[#string: tCryID, #integer: tNewCategory]>
+  [117] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "CHANGECALLCATEGORY", [#string: tCryID, #integer: tNewCategory]>
+  [119] objcall 200 ............................. getConnection(getVariable("connection.info.id")).send("CHANGECALLCATEGORY", [#string: tCryID, #integer: tNewCategory])
+  [121] pushint8 1 .............................. <1>
+  [123] pusharglistnoret 1 ...................... <1>
+  [125] extcall 18 .............................. return 1
+  [127] ret
+end
+
+on send_cryPick me, tCryID, tGoHelp
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 26 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 240 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [ 11] jmpifz [ 19] ............................ if not connectionExists(getVariable("connection.info.id")) then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 18 .............................. return 0
+  [ 19] pushcons 0 .............................. <"connection.info.id">
+  [ 21] pusharglist 1 ........................... <"connection.info.id">
+  [ 23] extcall 26 .............................. <getVariable("connection.info.id")>
+  [ 25] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 27] extcall 199 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 29] pushcons 7 .............................. <"PICK_CRYFORHELP">
+  [ 31] pushsymb 198 ............................ <#string>
+  [ 33] getparam 1 .............................. <tCryID>
+  [ 35] pusharglist 2 ........................... <[#string: tCryID]>
+  [ 37] pushproplist ............................ <[#string: tCryID]>
+  [ 38] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "PICK_CRYFORHELP", [#string: tCryID]>
+  [ 40] objcall 200 ............................. getConnection(getVariable("connection.info.id")).send("PICK_CRYFORHELP", [#string: tCryID])
+  [ 42] getparam 2 .............................. <tGoHelp>
+  [ 44] jmpifz [517] ............................ if tGoHelp then
+  [ 47] getprop 232 ............................. <pCryDataBase>
+  [ 49] getparam 1 .............................. <tCryID>
+  [ 51] pusharglist 2 ........................... <pCryDataBase, tCryID>
+  [ 53] objcall 42 .............................. <pCryDataBase[tCryID]>
+  [ 55] pusharglist 1 ........................... <pCryDataBase[tCryID]>
+  [ 57] objcall 245 ............................. <pCryDataBase[tCryID].duplicate()>
+  [ 59] setlocal 0 .............................. tdata = pCryDataBase[tCryID].duplicate()
+  [ 61] getlocal 0 .............................. <tdata>
+  [ 63] pusharglist 1 ........................... <tdata>
+  [ 65] extcall 34 .............................. <voidp(tdata)>
+  [ 67] jmpifz [ 75] ............................ if voidp(tdata) then
+  [ 70] pushzero ................................ <0>
+  [ 71] pusharglistnoret 1 ...................... <0>
+  [ 73] extcall 18 .............................. return 0
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] setlocal 1 .............................. tOk = 1
+  [ 79] getlocal 0 .............................. <tdata>
+  [ 81] pushsymb 149 ............................ <#picker>
+  [ 83] pusharglist 2 ........................... <tdata, #picker>
+  [ 85] objcall 42 .............................. <tdata[#picker]>
+  [ 87] getobjprop 35 ........................... <tdata[#picker].ilk>
+  [ 89] pushsymb 198 ............................ <#string>
+  [ 91] eq ...................................... <tdata[#picker].ilk = #string>
+  [ 92] getlocal 1 .............................. <tOk>
+  [ 94] and ..................................... <(tdata[#picker].ilk = #string) and tOk>
+  [ 95] setlocal 1 .............................. tOk = (tdata[#picker].ilk = #string) and tOk
+  [ 97] getlocal 0 .............................. <tdata>
+  [ 99] pushsymb 210 ............................ <#url_id>
+  [101] pusharglist 2 ........................... <tdata, #url_id>
+  [103] objcall 42 .............................. <tdata[#url_id]>
+  [105] getobjprop 35 ........................... <tdata[#url_id].ilk>
+  [107] pushsymb 198 ............................ <#string>
+  [109] eq ...................................... <tdata[#url_id].ilk = #string>
+  [110] getlocal 1 .............................. <tOk>
+  [112] and ..................................... <(tdata[#url_id].ilk = #string) and tOk>
+  [113] setlocal 1 .............................. tOk = (tdata[#url_id].ilk = #string) and tOk
+  [115] getlocal 0 .............................. <tdata>
+  [117] pushsymb 162 ............................ <#roomname>
+  [119] pusharglist 2 ........................... <tdata, #roomname>
+  [121] objcall 42 .............................. <tdata[#roomname]>
+  [123] getobjprop 35 ........................... <tdata[#roomname].ilk>
+  [125] pushsymb 198 ............................ <#string>
+  [127] eq ...................................... <tdata[#roomname].ilk = #string>
+  [128] getlocal 1 .............................. <tOk>
+  [130] and ..................................... <(tdata[#roomname].ilk = #string) and tOk>
+  [131] setlocal 1 .............................. tOk = (tdata[#roomname].ilk = #string) and tOk
+  [133] getlocal 0 .............................. <tdata>
+  [135] pushsymb 236 ............................ <#cry_id>
+  [137] pusharglist 2 ........................... <tdata, #cry_id>
+  [139] objcall 42 .............................. <tdata[#cry_id]>
+  [141] getobjprop 35 ........................... <tdata[#cry_id].ilk>
+  [143] pushsymb 198 ............................ <#string>
+  [145] eq ...................................... <tdata[#cry_id].ilk = #string>
+  [146] getlocal 1 .............................. <tOk>
+  [148] and ..................................... <(tdata[#cry_id].ilk = #string) and tOk>
+  [149] setlocal 1 .............................. tOk = (tdata[#cry_id].ilk = #string) and tOk
+  [151] getlocal 0 .............................. <tdata>
+  [153] pushsymb 166 ............................ <#type>
+  [155] pusharglist 2 ........................... <tdata, #type>
+  [157] objcall 42 .............................. <tdata[#type]>
+  [159] getobjprop 35 ........................... <tdata[#type].ilk>
+  [161] pushsymb 246 ............................ <#symbol>
+  [163] eq ...................................... <tdata[#type].ilk = #symbol>
+  [164] getlocal 1 .............................. <tOk>
+  [166] and ..................................... <(tdata[#type].ilk = #symbol) and tOk>
+  [167] setlocal 1 .............................. tOk = (tdata[#type].ilk = #symbol) and tOk
+  [169] getlocal 0 .............................. <tdata>
+  [171] pushsymb 141 ............................ <#Msg>
+  [173] pusharglist 2 ........................... <tdata, #Msg>
+  [175] objcall 42 .............................. <tdata[#Msg]>
+  [177] getobjprop 35 ........................... <tdata[#Msg].ilk>
+  [179] pushsymb 198 ............................ <#string>
+  [181] eq ...................................... <tdata[#Msg].ilk = #string>
+  [182] getlocal 1 .............................. <tOk>
+  [184] and ..................................... <(tdata[#Msg].ilk = #string) and tOk>
+  [185] setlocal 1 .............................. tOk = (tdata[#Msg].ilk = #string) and tOk
+  [187] getlocal 1 .............................. <tOk>
+  [189] not ..................................... <not tOk>
+  [190] jmpifz [209] ............................ if not tOk then
+  [193] getparam 0 .............................. <me>
+  [195] pushcons 8 .............................. <"Invalid or missing data in saved help cry!">
+  [197] pushsymb 212 ............................ <#send_cryPick>
+  [199] pushsymb 154 ............................ <#major>
+  [201] pusharglist 4 ........................... <me, "Invalid or missing data in saved help cry!", #send_cryPick, #major>
+  [203] extcall 153 ............................. <error(me, "Invalid or missing data in saved help cry!", #send_cryPick, #major)>
+  [205] pusharglistnoret 1 ...................... <error(me, "Invalid or missing data in saved help cry!", #send_cryPick, #major)>
+  [207] extcall 18 .............................. return error(me, "Invalid or missing data in saved help cry!", #send_cryPick, #major)
+  [209] getlocal 0 .............................. <tdata>
+  [211] pushsymb 165 ............................ <#room_id>
+  [213] pusharglist 2 ........................... <tdata, #room_id>
+  [215] objcall 42 .............................. <tdata[#room_id]>
+  [217] pushzero ................................ <0>
+  [218] eq ...................................... <tdata[#room_id] = 0>
+  [219] jmpifz [241] ............................ if tdata[#room_id] = 0 then / else
+  [222] getlocal 0 .............................. <tdata>
+  [224] pushsymb 247 ............................ <#id>
+  [226] getlocal 0 .............................. <tdata>
+  [228] pushsymb 162 ............................ <#roomname>
+  [230] pusharglist 2 ........................... <tdata, #roomname>
+  [232] objcall 42 .............................. <tdata[#roomname]>
+  [234] pusharglistnoret 3 ...................... <tdata, #id, tdata[#roomname]>
+  [236] objcall 194 ............................. tdata[#id] = tdata[#roomname]
+  [238] jmp [261]
+  [241] getlocal 0 .............................. <tdata>
+  [243] pushsymb 247 ............................ <#id>
+  [245] getlocal 0 .............................. <tdata>
+  [247] pushsymb 165 ............................ <#room_id>
+  [249] pusharglist 2 ........................... <tdata, #room_id>
+  [251] objcall 42 .............................. <tdata[#room_id]>
+  [253] pusharglist 1 ........................... <tdata[#room_id]>
+  [255] extcall 198 ............................. <string(tdata[#room_id])>
+  [257] pusharglistnoret 3 ...................... <tdata, #id, string(tdata[#room_id])>
+  [259] objcall 194 ............................. tdata[#id] = string(tdata[#room_id])
+  [261] getlocal 0 .............................. <tdata>
+  [263] pushsymb 144 ............................ <#name>
+  [265] getlocal 0 .............................. <tdata>
+  [267] pushsymb 162 ............................ <#roomname>
+  [269] pusharglist 2 ........................... <tdata, #roomname>
+  [271] objcall 42 .............................. <tdata[#roomname]>
+  [273] pusharglistnoret 3 ...................... <tdata, #name, tdata[#roomname]>
+  [275] objcall 194 ............................. tdata[#name] = tdata[#roomname]
+  [277] getlocal 0 .............................. <tdata>
+  [279] pushsymb 166 ............................ <#type>
+  [281] pusharglist 2 ........................... <tdata, #type>
+  [283] objcall 42 .............................. <tdata[#type]>
+  [285] pushsymb 248 ............................ <#private>
+  [287] eq ...................................... <tdata[#type] = #private>
+  [288] jmpifz [353] ............................ if tdata[#type] = #private then / else
+  [291] getlocal 0 .............................. <tdata>
+  [293] pushsymb 249 ............................ <#nodeType>
+  [295] pushint8 2 .............................. <2>
+  [297] pusharglistnoret 3 ...................... <tdata, #nodeType, 2>
+  [299] objcall 194 ............................. tdata[#nodeType] = 2
+  [301] getlocal 0 .............................. <tdata>
+  [303] pushsymb 250 ............................ <#flatId>
+  [305] getlocal 0 .............................. <tdata>
+  [307] pushsymb 247 ............................ <#id>
+  [309] pusharglist 2 ........................... <tdata, #id>
+  [311] objcall 42 .............................. <tdata[#id]>
+  [313] pusharglistnoret 3 ...................... <tdata, #flatId, tdata[#id]>
+  [315] objcall 194 ............................. tdata[#flatId] = tdata[#id]
+  [317] getlocal 0 .............................. <tdata>
+  [319] pushsymb 247 ............................ <#id>
+  [321] pushcons 9 .............................. <"f_">
+  [323] getlocal 0 .............................. <tdata>
+  [325] pushsymb 247 ............................ <#id>
+  [327] pusharglist 2 ........................... <tdata, #id>
+  [329] objcall 42 .............................. <tdata[#id]>
+  [331] joinstr ................................. <"f_" & tdata[#id]>
+  [332] pusharglistnoret 3 ...................... <tdata, #id, "f_" & tdata[#id]>
+  [334] objcall 194 ............................. tdata[#id] = "f_" & tdata[#id]
+  [336] getlocal 0 .............................. <tdata>
+  [338] pushsymb 251 ............................ <#casts>
+  [340] pushcons 10 ............................. <"room.cast.private">
+  [342] pusharglist 1 ........................... <"room.cast.private">
+  [344] extcall 252 ............................. <getVariableValue("room.cast.private")>
+  [346] pusharglistnoret 3 ...................... <tdata, #casts, getVariableValue("room.cast.private")>
+  [348] objcall 194 ............................. tdata[#casts] = getVariableValue("room.cast.private")
+  [350] jmp [479]
+  [353] getlocal 0 .............................. <tdata>
+  [355] pushsymb 249 ............................ <#nodeType>
+  [357] pushint8 1 .............................. <1>
+  [359] pusharglistnoret 3 ...................... <tdata, #nodeType, 1>
+  [361] objcall 194 ............................. tdata[#nodeType] = 1
+  [363] getlocal 0 .............................. <tdata>
+  [365] pushsymb 253 ............................ <#unitStrId>
+  [367] getlocal 0 .............................. <tdata>
+  [369] pushsymb 162 ............................ <#roomname>
+  [371] pusharglist 2 ........................... <tdata, #roomname>
+  [373] objcall 42 .............................. <tdata[#roomname]>
+  [375] pusharglistnoret 3 ...................... <tdata, #unitStrId, tdata[#roomname]>
+  [377] objcall 194 ............................. tdata[#unitStrId] = tdata[#roomname]
+  [379] getlocal 0 .............................. <tdata>
+  [381] pushsymb 251 ............................ <#casts>
+  [383] pusharglist 2 ........................... <tdata, #casts>
+  [385] objcall 42 .............................. <tdata[#casts]>
+  [387] pusharglist 1 ........................... <tdata[#casts]>
+  [389] extcall 35 .............................. <ilk(tdata[#casts])>
+  [391] pushsymb 198 ............................ <#string>
+  [393] eq ...................................... <ilk(tdata[#casts]) = #string>
+  [394] jmpifz [479] ............................ if ilk(tdata[#casts]) = #string then
+  [397] getlocal 0 .............................. <tdata>
+  [399] pushsymb 251 ............................ <#casts>
+  [401] pusharglist 2 ........................... <tdata, #casts>
+  [403] objcall 42 .............................. <tdata[#casts]>
+  [405] setlocal 2 .............................. tCasts = tdata[#casts]
+  [407] getlocal 0 .............................. <tdata>
+  [409] pushsymb 251 ............................ <#casts>
+  [411] pusharglist 0 ........................... <[]>
+  [413] pushlist ................................ <[]>
+  [414] pusharglistnoret 3 ...................... <tdata, #casts, []>
+  [416] objcall 194 ............................. tdata[#casts] = []
+  [418] getmovieprop 254 ........................ <the itemDelimiter>
+  [420] setlocal 3 .............................. tDelim = the itemDelimiter
+  [422] pushcons 11 ............................. <",">
+  [424] setmovieprop 254 ........................ the itemDelimiter = ","
+  [426] pushint8 1 .............................. <1>
+  [428] setlocal 4
+  [430] getlocal 4
+  [432] getlocal 2 .............................. <tCasts>
+  [434] pushsymb 255 ............................ <#item>
+  [436] pusharglist 2 ........................... <tCasts, #item>
+  [438] objcall 125 ............................. <tCasts.item.count>
+  [440] lteq
+  [441] jmpifz [475] ............................ repeat with c = 1 to tCasts.item.count
+  [444] getlocal 0 .............................. <tdata>
+  [446] pushsymb 251 ............................ <#casts>
+  [448] pusharglist 2 ........................... <tdata, #casts>
+  [450] objcall 42 .............................. <tdata[#casts]>
+  [452] getlocal 2 .............................. <tCasts>
+  [454] pushsymb 255 ............................ <#item>
+  [456] getlocal 4 .............................. <c>
+  [458] pusharglist 3 ........................... <tCasts, #item, c>
+  [460] objcall 147 ............................. <tCasts.item[c]>
+  [462] pusharglistnoret 2 ...................... <tdata[#casts], tCasts.item[c]>
+  [464] objcall 185 ............................. tdata[#casts].add(tCasts.item[c])
+  [466] pushint8 1
+  [468] getlocal 4
+  [470] add
+  [471] setlocal 4
+  [473] endrepeat [430]
+  [475] getlocal 3 .............................. <tDelim>
+  [477] setmovieprop 254 ........................ the itemDelimiter = tDelim
+  [479] pushsymb 256 ............................ <#pickAndGoCFH>
+  [482] getlocal 0 .............................. <tdata>
+  [484] pushsymb 140 ............................ <#sender>
+  [486] pusharglist 2 ........................... <tdata, #sender>
+  [488] objcall 42 .............................. <tdata[#sender]>
+  [490] pusharglistnoret 2 ...................... <#pickAndGoCFH, tdata[#sender]>
+  [492] extcall 241 ............................. executeMessage(#pickAndGoCFH, tdata[#sender])
+  [494] pushcons 0 .............................. <"connection.info.id">
+  [496] pusharglist 1 ........................... <"connection.info.id">
+  [498] extcall 26 .............................. <getVariable("connection.info.id")>
+  [500] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [502] extcall 199 ............................. <getConnection(getVariable("connection.info.id"))>
+  [504] pushcons 12 ............................. <"FOLLOW_CRYFORHELP">
+  [506] pushsymb 198 ............................ <#string>
+  [508] getparam 1 .............................. <tCryID>
+  [510] pusharglist 2 ........................... <[#string: tCryID]>
+  [512] pushproplist ............................ <[#string: tCryID]>
+  [513] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "FOLLOW_CRYFORHELP", [#string: tCryID]>
+  [515] objcall 200 ............................. getConnection(getVariable("connection.info.id")).send("FOLLOW_CRYFORHELP", [#string: tCryID])
+  [517] pushint8 1 .............................. <1>
+  [519] pusharglistnoret 1 ...................... <1>
+  [521] extcall 18 .............................. return 1
+  [523] ret
+end
+
+on send_cryForHelp me, tMsg, ttype
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushcons 13 ............................. <"/">
+  [  4] pusharglist 0 ........................... <>
+  [  6] extcall 264 ............................. <SPACE>
+  [  9] pusharglist 3 ........................... <tMsg, "/", SPACE>
+  [ 11] extcall 263 ............................. <replaceChars(tMsg, "/", SPACE)>
+  [ 14] setparam 1 .............................. tMsg = replaceChars(tMsg, "/", SPACE)
+  [ 16] getparam 1 .............................. <tMsg>
+  [ 18] pushcons 14 ............................. <RETURN>
+  [ 20] pushcons 15 ............................. <"<br>">
+  [ 22] pusharglist 3 ........................... <tMsg, RETURN, "<br>">
+  [ 24] extcall 265 ............................. <replaceChunks(tMsg, RETURN, "<br>")>
+  [ 27] setparam 1 .............................. tMsg = replaceChunks(tMsg, RETURN, "<br>")
+  [ 29] getparam 1 .............................. <tMsg>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] pusharglist 2 ........................... <tMsg, 1>
+  [ 35] extcall 266 ............................. <convertSpecialChars(tMsg, 1)>
+  [ 38] setparam 1 .............................. tMsg = convertSpecialChars(tMsg, 1)
+  [ 40] getparam 2 .............................. <ttype>
+  [ 42] pushsymb 267 ............................ <#habbo_helpers>
+  [ 45] eq ...................................... <ttype = #habbo_helpers>
+  [ 46] jmpifz [ 56] ............................ if ttype = #habbo_helpers then / else
+  [ 49] pushint8 2 .............................. <2>
+  [ 51] setlocal 0 .............................. tSendType = 2
+  [ 53] jmp [ 88]
+  [ 56] getparam 2 .............................. <ttype>
+  [ 58] pushsymb 268 ............................ <#emergency>
+  [ 61] eq ...................................... <ttype = #emergency>
+  [ 62] jmpifz [ 72] ............................ if ttype = #emergency then / else
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] setlocal 0 .............................. tSendType = 1
+  [ 69] jmp [ 88]
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pushcons 16 ............................. <"Illegal type for CFH!">
+  [ 76] pushsymb 230 ............................ <#send_cryForHelp>
+  [ 78] pushsymb 154 ............................ <#major>
+  [ 80] pusharglist 4 ........................... <me, "Illegal type for CFH!", #send_cryForHelp, #major>
+  [ 82] extcall 153 ............................. <error(me, "Illegal type for CFH!", #send_cryForHelp, #major)>
+  [ 84] pusharglistnoret 1 ...................... <error(me, "Illegal type for CFH!", #send_cryForHelp, #major)>
+  [ 86] extcall 18 .............................. return error(me, "Illegal type for CFH!", #send_cryForHelp, #major)
+  [ 88] pushsymb 198 ............................ <#string>
+  [ 90] getparam 1 .............................. <tMsg>
+  [ 92] pushsymb 25 ............................. <#integer>
+  [ 94] getlocal 0 .............................. <tSendType>
+  [ 96] pusharglist 4 ........................... <[#string: tMsg, #integer: tSendType]>
+  [ 98] pushproplist ............................ <[#string: tMsg, #integer: tSendType]>
+  [ 99] setlocal 1 .............................. tPropList = [#string: tMsg, #integer: tSendType]
+  [101] pushcons 17 ............................. <"connection.room.id">
+  [103] pusharglist 1 ........................... <"connection.room.id">
+  [105] extcall 26 .............................. <getVariable("connection.room.id")>
+  [107] pusharglist 1 ........................... <getVariable("connection.room.id")>
+  [109] extcall 240 ............................. <connectionExists(getVariable("connection.room.id"))>
+  [111] jmpifz [139] ............................ if connectionExists(getVariable("connection.room.id")) then / else
+  [114] pushcons 17 ............................. <"connection.room.id">
+  [116] pusharglist 1 ........................... <"connection.room.id">
+  [118] extcall 26 .............................. <getVariable("connection.room.id")>
+  [120] pusharglist 1 ........................... <getVariable("connection.room.id")>
+  [122] extcall 199 ............................. <getConnection(getVariable("connection.room.id"))>
+  [124] pushcons 18 ............................. <"CALL_FOR_HELP">
+  [126] getlocal 1 .............................. <tPropList>
+  [128] pusharglist 3 ........................... <getConnection(getVariable("connection.room.id")), "CALL_FOR_HELP", tPropList>
+  [130] objcall 200 ............................. <getConnection(getVariable("connection.room.id")).send("CALL_FOR_HELP", tPropList)>
+  [132] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.room.id")).send("CALL_FOR_HELP", tPropList)>
+  [134] extcall 18 .............................. return getConnection(getVariable("connection.room.id")).send("CALL_FOR_HELP", tPropList)
+  [136] jmp [155]
+  [139] getparam 0 .............................. <me>
+  [141] pushcons 19 ............................. <"Failed to access room connection!">
+  [143] pushsymb 230 ............................ <#send_cryForHelp>
+  [145] pushsymb 154 ............................ <#major>
+  [147] pusharglist 4 ........................... <me, "Failed to access room connection!", #send_cryForHelp, #major>
+  [149] extcall 153 ............................. <error(me, "Failed to access room connection!", #send_cryForHelp, #major)>
+  [151] pusharglistnoret 1 ...................... <error(me, "Failed to access room connection!", #send_cryForHelp, #major)>
+  [153] extcall 18 .............................. return error(me, "Failed to access room connection!", #send_cryForHelp, #major)
+  [155] ret
+end
+
+on send_CfhReply me, tCryID, tMsg
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 26 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 240 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [ 11] jmpifz [ 19] ............................ if not connectionExists(getVariable("connection.info.id")) then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 18 .............................. return 0
+  [ 19] pushzero ................................ <0>
+  [ 20] setlocal 0 .............................. tCharsCounted = 0
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] setlocal 1
+  [ 26] getlocal 1
+  [ 28] getparam 2 .............................. <tMsg>
+  [ 30] pushsymb 145 ............................ <#char>
+  [ 32] pusharglist 2 ........................... <tMsg, #char>
+  [ 34] objcall 125 ............................. <tMsg.char.count>
+  [ 36] lteq
+  [ 37] jmpifz [105] ............................ repeat with i = 1 to tMsg.char.count
+  [ 40] getlocal 0 .............................. <tCharsCounted>
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] add ..................................... <tCharsCounted + 1>
+  [ 45] setlocal 0 .............................. tCharsCounted = tCharsCounted + 1
+  [ 47] getlocal 0 .............................. <tCharsCounted>
+  [ 49] pushint8 45 ............................. <45>
+  [ 51] gt ...................................... <tCharsCounted > 45>
+  [ 52] getparam 2 .............................. <tMsg>
+  [ 54] pushsymb 145 ............................ <#char>
+  [ 56] getlocal 1 .............................. <i>
+  [ 58] pusharglist 3 ........................... <tMsg, #char, i>
+  [ 60] objcall 147 ............................. <tMsg.char[i]>
+  [ 62] pusharglist 0 ........................... <>
+  [ 64] extcall 264 ............................. <SPACE>
+  [ 67] eq ...................................... <tMsg.char[i] = SPACE>
+  [ 68] and ..................................... <(tCharsCounted > 45) and (tMsg.char[i] = SPACE)>
+  [ 69] jmpifz [ 96] ............................ if (tCharsCounted > 45) and (tMsg.char[i] = SPACE) then
+  [ 72] pushcons 15 ............................. <"<br>">
+  [ 74] pushint8 2 .............................. <2>
+  [ 76] pushchunkvarref 4 ....................... <tMsg>
+  [ 78] pushsymb 145 ............................ <#char>
+  [ 80] getlocal 1 .............................. <i>
+  [ 82] pusharglist 3 ........................... <tMsg, #char, i>
+  [ 84] objcall 271 ............................. <tMsg.char[i]>
+  [ 87] swap
+  [ 88] pusharglistnoret 2 ...................... <tMsg.char[i], "<br>">
+  [ 90] objcall 272 ............................. put "<br>" into tMsg.char[i]
+  [ 93] pushzero ................................ <0>
+  [ 94] setlocal 0 .............................. tCharsCounted = 0
+  [ 96] pushint8 1
+  [ 98] getlocal 1
+  [100] add
+  [101] setlocal 1
+  [103] endrepeat [ 26]
+  [105] getparam 2 .............................. <tMsg>
+  [107] pushcons 14 ............................. <RETURN>
+  [109] pushcons 15 ............................. <"<br>">
+  [111] pusharglist 3 ........................... <tMsg, RETURN, "<br>">
+  [113] extcall 265 ............................. <replaceChunks(tMsg, RETURN, "<br>")>
+  [116] setparam 2 .............................. tMsg = replaceChunks(tMsg, RETURN, "<br>")
+  [118] getparam 2 .............................. <tMsg>
+  [120] pushint8 1 .............................. <1>
+  [122] pusharglist 2 ........................... <tMsg, 1>
+  [124] extcall 266 ............................. <convertSpecialChars(tMsg, 1)>
+  [127] setparam 2 .............................. tMsg = convertSpecialChars(tMsg, 1)
+  [129] pushcons 0 .............................. <"connection.info.id">
+  [131] pusharglist 1 ........................... <"connection.info.id">
+  [133] extcall 26 .............................. <getVariable("connection.info.id")>
+  [135] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [137] extcall 199 ............................. <getConnection(getVariable("connection.info.id"))>
+  [139] pushcons 20 ............................. <"MESSAGETOCALLER">
+  [141] pushsymb 198 ............................ <#string>
+  [143] getparam 1 .............................. <tCryID>
+  [145] pushsymb 198 ............................ <#string>
+  [147] getparam 2 .............................. <tMsg>
+  [149] pusharglist 4 ........................... <[#string: tCryID, #string: tMsg]>
+  [151] pushproplist ............................ <[#string: tCryID, #string: tMsg]>
+  [152] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "MESSAGETOCALLER", [#string: tCryID, #string: tMsg]>
+  [154] objcall 200 ............................. getConnection(getVariable("connection.info.id")).send("MESSAGETOCALLER", [#string: tCryID, #string: tMsg])
+  [156] pushint8 1 .............................. <1>
+  [158] pusharglistnoret 1 ...................... <1>
+  [160] extcall 18 .............................. return 1
+  [162] ret
+end
+
+on getCryDataBase me
+  [  0] getprop 232 ............................. <pCryDataBase>
+  [  2] pusharglistnoret 1 ...................... <pCryDataBase>
+  [  4] extcall 18 .............................. return pCryDataBase
+  [  6] ret
+end
+
+on clearCryDataBase me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 232 ............................. pCryDataBase = [:]
+  [  5] pushint8 1 .............................. <1>
+  [  7] pusharglistnoret 1 ...................... <1>
+  [  9] extcall 18 .............................. return 1
+  [ 11] ret
+end

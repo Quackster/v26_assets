@@ -1,0 +1,333 @@
+property pProgramOn, pAnimFrame, pAnimFrameDuration, pAnimFrameCounter, pUpdateCount, pAnimLoop, pTotalLoopCount, pUpdatesToWaitOnLastFrame, pTotalFrameCount
+
+on prepare me, tdata
+  [  0] pushzero ................................ <0>
+  [  1] setprop 502 ............................. pUpdateCount = 0
+  [  4] pushzero ................................ <0>
+  [  5] setprop 50 .............................. pAnimFrame = 0
+  [  7] pushint8 1 .............................. <1>
+  [  9] setprop 503 ............................. pAnimLoop = 1
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] setprop 504 ............................. pUpdatesToWaitOnLastFrame = 1
+  [ 17] getparam 0 .............................. <me>
+  [ 19] getobjprop 55 ........................... <me.pXFactor>
+  [ 21] pushint8 32 ............................. <32>
+  [ 23] eq ...................................... <me.pXFactor = 32>
+  [ 24] jmpifz [ 39] ............................ if me.pXFactor = 32 then / else
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] setprop 505 ............................. pAnimFrameDuration = 1
+  [ 32] pushzero ................................ <0>
+  [ 33] setprop 506 ............................. pTotalLoopCount = 0
+  [ 36] jmp [ 49]
+  [ 39] pushint8 15 ............................. <15>
+  [ 41] setprop 505 ............................. pAnimFrameDuration = 15
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] setprop 506 ............................. pTotalLoopCount = 1
+  [ 49] getprop 505 ............................. <pAnimFrameDuration>
+  [ 52] setprop 507 ............................. pAnimFrameCounter = pAnimFrameDuration
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] setprop 508 ............................. pTotalFrameCount = 1
+  [ 60] getparam 1 .............................. <tdata>
+  [ 62] pushsymb 315 ............................ <#stuffdata>
+  [ 65] pusharglist 2 ........................... <tdata, #stuffdata>
+  [ 67] objcall 61 .............................. <tdata[#stuffdata]>
+  [ 69] pushcons 0 .............................. <"ON">
+  [ 71] eq ...................................... <tdata[#stuffdata] = "ON">
+  [ 72] jmpifz [ 85] ............................ if tdata[#stuffdata] = "ON" then / else
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pusharglistnoret 1 ...................... <me>
+  [ 79] objcall 472 ............................. me.setOn()
+  [ 82] jmp [ 92]
+  [ 85] getparam 0 .............................. <me>
+  [ 87] pusharglistnoret 1 ...................... <me>
+  [ 89] objcall 473 ............................. me.setOff()
+  [ 92] pushint8 1 .............................. <1>
+  [ 94] pusharglistnoret 1 ...................... <1>
+  [ 96] extcall 9 ............................... return 1
+  [ 98] ret
+end
+
+on updateStuffdata me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pushcons 0 .............................. <"ON">
+  [  4] eq ...................................... <tValue = "ON">
+  [  5] jmpifz [ 18] ............................ if tValue = "ON" then / else
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglistnoret 1 ...................... <me>
+  [ 12] objcall 472 ............................. me.setOn()
+  [ 15] jmp [ 25]
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglistnoret 1 ...................... <me>
+  [ 22] objcall 473 ............................. me.setOff()
+  [ 25] ret
+end
+
+on update me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 14 ............................. <#pSprList>
+  [  4] pusharglist 2 ........................... <me, #pSprList>
+  [  6] objcall 60 .............................. <me.pSprList.count>
+  [  8] pushint8 4 .............................. <4>
+  [ 10] lt ...................................... <me.pSprList.count < 4>
+  [ 11] jmpifz [ 19] ............................ if me.pSprList.count < 4 then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 9 ............................... return 0
+  [ 19] getprop 502 ............................. <pUpdateCount>
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] add ..................................... <pUpdateCount + 1>
+  [ 25] setprop 502 ............................. pUpdateCount = pUpdateCount + 1
+  [ 28] getprop 502 ............................. <pUpdateCount>
+  [ 31] pushint8 3 .............................. <3>
+  [ 33] lt ...................................... <pUpdateCount < 3>
+  [ 34] jmpifz [ 43] ............................ if pUpdateCount < 3 then
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 9 ............................... return 1
+  [ 43] pushzero ................................ <0>
+  [ 44] setprop 502 ............................. pUpdateCount = 0
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pushsymb 14 ............................. <#pSprList>
+  [ 51] pushint8 4 .............................. <4>
+  [ 53] pusharglist 3 ........................... <me, #pSprList, 4>
+  [ 55] objcall 15 .............................. <me.pSprList[4]>
+  [ 57] getchainedprop 96 ....................... <me.pSprList[4].member>
+  [ 59] getobjprop 81 ........................... <me.pSprList[4].member.name>
+  [ 61] setlocal 0 .............................. tName = me.pSprList[4].member.name
+  [ 63] getmovieprop 102 ........................ <the itemDelimiter>
+  [ 65] setlocal 1 .............................. tDelim = the itemDelimiter
+  [ 67] pushcons 1 .............................. <"_">
+  [ 69] setmovieprop 102 ........................ the itemDelimiter = "_"
+  [ 71] getlocal 0 .............................. <tName>
+  [ 73] pushsymb 103 ............................ <#item>
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] getlocal 0 .............................. <tName>
+  [ 79] pushsymb 103 ............................ <#item>
+  [ 81] pusharglist 2 ........................... <tName, #item>
+  [ 83] objcall 60 .............................. <tName.item.count>
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] sub ..................................... <tName.item.count - 1>
+  [ 88] pusharglist 4 ........................... <tName, #item, 1, tName.item.count - 1>
+  [ 90] objcall 100 ............................. <tName.item[1..tName.item.count - 1]>
+  [ 92] pushcons 1 .............................. <"_">
+  [ 94] joinstr ................................. <tName.item[1..tName.item.count - 1] & "_">
+  [ 95] setlocal 0 .............................. tName = tName.item[1..tName.item.count - 1] & "_"
+  [ 97] getlocal 1 .............................. <tDelim>
+  [ 99] setmovieprop 102 ........................ the itemDelimiter = tDelim
+  [101] getprop 509 ............................. <pProgramOn>
+  [104] jmpifz [302] ............................ if pProgramOn then / else
+  [107] getprop 503 ............................. <pAnimLoop>
+  [110] pushint8 1 .............................. <1>
+  [112] gteq .................................... <pAnimLoop >= 1>
+  [113] jmpifz [251] ............................ if pAnimLoop >= 1 then / else
+  [116] getprop 507 ............................. <pAnimFrameCounter>
+  [119] pushint8 1 .............................. <1>
+  [121] add ..................................... <pAnimFrameCounter + 1>
+  [122] setprop 507 ............................. pAnimFrameCounter = pAnimFrameCounter + 1
+  [125] getprop 507 ............................. <pAnimFrameCounter>
+  [128] getprop 505 ............................. <pAnimFrameDuration>
+  [131] lt ...................................... <pAnimFrameCounter < pAnimFrameDuration>
+  [132] jmpifz [141] ............................ if pAnimFrameCounter < pAnimFrameDuration then
+  [135] pushint8 1 .............................. <1>
+  [137] pusharglistnoret 1 ...................... <1>
+  [139] extcall 9 ............................... return 1
+  [141] pushzero ................................ <0>
+  [142] setprop 507 ............................. pAnimFrameCounter = 0
+  [145] getlocal 0 .............................. <tName>
+  [147] getprop 50 .............................. <pAnimFrame>
+  [149] joinstr ................................. <tName & pAnimFrame>
+  [150] setlocal 2 .............................. tNewName = tName & pAnimFrame
+  [152] getprop 50 .............................. <pAnimFrame>
+  [154] pushint8 1 .............................. <1>
+  [156] add ..................................... <pAnimFrame + 1>
+  [157] setprop 50 .............................. pAnimFrame = pAnimFrame + 1
+  [159] getprop 508 ............................. <pTotalFrameCount>
+  [162] getprop 50 .............................. <pAnimFrame>
+  [164] lteq .................................... <pTotalFrameCount <= pAnimFrame>
+  [165] getlocal 0 .............................. <tName>
+  [167] getprop 50 .............................. <pAnimFrame>
+  [169] pushint8 1 .............................. <1>
+  [171] add ..................................... <pAnimFrame + 1>
+  [172] joinstr ................................. <tName & pAnimFrame + 1>
+  [173] pusharglist 1 ........................... <tName & pAnimFrame + 1>
+  [175] extcall 101 ............................. <memberExists(tName & pAnimFrame + 1)>
+  [177] and ..................................... <(pTotalFrameCount <= pAnimFrame) and memberExists(tName & pAnimFrame + 1)>
+  [178] jmpifz [189] ............................ if (pTotalFrameCount <= pAnimFrame) and memberExists(tName & pAnimFrame + 1) then
+  [181] getprop 50 .............................. <pAnimFrame>
+  [183] pushint8 1 .............................. <1>
+  [185] add ..................................... <pAnimFrame + 1>
+  [186] setprop 508 ............................. pTotalFrameCount = pAnimFrame + 1
+  [189] getprop 50 .............................. <pAnimFrame>
+  [191] getprop 508 ............................. <pTotalFrameCount>
+  [194] eq ...................................... <pAnimFrame = pTotalFrameCount>
+  [195] jmpifz [248] ............................ if pAnimFrame = pTotalFrameCount then
+  [198] getprop 503 ............................. <pAnimLoop>
+  [201] getprop 506 ............................. <pTotalLoopCount>
+  [204] lt ...................................... <pAnimLoop < pTotalLoopCount>
+  [205] jmpifz [224] ............................ if pAnimLoop < pTotalLoopCount then / else
+  [208] pushint8 1 .............................. <1>
+  [210] setprop 50 .............................. pAnimFrame = 1
+  [212] getprop 503 ............................. <pAnimLoop>
+  [215] pushint8 1 .............................. <1>
+  [217] add ..................................... <pAnimLoop + 1>
+  [218] setprop 503 ............................. pAnimLoop = pAnimLoop + 1
+  [221] jmp [248]
+  [224] pushzero ................................ <0>
+  [225] setprop 503 ............................. pAnimLoop = 0
+  [228] getlocal 0 .............................. <tName>
+  [230] getprop 50 .............................. <pAnimFrame>
+  [232] joinstr ................................. <tName & pAnimFrame>
+  [233] setlocal 2 .............................. tNewName = tName & pAnimFrame
+  [235] pushint8 30 ............................. <30>
+  [237] pushint8 40 ............................. <40>
+  [239] pusharglist 1 ........................... <40>
+  [241] extcall 322 ............................. <random(40)>
+  [244] add ..................................... <30 + random(40)>
+  [245] setprop 504 ............................. pUpdatesToWaitOnLastFrame = 30 + random(40)
+  [248] jmp [299]
+  [251] getprop 503 ............................. <pAnimLoop>
+  [254] pushzero ................................ <0>
+  [255] eq ...................................... <pAnimLoop = 0>
+  [256] jmpifz [299] ............................ if pAnimLoop = 0 then
+  [259] getprop 50 .............................. <pAnimFrame>
+  [261] getprop 504 ............................. <pUpdatesToWaitOnLastFrame>
+  [264] lteq .................................... <pAnimFrame <= pUpdatesToWaitOnLastFrame>
+  [265] jmpifz [284] ............................ if pAnimFrame <= pUpdatesToWaitOnLastFrame then / else
+  [268] getprop 50 .............................. <pAnimFrame>
+  [270] pushint8 1 .............................. <1>
+  [272] add ..................................... <pAnimFrame + 1>
+  [273] setprop 50 .............................. pAnimFrame = pAnimFrame + 1
+  [275] pushint8 1 .............................. <1>
+  [277] pusharglistnoret 1 ...................... <1>
+  [279] extcall 9 ............................... return 1
+  [281] jmp [299]
+  [284] pushint8 1 .............................. <1>
+  [286] setprop 50 .............................. pAnimFrame = 1
+  [288] pushint8 1 .............................. <1>
+  [290] setprop 503 ............................. pAnimLoop = 1
+  [293] pushint8 1 .............................. <1>
+  [295] pusharglistnoret 1 ...................... <1>
+  [297] extcall 9 ............................... return 1
+  [299] jmp [309]
+  [302] getlocal 0 .............................. <tName>
+  [304] pushcons 2 .............................. <"0">
+  [306] joinstr ................................. <tName & "0">
+  [307] setlocal 2 .............................. tNewName = tName & "0"
+  [309] getlocal 2 .............................. <tNewName>
+  [311] pusharglist 1 ........................... <tNewName>
+  [313] extcall 101 ............................. <memberExists(tNewName)>
+  [315] jmpifz [379] ............................ if memberExists(tNewName) then
+  [318] getlocal 2 .............................. <tNewName>
+  [320] pusharglist 1 ........................... <tNewName>
+  [322] extcall 150 ............................. <getmemnum(tNewName)>
+  [324] pusharglist 1 ........................... <getmemnum(tNewName)>
+  [326] extcall 96 .............................. <member(getmemnum(tNewName))>
+  [328] setlocal 3 .............................. tmember = member(getmemnum(tNewName))
+  [330] getparam 0 .............................. <me>
+  [332] pushsymb 14 ............................. <#pSprList>
+  [334] pushint8 4 .............................. <4>
+  [336] pusharglist 3 ........................... <me, #pSprList, 4>
+  [338] objcall 15 .............................. <me.pSprList[4]>
+  [340] getlocal 3 .............................. <tmember>
+  [342] getobjprop 450 .......................... <tmember.number>
+  [345] setobjprop 177 .......................... me.pSprList[4].castNum = tmember.number
+  [347] getparam 0 .............................. <me>
+  [349] pushsymb 14 ............................. <#pSprList>
+  [351] pushint8 4 .............................. <4>
+  [353] pusharglist 3 ........................... <me, #pSprList, 4>
+  [355] objcall 15 .............................. <me.pSprList[4]>
+  [357] getlocal 3 .............................. <tmember>
+  [359] getobjprop 142 .......................... <tmember.width>
+  [361] setobjprop 142 .......................... me.pSprList[4].width = tmember.width
+  [363] getparam 0 .............................. <me>
+  [365] pushsymb 14 ............................. <#pSprList>
+  [367] pushint8 4 .............................. <4>
+  [369] pusharglist 3 ........................... <me, #pSprList, 4>
+  [371] objcall 15 .............................. <me.pSprList[4]>
+  [373] getlocal 3 .............................. <tmember>
+  [375] getobjprop 143 .......................... <tmember.height>
+  [377] setobjprop 143 .......................... me.pSprList[4].height = tmember.height
+  [379] getparam 0 .............................. <me>
+  [381] pushsymb 14 ............................. <#pSprList>
+  [383] pushint8 4 .............................. <4>
+  [385] pusharglist 3 ........................... <me, #pSprList, 4>
+  [387] objcall 15 .............................. <me.pSprList[4]>
+  [389] getparam 0 .............................. <me>
+  [391] pushsymb 14 ............................. <#pSprList>
+  [393] pushint8 1 .............................. <1>
+  [395] pusharglist 3 ........................... <me, #pSprList, 1>
+  [397] objcall 15 .............................. <me.pSprList[1]>
+  [399] getobjprop 206 .......................... <me.pSprList[1].locZ>
+  [401] pushint8 2 .............................. <2>
+  [403] add ..................................... <me.pSprList[1].locZ + 2>
+  [404] setobjprop 206 .......................... me.pSprList[4].locZ = me.pSprList[1].locZ + 2
+  [406] ret
+end
+
+on setOn me
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. pFramesToWaitOnLastFrame = 0
+  [  3] getprop 505 ............................. <pAnimFrameDuration>
+  [  6] setprop 507 ............................. pAnimFrameCounter = pAnimFrameDuration
+  [  9] getparam 0 .............................. <me>
+  [ 11] getobjprop 55 ........................... <me.pXFactor>
+  [ 13] pushint8 32 ............................. <32>
+  [ 15] eq ...................................... <me.pXFactor = 32>
+  [ 16] jmpifz [ 35] ............................ if me.pXFactor = 32 then / else
+  [ 19] pushint8 4 .............................. <4>
+  [ 21] pushint8 6 .............................. <6>
+  [ 23] pusharglist 1 ........................... <6>
+  [ 25] extcall 322 ............................. <random(6)>
+  [ 28] add ..................................... <4 + random(6)>
+  [ 29] setprop 506 ............................. pTotalLoopCount = 4 + random(6)
+  [ 32] jmp [ 40]
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setprop 506 ............................. pTotalLoopCount = 1
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] setprop 503 ............................. pAnimLoop = 1
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] setprop 50 .............................. pAnimFrame = 1
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] setprop 509 ............................. pProgramOn = 1
+  [ 54] ret
+end
+
+on setOff me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 509 ............................. pProgramOn = 0
+  [  4] ret
+end
+
+on select me
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 318 .......................... <the doubleClick>
+  [  5] jmpifz [ 64] ............................ if the doubleClick then
+  [  8] getprop 509 ............................. <pProgramOn>
+  [ 11] jmpifz [ 21] ............................ if pProgramOn then / else
+  [ 14] pushcons 3 .............................. <"OFF">
+  [ 16] setlocal 0 .............................. tOnString = "OFF"
+  [ 18] jmp [ 25]
+  [ 21] pushcons 0 .............................. <"ON">
+  [ 23] setlocal 0 .............................. tOnString = "ON"
+  [ 25] pushsymb 4 .............................. <#room>
+  [ 27] pusharglist 1 ........................... <#room>
+  [ 29] extcall 5 ............................... <getThread(#room)>
+  [ 31] pusharglist 1 ........................... <getThread(#room)>
+  [ 33] objcall 6 ............................... <getThread(#room).getComponent()>
+  [ 35] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 37] objcall 106 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 39] pushcons 4 .............................. <"SETSTUFFDATA">
+  [ 41] pushsymb 146 ............................ <#string>
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglist 1 ........................... <me>
+  [ 47] objcall 7 ............................... <me.getID()>
+  [ 49] pusharglist 1 ........................... <me.getID()>
+  [ 51] extcall 146 ............................. <string(me.getID())>
+  [ 53] pushsymb 146 ............................ <#string>
+  [ 55] getlocal 0 .............................. <tOnString>
+  [ 57] pusharglist 4 ........................... <[#string: string(me.getID()), #string: tOnString]>
+  [ 59] pushproplist ............................ <[#string: string(me.getID()), #string: tOnString]>
+  [ 60] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "SETSTUFFDATA", [#string: string(me.getID()), #string: tOnString]>
+  [ 62] objcall 107 ............................. getThread(#room).getComponent().getRoomConnection().send("SETSTUFFDATA", [#string: string(me.getID()), #string: tOnString])
+  [ 64] ret
+end

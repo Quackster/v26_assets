@@ -1,0 +1,357 @@
+property m_ar_iValue, m_iLength, m_iBitsPerWord, m_iBitMask, m_iCarryMask
+
+on construct this
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 2079 ............................ m_ar_iValue = []
+  [  6] pushzero ................................ <0>
+  [  7] setprop 2080 ............................ m_iLength = 0
+  [ 10] pushint8 12 ............................. <12>
+  [ 12] setprop 2081 ............................ m_iBitsPerWord = 12
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] setprop 2082 ............................ m_iBitMask = 1
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] setlocal 0
+  [ 24] getlocal 0
+  [ 26] getprop 2081 ............................ <m_iBitsPerWord>
+  [ 29] lteq
+  [ 30] jmpifz [ 57] ............................ repeat with i = 1 to m_iBitsPerWord
+  [ 33] getprop 2082 ............................ <m_iBitMask>
+  [ 36] pushint8 2 .............................. <2>
+  [ 38] mul ..................................... <m_iBitMask * 2>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pusharglist 2 ........................... <m_iBitMask * 2, 1>
+  [ 43] extcall 86 .............................. <bitOr(m_iBitMask * 2, 1)>
+  [ 45] setprop 2082 ............................ m_iBitMask = bitOr(m_iBitMask * 2, 1)
+  [ 48] pushint8 1
+  [ 50] getlocal 0
+  [ 52] add
+  [ 53] setlocal 0
+  [ 55] endrepeat [ 24]
+  [ 57] getprop 2082 ............................ <m_iBitMask>
+  [ 60] pushint8 2 .............................. <2>
+  [ 62] mul ..................................... <m_iBitMask * 2>
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] pusharglist 2 ........................... <m_iBitMask * 2, 1>
+  [ 67] extcall 86 .............................. <bitOr(m_iBitMask * 2, 1)>
+  [ 69] setprop 2083 ............................ m_iCarryMask = bitOr(m_iBitMask * 2, 1)
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 1 ...................... <1>
+  [ 76] extcall 11 .............................. return 1
+  [ 78] ret
+end
+
+on setup this, a_vInput
+  [  0] getparam 1 .............................. <a_vInput>
+  [  2] getobjprop 586 .......................... <a_vInput.ilk>
+  [  5] peek 0 .................................. case a_vInput.ilk of
+  [  7] pushsymb 1132 ........................... <#integer>
+  [ 10] eq
+  [ 11] jmpifz [144] ............................ (case) #integer:
+  [ 14] getparam 1 .............................. <a_vInput>
+  [ 16] setlocal 0 .............................. t_iValue = a_vInput
+  [ 18] pushint8 4 .............................. <4>
+  [ 20] pushint8 8 .............................. <8>
+  [ 22] mul ..................................... <4 * 8>
+  [ 23] pushint8 7 .............................. <7>
+  [ 25] add ..................................... <(4 * 8) + 7>
+  [ 26] getprop 2081 ............................ <m_iBitsPerWord>
+  [ 29] div ..................................... <((4 * 8) + 7) / m_iBitsPerWord>
+  [ 30] setlocal 1 .............................. t_iLength = ((4 * 8) + 7) / m_iBitsPerWord
+  [ 32] pusharglist 0 ........................... <[]>
+  [ 34] pushlist ................................ <[]>
+  [ 35] setprop 2079 ............................ m_ar_iValue = []
+  [ 38] getprop 2079 ............................ <m_ar_iValue>
+  [ 41] getlocal 1 .............................. <t_iLength>
+  [ 43] pushzero ................................ <0>
+  [ 44] pusharglistnoret 3 ...................... <m_ar_iValue, t_iLength, 0>
+  [ 46] objcall 625 ............................. m_ar_iValue.addAt(t_iLength, 0)
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] setlocal 2
+  [ 53] getlocal 2
+  [ 55] getlocal 1 .............................. <t_iLength>
+  [ 57] lteq
+  [ 58] jmpifz [ 99] ............................ repeat with i = 1 to t_iLength
+  [ 61] getlocal 0 .............................. <t_iValue>
+  [ 63] getprop 2082 ............................ <m_iBitMask>
+  [ 66] pusharglist 2 ........................... <t_iValue, m_iBitMask>
+  [ 68] extcall 26 .............................. <bitAnd(t_iValue, m_iBitMask)>
+  [ 70] setlocal 0 .............................. t_iValue = bitAnd(t_iValue, m_iBitMask)
+  [ 72] getlocal 0 .............................. <t_iValue>
+  [ 74] pushint8 2 .............................. <2>
+  [ 76] div ..................................... <t_iValue / 2>
+  [ 77] setlocal 0 .............................. t_iValue = t_iValue / 2
+  [ 79] getprop 2079 ............................ <m_ar_iValue>
+  [ 82] getlocal 2 .............................. <i>
+  [ 84] getlocal 0 .............................. <t_iValue>
+  [ 86] pusharglistnoret 3 ...................... <m_ar_iValue, i, t_iValue>
+  [ 88] objcall 23 .............................. m_ar_iValue[i] = t_iValue
+  [ 90] pushint8 1
+  [ 92] getlocal 2
+  [ 94] add
+  [ 95] setlocal 2
+  [ 97] endrepeat [ 53]
+  [ 99] getlocal 1 .............................. <t_iLength>
+  [101] setprop 2080 ............................ m_iLength = t_iLength
+  [104] pushint8 1 .............................. <1>
+  [106] jmpifz [141] ............................ repeat while 1
+  [109] getprop 2079 ............................ <m_ar_iValue>
+  [112] getprop 2080 ............................ <m_iLength>
+  [115] pusharglist 2 ........................... <m_ar_iValue, m_iLength>
+  [117] objcall 29 .............................. <m_ar_iValue[m_iLength]>
+  [119] pushzero ................................ <0>
+  [120] eq ...................................... <m_ar_iValue[m_iLength] = 0>
+  [121] jmpifz [136] ............................ if m_ar_iValue[m_iLength] = 0 then
+  [124] getprop 2080 ............................ <m_iLength>
+  [127] pushint8 1 .............................. <1>
+  [129] sub ..................................... <m_iLength - 1>
+  [130] setprop 2080 ............................ m_iLength = m_iLength - 1
+  [133] jmp [139] ............................... next repeat
+  [136] jmp [141] ............................... exit repeat
+  [139] endrepeat [104]
+  [141] jmp [173]
+  [144] peek 0
+  [146] pushsymb 587 ............................ <#list>
+  [149] eq
+  [150] jmpifz [173] ............................ (case) #list:
+  [153] getparam 1 .............................. <a_vInput>
+  [155] getchainedprop 2079 ..................... <a_vInput.m_ar_iValue>
+  [158] pusharglist 1 ........................... <a_vInput.m_ar_iValue>
+  [160] objcall 649 ............................. <a_vInput.m_ar_iValue.duplicate()>
+  [163] setprop 2079 ............................ m_ar_iValue = a_vInput.m_ar_iValue.duplicate()
+  [166] getparam 1 .............................. <a_vInput>
+  [168] getobjprop 2085 ......................... <a_vInput.m_iValue>
+  [171] setlocal 3 .............................. m_iValue = a_vInput.m_iValue
+  [173] pop 1 ................................... end case
+  [175] ret
+end
+
+on multiply this, a_rOperand
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. t_ar_iResult = []
+  [  5] getlocal 0 .............................. <t_ar_iResult>
+  [  7] getprop 2080 ............................ <m_iLength>
+  [ 10] getparam 1 .............................. <a_rOperand>
+  [ 12] getobjprop 2080 ......................... <a_rOperand.m_iLength>
+  [ 15] add ..................................... <m_iLength + a_rOperand.m_iLength>
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 3 ...................... <t_ar_iResult, m_iLength + a_rOperand.m_iLength, 0>
+  [ 19] objcall 625 ............................. t_ar_iResult.addAt(m_iLength + a_rOperand.m_iLength, 0)
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] setlocal 1
+  [ 26] getlocal 1
+  [ 28] getprop 2080 ............................ <m_iLength>
+  [ 31] lteq
+  [ 32] jmpifz [158] ............................ repeat with i = 1 to m_iLength
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setlocal 2
+  [ 39] getlocal 2
+  [ 41] getparam 1 .............................. <a_rOperand>
+  [ 43] getobjprop 2080 ......................... <a_rOperand.m_iLength>
+  [ 46] lteq
+  [ 47] jmpifz [149] ............................ repeat with j = 1 to a_rOperand.m_iLength
+  [ 50] getprop 2079 ............................ <m_ar_iValue>
+  [ 53] getlocal 1 .............................. <i>
+  [ 55] pusharglist 2 ........................... <m_ar_iValue, i>
+  [ 57] objcall 29 .............................. <m_ar_iValue[i]>
+  [ 59] getparam 1 .............................. <a_rOperand>
+  [ 61] pushsymb 2079 ........................... <#m_ar_iValue>
+  [ 64] getlocal 2 .............................. <j>
+  [ 66] pusharglist 3 ........................... <a_rOperand, #m_ar_iValue, j>
+  [ 68] objcall 22 .............................. <a_rOperand.m_ar_iValue[j]>
+  [ 70] mul ..................................... <m_ar_iValue[i] * a_rOperand.m_ar_iValue[j]>
+  [ 71] setlocal 3 .............................. t_iProduct = m_ar_iValue[i] * a_rOperand.m_ar_iValue[j]
+  [ 73] getlocal 1 .............................. <i>
+  [ 75] getlocal 2 .............................. <j>
+  [ 77] add ..................................... <i + j>
+  [ 78] setlocal 4 .............................. k = i + j
+  [ 80] getlocal 3 .............................. <t_iProduct>
+  [ 82] pushzero ................................ <0>
+  [ 83] nteq .................................... <t_iProduct <> 0>
+  [ 84] jmpifz [140] ............................ repeat while t_iProduct <> 0
+  [ 87] getlocal 3 .............................. <t_iProduct>
+  [ 89] getlocal 0 .............................. <t_ar_iResult>
+  [ 91] getlocal 4 .............................. <k>
+  [ 93] pusharglist 2 ........................... <t_ar_iResult, k>
+  [ 95] objcall 29 .............................. <t_ar_iResult[k]>
+  [ 97] add ..................................... <t_iProduct + t_ar_iResult[k]>
+  [ 98] setlocal 3 .............................. t_iProduct = t_iProduct + t_ar_iResult[k]
+  [100] getlocal 0 .............................. <t_ar_iResult>
+  [102] getlocal 4 .............................. <k>
+  [104] getlocal 3 .............................. <t_iProduct>
+  [106] getprop 2082 ............................ <m_iBitMask>
+  [109] pusharglist 2 ........................... <t_iProduct, m_iBitMask>
+  [111] extcall 26 .............................. <bitAnd(t_iProduct, m_iBitMask)>
+  [113] pusharglistnoret 3 ...................... <t_ar_iResult, k, bitAnd(t_iProduct, m_iBitMask)>
+  [115] objcall 23 .............................. t_ar_iResult[k] = bitAnd(t_iProduct, m_iBitMask)
+  [117] getparam 0 .............................. <this>
+  [119] getlocal 3 .............................. <t_iProduct>
+  [121] getprop 2081 ............................ <m_iBitsPerWord>
+  [124] pusharglist 3 ........................... <this, t_iProduct, m_iBitsPerWord>
+  [126] objcall 2078 ............................ <this.BitRight(t_iProduct, m_iBitsPerWord)>
+  [129] setlocal 3 .............................. t_iProduct = this.BitRight(t_iProduct, m_iBitsPerWord)
+  [131] getlocal 4 .............................. <k>
+  [133] pushint8 1 .............................. <1>
+  [135] add ..................................... <k + 1>
+  [136] setlocal 4 .............................. k = k + 1
+  [138] endrepeat [ 80]
+  [140] pushint8 1
+  [142] getlocal 2
+  [144] add
+  [145] setlocal 2
+  [147] endrepeat [ 39]
+  [149] pushint8 1
+  [151] getlocal 1
+  [153] add
+  [154] setlocal 1
+  [156] endrepeat [ 26]
+  [158] pushsymb 66 ............................. <#temp>
+  [160] pushcons 0 .............................. <"CBigInt16">
+  [162] pusharglist 2 ........................... <#temp, "CBigInt16">
+  [164] extcall 177 ............................. <createObject(#temp, "CBigInt16")>
+  [166] setlocal 5 .............................. t_rBigInt = createObject(#temp, "CBigInt16")
+  [168] getlocal 5 .............................. <t_rBigInt>
+  [170] getlocal 0 .............................. <t_ar_iResult>
+  [172] pusharglistnoret 2 ...................... <t_rBigInt, t_ar_iResult>
+  [174] objcall 2072 ............................ t_rBigInt.setup(t_ar_iResult)
+  [177] getlocal 5 .............................. <t_rBigInt>
+  [179] pusharglistnoret 1 ...................... <t_rBigInt>
+  [181] extcall 11 .............................. return t_rBigInt
+  [183] ret
+end
+
+on power this, a_rBigIntExp, a_rBigIntMod
+  [  0] pushsymb 66 ............................. <#temp>
+  [  2] pushcons 0 .............................. <"CBigInt16">
+  [  4] pusharglist 2 ........................... <#temp, "CBigInt16">
+  [  6] extcall 177 ............................. <createObject(#temp, "CBigInt16")>
+  [  8] setlocal 0 .............................. t_rResult = createObject(#temp, "CBigInt16")
+  [ 10] getparam 0 .............................. <this>
+  [ 12] setlocal 1 .............................. t_rBase = this
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] setlocal 2
+  [ 18] getlocal 2
+  [ 20] getparam 1 .............................. <a_rBigIntExp>
+  [ 22] getobjprop 2080 ......................... <a_rBigIntExp.m_iLength>
+  [ 25] lteq
+  [ 26] jmpifz [111] ............................ repeat with n = 1 to a_rBigIntExp.m_iLength
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] setlocal 3 .............................. bit = 1
+  [ 33] getlocal 3 .............................. <bit>
+  [ 35] getprop 2082 ............................ <m_iBitMask>
+  [ 38] lt ...................................... <bit < m_iBitMask>
+  [ 39] jmpifz [102] ............................ repeat while bit < m_iBitMask
+  [ 42] getparam 1 .............................. <a_rBigIntExp>
+  [ 44] pushsymb 2079 ........................... <#m_ar_iValue>
+  [ 47] getlocal 2 .............................. <n>
+  [ 49] pusharglist 3 ........................... <a_rBigIntExp, #m_ar_iValue, n>
+  [ 51] objcall 22 .............................. <a_rBigIntExp.m_ar_iValue[n]>
+  [ 53] getlocal 3 .............................. <bit>
+  [ 55] pusharglist 2 ........................... <a_rBigIntExp.m_ar_iValue[n], bit>
+  [ 57] extcall 26 .............................. <bitAnd(a_rBigIntExp.m_ar_iValue[n], bit)>
+  [ 59] pushzero ................................ <0>
+  [ 60] nteq .................................... <bitAnd(a_rBigIntExp.m_ar_iValue[n], bit) <> 0>
+  [ 61] jmpifz [ 82] ............................ if bitAnd(a_rBigIntExp.m_ar_iValue[n], bit) <> 0 then
+  [ 64] getlocal 0 .............................. <t_rResult>
+  [ 66] getlocal 1 .............................. <t_rBase>
+  [ 68] pusharglist 2 ........................... <t_rResult, t_rBase>
+  [ 70] objcall 2073 ............................ <t_rResult.multiply(t_rBase)>
+  [ 73] getparam 2 .............................. <a_rBigIntMod>
+  [ 75] pusharglist 2 ........................... <t_rResult.multiply(t_rBase), a_rBigIntMod>
+  [ 77] objcall 2075 ............................ <t_rResult.multiply(t_rBase).Modulo(a_rBigIntMod)>
+  [ 80] setlocal 0 .............................. t_rResult = t_rResult.multiply(t_rBase).Modulo(a_rBigIntMod)
+  [ 82] getlocal 1 .............................. <t_rBase>
+  [ 84] getlocal 1 .............................. <t_rBase>
+  [ 86] pusharglist 2 ........................... <t_rBase, t_rBase>
+  [ 88] objcall 2073 ............................ <t_rBase.multiply(t_rBase)>
+  [ 91] getparam 2 .............................. <a_rBigIntMod>
+  [ 93] pusharglist 2 ........................... <t_rBase.multiply(t_rBase), a_rBigIntMod>
+  [ 95] objcall 2075 ............................ <t_rBase.multiply(t_rBase).Modulo(a_rBigIntMod)>
+  [ 98] setlocal 1 .............................. t_rBase = t_rBase.multiply(t_rBase).Modulo(a_rBigIntMod)
+  [100] endrepeat [ 33]
+  [102] pushint8 1
+  [104] getlocal 2
+  [106] add
+  [107] setlocal 2
+  [109] endrepeat [ 18]
+  [111] getlocal 0 .............................. <t_rResult>
+  [113] pusharglistnoret 1 ...................... <t_rResult>
+  [115] extcall 11 .............................. return t_rResult
+  [117] ret
+end
+
+on Compare this, a_rOperand
+  [  0] getprop 2080 ............................ <m_iLength>
+  [  3] getparam 1 .............................. <a_rOperand>
+  [  5] getobjprop 2080 ......................... <a_rOperand.m_iLength>
+  [  8] eq ...................................... <m_iLength = a_rOperand.m_iLength>
+  [  9] jmpifz [ 12] ............................ if m_iLength = a_rOperand.m_iLength then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 11 .............................. return 0
+  [ 17] ret
+end
+
+on Modulo this, a_rModulus
+  [  0] ret
+end
+
+on toString this
+  [  0] pushcons 1 .............................. <EMPTY>
+  [  2] pusharglistnoret 1 ...................... <EMPTY>
+  [  4] extcall 11 .............................. return EMPTY
+  [  6] ret
+end
+
+on FromString this, a_sHex
+  [  0] ret
+end
+
+on BitRight this, n, s
+  [  0] getparam 2 .............................. <s>
+  [  2] pushint8 32 ............................. <32>
+  [  4] mod ..................................... <s mod 32>
+  [  5] setparam 2 .............................. s = s mod 32
+  [  7] getparam 1 .............................. <n>
+  [  9] pushzero ................................ <0>
+  [ 10] gt ...................................... <n > 0>
+  [ 11] jmpifz [ 37] ............................ if n > 0 then / else
+  [ 14] getparam 1 .............................. <n>
+  [ 16] pushint8 2 .............................. <2>
+  [ 18] getparam 2 .............................. <s>
+  [ 20] pusharglist 2 ........................... <2, s>
+  [ 22] localcall 3 ............................. <power(2, s)>
+  [ 24] div ..................................... <n / power(2, s)>
+  [ 25] pushzero ................................ <0>
+  [ 26] pusharglist 2 ........................... <n / power(2, s), 0>
+  [ 28] extcall 86 .............................. <bitOr(n / power(2, s), 0)>
+  [ 30] pusharglistnoret 1 ...................... <bitOr(n / power(2, s), 0)>
+  [ 32] extcall 11 .............................. return bitOr(n / power(2, s), 0)
+  [ 34] jmp [ 85]
+  [ 37] getparam 1 .............................. <n>
+  [ 39] pushint8 2 .............................. <2>
+  [ 41] getparam 2 .............................. <s>
+  [ 43] pusharglist 2 ........................... <2, s>
+  [ 45] localcall 3 ............................. <power(2, s)>
+  [ 47] div ..................................... <n / power(2, s)>
+  [ 48] setlocal 0 .............................. f = n / power(2, s)
+  [ 50] getlocal 0 .............................. <f>
+  [ 52] pusharglist 1 ........................... <f>
+  [ 54] extcall 1132 ............................ <integer(f)>
+  [ 57] setlocal 1 .............................. i = integer(f)
+  [ 59] getlocal 1 .............................. <i>
+  [ 61] getlocal 0 .............................. <f>
+  [ 63] gt ...................................... <i > f>
+  [ 64] jmpifz [ 79] ............................ if i > f then / else
+  [ 67] getlocal 1 .............................. <i>
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] sub ..................................... <i - 1>
+  [ 72] pusharglistnoret 1 ...................... <i - 1>
+  [ 74] extcall 11 .............................. return i - 1
+  [ 76] jmp [ 85]
+  [ 79] getlocal 1 .............................. <i>
+  [ 81] pusharglistnoret 1 ...................... <i>
+  [ 83] extcall 11 .............................. return i
+  [ 85] ret
+end

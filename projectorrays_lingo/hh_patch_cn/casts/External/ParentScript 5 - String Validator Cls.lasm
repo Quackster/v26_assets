@@ -1,0 +1,129 @@
+property pProhibitedCharCodes, pLastFailedCharacter
+
+on construct me
+  [  0] pushcons 0 .............................. <"prohibited_name_chars">
+  [  2] pusharglist 1 ........................... <"prohibited_name_chars">
+  [  4] extcall 182 ............................. <memberExists("prohibited_name_chars")>
+  [  6] not ..................................... <not memberExists("prohibited_name_chars")>
+  [  7] jmpifz [ 30] ............................ if not memberExists("prohibited_name_chars") then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 1 .............................. <"Resource containing prohibited chars not found!">
+  [ 14] pushsymb 22 ............................. <#construct>
+  [ 16] pusharglistnoret 3 ...................... <me, "Resource containing prohibited chars not found!", #construct>
+  [ 18] extcall 95 .............................. error(me, "Resource containing prohibited chars not found!", #construct)
+  [ 20] getparam 0 .............................. <me>
+  [ 22] pusharglist 1 ........................... <me>
+  [ 24] objcall 45 .............................. <me.getID()>
+  [ 26] pusharglistnoret 1 ...................... <me.getID()>
+  [ 28] extcall 39 .............................. removeObject(me.getID())
+  [ 30] pusharglist 0 ........................... <[]>
+  [ 32] pushlist ................................ <[]>
+  [ 33] setprop 183 ............................. pProhibitedCharCodes = []
+  [ 35] pushcons 2 .............................. <EMPTY>
+  [ 37] setprop 184 ............................. pLastFailedCharacter = EMPTY
+  [ 39] pushcons 0 .............................. <"prohibited_name_chars">
+  [ 41] pusharglist 1 ........................... <"prohibited_name_chars">
+  [ 43] extcall 71 .............................. <getmemnum("prohibited_name_chars")>
+  [ 45] pusharglist 1 ........................... <getmemnum("prohibited_name_chars")>
+  [ 47] extcall 15 .............................. <member(getmemnum("prohibited_name_chars"))>
+  [ 49] getobjprop 18 ........................... <member(getmemnum("prohibited_name_chars")).text>
+  [ 51] setlocal 0 .............................. tCharCodeList = member(getmemnum("prohibited_name_chars")).text
+  [ 53] pushint8 1 .............................. <1>
+  [ 55] setlocal 1
+  [ 57] getlocal 1
+  [ 59] getlocal 0 .............................. <tCharCodeList>
+  [ 61] pushsymb 79 ............................. <#line>
+  [ 63] pusharglist 2 ........................... <tCharCodeList, #line>
+  [ 65] objcall 77 .............................. <tCharCodeList.line.count>
+  [ 67] lteq
+  [ 68] jmpifz [100] ............................ repeat with i = 1 to tCharCodeList.line.count
+  [ 71] getprop 183 ............................. <pProhibitedCharCodes>
+  [ 73] getlocal 0 .............................. <tCharCodeList>
+  [ 75] pushsymb 79 ............................. <#line>
+  [ 77] getlocal 1 .............................. <i>
+  [ 79] pusharglist 3 ........................... <tCharCodeList, #line, i>
+  [ 81] objcall 82 .............................. <tCharCodeList.line[i]>
+  [ 83] pusharglist 1 ........................... <tCharCodeList.line[i]>
+  [ 85] extcall 185 ............................. <integer(tCharCodeList.line[i])>
+  [ 87] pusharglistnoret 2 ...................... <pProhibitedCharCodes, integer(tCharCodeList.line[i])>
+  [ 89] objcall 84 .............................. pProhibitedCharCodes.add(integer(tCharCodeList.line[i]))
+  [ 91] pushint8 1
+  [ 93] getlocal 1
+  [ 95] add
+  [ 96] setlocal 1
+  [ 98] endrepeat [ 57]
+  [100] getprop 183 ............................. <pProhibitedCharCodes>
+  [102] pusharglistnoret 1 ...................... <pProhibitedCharCodes>
+  [104] extcall 186 ............................. sort(pProhibitedCharCodes)
+  [106] pushint8 1 .............................. <1>
+  [108] pusharglistnoret 1 ...................... <1>
+  [110] extcall 20 .............................. return 1
+  [112] ret
+end
+
+on validateString me, tString
+  [  0] getparam 1 .............................. <tString>
+  [  2] getobjprop 188 .......................... <tString.ilk>
+  [  4] pushsymb 33 ............................. <#string>
+  [  6] nteq .................................... <tString.ilk <> #string>
+  [  7] jmpifz [ 27] ............................ if tString.ilk <> #string then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 3 .............................. <"String expected:">
+  [ 14] getparam 1 .............................. <tString>
+  [ 16] joinpadstr .............................. <"String expected:" && tString>
+  [ 17] pushsymb 189 ............................ <#validate>
+  [ 19] pusharglist 3 ........................... <me, "String expected:" && tString, #validate>
+  [ 21] extcall 95 .............................. <error(me, "String expected:" && tString, #validate)>
+  [ 23] pusharglistnoret 1 ...................... <error(me, "String expected:" && tString, #validate)>
+  [ 25] extcall 20 .............................. return error(me, "String expected:" && tString, #validate)
+  [ 27] pushcons 2 .............................. <EMPTY>
+  [ 29] setprop 184 ............................. pLastFailedCharacter = EMPTY
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] setlocal 0
+  [ 35] getlocal 0
+  [ 37] getparam 1 .............................. <tString>
+  [ 39] pusharglist 1 ........................... <tString>
+  [ 41] extcall 115 ............................. <length(tString)>
+  [ 43] lteq
+  [ 44] jmpifz [ 97] ............................ repeat with i = 1 to length(tString)
+  [ 47] getlocal 0 .............................. <i>
+  [ 49] pushzero ................................ <0>
+  [ 50] pushzero ................................ <0>
+  [ 51] pushzero ................................ <0>
+  [ 52] pushzero ................................ <0>
+  [ 53] pushzero ................................ <0>
+  [ 54] pushzero ................................ <0>
+  [ 55] pushzero ................................ <0>
+  [ 56] getparam 1 .............................. <tString>
+  [ 58] getchunk ................................ <char i of tString>
+  [ 59] setlocal 1 .............................. tChar = char i of tString
+  [ 61] getprop 183 ............................. <pProhibitedCharCodes>
+  [ 63] getlocal 1 .............................. <tChar>
+  [ 65] pusharglist 1 ........................... <tChar>
+  [ 67] extcall 190 ............................. <charToNum(tChar)>
+  [ 69] pusharglist 2 ........................... <pProhibitedCharCodes, charToNum(tChar)>
+  [ 71] objcall 105 ............................. <pProhibitedCharCodes.getOne(charToNum(tChar))>
+  [ 73] jmpifz [ 88] ............................ if pProhibitedCharCodes.getOne(charToNum(tChar)) then
+  [ 76] getlocal 1 .............................. <tChar>
+  [ 78] setprop 184 ............................. pLastFailedCharacter = tChar
+  [ 80] pushzero ................................ <0>
+  [ 81] pusharglistnoret 1 ...................... <0>
+  [ 83] extcall 20 .............................. return 0
+  [ 85] jmp [ 97] ............................... exit repeat
+  [ 88] pushint8 1
+  [ 90] getlocal 0
+  [ 92] add
+  [ 93] setlocal 0
+  [ 95] endrepeat [ 35]
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] pusharglistnoret 1 ...................... <1>
+  [101] extcall 20 .............................. return 1
+  [103] ret
+end
+
+on getFailedChar me
+  [  0] getprop 184 ............................. <pLastFailedCharacter>
+  [  2] pusharglistnoret 1 ...................... <pLastFailedCharacter>
+  [  4] extcall 20 .............................. return pLastFailedCharacter
+  [  6] ret
+end

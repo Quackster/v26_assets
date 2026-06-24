@@ -1,0 +1,810 @@
+property pPageCache, pCatalogIndex, pWaitingForData, pWaitingForFrontPage, pPersistentCatalogDataId, pPageItemDownloader, pCreditInfoPageID, pPixelInfoPageID, pCreditInfoNodeName, pPixelInfoNodeName, pPurchaseProcessor
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 319 ............................. pPageCache = [:]
+  [  6] pusharglist 0 ........................... <>
+  [  8] extcall 15 .............................. <VOID>
+  [ 10] setprop 320 ............................. pCatalogIndex = VOID
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] inv ..................................... <-1>
+  [ 16] setprop 321 ............................. pWaitingForData = -1
+  [ 19] pushzero ................................ <0>
+  [ 20] setprop 322 ............................. pWaitingForFrontPage = 0
+  [ 23] pushcons 0 .............................. <"Persistent Catalog Data">
+  [ 25] setprop 323 ............................. pPersistentCatalogDataId = "Persistent Catalog Data"
+  [ 28] getprop 323 ............................. <pPersistentCatalogDataId>
+  [ 31] pushcons 1 .............................. <"Persistent Product Data Container">
+  [ 33] pusharglist 1 ........................... <["Persistent Product Data Container"]>
+  [ 35] pushlist ................................ <["Persistent Product Data Container"]>
+  [ 36] pusharglistnoret 2 ...................... <pPersistentCatalogDataId, ["Persistent Product Data Container"]>
+  [ 38] extcall 41 .............................. createObject(pPersistentCatalogDataId, ["Persistent Product Data Container"])
+  [ 40] pusharglist 0 ........................... <>
+  [ 42] extcall 42 .............................. <getUniqueID()>
+  [ 44] pushcons 2 .............................. <"Page Item Downloader Class">
+  [ 46] pusharglist 2 ........................... <getUniqueID(), "Page Item Downloader Class">
+  [ 48] extcall 41 .............................. <createObject(getUniqueID(), "Page Item Downloader Class")>
+  [ 50] setprop 19 .............................. pPageItemDownloader = createObject(getUniqueID(), "Page Item Downloader Class")
+  [ 52] pushcons 3 .............................. <"magic.credits">
+  [ 54] setprop 324 ............................. pCreditInfoNodeName = "magic.credits"
+  [ 57] pushcons 4 .............................. <"magic.pixels">
+  [ 59] setprop 325 ............................. pPixelInfoNodeName = "magic.pixels"
+  [ 62] pusharglist 0 ........................... <>
+  [ 64] extcall 15 .............................. <VOID>
+  [ 66] setprop 326 ............................. pCreditInfoPageID = VOID
+  [ 69] pusharglist 0 ........................... <>
+  [ 71] extcall 15 .............................. <VOID>
+  [ 73] setprop 327 ............................. pPixelInfoPageID = VOID
+  [ 76] pusharglist 0 ........................... <>
+  [ 78] extcall 15 .............................. <VOID>
+  [ 80] setprop 328 ............................. pPurchaseProcessor = VOID
+  [ 83] ret
+end
+
+on deconstruct me
+  [  0] getprop 323 ............................. <pPersistentCatalogDataId>
+  [  3] pusharglist 1 ........................... <pPersistentCatalogDataId>
+  [  5] extcall 33 .............................. <objectExists(pPersistentCatalogDataId)>
+  [  7] jmpifz [ 17] ............................ if objectExists(pPersistentCatalogDataId) then
+  [ 10] getprop 323 ............................. <pPersistentCatalogDataId>
+  [ 13] pusharglistnoret 1 ...................... <pPersistentCatalogDataId>
+  [ 15] extcall 35 .............................. removeObject(pPersistentCatalogDataId)
+  [ 17] ret
+end
+
+on updatePageData me, tPageID, tdata
+  [  0] getprop 319 ............................. <pPageCache>
+  [  3] getparam 1 .............................. <tPageID>
+  [  5] getparam 0 .............................. <me>
+  [  7] getparam 2 .............................. <tdata>
+  [  9] pusharglist 1 ........................... <tdata>
+  [ 11] objcall 284 ............................. <tdata.duplicate()>
+  [ 14] pusharglist 2 ........................... <me, tdata.duplicate()>
+  [ 16] objcall 315 ............................. <me.groupOffersByProducts(tdata.duplicate())>
+  [ 19] pusharglistnoret 3 ...................... <pPageCache, tPageID, me.groupOffersByProducts(tdata.duplicate())>
+  [ 21] objcall 329 ............................. pPageCache.setaProp(tPageID, me.groupOffersByProducts(tdata.duplicate()))
+  [ 24] getparam 1 .............................. <tPageID>
+  [ 26] getprop 321 ............................. <pWaitingForData>
+  [ 29] eq ...................................... <tPageID = pWaitingForData>
+  [ 30] jmpifz [ 45] ............................ if tPageID = pWaitingForData then
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pusharglist 1 ........................... <me>
+  [ 37] objcall 210 ............................. <me.getInterface()>
+  [ 39] getparam 1 .............................. <tPageID>
+  [ 41] pusharglistnoret 2 ...................... <me.getInterface(), tPageID>
+  [ 43] objcall 169 ............................. me.getInterface().displayPage(tPageID)
+  [ 45] ret
+end
+
+on updateCatalogIndex me, tdata
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 319 ............................. pPageCache = [:]
+  [  6] getparam 1 .............................. <tdata>
+  [  8] setprop 320 ............................. pCatalogIndex = tdata
+  [ 11] getprop 322 ............................. <pWaitingForFrontPage>
+  [ 14] jmpifz [136] ............................ if pWaitingForFrontPage then
+  [ 17] getparam 0 .............................. <me>
+  [ 19] getprop 320 ............................. <pCatalogIndex>
+  [ 22] pusharglist 2 ........................... <me, pCatalogIndex>
+  [ 24] objcall 311 ............................. <me.getFirstNavigateableNode(pCatalogIndex)>
+  [ 27] setlocal 0 .............................. tNode = me.getFirstNavigateableNode(pCatalogIndex)
+  [ 29] getlocal 0 .............................. <tNode>
+  [ 31] pusharglist 1 ........................... <tNode>
+  [ 33] extcall 44 .............................. <voidp(tNode)>
+  [ 35] jmpifz [ 45] ............................ if voidp(tNode) then / else
+  [ 38] pusharglistnoret 0 ...................... <>
+  [ 40] extcall 30 .............................. return 
+  [ 42] jmp [ 64]
+  [ 45] getparam 0 .............................. <me>
+  [ 47] getlocal 0 .............................. <tNode>
+  [ 49] pushsymb 72 ............................. <#pageid>
+  [ 51] pusharglist 2 ........................... <tNode, #pageid>
+  [ 53] objcall 57 .............................. <tNode[#pageid]>
+  [ 55] pusharglistnoret 2 ...................... <me, tNode[#pageid]>
+  [ 57] objcall 309 ............................. me.preparePage(tNode[#pageid])
+  [ 60] pushzero ................................ <0>
+  [ 61] setprop 322 ............................. pWaitingForFrontPage = 0
+  [ 64] getparam 0 .............................. <me>
+  [ 66] getprop 324 ............................. <pCreditInfoNodeName>
+  [ 69] getprop 320 ............................. <pCatalogIndex>
+  [ 72] pusharglist 3 ........................... <me, pCreditInfoNodeName, pCatalogIndex>
+  [ 74] objcall 312 ............................. <me.getNodeByName(pCreditInfoNodeName, pCatalogIndex)>
+  [ 77] setlocal 1 .............................. tCreditInfoNode = me.getNodeByName(pCreditInfoNodeName, pCatalogIndex)
+  [ 79] getparam 0 .............................. <me>
+  [ 81] getprop 325 ............................. <pPixelInfoNodeName>
+  [ 84] getprop 320 ............................. <pCatalogIndex>
+  [ 87] pusharglist 3 ........................... <me, pPixelInfoNodeName, pCatalogIndex>
+  [ 89] objcall 312 ............................. <me.getNodeByName(pPixelInfoNodeName, pCatalogIndex)>
+  [ 92] setlocal 2 .............................. tPixelInfoNode = me.getNodeByName(pPixelInfoNodeName, pCatalogIndex)
+  [ 94] getlocal 1 .............................. <tCreditInfoNode>
+  [ 96] pusharglist 1 ........................... <tCreditInfoNode>
+  [ 98] extcall 44 .............................. <voidp(tCreditInfoNode)>
+  [100] not ..................................... <not voidp(tCreditInfoNode)>
+  [101] jmpifz [115] ............................ if not voidp(tCreditInfoNode) then
+  [104] getlocal 1 .............................. <tCreditInfoNode>
+  [106] pushsymb 72 ............................. <#pageid>
+  [108] pusharglist 2 ........................... <tCreditInfoNode, #pageid>
+  [110] objcall 57 .............................. <tCreditInfoNode[#pageid]>
+  [112] setprop 326 ............................. pCreditInfoPageID = tCreditInfoNode[#pageid]
+  [115] getlocal 2 .............................. <tPixelInfoNode>
+  [117] pusharglist 1 ........................... <tPixelInfoNode>
+  [119] extcall 44 .............................. <voidp(tPixelInfoNode)>
+  [121] not ..................................... <not voidp(tPixelInfoNode)>
+  [122] jmpifz [136] ............................ if not voidp(tPixelInfoNode) then
+  [125] getlocal 2 .............................. <tPixelInfoNode>
+  [127] pushsymb 72 ............................. <#pageid>
+  [129] pusharglist 2 ........................... <tPixelInfoNode, #pageid>
+  [131] objcall 57 .............................. <tPixelInfoNode[#pageid]>
+  [133] setprop 327 ............................. pPixelInfoPageID = tPixelInfoNode[#pageid]
+  [136] ret
+end
+
+on preparePage me, tPageID
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 314 ............................. me.initCatalogData()
+  [  7] getprop 319 ............................. <pPageCache>
+  [ 10] getparam 1 .............................. <tPageID>
+  [ 12] pusharglist 2 ........................... <pPageCache, tPageID>
+  [ 14] objcall 106 ............................. <pPageCache.getaProp(tPageID)>
+  [ 16] pusharglist 1 ........................... <pPageCache.getaProp(tPageID)>
+  [ 18] extcall 44 .............................. <voidp(pPageCache.getaProp(tPageID))>
+  [ 20] jmpifz [ 45] ............................ if voidp(pPageCache.getaProp(tPageID)) then / else
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglist 1 ........................... <me>
+  [ 27] objcall 333 ............................. <me.getHandler()>
+  [ 30] getparam 1 .............................. <tPageID>
+  [ 32] pusharglistnoret 2 ...................... <me.getHandler(), tPageID>
+  [ 34] objcall 334 ............................. me.getHandler().requestPage(tPageID)
+  [ 37] getparam 1 .............................. <tPageID>
+  [ 39] setprop 321 ............................. pWaitingForData = tPageID
+  [ 42] jmp [ 57]
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 210 ............................. <me.getInterface()>
+  [ 51] getparam 1 .............................. <tPageID>
+  [ 53] pusharglistnoret 2 ...................... <me.getInterface(), tPageID>
+  [ 55] objcall 169 ............................. me.getInterface().displayPage(tPageID)
+  [ 57] ret
+end
+
+on prepareFrontPage me
+  [  0] getprop 320 ............................. <pCatalogIndex>
+  [  3] pusharglist 1 ........................... <pCatalogIndex>
+  [  5] extcall 44 .............................. <voidp(pCatalogIndex)>
+  [  7] not ..................................... <not voidp(pCatalogIndex)>
+  [  8] jmpifz [ 61] ............................ if not voidp(pCatalogIndex) then / else
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getprop 320 ............................. <pCatalogIndex>
+  [ 16] pusharglist 2 ........................... <me, pCatalogIndex>
+  [ 18] objcall 311 ............................. <me.getFirstNavigateableNode(pCatalogIndex)>
+  [ 21] setlocal 0 .............................. tNode = me.getFirstNavigateableNode(pCatalogIndex)
+  [ 23] getlocal 0 .............................. <tNode>
+  [ 25] pusharglist 1 ........................... <tNode>
+  [ 27] extcall 44 .............................. <voidp(tNode)>
+  [ 29] jmpifz [ 39] ............................ if voidp(tNode) then / else
+  [ 32] pusharglistnoret 0 ...................... <>
+  [ 34] extcall 30 .............................. return 
+  [ 36] jmp [ 58]
+  [ 39] getparam 0 .............................. <me>
+  [ 41] getlocal 0 .............................. <tNode>
+  [ 43] pushsymb 72 ............................. <#pageid>
+  [ 45] pusharglist 2 ........................... <tNode, #pageid>
+  [ 47] objcall 57 .............................. <tNode[#pageid]>
+  [ 49] pusharglistnoret 2 ...................... <me, tNode[#pageid]>
+  [ 51] objcall 309 ............................. me.preparePage(tNode[#pageid])
+  [ 54] pushzero ................................ <0>
+  [ 55] setprop 322 ............................. pWaitingForFrontPage = 0
+  [ 58] jmp [ 73]
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] setprop 322 ............................. pWaitingForFrontPage = 1
+  [ 66] getparam 0 .............................. <me>
+  [ 68] pusharglistnoret 1 ...................... <me>
+  [ 70] objcall 314 ............................. me.initCatalogData()
+  [ 73] ret
+end
+
+on prepareCreditsInfoPage me
+  [  0] getprop 326 ............................. <pCreditInfoPageID>
+  [  3] pusharglist 1 ........................... <pCreditInfoPageID>
+  [  5] extcall 44 .............................. <voidp(pCreditInfoPageID)>
+  [  7] jmpifz [ 27] ............................ if voidp(pCreditInfoPageID) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 5 .............................. <"Credits info page not found in node tree.">
+  [ 14] pushsymb 260 ............................ <#prepareCreditsInfoPage>
+  [ 17] pushsymb 123 ............................ <#major>
+  [ 19] pusharglist 4 ........................... <me, "Credits info page not found in node tree.", #prepareCreditsInfoPage, #major>
+  [ 21] extcall 52 .............................. <error(me, "Credits info page not found in node tree.", #prepareCreditsInfoPage, #major)>
+  [ 23] pusharglistnoret 1 ...................... <error(me, "Credits info page not found in node tree.", #prepareCreditsInfoPage, #major)>
+  [ 25] extcall 30 .............................. return error(me, "Credits info page not found in node tree.", #prepareCreditsInfoPage, #major)
+  [ 27] getparam 0 .............................. <me>
+  [ 29] getprop 326 ............................. <pCreditInfoPageID>
+  [ 32] pusharglistnoret 2 ...................... <me, pCreditInfoPageID>
+  [ 34] objcall 309 ............................. me.preparePage(pCreditInfoPageID)
+  [ 37] ret
+end
+
+on preparePixelsInfoPage me
+  [  0] getprop 327 ............................. <pPixelInfoPageID>
+  [  3] pusharglist 1 ........................... <pPixelInfoPageID>
+  [  5] extcall 44 .............................. <voidp(pPixelInfoPageID)>
+  [  7] jmpifz [ 27] ............................ if voidp(pPixelInfoPageID) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 6 .............................. <"Pixels info page not found in node tree.">
+  [ 14] pushsymb 259 ............................ <#preparePixelsInfoPage>
+  [ 17] pushsymb 123 ............................ <#major>
+  [ 19] pusharglist 4 ........................... <me, "Pixels info page not found in node tree.", #preparePixelsInfoPage, #major>
+  [ 21] extcall 52 .............................. <error(me, "Pixels info page not found in node tree.", #preparePixelsInfoPage, #major)>
+  [ 23] pusharglistnoret 1 ...................... <error(me, "Pixels info page not found in node tree.", #preparePixelsInfoPage, #major)>
+  [ 25] extcall 30 .............................. return error(me, "Pixels info page not found in node tree.", #preparePixelsInfoPage, #major)
+  [ 27] getparam 0 .............................. <me>
+  [ 29] getprop 327 ............................. <pPixelInfoPageID>
+  [ 32] pusharglistnoret 2 ...................... <me, pPixelInfoPageID>
+  [ 34] objcall 309 ............................. me.preparePage(pPixelInfoPageID)
+  [ 37] ret
+end
+
+on getPageData me, tPageID
+  [  0] getprop 319 ............................. <pPageCache>
+  [  3] getparam 1 .............................. <tPageID>
+  [  5] pusharglist 2 ........................... <pPageCache, tPageID>
+  [  7] objcall 106 ............................. <pPageCache.getaProp(tPageID)>
+  [  9] pusharglistnoret 1 ...................... <pPageCache.getaProp(tPageID)>
+  [ 11] extcall 30 .............................. return pPageCache.getaProp(tPageID)
+  [ 13] ret
+end
+
+on getPageDataByLayout me, tLayout
+  [  0] getprop 319 ............................. <pPageCache>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 58
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 54] ............................ repeat with tPage in pPageCache
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 57
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tPage>
+  [ 31] pushsymb 39 ............................. <#layout>
+  [ 33] pusharglist 2 ........................... <tPage, #layout>
+  [ 35] objcall 57 .............................. <tPage[#layout]>
+  [ 37] getparam 1 .............................. <tLayout>
+  [ 39] eq ...................................... <tPage[#layout] = tLayout>
+  [ 40] jmpifz [ 49] ............................ if tPage[#layout] = tLayout then
+  [ 43] getlocal 0 .............................. <tPage>
+  [ 45] pusharglistnoret 1 ...................... <tPage>
+  [ 47] extcall 30 .............................. return tPage
+  [ 49] pushint8 1
+  [ 51] add
+  [ 52] endrepeat [ 11]
+  [ 54] pop 3
+  [ 56] pusharglist 0 ........................... <[:]>
+  [ 58] pushproplist ............................ <[:]>
+  [ 59] pusharglistnoret 1 ...................... <[:]>
+  [ 61] extcall 30 .............................. return [:]
+  [ 63] ret
+end
+
+on getCatalogIndex me
+  [  0] getprop 320 ............................. <pCatalogIndex>
+  [  3] pusharglistnoret 1 ...................... <pCatalogIndex>
+  [  5] extcall 30 .............................. return pCatalogIndex
+  [  7] ret
+end
+
+on getPersistentCatalogDataObject me
+  [  0] getprop 323 ............................. <pPersistentCatalogDataId>
+  [  3] pusharglist 1 ........................... <pPersistentCatalogDataId>
+  [  5] extcall 25 .............................. <getObject(pPersistentCatalogDataId)>
+  [  7] pusharglist 1 ........................... <getObject(pPersistentCatalogDataId)>
+  [  9] extcall 44 .............................. <voidp(getObject(pPersistentCatalogDataId))>
+  [ 11] jmpifz [ 26] ............................ if voidp(getObject(pPersistentCatalogDataId)) then
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pushcons 7 .............................. <"Persistent Catalog Data Missing!">
+  [ 18] pushsymb 48 ............................. <#getPersistentCatalogDataObject>
+  [ 20] pushsymb 123 ............................ <#major>
+  [ 22] pusharglistnoret 4 ...................... <me, "Persistent Catalog Data Missing!", #getPersistentCatalogDataObject, #major>
+  [ 24] extcall 52 .............................. error(me, "Persistent Catalog Data Missing!", #getPersistentCatalogDataObject, #major)
+  [ 26] getprop 323 ............................. <pPersistentCatalogDataId>
+  [ 29] pusharglist 1 ........................... <pPersistentCatalogDataId>
+  [ 31] extcall 25 .............................. <getObject(pPersistentCatalogDataId)>
+  [ 33] pusharglistnoret 1 ...................... <getObject(pPersistentCatalogDataId)>
+  [ 35] extcall 30 .............................. return getObject(pPersistentCatalogDataId)
+  [ 37] ret
+end
+
+on getPageItemDownloader me
+  [  0] getprop 19 .............................. <pPageItemDownloader>
+  [  2] pusharglistnoret 1 ...................... <pPageItemDownloader>
+  [  4] extcall 30 .............................. return pPageItemDownloader
+  [  6] ret
+end
+
+on getFirstNavigateableNode me, tNode
+  [  0] getparam 1 .............................. <tNode>
+  [  2] pusharglist 1 ........................... <tNode>
+  [  4] extcall 125 ............................. <ilk(tNode)>
+  [  6] pushsymb 261 ............................ <#propList>
+  [  9] nteq .................................... <ilk(tNode) <> #propList>
+  [ 10] jmpifz [ 35] ............................ if ilk(tNode) <> #propList then
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushcons 8 .............................. <"Node type was invalid.">
+  [ 17] pushsymb 311 ............................ <#getFirstNavigateableNode>
+  [ 20] pushsymb 337 ............................ <#critical>
+  [ 23] pusharglistnoret 4 ...................... <me, "Node type was invalid.", #getFirstNavigateableNode, #critical>
+  [ 25] extcall 52 .............................. error(me, "Node type was invalid.", #getFirstNavigateableNode, #critical)
+  [ 27] pusharglist 0 ........................... <>
+  [ 29] extcall 15 .............................. <VOID>
+  [ 31] pusharglistnoret 1 ...................... <VOID>
+  [ 33] extcall 30 .............................. return VOID
+  [ 35] getparam 1 .............................. <tNode>
+  [ 37] pushsymb 338 ............................ <#navigateable>
+  [ 40] pusharglist 2 ........................... <tNode, #navigateable>
+  [ 42] objcall 57 .............................. <tNode[#navigateable]>
+  [ 44] getparam 1 .............................. <tNode>
+  [ 46] pushsymb 72 ............................. <#pageid>
+  [ 48] pusharglist 2 ........................... <tNode, #pageid>
+  [ 50] objcall 57 .............................. <tNode[#pageid]>
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] inv ..................................... <-1>
+  [ 55] nteq .................................... <tNode[#pageid] <> -1>
+  [ 56] and ..................................... <tNode[#navigateable] and (tNode[#pageid] <> -1)>
+  [ 57] jmpifz [ 69] ............................ if tNode[#navigateable] and (tNode[#pageid] <> -1) then / else
+  [ 60] getparam 1 .............................. <tNode>
+  [ 62] pusharglistnoret 1 ...................... <tNode>
+  [ 64] extcall 30 .............................. return tNode
+  [ 66] jmp [155]
+  [ 69] getparam 1 .............................. <tNode>
+  [ 71] pushsymb 339 ............................ <#subnodes>
+  [ 74] pusharglist 2 ........................... <tNode, #subnodes>
+  [ 76] objcall 106 ............................. <tNode.getaProp(#subnodes)>
+  [ 78] pusharglist 1 ........................... <tNode.getaProp(#subnodes)>
+  [ 80] extcall 44 .............................. <voidp(tNode.getaProp(#subnodes))>
+  [ 82] not ..................................... <not voidp(tNode.getaProp(#subnodes))>
+  [ 83] jmpifz [155] ............................ if not voidp(tNode.getaProp(#subnodes)) then
+  [ 86] getparam 1 .............................. <tNode>
+  [ 88] pushsymb 339 ............................ <#subnodes>
+  [ 91] pusharglist 2 ........................... <tNode, #subnodes>
+  [ 93] objcall 57 .............................. <tNode[#subnodes]>
+  [ 95] peek 0
+  [ 97] pusharglist 1
+  [ 99] extcall 58
+  [101] pushint8 1
+  [103] peek 0
+  [105] peek 2
+  [107] lteq
+  [108] jmpifz [153] ............................ repeat with tSubNode in tNode[#subnodes]
+  [111] peek 2
+  [113] peek 1
+  [115] pusharglist 2
+  [117] extcall 57
+  [119] setlocal 0
+  [121] getparam 0 .............................. <me>
+  [123] getlocal 0 .............................. <tSubNode>
+  [125] pusharglist 2 ........................... <me, tSubNode>
+  [127] objcall 311 ............................. <me.getFirstNavigateableNode(tSubNode)>
+  [130] setlocal 1 .............................. tResult = me.getFirstNavigateableNode(tSubNode)
+  [132] getlocal 1 .............................. <tResult>
+  [134] pusharglist 1 ........................... <tResult>
+  [136] extcall 44 .............................. <voidp(tResult)>
+  [138] not ..................................... <not voidp(tResult)>
+  [139] jmpifz [148] ............................ if not voidp(tResult) then
+  [142] getlocal 1 .............................. <tResult>
+  [144] pusharglistnoret 1 ...................... <tResult>
+  [146] extcall 30 .............................. return tResult
+  [148] pushint8 1
+  [150] add
+  [151] endrepeat [103]
+  [153] pop 3
+  [155] ret
+end
+
+on getNodeByName me, tName
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tName>
+  [  4] getprop 320 ............................. <pCatalogIndex>
+  [  7] pusharglist 3 ........................... <me, tName, pCatalogIndex>
+  [  9] objcall 313 ............................. <me.getFirstNodeByName(tName, pCatalogIndex)>
+  [ 12] pusharglistnoret 1 ...................... <me.getFirstNodeByName(tName, pCatalogIndex)>
+  [ 14] extcall 30 .............................. return me.getFirstNodeByName(tName, pCatalogIndex)
+  [ 16] ret
+end
+
+on getFirstNodeByName me, tName, tNode
+  [  0] getparam 2 .............................. <tNode>
+  [  2] pusharglist 1 ........................... <tNode>
+  [  4] extcall 125 ............................. <ilk(tNode)>
+  [  6] pushsymb 261 ............................ <#propList>
+  [  9] nteq .................................... <ilk(tNode) <> #propList>
+  [ 10] jmpifz [ 34] ............................ if ilk(tNode) <> #propList then
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushcons 8 .............................. <"Node type was invalid.">
+  [ 17] pushsymb 312 ............................ <#getNodeByName>
+  [ 20] pushsymb 123 ............................ <#major>
+  [ 22] pusharglistnoret 4 ...................... <me, "Node type was invalid.", #getNodeByName, #major>
+  [ 24] extcall 52 .............................. error(me, "Node type was invalid.", #getNodeByName, #major)
+  [ 26] pusharglist 0 ........................... <>
+  [ 28] extcall 15 .............................. <VOID>
+  [ 30] pusharglistnoret 1 ...................... <VOID>
+  [ 32] extcall 30 .............................. return VOID
+  [ 34] getparam 2 .............................. <tNode>
+  [ 36] pushsymb 343 ............................ <#nodename>
+  [ 39] pusharglist 2 ........................... <tNode, #nodename>
+  [ 41] objcall 57 .............................. <tNode[#nodename]>
+  [ 43] getparam 1 .............................. <tName>
+  [ 45] eq ...................................... <tNode[#nodename] = tName>
+  [ 46] jmpifz [ 58] ............................ if tNode[#nodename] = tName then / else
+  [ 49] getparam 2 .............................. <tNode>
+  [ 51] pusharglistnoret 1 ...................... <tNode>
+  [ 53] extcall 30 .............................. return tNode
+  [ 55] jmp [146]
+  [ 58] getparam 2 .............................. <tNode>
+  [ 60] pushsymb 339 ............................ <#subnodes>
+  [ 63] pusharglist 2 ........................... <tNode, #subnodes>
+  [ 65] objcall 106 ............................. <tNode.getaProp(#subnodes)>
+  [ 67] pusharglist 1 ........................... <tNode.getaProp(#subnodes)>
+  [ 69] extcall 44 .............................. <voidp(tNode.getaProp(#subnodes))>
+  [ 71] not ..................................... <not voidp(tNode.getaProp(#subnodes))>
+  [ 72] jmpifz [146] ............................ if not voidp(tNode.getaProp(#subnodes)) then
+  [ 75] getparam 2 .............................. <tNode>
+  [ 77] pushsymb 339 ............................ <#subnodes>
+  [ 80] pusharglist 2 ........................... <tNode, #subnodes>
+  [ 82] objcall 57 .............................. <tNode[#subnodes]>
+  [ 84] peek 0
+  [ 86] pusharglist 1
+  [ 88] extcall 58
+  [ 90] pushint8 1
+  [ 92] peek 0
+  [ 94] peek 2
+  [ 96] lteq
+  [ 97] jmpifz [144] ............................ repeat with tSubNode in tNode[#subnodes]
+  [100] peek 2
+  [102] peek 1
+  [104] pusharglist 2
+  [106] extcall 57
+  [108] setlocal 0
+  [110] getparam 0 .............................. <me>
+  [112] getparam 1 .............................. <tName>
+  [114] getlocal 0 .............................. <tSubNode>
+  [116] pusharglist 3 ........................... <me, tName, tSubNode>
+  [118] objcall 313 ............................. <me.getFirstNodeByName(tName, tSubNode)>
+  [121] setlocal 1 .............................. tResult = me.getFirstNodeByName(tName, tSubNode)
+  [123] getlocal 1 .............................. <tResult>
+  [125] pusharglist 1 ........................... <tResult>
+  [127] extcall 44 .............................. <voidp(tResult)>
+  [129] not ..................................... <not voidp(tResult)>
+  [130] jmpifz [139] ............................ if not voidp(tResult) then
+  [133] getlocal 1 .............................. <tResult>
+  [135] pusharglistnoret 1 ...................... <tResult>
+  [137] extcall 30 .............................. return tResult
+  [139] pushint8 1
+  [141] add
+  [142] endrepeat [ 92]
+  [144] pop 3
+  [146] ret
+end
+
+on initCatalogData me
+  [  0] getprop 320 ............................. <pCatalogIndex>
+  [  3] pusharglist 1 ........................... <pCatalogIndex>
+  [  5] extcall 44 .............................. <voidp(pCatalogIndex)>
+  [  7] jmpifz [ 22] ............................ if voidp(pCatalogIndex) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 333 ............................. <me.getHandler()>
+  [ 17] pusharglistnoret 1 ...................... <me.getHandler()>
+  [ 19] objcall 344 ............................. me.getHandler().requestCatalogIndex()
+  [ 22] ret
+end
+
+on groupOffersByProducts me, tPageData
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tGroupedOffers = [:]
+  [  5] getparam 1 .............................. <tPageData>
+  [  7] pushsymb 43 ............................. <#offers>
+  [  9] pusharglist 2 ........................... <tPageData, #offers>
+  [ 11] objcall 57 .............................. <tPageData[#offers]>
+  [ 13] peek 0
+  [ 15] pusharglist 1
+  [ 17] extcall 58
+  [ 19] pushint8 1
+  [ 21] peek 0
+  [ 23] peek 2
+  [ 25] lteq
+  [ 26] jmpifz [106] ............................ repeat with tOffer in tPageData[#offers]
+  [ 29] peek 2
+  [ 31] peek 1
+  [ 33] pusharglist 2
+  [ 35] extcall 57
+  [ 37] setlocal 1
+  [ 39] getlocal 1 .............................. <tOffer>
+  [ 41] pushsymb 103 ............................ <#offername>
+  [ 43] pusharglist 2 ........................... <tOffer, #offername>
+  [ 45] objcall 57 .............................. <tOffer[#offername]>
+  [ 47] setlocal 2 .............................. tProductCode = tOffer[#offername]
+  [ 49] getlocal 0 .............................. <tGroupedOffers>
+  [ 51] getlocal 2 .............................. <tProductCode>
+  [ 53] pusharglist 2 ........................... <tGroupedOffers, tProductCode>
+  [ 55] objcall 106 ............................. <tGroupedOffers.getaProp(tProductCode)>
+  [ 57] pusharglist 1 ........................... <tGroupedOffers.getaProp(tProductCode)>
+  [ 59] extcall 44 .............................. <voidp(tGroupedOffers.getaProp(tProductCode))>
+  [ 61] jmpifz [ 81] ............................ if voidp(tGroupedOffers.getaProp(tProductCode)) then
+  [ 64] getlocal 0 .............................. <tGroupedOffers>
+  [ 66] getlocal 2 .............................. <tProductCode>
+  [ 68] pushsymb 124 ............................ <#offerList>
+  [ 70] pusharglist 0 ........................... <[]>
+  [ 72] pushlist ................................ <[]>
+  [ 73] pusharglist 2 ........................... <[#offerList: []]>
+  [ 75] pushproplist ............................ <[#offerList: []]>
+  [ 76] pusharglistnoret 3 ...................... <tGroupedOffers, tProductCode, [#offerList: []]>
+  [ 78] objcall 329 ............................. tGroupedOffers.setaProp(tProductCode, [#offerList: []])
+  [ 81] getlocal 0 .............................. <tGroupedOffers>
+  [ 83] getlocal 2 .............................. <tProductCode>
+  [ 85] pusharglist 2 ........................... <tGroupedOffers, tProductCode>
+  [ 87] objcall 57 .............................. <tGroupedOffers[tProductCode]>
+  [ 89] pushsymb 124 ............................ <#offerList>
+  [ 91] pusharglist 2 ........................... <tGroupedOffers[tProductCode], #offerList>
+  [ 93] objcall 57 .............................. <tGroupedOffers[tProductCode][#offerList]>
+  [ 95] getlocal 1 .............................. <tOffer>
+  [ 97] pusharglistnoret 2 ...................... <tGroupedOffers[tProductCode][#offerList], tOffer>
+  [ 99] objcall 97 .............................. tGroupedOffers[tProductCode][#offerList].add(tOffer)
+  [101] pushint8 1
+  [103] add
+  [104] endrepeat [ 21]
+  [106] pop 3
+  [108] getparam 1 .............................. <tPageData>
+  [110] pushsymb 43 ............................. <#offers>
+  [112] getlocal 0 .............................. <tGroupedOffers>
+  [114] pusharglistnoret 3 ...................... <tPageData, #offers, tGroupedOffers>
+  [116] objcall 111 ............................. tPageData[#offers] = tGroupedOffers
+  [118] getparam 1 .............................. <tPageData>
+  [120] pusharglistnoret 1 ...................... <tPageData>
+  [122] extcall 30 .............................. return tPageData
+  [124] ret
+end
+
+on findOfferByOldpageSelection me, tSelectedProduct, tPageID
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 319 ...................... <me.pPageCache>
+  [  5] getparam 2 .............................. <tPageID>
+  [  7] pusharglist 2 ........................... <me.pPageCache, tPageID>
+  [  9] objcall 106 ............................. <me.pPageCache.getaProp(tPageID)>
+  [ 11] setlocal 0 .............................. tPageData = me.pPageCache.getaProp(tPageID)
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 15 .............................. <VOID>
+  [ 17] setlocal 1 .............................. tOffer = VOID
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] setlocal 2
+  [ 23] getlocal 2
+  [ 25] getlocal 0 .............................. <tPageData>
+  [ 27] pushsymb 43 ............................. <#offers>
+  [ 29] pusharglist 2 ........................... <tPageData, #offers>
+  [ 31] objcall 57 .............................. <tPageData[#offers]>
+  [ 33] getobjprop 58 ........................... <tPageData[#offers].count>
+  [ 35] lteq
+  [ 36] jmpifz [110] ............................ repeat with i = 1 to tPageData[#offers].count
+  [ 39] getparam 1 .............................. <tSelectedProduct>
+  [ 41] pushcons 9 .............................. <"purchaseCode">
+  [ 43] pusharglist 2 ........................... <tSelectedProduct, "purchaseCode">
+  [ 45] objcall 57 .............................. <tSelectedProduct["purchaseCode"]>
+  [ 47] getlocal 0 .............................. <tPageData>
+  [ 49] pushsymb 43 ............................. <#offers>
+  [ 51] pusharglist 2 ........................... <tPageData, #offers>
+  [ 53] objcall 57 .............................. <tPageData[#offers]>
+  [ 55] getlocal 2 .............................. <i>
+  [ 57] pusharglist 2 ........................... <tPageData[#offers], i>
+  [ 59] objcall 88 .............................. <tPageData[#offers].getPropAt(i)>
+  [ 61] eq ...................................... <tSelectedProduct["purchaseCode"] = tPageData[#offers].getPropAt(i)>
+  [ 62] jmpifz [101] ............................ if tSelectedProduct["purchaseCode"] = tPageData[#offers].getPropAt(i) then
+  [ 65] getlocal 0 .............................. <tPageData>
+  [ 67] pushsymb 43 ............................. <#offers>
+  [ 69] pusharglist 2 ........................... <tPageData, #offers>
+  [ 71] objcall 57 .............................. <tPageData[#offers]>
+  [ 73] getlocal 2 .............................. <i>
+  [ 75] pusharglist 2 ........................... <tPageData[#offers], i>
+  [ 77] objcall 57 .............................. <tPageData[#offers][i]>
+  [ 79] pushsymb 124 ............................ <#offerList>
+  [ 81] pusharglist 2 ........................... <tPageData[#offers][i], #offerList>
+  [ 83] objcall 57 .............................. <tPageData[#offers][i][#offerList]>
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] pusharglist 2 ........................... <tPageData[#offers][i][#offerList], 1>
+  [ 89] objcall 57 .............................. <tPageData[#offers][i][#offerList][1]>
+  [ 91] pusharglist 1 ........................... <tPageData[#offers][i][#offerList][1]>
+  [ 93] objcall 284 ............................. <tPageData[#offers][i][#offerList][1].duplicate()>
+  [ 96] setlocal 1 .............................. tOffer = tPageData[#offers][i][#offerList][1].duplicate()
+  [ 98] jmp [110] ............................... exit repeat
+  [101] pushint8 1
+  [103] getlocal 2
+  [105] add
+  [106] setlocal 2
+  [108] endrepeat [ 23]
+  [110] getlocal 1 .............................. <tOffer>
+  [112] pusharglist 1 ........................... <tOffer>
+  [114] extcall 44 .............................. <voidp(tOffer)>
+  [116] jmpifz [135] ............................ if voidp(tOffer) then / else
+  [119] getparam 0 .............................. <me>
+  [121] pushcons 10 ............................. <"Could not map old page's product code to a current product id">
+  [123] pushsymb 316 ............................ <#findOfferByOldpageSelection>
+  [126] pushsymb 123 ............................ <#major>
+  [128] pusharglistnoret 4 ...................... <me, "Could not map old page's product code to a current product id", #findOfferByOldpageSelection, #major>
+  [130] extcall 52 .............................. error(me, "Could not map old page's product code to a current product id", #findOfferByOldpageSelection, #major)
+  [132] jmp [163]
+  [135] getlocal 1 .............................. <tOffer>
+  [137] pushsymb 104 ............................ <#content>
+  [139] pusharglist 2 ........................... <tOffer, #content>
+  [141] objcall 57 .............................. <tOffer[#content]>
+  [143] pushint8 1 .............................. <1>
+  [145] pusharglist 2 ........................... <tOffer[#content], 1>
+  [147] objcall 57 .............................. <tOffer[#content][1]>
+  [149] pushsymb 108 ............................ <#extra_param>
+  [151] getparam 1 .............................. <tSelectedProduct>
+  [153] pushcons 11 ............................. <"extra_parm">
+  [155] pusharglist 2 ........................... <tSelectedProduct, "extra_parm">
+  [157] objcall 57 .............................. <tSelectedProduct["extra_parm"]>
+  [159] pusharglistnoret 3 ...................... <tOffer[#content][1], #extra_param, tSelectedProduct["extra_parm"]>
+  [161] objcall 111 ............................. tOffer[#content][1][#extra_param] = tSelectedProduct["extra_parm"]
+  [163] getlocal 1 .............................. <tOffer>
+  [165] pusharglistnoret 1 ...................... <tOffer>
+  [167] extcall 30 .............................. return tOffer
+  [169] ret
+end
+
+on checkProductOrder me, tSelectedProduct
+  [  0] getparam 1 .............................. <tSelectedProduct>
+  [  2] pusharglist 1 ........................... <tSelectedProduct>
+  [  4] extcall 105 ............................. <listp(tSelectedProduct)>
+  [  6] not ..................................... <not listp(tSelectedProduct)>
+  [  7] jmpifz [ 27] ............................ if not listp(tSelectedProduct) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 12 ............................. <"Selected product was not valid">
+  [ 14] pushsymb 317 ............................ <#checkProductOrder>
+  [ 17] pushsymb 123 ............................ <#major>
+  [ 19] pusharglist 4 ........................... <me, "Selected product was not valid", #checkProductOrder, #major>
+  [ 21] extcall 52 .............................. <error(me, "Selected product was not valid", #checkProductOrder, #major)>
+  [ 23] pusharglistnoret 1 ...................... <error(me, "Selected product was not valid", #checkProductOrder, #major)>
+  [ 25] extcall 30 .............................. return error(me, "Selected product was not valid", #checkProductOrder, #major)
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglist 1 ........................... <me>
+  [ 31] objcall 210 ............................. <me.getInterface()>
+  [ 33] pusharglist 1 ........................... <me.getInterface()>
+  [ 35] objcall 175 ............................. <me.getInterface().getLastOpenedPage()>
+  [ 37] setlocal 0 .............................. tPageID = me.getInterface().getLastOpenedPage()
+  [ 39] getparam 0 .............................. <me>
+  [ 41] getparam 1 .............................. <tSelectedProduct>
+  [ 43] getlocal 0 .............................. <tPageID>
+  [ 45] pusharglist 3 ........................... <me, tSelectedProduct, tPageID>
+  [ 47] objcall 316 ............................. <me.findOfferByOldpageSelection(tSelectedProduct, tPageID)>
+  [ 50] setlocal 1 .............................. tOffer = me.findOfferByOldpageSelection(tSelectedProduct, tPageID)
+  [ 52] getprop 328 ............................. <pPurchaseProcessor>
+  [ 55] pusharglist 1 ........................... <pPurchaseProcessor>
+  [ 57] extcall 116 ............................. <objectp(pPurchaseProcessor)>
+  [ 59] not ..................................... <not objectp(pPurchaseProcessor)>
+  [ 60] jmpifz [ 76] ............................ if not objectp(pPurchaseProcessor) then
+  [ 63] pusharglist 0 ........................... <>
+  [ 65] extcall 42 .............................. <getUniqueID()>
+  [ 67] pushcons 13 ............................. <"Purchase Processor Class">
+  [ 69] pusharglist 2 ........................... <getUniqueID(), "Purchase Processor Class">
+  [ 71] extcall 41 .............................. <createObject(getUniqueID(), "Purchase Processor Class")>
+  [ 73] setprop 328 ............................. pPurchaseProcessor = createObject(getUniqueID(), "Purchase Processor Class")
+  [ 76] getprop 328 ............................. <pPurchaseProcessor>
+  [ 79] pushsymb 348 ............................ <#offerType>
+  [ 82] pushsymb 162 ............................ <#credits>
+  [ 84] pushsymb 72 ............................. <#pageid>
+  [ 86] getlocal 0 .............................. <tPageID>
+  [ 88] pushsymb 349 ............................ <#item>
+  [ 91] getlocal 1 .............................. <tOffer>
+  [ 93] pushsymb 350 ............................ <#method>
+  [ 96] pushsymb 159 ............................ <#sendPurchaseFromCatalog>
+  [ 98] pusharglist 8 ........................... <[#offerType: #credits, #pageid: tPageID, #item: tOffer, #method: #sendPurchaseFromCatalog]>
+  [100] pushproplist ............................ <[#offerType: #credits, #pageid: tPageID, #item: tOffer, #method: #sendPurchaseFromCatalog]>
+  [101] pusharglistnoret 2 ...................... <pPurchaseProcessor, [#offerType: #credits, #pageid: tPageID, #item: tOffer, #method: #sendPurchaseFromCatalog]>
+  [103] objcall 351 ............................. pPurchaseProcessor.startPurchase([#offerType: #credits, #pageid: tPageID, #item: tOffer, #method: #sendPurchaseFromCatalog])
+  [106] ret
+end
+
+on requestPurchase me, tOfferType, tPageID, tSelectedItem, tMethod, tExtraProps
+  [  0] getprop 328 ............................. <pPurchaseProcessor>
+  [  3] pusharglist 1 ........................... <pPurchaseProcessor>
+  [  5] extcall 116 ............................. <objectp(pPurchaseProcessor)>
+  [  7] not ..................................... <not objectp(pPurchaseProcessor)>
+  [  8] jmpifz [ 24] ............................ if not objectp(pPurchaseProcessor) then
+  [ 11] pusharglist 0 ........................... <>
+  [ 13] extcall 42 .............................. <getUniqueID()>
+  [ 15] pushcons 13 ............................. <"Purchase Processor Class">
+  [ 17] pusharglist 2 ........................... <getUniqueID(), "Purchase Processor Class">
+  [ 19] extcall 41 .............................. <createObject(getUniqueID(), "Purchase Processor Class")>
+  [ 21] setprop 328 ............................. pPurchaseProcessor = createObject(getUniqueID(), "Purchase Processor Class")
+  [ 24] pushsymb 348 ............................ <#offerType>
+  [ 27] getparam 1 .............................. <tOfferType>
+  [ 29] pushsymb 72 ............................. <#pageid>
+  [ 31] getparam 2 .............................. <tPageID>
+  [ 33] pushsymb 349 ............................ <#item>
+  [ 36] getparam 3 .............................. <tSelectedItem>
+  [ 38] pushsymb 350 ............................ <#method>
+  [ 41] getparam 4 .............................. <tMethod>
+  [ 43] pusharglist 8 ........................... <[#offerType: tOfferType, #pageid: tPageID, #item: tSelectedItem, #method: tMethod]>
+  [ 45] pushproplist ............................ <[#offerType: tOfferType, #pageid: tPageID, #item: tSelectedItem, #method: tMethod]>
+  [ 46] setlocal 0 .............................. tProps = [#offerType: tOfferType, #pageid: tPageID, #item: tSelectedItem, #method: tMethod]
+  [ 48] getparam 5 .............................. <tExtraProps>
+  [ 50] pusharglist 1 ........................... <tExtraProps>
+  [ 52] extcall 105 ............................. <listp(tExtraProps)>
+  [ 54] jmpifz [103] ............................ if listp(tExtraProps) then
+  [ 57] getparam 5 .............................. <tExtraProps>
+  [ 59] peek 0
+  [ 61] pusharglist 1
+  [ 63] extcall 58
+  [ 65] pushint8 1
+  [ 67] peek 0
+  [ 69] peek 2
+  [ 71] lteq
+  [ 72] jmpifz [101] ............................ repeat with tProp in tExtraProps
+  [ 75] peek 2
+  [ 77] peek 1
+  [ 79] pusharglist 2
+  [ 81] extcall 57
+  [ 83] setlocal 1
+  [ 85] getlocal 0 .............................. <tProps>
+  [ 87] getlocal 1 .............................. <tProp>
+  [ 89] pushint8 1 .............................. <1>
+  [ 91] pusharglistnoret 3 ...................... <tProps, tProp, 1>
+  [ 93] objcall 329 ............................. tProps.setaProp(tProp, 1)
+  [ 96] pushint8 1
+  [ 98] add
+  [ 99] endrepeat [ 67]
+  [101] pop 3
+  [103] getprop 328 ............................. <pPurchaseProcessor>
+  [106] getlocal 0 .............................. <tProps>
+  [108] pusharglistnoret 2 ...................... <pPurchaseProcessor, tProps>
+  [110] objcall 351 ............................. pPurchaseProcessor.startPurchase(tProps)
+  [113] ret
+end
+
+on getArePixelsEnabled me
+  [  0] pushcons 14 ............................. <"pixels.enabled">
+  [  2] pusharglist 1 ........................... <"pixels.enabled">
+  [  4] extcall 27 .............................. <getVariableValue("pixels.enabled")>
+  [  6] pushint8 1 .............................. <1>
+  [  8] eq ...................................... <getVariableValue("pixels.enabled") = 1>
+  [  9] jmpifz [ 21] ............................ if getVariableValue("pixels.enabled") = 1 then / else
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 30 .............................. return 1
+  [ 18] jmp [ 26]
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 30 .............................. return 0
+  [ 26] ret
+end
+
+on refreshCatalogue me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 210 ............................. <me.getInterface()>
+  [  6] pusharglist 1 ........................... <me.getInterface()>
+  [  8] objcall 179 ............................. <me.getInterface().isVisible()>
+  [ 10] jmpifz [ 33] ............................ if me.getInterface().isVisible() then
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pusharglist 1 ........................... <me>
+  [ 17] objcall 210 ............................. <me.getInterface()>
+  [ 19] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 21] objcall 172 ............................. me.getInterface().hideCatalogue()
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglist 1 ........................... <me>
+  [ 27] objcall 210 ............................. <me.getInterface()>
+  [ 29] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 31] objcall 178 ............................. me.getInterface().showCatalogWasPublishedDialog()
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pusharglist 1 ........................... <me>
+  [ 37] objcall 333 ............................. <me.getHandler()>
+  [ 40] pusharglistnoret 1 ...................... <me.getHandler()>
+  [ 42] objcall 344 ............................. me.getHandler().requestCatalogIndex()
+  [ 45] ret
+end

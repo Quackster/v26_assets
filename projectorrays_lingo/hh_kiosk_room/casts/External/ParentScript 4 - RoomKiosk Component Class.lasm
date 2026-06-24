@@ -1,0 +1,254 @@
+property pState, pValidPartProps, pValidPartGroups
+
+on construct me
+  [  0] pushsymb 10 ............................. <#userlogin>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 11 .............................. <me.getID()>
+  [  8] pushsymb 234 ............................ <#checkWebShortcuts>
+  [ 10] pusharglistnoret 3 ...................... <#userlogin, me.getID(), #checkWebShortcuts>
+  [ 12] extcall 9 ............................... registerMessage(#userlogin, me.getID(), #checkWebShortcuts)
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pushcons 0 .............................. <"start">
+  [ 18] pusharglist 2 ........................... <me, "start">
+  [ 20] objcall 6 ............................... <me.updateState("start")>
+  [ 22] pusharglistnoret 1 ...................... <me.updateState("start")>
+  [ 24] extcall 12 .............................. return me.updateState("start")
+  [ 26] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 10 ............................. <#userlogin>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 11 .............................. <me.getID()>
+  [  8] pusharglistnoret 2 ...................... <#userlogin, me.getID()>
+  [ 10] extcall 14 .............................. unregisterMessage(#userlogin, me.getID())
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 1 .............................. <"reset">
+  [ 16] pusharglist 2 ........................... <me, "reset">
+  [ 18] objcall 6 ............................... <me.updateState("reset")>
+  [ 20] pusharglistnoret 1 ...................... <me.updateState("reset")>
+  [ 22] extcall 12 .............................. return me.updateState("reset")
+  [ 24] ret
+end
+
+on showHideRoomKiosk me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 15 .............................. <me.getInterface()>
+  [  6] pusharglist 1 ........................... <me.getInterface()>
+  [  8] objcall 2 ............................... <me.getInterface().showHideRoomKiosk()>
+  [ 10] pusharglistnoret 1 ...................... <me.getInterface().showHideRoomKiosk()>
+  [ 12] extcall 12 .............................. return me.getInterface().showHideRoomKiosk()
+  [ 14] ret
+end
+
+on sendNewRoomData me, tFlatData
+  [  0] pushcons 2 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 17 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 16 .............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 38] ............................ if connectionExists(getVariable("connection.info.id")) then / else
+  [ 13] pushcons 2 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 17 .............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 18 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 3 .............................. <"CREATEFLAT">
+  [ 25] getparam 1 .............................. <tFlatData>
+  [ 27] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "CREATEFLAT", tFlatData>
+  [ 29] objcall 19 .............................. <getConnection(getVariable("connection.info.id")).send("CREATEFLAT", tFlatData)>
+  [ 31] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("CREATEFLAT", tFlatData)>
+  [ 33] extcall 12 .............................. return getConnection(getVariable("connection.info.id")).send("CREATEFLAT", tFlatData)
+  [ 35] jmp [ 43]
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 12 .............................. return 0
+  [ 43] ret
+end
+
+on sendSetFlatInfo me, tFlatMsg
+  [  0] pushcons 2 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 17 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 16 .............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 34] ............................ if connectionExists(getVariable("connection.info.id")) then / else
+  [ 13] pushcons 2 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 17 .............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 18 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 4 .............................. <"SETFLATINFO">
+  [ 25] getparam 1 .............................. <tFlatMsg>
+  [ 27] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "SETFLATINFO", tFlatMsg>
+  [ 29] objcall 19 .............................. getConnection(getVariable("connection.info.id")).send("SETFLATINFO", tFlatMsg)
+  [ 31] jmp [ 39]
+  [ 34] pushzero ................................ <0>
+  [ 35] pusharglistnoret 1 ...................... <0>
+  [ 37] extcall 12 .............................. return 0
+  [ 39] ret
+end
+
+on sendFlatCategory me, tNodeId, tCategoryId
+  [  0] getparam 1 .............................. <tNodeId>
+  [  2] pusharglist 1 ........................... <tNodeId>
+  [  4] extcall 22 .............................. <voidp(tNodeId)>
+  [  6] jmpifz [ 25] ............................ if voidp(tNodeId) then
+  [  9] getparam 0 .............................. <me>
+  [ 11] pushcons 5 .............................. <"Node ID expected!">
+  [ 13] pushsymb 5 .............................. <#sendFlatCategory>
+  [ 15] pushsymb 24 ............................. <#major>
+  [ 17] pusharglist 4 ........................... <me, "Node ID expected!", #sendFlatCategory, #major>
+  [ 19] extcall 23 .............................. <error(me, "Node ID expected!", #sendFlatCategory, #major)>
+  [ 21] pusharglistnoret 1 ...................... <error(me, "Node ID expected!", #sendFlatCategory, #major)>
+  [ 23] extcall 12 .............................. return error(me, "Node ID expected!", #sendFlatCategory, #major)
+  [ 25] getparam 2 .............................. <tCategoryId>
+  [ 27] pusharglist 1 ........................... <tCategoryId>
+  [ 29] extcall 22 .............................. <voidp(tCategoryId)>
+  [ 31] jmpifz [ 50] ............................ if voidp(tCategoryId) then
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pushcons 6 .............................. <"Category ID expected!">
+  [ 38] pushsymb 5 .............................. <#sendFlatCategory>
+  [ 40] pushsymb 24 ............................. <#major>
+  [ 42] pusharglist 4 ........................... <me, "Category ID expected!", #sendFlatCategory, #major>
+  [ 44] extcall 23 .............................. <error(me, "Category ID expected!", #sendFlatCategory, #major)>
+  [ 46] pusharglistnoret 1 ...................... <error(me, "Category ID expected!", #sendFlatCategory, #major)>
+  [ 48] extcall 12 .............................. return error(me, "Category ID expected!", #sendFlatCategory, #major)
+  [ 50] pushcons 2 .............................. <"connection.info.id">
+  [ 52] pusharglist 1 ........................... <"connection.info.id">
+  [ 54] extcall 17 .............................. <getVariable("connection.info.id")>
+  [ 56] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 58] extcall 16 .............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 60] jmpifz [105] ............................ if connectionExists(getVariable("connection.info.id")) then / else
+  [ 63] pushcons 2 .............................. <"connection.info.id">
+  [ 65] pusharglist 1 ........................... <"connection.info.id">
+  [ 67] extcall 17 .............................. <getVariable("connection.info.id")>
+  [ 69] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 71] extcall 18 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 73] pushcons 7 .............................. <"SETFLATCAT">
+  [ 75] pushsymb 25 ............................. <#integer>
+  [ 77] getparam 1 .............................. <tNodeId>
+  [ 79] pusharglist 1 ........................... <tNodeId>
+  [ 81] extcall 25 .............................. <integer(tNodeId)>
+  [ 83] pushsymb 25 ............................. <#integer>
+  [ 85] getparam 2 .............................. <tCategoryId>
+  [ 87] pusharglist 1 ........................... <tCategoryId>
+  [ 89] extcall 25 .............................. <integer(tCategoryId)>
+  [ 91] pusharglist 4 ........................... <[#integer: integer(tNodeId), #integer: integer(tCategoryId)]>
+  [ 93] pushproplist ............................ <[#integer: integer(tNodeId), #integer: integer(tCategoryId)]>
+  [ 94] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "SETFLATCAT", [#integer: integer(tNodeId), #integer: integer(tCategoryId)]>
+  [ 96] objcall 19 .............................. <getConnection(getVariable("connection.info.id")).send("SETFLATCAT", [#integer: integer(tNodeId), #integer: integer(tCategoryId)])>
+  [ 98] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("SETFLATCAT", [#integer: integer(tNodeId), #integer: integer(tCategoryId)])>
+  [100] extcall 12 .............................. return getConnection(getVariable("connection.info.id")).send("SETFLATCAT", [#integer: integer(tNodeId), #integer: integer(tCategoryId)])
+  [102] jmp [110]
+  [105] pushzero ................................ <0>
+  [106] pusharglistnoret 1 ...................... <0>
+  [108] extcall 12 .............................. return 0
+  [110] ret
+end
+
+on updateState me, tstate, tProps
+  [  0] getparam 1 .............................. <tstate>
+  [  2] peek 0 .................................. case tstate of
+  [  4] pushcons 1 .............................. <"reset">
+  [  6] eq
+  [  7] jmpifz [ 35] ............................ (case) "reset":
+  [ 10] getparam 1 .............................. <tstate>
+  [ 12] setprop 28 .............................. pState = tstate
+  [ 14] pop 1
+  [ 16] pushsymb 29 ............................. <#open_roomkiosk>
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglist 1 ........................... <me>
+  [ 22] objcall 11 .............................. <me.getID()>
+  [ 24] pusharglist 2 ........................... <#open_roomkiosk, me.getID()>
+  [ 26] extcall 14 .............................. <unregisterMessage(#open_roomkiosk, me.getID())>
+  [ 28] pusharglistnoret 1 ...................... <unregisterMessage(#open_roomkiosk, me.getID())>
+  [ 30] extcall 12 .............................. return unregisterMessage(#open_roomkiosk, me.getID())
+  [ 32] jmp [ 91]
+  [ 35] peek 0
+  [ 37] pushcons 0 .............................. <"start">
+  [ 39] eq
+  [ 40] jmpifz [ 70] ............................ (case) "start":
+  [ 43] getparam 1 .............................. <tstate>
+  [ 45] setprop 28 .............................. pState = tstate
+  [ 47] pop 1
+  [ 49] pushsymb 29 ............................. <#open_roomkiosk>
+  [ 51] getparam 0 .............................. <me>
+  [ 53] pusharglist 1 ........................... <me>
+  [ 55] objcall 11 .............................. <me.getID()>
+  [ 57] pushsymb 2 .............................. <#showHideRoomKiosk>
+  [ 59] pusharglist 3 ........................... <#open_roomkiosk, me.getID(), #showHideRoomKiosk>
+  [ 61] extcall 9 ............................... <registerMessage(#open_roomkiosk, me.getID(), #showHideRoomKiosk)>
+  [ 63] pusharglistnoret 1 ...................... <registerMessage(#open_roomkiosk, me.getID(), #showHideRoomKiosk)>
+  [ 65] extcall 12 .............................. return registerMessage(#open_roomkiosk, me.getID(), #showHideRoomKiosk)
+  [ 67] jmp [ 91] ............................... (case) otherwise:
+  [ 70] pop 1
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pushcons 8 .............................. <"Unknown state:">
+  [ 76] getparam 1 .............................. <tstate>
+  [ 78] joinpadstr .............................. <"Unknown state:" && tstate>
+  [ 79] pushsymb 6 .............................. <#updateState>
+  [ 81] pushsymb 30 ............................. <#minor>
+  [ 83] pusharglist 4 ........................... <me, "Unknown state:" && tstate, #updateState, #minor>
+  [ 85] extcall 23 .............................. <error(me, "Unknown state:" && tstate, #updateState, #minor)>
+  [ 87] pusharglistnoret 1 ...................... <error(me, "Unknown state:" && tstate, #updateState, #minor)>
+  [ 89] extcall 12 .............................. return error(me, "Unknown state:" && tstate, #updateState, #minor)
+  [ 91] pop 1 ................................... end case
+  [ 93] ret
+end
+
+on getState me
+  [  0] getprop 28 .............................. <pState>
+  [  2] pusharglistnoret 1 ...................... <pState>
+  [  4] extcall 12 .............................. return pState
+  [  6] ret
+end
+
+on checkWebShortcuts me, tChecked
+  [  0] getparam 1 .............................. <tChecked>
+  [  2] pushint8 1 .............................. <1>
+  [  4] eq ...................................... <tChecked = 1>
+  [  5] jmpifz [ 20] ............................ if tChecked = 1 then
+  [  8] pushsymb 29 ............................. <#open_roomkiosk>
+  [ 10] pusharglistnoret 1 ...................... <#open_roomkiosk>
+  [ 12] extcall 35 .............................. executeMessage(#open_roomkiosk)
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 12 .............................. return 1
+  [ 20] pushcons 9 .............................. <"shortcut.id">
+  [ 22] pusharglist 1 ........................... <"shortcut.id">
+  [ 24] extcall 33 .............................. <variableExists("shortcut.id")>
+  [ 26] jmpifz [ 80] ............................ if variableExists("shortcut.id") then
+  [ 29] pushcons 9 .............................. <"shortcut.id">
+  [ 31] pusharglist 1 ........................... <"shortcut.id">
+  [ 33] extcall 34 .............................. <getIntVariable("shortcut.id")>
+  [ 35] setlocal 0 .............................. tShortcutID = getIntVariable("shortcut.id")
+  [ 37] getlocal 0 .............................. <tShortcutID>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] eq ...................................... <tShortcutID = 1>
+  [ 42] jmpifz [ 80] ............................ if tShortcutID = 1 then
+  [ 45] pushsymb 230 ............................ <#roommatic_opening_timeout>
+  [ 47] setlocal 1 .............................. tTimeoutID = #roommatic_opening_timeout
+  [ 49] getlocal 1 .............................. <tTimeoutID>
+  [ 51] pusharglist 1 ........................... <tTimeoutID>
+  [ 53] extcall 231 ............................. <timeoutExists(tTimeoutID)>
+  [ 55] not ..................................... <not timeoutExists(tTimeoutID)>
+  [ 56] jmpifz [ 80] ............................ if not timeoutExists(tTimeoutID) then
+  [ 59] pushsymb 233 ............................ <#tTimeoutID>
+  [ 61] pushint16 2500 .......................... <2500>
+  [ 64] pushsymb 234 ............................ <#checkWebShortcuts>
+  [ 66] getparam 0 .............................. <me>
+  [ 68] pusharglist 1 ........................... <me>
+  [ 70] objcall 11 .............................. <me.getID()>
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pushint8 1 .............................. <1>
+  [ 76] pusharglistnoret 6 ...................... <#tTimeoutID, 2500, #checkWebShortcuts, me.getID(), 1, 1>
+  [ 78] extcall 232 ............................. createTimeout(#tTimeoutID, 2500, #checkWebShortcuts, me.getID(), 1, 1)
+  [ 80] pushint8 1 .............................. <1>
+  [ 82] pusharglistnoret 1 ...................... <1>
+  [ 84] extcall 12 .............................. return 1
+  [ 86] ret
+end

@@ -1,0 +1,609 @@
+property pDoorOpentimer, pProcessActive, pAnimActive, pAnimTime, pKickTime, pTargetData, pCloseDoorTimer
+
+on prepare me, tdata
+  [  0] getprop 517 ............................. <pProcessActive>
+  [  3] jmpifz [ 21] ............................ if pProcessActive then / else
+  [  6] getparam 0 .............................. <me>
+  [  8] pushint8 50 ............................. <50>
+  [ 10] pushsymb 513 ............................ <#doorLogin>
+  [ 13] pusharglistnoret 3 ...................... <me, 50, #doorLogin>
+  [ 15] objcall 321 ............................. me.delay(50, #doorLogin)
+  [ 18] jmp [ 27]
+  [ 21] pusharglist 0 ........................... <[:]>
+  [ 23] pushproplist ............................ <[:]>
+  [ 24] setprop 518 ............................. pTargetData = [:]
+  [ 27] pushzero ................................ <0>
+  [ 28] setprop 517 ............................. pProcessActive = 0
+  [ 31] pushzero ................................ <0>
+  [ 32] setprop 519 ............................. pAnimActive = 0
+  [ 35] pushint8 10 ............................. <10>
+  [ 37] setprop 520 ............................. pAnimTime = 10
+  [ 40] pushzero ................................ <0>
+  [ 41] setprop 521 ............................. pKickTime = 0
+  [ 44] pushzero ................................ <0>
+  [ 45] setprop 522 ............................. pDoorOpentimer = 0
+  [ 48] pushzero ................................ <0>
+  [ 49] setprop 523 ............................. pCloseDoorTimer = 0
+  [ 52] getparam 1 .............................. <tdata>
+  [ 54] getobjprop 60 ........................... <tdata.count>
+  [ 56] pushzero ................................ <0>
+  [ 57] gt ...................................... <tdata.count > 0>
+  [ 58] jmpifz [ 80] ............................ if tdata.count > 0 then / else
+  [ 61] getparam 0 .............................. <me>
+  [ 63] getparam 1 .............................. <tdata>
+  [ 65] pushsymb 315 ............................ <#stuffdata>
+  [ 68] pusharglist 2 ........................... <tdata, #stuffdata>
+  [ 70] objcall 61 .............................. <tdata[#stuffdata]>
+  [ 72] pusharglistnoret 2 ...................... <me, tdata[#stuffdata]>
+  [ 74] objcall 280 ............................. me.updateStuffdata(tdata[#stuffdata])
+  [ 77] jmp [ 89]
+  [ 80] getparam 0 .............................. <me>
+  [ 82] pushcons 0 .............................. <EMPTY>
+  [ 84] pusharglistnoret 2 ...................... <me, EMPTY>
+  [ 86] objcall 280 ............................. me.updateStuffdata(EMPTY)
+  [ 89] pushsymb 181 ............................ <#session>
+  [ 91] pusharglist 1 ........................... <#session>
+  [ 93] extcall 87 .............................. <getObject(#session)>
+  [ 95] pushcons 1 .............................. <"target_door_ID">
+  [ 97] pusharglist 2 ........................... <getObject(#session), "target_door_ID">
+  [ 99] objcall 524 ............................. <getObject(#session).exists("target_door_ID")>
+  [102] jmpifz [163] ............................ if getObject(#session).exists("target_door_ID") then
+  [105] pushsymb 181 ............................ <#session>
+  [107] pusharglist 1 ........................... <#session>
+  [109] extcall 87 .............................. <getObject(#session)>
+  [111] pushcons 1 .............................. <"target_door_ID">
+  [113] pusharglist 2 ........................... <getObject(#session), "target_door_ID">
+  [115] objcall 182 ............................. <getObject(#session).GET("target_door_ID")>
+  [117] getparam 0 .............................. <me>
+  [119] pusharglist 1 ........................... <me>
+  [121] objcall 7 ............................... <me.getID()>
+  [123] eq ...................................... <getObject(#session).GET("target_door_ID") = me.getID()>
+  [124] jmpifz [163] ............................ if getObject(#session).GET("target_door_ID") = me.getID() then
+  [127] pushsymb 181 ............................ <#session>
+  [129] pusharglist 1 ........................... <#session>
+  [131] extcall 87 .............................. <getObject(#session)>
+  [133] pushcons 1 .............................. <"target_door_ID">
+  [135] pushzero ................................ <0>
+  [136] pusharglistnoret 3 ...................... <getObject(#session), "target_door_ID", 0>
+  [138] objcall 525 ............................. getObject(#session).set("target_door_ID", 0)
+  [141] getparam 0 .............................. <me>
+  [143] pushint8 12 ............................. <12>
+  [145] pusharglistnoret 2 ...................... <me, 12>
+  [147] objcall 516 ............................. me.animate(12)
+  [150] getparam 0 .............................. <me>
+  [152] pushint16 800 ........................... <800>
+  [155] pushsymb 515 ............................ <#kickOut>
+  [158] pusharglistnoret 3 ...................... <me, 800, #kickOut>
+  [160] objcall 321 ............................. me.delay(800, #kickOut)
+  [163] pushint8 1 .............................. <1>
+  [165] pusharglistnoret 1 ...................... <1>
+  [167] extcall 9 ............................... return 1
+  [169] ret
+end
+
+on updateStuffdata me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pushcons 2 .............................. <"TRUE">
+  [  4] eq ...................................... <tValue = "TRUE">
+  [  5] jmpifz [ 20] ............................ if tValue = "TRUE" then / else
+  [  8] pushint8 2 .............................. <2>
+  [ 10] setparam 1 .............................. tValue = 2
+  [ 12] pushint8 18 ............................. <18>
+  [ 14] setprop 522 ............................. pDoorOpentimer = 18
+  [ 17] jmp [ 36]
+  [ 20] getparam 1 .............................. <tValue>
+  [ 22] pushcons 3 .............................. <"FALSE">
+  [ 24] eq ...................................... <tValue = "FALSE">
+  [ 25] jmpifz [ 36] ............................ if tValue = "FALSE" then
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] setparam 1 .............................. tValue = 1
+  [ 32] pushzero ................................ <0>
+  [ 33] setprop 522 ............................. pDoorOpentimer = 0
+  [ 36] getparam 0 .............................. <me>
+  [ 38] getparam 1 .............................. <tValue>
+  [ 40] pusharglistnoret 2 ...................... <me, tValue>
+  [ 42] objcall 220 ............................. me.setState(tValue)
+  [ 44] ret
+end
+
+on select me
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 318 .......................... <the doubleClick>
+  [  5] jmpifz [308] ............................ if the doubleClick then
+  [  8] pushsymb 4 .............................. <#room>
+  [ 10] pusharglist 1 ........................... <#room>
+  [ 12] extcall 5 ............................... <getThread(#room)>
+  [ 14] pusharglist 1 ........................... <getThread(#room)>
+  [ 16] objcall 6 ............................... <getThread(#room).getComponent()>
+  [ 18] setlocal 0 .............................. tRoom = getThread(#room).getComponent()
+  [ 20] getlocal 0 .............................. <tRoom>
+  [ 22] pusharglist 1 ........................... <tRoom>
+  [ 24] objcall 491 ............................. <tRoom.getOwnUser()>
+  [ 27] setlocal 1 .............................. tUserObj = tRoom.getOwnUser()
+  [ 29] getlocal 1 .............................. <tUserObj>
+  [ 31] pushzero ................................ <0>
+  [ 32] eq ...................................... <tUserObj = 0>
+  [ 33] jmpifz [ 42] ............................ if tUserObj = 0 then
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 1 ...................... <1>
+  [ 40] extcall 9 ............................... return 1
+  [ 42] getparam 0 .............................. <me>
+  [ 44] getobjprop 51 ........................... <me.pLocX>
+  [ 46] getlocal 1 .............................. <tUserObj>
+  [ 48] getobjprop 51 ........................... <tUserObj.pLocX>
+  [ 50] eq ...................................... <me.pLocX = tUserObj.pLocX>
+  [ 51] getparam 0 .............................. <me>
+  [ 53] getobjprop 52 ........................... <me.pLocY>
+  [ 55] getlocal 1 .............................. <tUserObj>
+  [ 57] getobjprop 52 ........................... <tUserObj.pLocY>
+  [ 59] eq ...................................... <me.pLocY = tUserObj.pLocY>
+  [ 60] and ..................................... <(me.pLocX = tUserObj.pLocX) and (me.pLocY = tUserObj.pLocY)>
+  [ 61] jmpifz [ 75] ............................ if (me.pLocX = tUserObj.pLocX) and (me.pLocY = tUserObj.pLocY) then
+  [ 64] getparam 0 .............................. <me>
+  [ 66] pusharglist 1 ........................... <me>
+  [ 68] objcall 511 ............................. <me.tryDoor()>
+  [ 71] pusharglistnoret 1 ...................... <me.tryDoor()>
+  [ 73] extcall 9 ............................... return me.tryDoor()
+  [ 75] pushzero ................................ <0>
+  [ 76] setlocal 2 .............................. tUserIsClose = 0
+  [ 78] pushcons 4 .............................. <"0">
+  [ 80] pushzero ................................ <0>
+  [ 81] pushint8 1 .............................. <1>
+  [ 83] pusharglist 2 ........................... <[0, 1]>
+  [ 85] pushlist ................................ <[0, 1]>
+  [ 86] pushcons 5 .............................. <"2">
+  [ 88] pushint8 1 .............................. <1>
+  [ 90] inv ..................................... <-1>
+  [ 91] pushzero ................................ <0>
+  [ 92] pusharglist 2 ........................... <[-1, 0]>
+  [ 94] pushlist ................................ <[-1, 0]>
+  [ 95] pushcons 6 .............................. <"4">
+  [ 97] pushzero ................................ <0>
+  [ 98] pushint8 1 .............................. <1>
+  [100] inv ..................................... <-1>
+  [101] pusharglist 2 ........................... <[0, -1]>
+  [103] pushlist ................................ <[0, -1]>
+  [104] pushcons 7 .............................. <"6">
+  [106] pushint8 1 .............................. <1>
+  [108] pushzero ................................ <0>
+  [109] pusharglist 2 ........................... <[1, 0]>
+  [111] pushlist ................................ <[1, 0]>
+  [112] pusharglist 8 ........................... <["0": [0, 1], "2": [-1, 0], "4": [0, -1], "6": [1, 0]]>
+  [114] pushproplist ............................ <["0": [0, 1], "2": [-1, 0], "4": [0, -1], "6": [1, 0]]>
+  [115] setlocal 3 .............................. tCloseList = ["0": [0, 1], "2": [-1, 0], "4": [0, -1], "6": [1, 0]]
+  [117] getlocal 3 .............................. <tCloseList>
+  [119] getparam 0 .............................. <me>
+  [121] pushsymb 45 ............................. <#pDirection>
+  [123] pushint8 1 .............................. <1>
+  [125] pusharglist 3 ........................... <me, #pDirection, 1>
+  [127] objcall 100 ............................. <me.pDirection[1]>
+  [129] pusharglist 1 ........................... <me.pDirection[1]>
+  [131] extcall 146 ............................. <string(me.pDirection[1])>
+  [133] pusharglist 2 ........................... <tCloseList, string(me.pDirection[1])>
+  [135] objcall 61 .............................. <tCloseList[string(me.pDirection[1])]>
+  [137] setlocal 4 .............................. tDelta = tCloseList[string(me.pDirection[1])]
+  [139] getlocal 4 .............................. <tDelta>
+  [141] pusharglist 1 ........................... <tDelta>
+  [143] extcall 97 .............................. <voidp(tDelta)>
+  [145] not ..................................... <not voidp(tDelta)>
+  [146] jmpifz [247] ............................ if not voidp(tDelta) then
+  [149] getparam 0 .............................. <me>
+  [151] getobjprop 51 ........................... <me.pLocX>
+  [153] getlocal 1 .............................. <tUserObj>
+  [155] getobjprop 51 ........................... <tUserObj.pLocX>
+  [157] sub ..................................... <me.pLocX - tUserObj.pLocX>
+  [158] getlocal 4 .............................. <tDelta>
+  [160] pushint8 1 .............................. <1>
+  [162] pusharglist 2 ........................... <tDelta, 1>
+  [164] objcall 61 .............................. <tDelta[1]>
+  [166] eq ...................................... <(me.pLocX - tUserObj.pLocX) = tDelta[1]>
+  [167] getparam 0 .............................. <me>
+  [169] getobjprop 52 ........................... <me.pLocY>
+  [171] getlocal 1 .............................. <tUserObj>
+  [173] getobjprop 52 ........................... <tUserObj.pLocY>
+  [175] sub ..................................... <me.pLocY - tUserObj.pLocY>
+  [176] getlocal 4 .............................. <tDelta>
+  [178] pushint8 2 .............................. <2>
+  [180] pusharglist 2 ........................... <tDelta, 2>
+  [182] objcall 61 .............................. <tDelta[2]>
+  [184] eq ...................................... <(me.pLocY - tUserObj.pLocY) = tDelta[2]>
+  [185] and ..................................... <((me.pLocX - tUserObj.pLocX) = tDelta[1]) and ((me.pLocY - tUserObj.pLocY) = tDelta[2])>
+  [186] jmpifz [196] ............................ if ((me.pLocX - tUserObj.pLocX) = tDelta[1]) and ((me.pLocY - tUserObj.pLocY) = tDelta[2]) then / else
+  [189] pushint8 1 .............................. <1>
+  [191] setlocal 2 .............................. tUserIsClose = 1
+  [193] jmp [247]
+  [196] getlocal 0 .............................. <tRoom>
+  [198] pusharglist 1 ........................... <tRoom>
+  [200] objcall 106 ............................. <tRoom.getRoomConnection()>
+  [202] pushcons 8 .............................. <"MOVE">
+  [204] pushsymb 319 ............................ <#short>
+  [207] getparam 0 .............................. <me>
+  [209] getobjprop 51 ........................... <me.pLocX>
+  [211] getlocal 4 .............................. <tDelta>
+  [213] pushint8 1 .............................. <1>
+  [215] pusharglist 2 ........................... <tDelta, 1>
+  [217] objcall 61 .............................. <tDelta[1]>
+  [219] sub ..................................... <me.pLocX - tDelta[1]>
+  [220] pushsymb 319 ............................ <#short>
+  [223] getparam 0 .............................. <me>
+  [225] getobjprop 52 ........................... <me.pLocY>
+  [227] getlocal 4 .............................. <tDelta>
+  [229] pushint8 2 .............................. <2>
+  [231] pusharglist 2 ........................... <tDelta, 2>
+  [233] objcall 61 .............................. <tDelta[2]>
+  [235] sub ..................................... <me.pLocY - tDelta[2]>
+  [236] pusharglist 4 ........................... <[#short: me.pLocX - tDelta[1], #short: me.pLocY - tDelta[2]]>
+  [238] pushproplist ............................ <[#short: me.pLocX - tDelta[1], #short: me.pLocY - tDelta[2]]>
+  [239] pusharglist 3 ........................... <tRoom.getRoomConnection(), "MOVE", [#short: me.pLocX - tDelta[1], #short: me.pLocY - tDelta[2]]>
+  [241] objcall 107 ............................. <tRoom.getRoomConnection().send("MOVE", [#short: me.pLocX - tDelta[1], #short: me.pLocY - tDelta[2]])>
+  [243] pusharglistnoret 1 ...................... <tRoom.getRoomConnection().send("MOVE", [#short: me.pLocX - tDelta[1], #short: me.pLocY - tDelta[2]])>
+  [245] extcall 9 ............................... return tRoom.getRoomConnection().send("MOVE", [#short: me.pLocX - tDelta[1], #short: me.pLocY - tDelta[2]])
+  [247] getlocal 2 .............................. <tUserIsClose>
+  [249] jmpifz [308] ............................ if tUserIsClose then
+  [252] getlocal 0 .............................. <tRoom>
+  [254] pusharglist 1 ........................... <tRoom>
+  [256] objcall 106 ............................. <tRoom.getRoomConnection()>
+  [258] pushcons 9 .............................. <"SETSTUFFDATA">
+  [260] pushsymb 146 ............................ <#string>
+  [262] getparam 0 .............................. <me>
+  [264] pusharglist 1 ........................... <me>
+  [266] objcall 7 ............................... <me.getID()>
+  [268] pusharglist 1 ........................... <me.getID()>
+  [270] extcall 146 ............................. <string(me.getID())>
+  [272] pushsymb 146 ............................ <#string>
+  [274] pushcons 2 .............................. <"TRUE">
+  [276] pusharglist 4 ........................... <[#string: string(me.getID()), #string: "TRUE"]>
+  [278] pushproplist ............................ <[#string: string(me.getID()), #string: "TRUE"]>
+  [279] pusharglistnoret 3 ...................... <tRoom.getRoomConnection(), "SETSTUFFDATA", [#string: string(me.getID()), #string: "TRUE"]>
+  [281] objcall 107 ............................. tRoom.getRoomConnection().send("SETSTUFFDATA", [#string: string(me.getID()), #string: "TRUE"])
+  [283] getlocal 0 .............................. <tRoom>
+  [285] pusharglist 1 ........................... <tRoom>
+  [287] objcall 106 ............................. <tRoom.getRoomConnection()>
+  [289] pushcons 10 ............................. <"INTODOOR">
+  [291] getparam 0 .............................. <me>
+  [293] pusharglist 1 ........................... <me>
+  [295] objcall 7 ............................... <me.getID()>
+  [297] pusharglistnoret 3 ...................... <tRoom.getRoomConnection(), "INTODOOR", me.getID()>
+  [299] objcall 107 ............................. tRoom.getRoomConnection().send("INTODOOR", me.getID())
+  [301] getparam 0 .............................. <me>
+  [303] pusharglistnoret 1 ...................... <me>
+  [305] objcall 511 ............................. me.tryDoor()
+  [308] pushint8 1 .............................. <1>
+  [310] pusharglistnoret 1 ...................... <1>
+  [312] extcall 9 ............................... return 1
+  [314] ret
+end
+
+on tryDoor me
+  [  0] pushsymb 181 ............................ <#session>
+  [  2] pusharglist 1 ........................... <#session>
+  [  4] extcall 87 .............................. <getObject(#session)>
+  [  6] pushcons 1 .............................. <"target_door_ID">
+  [  8] pusharglist 2 ........................... <getObject(#session), "target_door_ID">
+  [ 10] objcall 524 ............................. <getObject(#session).exists("target_door_ID")>
+  [ 13] jmpifz [ 43] ............................ if getObject(#session).exists("target_door_ID") then
+  [ 16] pushsymb 181 ............................ <#session>
+  [ 18] pusharglist 1 ........................... <#session>
+  [ 20] extcall 87 .............................. <getObject(#session)>
+  [ 22] pushcons 1 .............................. <"target_door_ID">
+  [ 24] pusharglist 2 ........................... <getObject(#session), "target_door_ID">
+  [ 26] objcall 182 ............................. <getObject(#session).GET("target_door_ID")>
+  [ 28] setlocal 0 .............................. tTargetDoorID = getObject(#session).GET("target_door_ID")
+  [ 30] getlocal 0 .............................. <tTargetDoorID>
+  [ 32] pushzero ................................ <0>
+  [ 33] nteq .................................... <tTargetDoorID <> 0>
+  [ 34] jmpifz [ 43] ............................ if tTargetDoorID <> 0 then
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 9 ............................... return 1
+  [ 43] pushsymb 181 ............................ <#session>
+  [ 45] pusharglist 1 ........................... <#session>
+  [ 47] extcall 87 .............................. <getObject(#session)>
+  [ 49] pushcons 11 ............................. <"current_door_ID">
+  [ 51] getparam 0 .............................. <me>
+  [ 53] pusharglist 1 ........................... <me>
+  [ 55] objcall 7 ............................... <me.getID()>
+  [ 57] pusharglistnoret 3 ...................... <getObject(#session), "current_door_ID", me.getID()>
+  [ 59] objcall 525 ............................. getObject(#session).set("current_door_ID", me.getID())
+  [ 62] pushcons 12 ............................. <"connection.info.id">
+  [ 64] pusharglist 1 ........................... <"connection.info.id">
+  [ 66] extcall 489 ............................. <getVariable("connection.info.id")>
+  [ 69] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 71] extcall 530 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 74] jmpifz [101] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 77] pushcons 12 ............................. <"connection.info.id">
+  [ 79] pusharglist 1 ........................... <"connection.info.id">
+  [ 81] extcall 489 ............................. <getVariable("connection.info.id")>
+  [ 84] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 86] extcall 451 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 89] pushcons 13 ............................. <"GETDOORFLAT">
+  [ 91] getparam 0 .............................. <me>
+  [ 93] pusharglist 1 ........................... <me>
+  [ 95] objcall 7 ............................... <me.getID()>
+  [ 97] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "GETDOORFLAT", me.getID()>
+  [ 99] objcall 107 ............................. getConnection(getVariable("connection.info.id")).send("GETDOORFLAT", me.getID())
+  [101] pushint8 1 .............................. <1>
+  [103] pusharglistnoret 1 ...................... <1>
+  [105] extcall 9 ............................... return 1
+  [107] ret
+end
+
+on startTeleport me, tDataList
+  [  0] getparam 1 .............................. <tDataList>
+  [  2] setprop 518 ............................. pTargetData = tDataList
+  [  5] pushint8 1 .............................. <1>
+  [  7] setprop 517 ............................. pProcessActive = 1
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushint8 50 ............................. <50>
+  [ 14] pusharglistnoret 2 ...................... <me, 50>
+  [ 16] objcall 516 ............................. me.animate(50)
+  [ 19] pushsymb 4 .............................. <#room>
+  [ 21] pusharglist 1 ........................... <#room>
+  [ 23] extcall 5 ............................... <getThread(#room)>
+  [ 25] pusharglist 1 ........................... <getThread(#room)>
+  [ 27] objcall 6 ............................... <getThread(#room).getComponent()>
+  [ 29] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 31] objcall 106 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 33] pushcons 14 ............................. <"DOORGOIN">
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 7 ............................... <me.getID()>
+  [ 41] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "DOORGOIN", me.getID()>
+  [ 43] objcall 107 ............................. getThread(#room).getComponent().getRoomConnection().send("DOORGOIN", me.getID())
+  [ 45] ret
+end
+
+on doorLogin me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 517 ............................. pProcessActive = 0
+  [  4] pushsymb 181 ............................ <#session>
+  [  6] pusharglist 1 ........................... <#session>
+  [  8] extcall 87 .............................. <getObject(#session)>
+  [ 10] pushcons 1 .............................. <"target_door_ID">
+  [ 12] getprop 518 ............................. <pTargetData>
+  [ 15] pushsymb 533 ............................ <#teleport>
+  [ 18] pusharglist 2 ........................... <pTargetData, #teleport>
+  [ 20] objcall 61 .............................. <pTargetData[#teleport]>
+  [ 22] pusharglistnoret 3 ...................... <getObject(#session), "target_door_ID", pTargetData[#teleport]>
+  [ 24] objcall 525 ............................. getObject(#session).set("target_door_ID", pTargetData[#teleport])
+  [ 27] pushsymb 4 .............................. <#room>
+  [ 29] pusharglist 1 ........................... <#room>
+  [ 31] extcall 5 ............................... <getThread(#room)>
+  [ 33] pusharglist 1 ........................... <getThread(#room)>
+  [ 35] objcall 6 ............................... <getThread(#room).getComponent()>
+  [ 37] getprop 518 ............................. <pTargetData>
+  [ 40] pusharglist 2 ........................... <getThread(#room).getComponent(), pTargetData>
+  [ 42] objcall 534 ............................. <getThread(#room).getComponent().enterDoor(pTargetData)>
+  [ 45] pusharglistnoret 1 ...................... <getThread(#room).getComponent().enterDoor(pTargetData)>
+  [ 47] extcall 9 ............................... return getThread(#room).getComponent().enterDoor(pTargetData)
+  [ 49] ret
+end
+
+on prepareToKick me, tIncomer
+  [  0] getparam 1 .............................. <tIncomer>
+  [  2] pushsymb 181 ............................ <#session>
+  [  4] pusharglist 1 ........................... <#session>
+  [  6] extcall 87 .............................. <getObject(#session)>
+  [  8] pushcons 15 ............................. <"user_name">
+  [ 10] pusharglist 2 ........................... <getObject(#session), "user_name">
+  [ 12] objcall 182 ............................. <getObject(#session).GET("user_name")>
+  [ 14] eq ...................................... <tIncomer = getObject(#session).GET("user_name")>
+  [ 15] jmpifz [ 23] ............................ if tIncomer = getObject(#session).GET("user_name") then
+  [ 18] pushint8 20 ............................. <20>
+  [ 20] setprop 521 ............................. pKickTime = 20
+  [ 23] ret
+end
+
+on kickOut me
+  [  0] pushsymb 4 .............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 5 ............................... <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 6 ............................... <getThread(#room).getComponent()>
+  [ 10] setlocal 0 .............................. tRoom = getThread(#room).getComponent()
+  [ 12] getlocal 0 .............................. <tRoom>
+  [ 14] pusharglist 1 ........................... <tRoom>
+  [ 16] objcall 106 ............................. <tRoom.getRoomConnection()>
+  [ 18] pushcons 9 .............................. <"SETSTUFFDATA">
+  [ 20] pushsymb 146 ............................ <#string>
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pusharglist 1 ........................... <me>
+  [ 26] objcall 7 ............................... <me.getID()>
+  [ 28] pusharglist 1 ........................... <me.getID()>
+  [ 30] extcall 146 ............................. <string(me.getID())>
+  [ 32] pushsymb 146 ............................ <#string>
+  [ 34] pushcons 2 .............................. <"TRUE">
+  [ 36] pusharglist 4 ........................... <[#string: string(me.getID()), #string: "TRUE"]>
+  [ 38] pushproplist ............................ <[#string: string(me.getID()), #string: "TRUE"]>
+  [ 39] pusharglistnoret 3 ...................... <tRoom.getRoomConnection(), "SETSTUFFDATA", [#string: string(me.getID()), #string: "TRUE"]>
+  [ 41] objcall 107 ............................. tRoom.getRoomConnection().send("SETSTUFFDATA", [#string: string(me.getID()), #string: "TRUE"])
+  [ 43] pushcons 4 .............................. <"0">
+  [ 45] pushzero ................................ <0>
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] inv ..................................... <-1>
+  [ 49] pusharglist 2 ........................... <[0, -1]>
+  [ 51] pushlist ................................ <[0, -1]>
+  [ 52] pushcons 5 .............................. <"2">
+  [ 54] pushint8 1 .............................. <1>
+  [ 56] pushzero ................................ <0>
+  [ 57] pusharglist 2 ........................... <[1, 0]>
+  [ 59] pushlist ................................ <[1, 0]>
+  [ 60] pushcons 6 .............................. <"4">
+  [ 62] pushzero ................................ <0>
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] pusharglist 2 ........................... <[0, 1]>
+  [ 67] pushlist ................................ <[0, 1]>
+  [ 68] pushcons 7 .............................. <"6">
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] inv ..................................... <-1>
+  [ 73] pushzero ................................ <0>
+  [ 74] pusharglist 2 ........................... <[-1, 0]>
+  [ 76] pushlist ................................ <[-1, 0]>
+  [ 77] pusharglist 8 ........................... <["0": [0, -1], "2": [1, 0], "4": [0, 1], "6": [-1, 0]]>
+  [ 79] pushproplist ............................ <["0": [0, -1], "2": [1, 0], "4": [0, 1], "6": [-1, 0]]>
+  [ 80] setlocal 1 .............................. tCloseList = ["0": [0, -1], "2": [1, 0], "4": [0, 1], "6": [-1, 0]]
+  [ 82] getlocal 1 .............................. <tCloseList>
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pushsymb 45 ............................. <#pDirection>
+  [ 88] pushint8 1 .............................. <1>
+  [ 90] pusharglist 3 ........................... <me, #pDirection, 1>
+  [ 92] objcall 100 ............................. <me.pDirection[1]>
+  [ 94] pusharglist 1 ........................... <me.pDirection[1]>
+  [ 96] extcall 146 ............................. <string(me.pDirection[1])>
+  [ 98] pusharglist 2 ........................... <tCloseList, string(me.pDirection[1])>
+  [100] objcall 61 .............................. <tCloseList[string(me.pDirection[1])]>
+  [102] setlocal 2 .............................. tDelta = tCloseList[string(me.pDirection[1])]
+  [104] getlocal 2 .............................. <tDelta>
+  [106] pusharglist 1 ........................... <tDelta>
+  [108] extcall 97 .............................. <voidp(tDelta)>
+  [110] not ..................................... <not voidp(tDelta)>
+  [111] jmpifz [161] ............................ if not voidp(tDelta) then
+  [114] getlocal 0 .............................. <tRoom>
+  [116] pusharglist 1 ........................... <tRoom>
+  [118] objcall 106 ............................. <tRoom.getRoomConnection()>
+  [120] pushcons 8 .............................. <"MOVE">
+  [122] pushsymb 319 ............................ <#short>
+  [125] getparam 0 .............................. <me>
+  [127] getobjprop 51 ........................... <me.pLocX>
+  [129] getlocal 2 .............................. <tDelta>
+  [131] pushint8 1 .............................. <1>
+  [133] pusharglist 2 ........................... <tDelta, 1>
+  [135] objcall 61 .............................. <tDelta[1]>
+  [137] add ..................................... <me.pLocX + tDelta[1]>
+  [138] pushsymb 319 ............................ <#short>
+  [141] getparam 0 .............................. <me>
+  [143] getobjprop 52 ........................... <me.pLocY>
+  [145] getlocal 2 .............................. <tDelta>
+  [147] pushint8 2 .............................. <2>
+  [149] pusharglist 2 ........................... <tDelta, 2>
+  [151] objcall 61 .............................. <tDelta[2]>
+  [153] add ..................................... <me.pLocY + tDelta[2]>
+  [154] pusharglist 4 ........................... <[#short: me.pLocX + tDelta[1], #short: me.pLocY + tDelta[2]]>
+  [156] pushproplist ............................ <[#short: me.pLocX + tDelta[1], #short: me.pLocY + tDelta[2]]>
+  [157] pusharglistnoret 3 ...................... <tRoom.getRoomConnection(), "MOVE", [#short: me.pLocX + tDelta[1], #short: me.pLocY + tDelta[2]]>
+  [159] objcall 107 ............................. tRoom.getRoomConnection().send("MOVE", [#short: me.pLocX + tDelta[1], #short: me.pLocY + tDelta[2]])
+  [161] ret
+end
+
+on animate me, tTime
+  [  0] getparam 1 .............................. <tTime>
+  [  2] pusharglist 1 ........................... <tTime>
+  [  4] extcall 97 .............................. <voidp(tTime)>
+  [  6] jmpifz [ 13] ............................ if voidp(tTime) then
+  [  9] pushint8 25 ............................. <25>
+  [ 11] setparam 1 .............................. tTime = 25
+  [ 13] getparam 1 .............................. <tTime>
+  [ 15] setprop 520 ............................. pAnimTime = tTime
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] setprop 519 ............................. pAnimActive = 1
+  [ 23] ret
+end
+
+on update me
+  [  0] pushsymb 276 ............................ <#update>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <[me]>
+  [  7] pushlist ................................ <[me]>
+  [  8] pusharglistnoret 2 ...................... <#update, [me]>
+  [ 10] extcall 2 ............................... callAncestor(#update, [me])
+  [ 12] getprop 522 ............................. <pDoorOpentimer>
+  [ 15] pushzero ................................ <0>
+  [ 16] gt ...................................... <pDoorOpentimer > 0>
+  [ 17] jmpifz [ 76] ............................ if pDoorOpentimer > 0 then
+  [ 20] getprop 522 ............................. <pDoorOpentimer>
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] sub ..................................... <pDoorOpentimer - 1>
+  [ 26] setprop 522 ............................. pDoorOpentimer = pDoorOpentimer - 1
+  [ 29] getprop 522 ............................. <pDoorOpentimer>
+  [ 32] pushzero ................................ <0>
+  [ 33] eq ...................................... <pDoorOpentimer = 0>
+  [ 34] jmpifz [ 76] ............................ if pDoorOpentimer = 0 then
+  [ 37] pushsymb 4 .............................. <#room>
+  [ 39] pusharglist 1 ........................... <#room>
+  [ 41] extcall 5 ............................... <getThread(#room)>
+  [ 43] pusharglist 1 ........................... <getThread(#room)>
+  [ 45] objcall 6 ............................... <getThread(#room).getComponent()>
+  [ 47] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 49] objcall 106 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 51] pushcons 9 .............................. <"SETSTUFFDATA">
+  [ 53] pushsymb 146 ............................ <#string>
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pusharglist 1 ........................... <me>
+  [ 59] objcall 7 ............................... <me.getID()>
+  [ 61] pusharglist 1 ........................... <me.getID()>
+  [ 63] extcall 146 ............................. <string(me.getID())>
+  [ 65] pushsymb 146 ............................ <#string>
+  [ 67] pushcons 3 .............................. <"FALSE">
+  [ 69] pusharglist 4 ........................... <[#string: string(me.getID()), #string: "FALSE"]>
+  [ 71] pushproplist ............................ <[#string: string(me.getID()), #string: "FALSE"]>
+  [ 72] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "SETSTUFFDATA", [#string: string(me.getID()), #string: "FALSE"]>
+  [ 74] objcall 107 ............................. getThread(#room).getComponent().getRoomConnection().send("SETSTUFFDATA", [#string: string(me.getID()), #string: "FALSE"])
+  [ 76] getprop 519 ............................. <pAnimActive>
+  [ 79] pushzero ................................ <0>
+  [ 80] gt ...................................... <pAnimActive > 0>
+  [ 81] jmpifz [116] ............................ if pAnimActive > 0 then
+  [ 84] getprop 519 ............................. <pAnimActive>
+  [ 87] pushint8 1 .............................. <1>
+  [ 89] add ..................................... <pAnimActive + 1>
+  [ 90] getprop 520 ............................. <pAnimTime>
+  [ 93] mod ..................................... <(pAnimActive + 1) mod pAnimTime>
+  [ 94] setprop 519 ............................. pAnimActive = (pAnimActive + 1) mod pAnimTime
+  [ 97] getparam 0 .............................. <me>
+  [ 99] getobjprop 287 .......................... <me.pState>
+  [102] pushint8 1 .............................. <1>
+  [104] eq ...................................... <me.pState = 1>
+  [105] jmpifz [116] ............................ if me.pState = 1 then
+  [108] getparam 0 .............................. <me>
+  [110] pushint8 3 .............................. <3>
+  [112] pusharglistnoret 2 ...................... <me, 3>
+  [114] objcall 220 ............................. me.setState(3)
+  [116] getprop 519 ............................. <pAnimActive>
+  [119] getprop 520 ............................. <pAnimTime>
+  [122] pushint8 1 .............................. <1>
+  [124] sub ..................................... <pAnimTime - 1>
+  [125] eq ...................................... <pAnimActive = (pAnimTime - 1)>
+  [126] jmpifz [155] ............................ if pAnimActive = (pAnimTime - 1) then
+  [129] pushzero ................................ <0>
+  [130] setprop 519 ............................. pAnimActive = 0
+  [133] pushint8 20 ............................. <20>
+  [135] setprop 523 ............................. pCloseDoorTimer = 20
+  [138] getprop 517 ............................. <pProcessActive>
+  [141] jmpifz [155] ............................ if pProcessActive then
+  [144] getparam 0 .............................. <me>
+  [146] pusharglist 1 ........................... <me>
+  [148] objcall 513 ............................. <me.doorLogin()>
+  [151] pusharglistnoret 1 ...................... <me.doorLogin()>
+  [153] extcall 9 ............................... return me.doorLogin()
+  [155] getprop 521 ............................. <pKickTime>
+  [158] pushzero ................................ <0>
+  [159] gt ...................................... <pKickTime > 0>
+  [160] jmpifz [187] ............................ if pKickTime > 0 then
+  [163] getprop 521 ............................. <pKickTime>
+  [166] pushint8 1 .............................. <1>
+  [168] sub ..................................... <pKickTime - 1>
+  [169] setprop 521 ............................. pKickTime = pKickTime - 1
+  [172] getprop 521 ............................. <pKickTime>
+  [175] pushzero ................................ <0>
+  [176] eq ...................................... <pKickTime = 0>
+  [177] jmpifz [187] ............................ if pKickTime = 0 then
+  [180] getparam 0 .............................. <me>
+  [182] pusharglistnoret 1 ...................... <me>
+  [184] objcall 515 ............................. me.kickOut()
+  [187] getprop 523 ............................. <pCloseDoorTimer>
+  [190] pushzero ................................ <0>
+  [191] gt ...................................... <pCloseDoorTimer > 0>
+  [192] jmpifz [220] ............................ if pCloseDoorTimer > 0 then
+  [195] getprop 523 ............................. <pCloseDoorTimer>
+  [198] pushint8 1 .............................. <1>
+  [200] sub ..................................... <pCloseDoorTimer - 1>
+  [201] setprop 523 ............................. pCloseDoorTimer = pCloseDoorTimer - 1
+  [204] getprop 523 ............................. <pCloseDoorTimer>
+  [207] pushzero ................................ <0>
+  [208] eq ...................................... <pCloseDoorTimer = 0>
+  [209] jmpifz [220] ............................ if pCloseDoorTimer = 0 then
+  [212] getparam 0 .............................. <me>
+  [214] pushint8 1 .............................. <1>
+  [216] pusharglistnoret 2 ...................... <me, 1>
+  [218] objcall 220 ............................. me.setState(1)
+  [220] ret
+end

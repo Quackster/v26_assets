@@ -1,0 +1,802 @@
+property pChats, pFriends, pUserId, pShowModNotification, pInvitees
+
+on construct me
+  [  0] pushcons 0 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. tStamp = EMPTY
+  [  4] pushint8 1 .............................. <1>
+  [  6] setlocal 1
+  [  8] getlocal 1
+  [ 10] pushint8 100 ............................ <100>
+  [ 12] lteq
+  [ 13] jmpifz [ 47] ............................ repeat with tNo = 1 to 100
+  [ 16] pushint8 48 ............................. <48>
+  [ 18] pusharglist 1 ........................... <48>
+  [ 20] extcall 20 .............................. <random(48)>
+  [ 22] pushint8 74 ............................. <74>
+  [ 24] add ..................................... <random(48) + 74>
+  [ 25] pusharglist 1 ........................... <random(48) + 74>
+  [ 27] extcall 19 .............................. <numToChar(random(48) + 74)>
+  [ 29] setlocal 2 .............................. tChar = numToChar(random(48) + 74)
+  [ 31] getlocal 0 .............................. <tStamp>
+  [ 33] getlocal 2 .............................. <tChar>
+  [ 35] joinstr ................................. <tStamp & tChar>
+  [ 36] setlocal 0 .............................. tStamp = tStamp & tChar
+  [ 38] pushint8 1
+  [ 40] getlocal 1
+  [ 42] add
+  [ 43] setlocal 1
+  [ 45] endrepeat [  8]
+  [ 47] pusharglist 0 ........................... <>
+  [ 49] extcall 21 .............................. <getSpecialServices()>
+  [ 51] getlocal 0 .............................. <tStamp>
+  [ 53] pusharglist 2 ........................... <getSpecialServices(), tStamp>
+  [ 55] objcall 22 .............................. <getSpecialServices().getReceipt(tStamp)>
+  [ 57] setlocal 3 .............................. tFuseReceipt = getSpecialServices().getReceipt(tStamp)
+  [ 59] pusharglist 0 ........................... <[]>
+  [ 61] pushlist ................................ <[]>
+  [ 62] setlocal 4 .............................. tReceipt = []
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] setlocal 5
+  [ 68] getlocal 5
+  [ 70] getlocal 0 .............................. <tStamp>
+  [ 72] getobjprop 23 ........................... <tStamp.length>
+  [ 74] lteq
+  [ 75] jmpifz [130] ............................ repeat with tCharNo = 1 to tStamp.length
+  [ 78] getlocal 0 .............................. <tStamp>
+  [ 80] getlocal 5 .............................. <tCharNo>
+  [ 82] getlocal 5 .............................. <tCharNo>
+  [ 84] pusharglist 3 ........................... <tStamp, tCharNo, tCharNo>
+  [ 86] extcall 24 .............................. <chars(tStamp, tCharNo, tCharNo)>
+  [ 88] setlocal 2 .............................. tChar = chars(tStamp, tCharNo, tCharNo)
+  [ 90] getlocal 2 .............................. <tChar>
+  [ 92] pusharglist 1 ........................... <tChar>
+  [ 94] extcall 25 .............................. <charToNum(tChar)>
+  [ 96] setlocal 2 .............................. tChar = charToNum(tChar)
+  [ 98] getlocal 2 .............................. <tChar>
+  [100] getlocal 5 .............................. <tCharNo>
+  [102] mul ..................................... <tChar * tCharNo>
+  [103] pushint32 309203 ........................ <309203>
+  [108] add ..................................... <(tChar * tCharNo) + 309203>
+  [109] setlocal 2 .............................. tChar = (tChar * tCharNo) + 309203
+  [111] getlocal 4 .............................. <tReceipt>
+  [113] getlocal 5 .............................. <tCharNo>
+  [115] getlocal 2 .............................. <tChar>
+  [117] pusharglistnoret 3 ...................... <tReceipt, tCharNo, tChar>
+  [119] objcall 26 .............................. tReceipt[tCharNo] = tChar
+  [121] pushint8 1
+  [123] getlocal 5
+  [125] add
+  [126] setlocal 5
+  [128] endrepeat [ 68]
+  [130] getlocal 4 .............................. <tReceipt>
+  [132] getlocal 3 .............................. <tFuseReceipt>
+  [134] nteq .................................... <tReceipt <> tFuseReceipt>
+  [135] jmpifz [155] ............................ if tReceipt <> tFuseReceipt then
+  [138] getparam 0 .............................. <me>
+  [140] pushcons 1 .............................. <"Invalid build structure">
+  [142] pushsymb 28 ............................. <#checkDataLoaded>
+  [144] pushsymb 29 ............................. <#critical>
+  [146] pusharglistnoret 4 ...................... <me, "Invalid build structure", #checkDataLoaded, #critical>
+  [148] extcall 27 .............................. error(me, "Invalid build structure", #checkDataLoaded, #critical)
+  [150] pushzero ................................ <0>
+  [151] pusharglistnoret 1 ...................... <0>
+  [153] extcall 30 .............................. return 0
+  [155] pusharglist 0 ........................... <[:]>
+  [157] pushproplist ............................ <[:]>
+  [158] setprop 31 .............................. pChats = [:]
+  [160] pusharglist 0 ........................... <[:]>
+  [162] pushproplist ............................ <[:]>
+  [163] setprop 32 .............................. pFriends = [:]
+  [165] pusharglist 0 ........................... <[]>
+  [167] pushlist ................................ <[]>
+  [168] setprop 33 .............................. pInvitees = []
+  [170] pushsymb 35 ............................. <#userlogin>
+  [172] getparam 0 .............................. <me>
+  [174] pusharglist 1 ........................... <me>
+  [176] objcall 36 .............................. <me.getID()>
+  [178] pushsymb 2 .............................. <#setUserID>
+  [180] pusharglistnoret 3 ...................... <#userlogin, me.getID(), #setUserID>
+  [182] extcall 34 .............................. registerMessage(#userlogin, me.getID(), #setUserID)
+  [184] pushsymb 3 .............................. <#startIMChat>
+  [186] getparam 0 .............................. <me>
+  [188] pusharglist 1 ........................... <me>
+  [190] objcall 36 .............................. <me.getID()>
+  [192] pushsymb 3 .............................. <#startIMChat>
+  [194] pusharglistnoret 3 ...................... <#startIMChat, me.getID(), #startIMChat>
+  [196] extcall 34 .............................. registerMessage(#startIMChat, me.getID(), #startIMChat)
+  [198] pushsymb 37 ............................. <#friendDataUpdated>
+  [200] getparam 0 .............................. <me>
+  [202] pusharglist 1 ........................... <me>
+  [204] objcall 36 .............................. <me.getID()>
+  [206] pushsymb 7 .............................. <#updateChat>
+  [208] pusharglistnoret 3 ...................... <#friendDataUpdated, me.getID(), #updateChat>
+  [210] extcall 34 .............................. registerMessage(#friendDataUpdated, me.getID(), #updateChat)
+  [212] pushint8 1 .............................. <1>
+  [214] setprop 38 .............................. pShowModNotification = 1
+  [216] pushint8 1 .............................. <1>
+  [218] pusharglistnoret 1 ...................... <1>
+  [220] extcall 30 .............................. return 1
+  [222] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 3 .............................. <#startIMChat>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 36 .............................. <me.getID()>
+  [  8] pusharglistnoret 2 ...................... <#startIMChat, me.getID()>
+  [ 10] extcall 46 .............................. unregisterMessage(#startIMChat, me.getID())
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 30 .............................. return 1
+  [ 18] ret
+end
+
+on setUserID me
+  [  0] pushsymb 49 ............................. <#session>
+  [  2] pusharglist 1 ........................... <#session>
+  [  4] extcall 48 .............................. <getObject(#session)>
+  [  6] pushcons 2 .............................. <"user_user_id">
+  [  8] pusharglist 2 ........................... <getObject(#session), "user_user_id">
+  [ 10] objcall 50 .............................. <getObject(#session).GET("user_user_id")>
+  [ 12] setprop 47 .............................. pUserId = getObject(#session).GET("user_user_id")
+  [ 14] ret
+end
+
+on startIMChat me, tReceiverName, tText
+  [  0] pushsymb 52 ............................. <#friend_list>
+  [  2] pusharglist 1 ........................... <#friend_list>
+  [  4] extcall 51 .............................. <threadExists(#friend_list)>
+  [  6] not ..................................... <not threadExists(#friend_list)>
+  [  7] jmpifz [ 15] ............................ if not threadExists(#friend_list) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 30 .............................. return 0
+  [ 15] pushsymb 52 ............................. <#friend_list>
+  [ 17] pusharglist 1 ........................... <#friend_list>
+  [ 19] extcall 53 .............................. <getThread(#friend_list)>
+  [ 21] pusharglist 1 ........................... <getThread(#friend_list)>
+  [ 23] objcall 54 .............................. <getThread(#friend_list).getComponent()>
+  [ 25] getparam 1 .............................. <tReceiverName>
+  [ 27] pusharglist 2 ........................... <getThread(#friend_list).getComponent(), tReceiverName>
+  [ 29] objcall 55 .............................. <getThread(#friend_list).getComponent().getFriendByName(tReceiverName)>
+  [ 31] setlocal 0 .............................. tFriend = getThread(#friend_list).getComponent().getFriendByName(tReceiverName)
+  [ 33] getlocal 0 .............................. <tFriend>
+  [ 35] not ..................................... <not tFriend>
+  [ 36] jmpifz [ 44] ............................ if not tFriend then
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 1 ...................... <0>
+  [ 42] extcall 30 .............................. return 0
+  [ 44] getlocal 0 .............................. <tFriend>
+  [ 46] pushsymb 56 ............................. <#id>
+  [ 48] pusharglist 2 ........................... <tFriend, #id>
+  [ 50] objcall 57 .............................. <tFriend.getaProp(#id)>
+  [ 52] setlocal 1 .............................. tReceiverID = tFriend.getaProp(#id)
+  [ 54] getlocal 1 .............................. <tReceiverID>
+  [ 56] pushzero ................................ <0>
+  [ 57] eq ...................................... <tReceiverID = 0>
+  [ 58] jmpifz [ 66] ............................ if tReceiverID = 0 then
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 30 .............................. return 0
+  [ 66] getparam 0 .............................. <me>
+  [ 68] getlocal 1 .............................. <tReceiverID>
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 3 ...................... <me, tReceiverID, 1>
+  [ 74] objcall 6 ............................... me.addChat(tReceiverID, 1)
+  [ 76] getparam 2 .............................. <tText>
+  [ 78] pushcons 0 .............................. <EMPTY>
+  [ 80] nteq .................................... <tText <> EMPTY>
+  [ 81] jmpifz [ 94] ............................ if tText <> EMPTY then
+  [ 84] getparam 0 .............................. <me>
+  [ 86] getlocal 1 .............................. <tReceiverID>
+  [ 88] getparam 2 .............................. <tText>
+  [ 90] pusharglistnoret 3 ...................... <me, tReceiverID, tText>
+  [ 92] objcall 15 .............................. me.sendMessage(tReceiverID, tText)
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pusharglist 1 ........................... <me>
+  [ 98] objcall 58 .............................. <me.getInterface()>
+  [100] getlocal 1 .............................. <tReceiverID>
+  [102] pusharglistnoret 2 ...................... <me.getInterface(), tReceiverID>
+  [104] objcall 59 .............................. me.getInterface().activateChat(tReceiverID)
+  [106] getparam 0 .............................. <me>
+  [108] pusharglist 1 ........................... <me>
+  [110] objcall 58 .............................. <me.getInterface()>
+  [112] pusharglistnoret 1 ...................... <me.getInterface()>
+  [114] objcall 60 .............................. me.getInterface().openIMWindow()
+  [116] getparam 0 .............................. <me>
+  [118] getlocal 1 .............................. <tReceiverID>
+  [120] pusharglistnoret 2 ...................... <me, tReceiverID>
+  [122] objcall 7 ............................... me.updateChat(tReceiverID)
+  [124] ret
+end
+
+on inviteFriends me, tIDList
+  [  0] getparam 1 .............................. <tIDList>
+  [  2] pusharglist 1 ........................... <tIDList>
+  [  4] extcall 65 .............................. <listp(tIDList)>
+  [  6] not ..................................... <not listp(tIDList)>
+  [  7] jmpifz [ 15] ............................ if not listp(tIDList) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 30 .............................. return 0
+  [ 15] getparam 1 .............................. <tIDList>
+  [ 17] setprop 33 .............................. pInvitees = tIDList
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglist 1 ........................... <me>
+  [ 23] objcall 58 .............................. <me.getInterface()>
+  [ 25] getprop 33 .............................. <pInvitees>
+  [ 27] getobjprop 66 ........................... <pInvitees.count>
+  [ 29] pusharglistnoret 2 ...................... <me.getInterface(), pInvitees.count>
+  [ 31] objcall 67 .............................. me.getInterface().showInvitationWindow(pInvitees.count)
+  [ 33] ret
+end
+
+on sendInvitation me, tInvitationText
+  [  0] getprop 33 .............................. <pInvitees>
+  [  2] getobjprop 66 ........................... <pInvitees.count>
+  [  4] pushzero ................................ <0>
+  [  5] eq ...................................... <pInvitees.count = 0>
+  [  6] jmpifz [ 14] ............................ if pInvitees.count = 0 then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 30 .............................. return 0
+  [ 14] pusharglist 0 ........................... <[:]>
+  [ 16] pushproplist ............................ <[:]>
+  [ 17] setlocal 0 .............................. tMsg = [:]
+  [ 19] getlocal 0 .............................. <tMsg>
+  [ 21] pushsymb 69 ............................. <#integer>
+  [ 23] getprop 33 .............................. <pInvitees>
+  [ 25] getobjprop 66 ........................... <pInvitees.count>
+  [ 27] pusharglistnoret 3 ...................... <tMsg, #integer, pInvitees.count>
+  [ 29] objcall 70 .............................. tMsg.addProp(#integer, pInvitees.count)
+  [ 31] getprop 33 .............................. <pInvitees>
+  [ 33] peek 0
+  [ 35] pusharglist 1
+  [ 37] extcall 66
+  [ 39] pushint8 1
+  [ 41] peek 0
+  [ 43] peek 2
+  [ 45] lteq
+  [ 46] jmpifz [ 78] ............................ repeat with tID in pInvitees
+  [ 49] peek 2
+  [ 51] peek 1
+  [ 53] pusharglist 2
+  [ 55] extcall 71
+  [ 57] setlocal 1
+  [ 59] getlocal 0 .............................. <tMsg>
+  [ 61] pushsymb 69 ............................. <#integer>
+  [ 63] getlocal 1 .............................. <tID>
+  [ 65] pusharglist 1 ........................... <tID>
+  [ 67] extcall 69 .............................. <integer(tID)>
+  [ 69] pusharglistnoret 3 ...................... <tMsg, #integer, integer(tID)>
+  [ 71] objcall 70 .............................. tMsg.addProp(#integer, integer(tID))
+  [ 73] pushint8 1
+  [ 75] add
+  [ 76] endrepeat [ 41]
+  [ 78] pop 3
+  [ 80] getlocal 0 .............................. <tMsg>
+  [ 82] pushsymb 72 ............................. <#string>
+  [ 84] getparam 1 .............................. <tInvitationText>
+  [ 86] pusharglistnoret 3 ...................... <tMsg, #string, tInvitationText>
+  [ 88] objcall 70 .............................. tMsg.addProp(#string, tInvitationText)
+  [ 90] pushcons 3 .............................. <"connection.info.id">
+  [ 92] pusharglist 1 ........................... <"connection.info.id">
+  [ 94] extcall 74 .............................. <getVariable("connection.info.id")>
+  [ 96] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 98] extcall 73 .............................. <getConnection(getVariable("connection.info.id"))>
+  [100] pushcons 4 .............................. <"FRIEND_INVITE">
+  [102] getlocal 0 .............................. <tMsg>
+  [104] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "FRIEND_INVITE", tMsg>
+  [106] objcall 75 .............................. <getConnection(getVariable("connection.info.id")).send("FRIEND_INVITE", tMsg)>
+  [108] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("FRIEND_INVITE", tMsg)>
+  [110] extcall 30 .............................. return getConnection(getVariable("connection.info.id")).send("FRIEND_INVITE", tMsg)
+  [112] ret
+end
+
+on addChat me, tChatID, tDontPlaySound
+  [  0] getprop 31 .............................. <pChats>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglist 2 ........................... <pChats, tChatID>
+  [  6] objcall 57 .............................. <pChats.getaProp(tChatID)>
+  [  8] pusharglist 1 ........................... <pChats.getaProp(tChatID)>
+  [ 10] extcall 79 .............................. <voidp(pChats.getaProp(tChatID))>
+  [ 12] not ..................................... <not voidp(pChats.getaProp(tChatID))>
+  [ 13] jmpifz [ 21] ............................ if not voidp(pChats.getaProp(tChatID)) then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 30 .............................. return 0
+  [ 21] getparam 0 .............................. <me>
+  [ 23] getparam 1 .............................. <tChatID>
+  [ 25] pusharglist 2 ........................... <me, tChatID>
+  [ 27] objcall 17 .............................. <me.updateFriend(tChatID)>
+  [ 29] setlocal 0 .............................. tFriend = me.updateFriend(tChatID)
+  [ 31] getlocal 0 .............................. <tFriend>
+  [ 33] not ..................................... <not tFriend>
+  [ 34] jmpifz [ 42] ............................ if not tFriend then
+  [ 37] pushzero ................................ <0>
+  [ 38] pusharglistnoret 1 ...................... <0>
+  [ 40] extcall 30 .............................. return 0
+  [ 42] getlocal 0 .............................. <tFriend>
+  [ 44] pushsymb 56 ............................. <#id>
+  [ 46] pusharglist 2 ........................... <tFriend, #id>
+  [ 48] objcall 57 .............................. <tFriend.getaProp(#id)>
+  [ 50] setlocal 1 .............................. tFriendID = tFriend.getaProp(#id)
+  [ 52] getprop 32 .............................. <pFriends>
+  [ 54] getlocal 1 .............................. <tFriendID>
+  [ 56] getlocal 0 .............................. <tFriend>
+  [ 58] pusharglistnoret 3 ...................... <pFriends, tFriendID, tFriend>
+  [ 60] objcall 80 .............................. pFriends.setaProp(tFriendID, tFriend)
+  [ 62] pusharglist 0 ........................... <[]>
+  [ 64] pushlist ................................ <[]>
+  [ 65] setlocal 2 .............................. tChat = []
+  [ 67] getprop 31 .............................. <pChats>
+  [ 69] getparam 1 .............................. <tChatID>
+  [ 71] getlocal 2 .............................. <tChat>
+  [ 73] pusharglistnoret 3 ...................... <pChats, tChatID, tChat>
+  [ 75] objcall 80 .............................. pChats.setaProp(tChatID, tChat)
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pusharglist 1 ........................... <me>
+  [ 81] objcall 58 .............................. <me.getInterface()>
+  [ 83] getparam 1 .............................. <tChatID>
+  [ 85] getlocal 0 .............................. <tFriend>
+  [ 87] getparam 2 .............................. <tDontPlaySound>
+  [ 89] pusharglistnoret 4 ...................... <me.getInterface(), tChatID, tFriend, tDontPlaySound>
+  [ 91] objcall 6 ............................... me.getInterface().addChat(tChatID, tFriend, tDontPlaySound)
+  [ 93] getprop 38 .............................. <pShowModNotification>
+  [ 95] jmpifz [111] ............................ if pShowModNotification then
+  [ 98] getparam 0 .............................. <me>
+  [100] getparam 1 .............................. <tChatID>
+  [102] pushsymb 81 ............................. <#moderation>
+  [104] pusharglistnoret 3 ...................... <me, tChatID, #moderation>
+  [106] objcall 13 .............................. me.receiveNotification(tChatID, #moderation)
+  [108] pushzero ................................ <0>
+  [109] setprop 38 .............................. pShowModNotification = 0
+  [111] pushint8 1 .............................. <1>
+  [113] pusharglistnoret 1 ...................... <1>
+  [115] extcall 30 .............................. return 1
+  [117] ret
+end
+
+on updateChat me, tChatID
+  [  0] getprop 31 .............................. <pChats>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglist 2 ........................... <pChats, tChatID>
+  [  6] objcall 86 .............................. <pChats.findPos(tChatID)>
+  [  8] pusharglist 1 ........................... <pChats.findPos(tChatID)>
+  [ 10] extcall 79 .............................. <voidp(pChats.findPos(tChatID))>
+  [ 12] jmpifz [ 21] ............................ if voidp(pChats.findPos(tChatID)) then
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 30 .............................. return 1
+  [ 21] getprop 32 .............................. <pFriends>
+  [ 23] getparam 1 .............................. <tChatID>
+  [ 25] pusharglist 2 ........................... <pFriends, tChatID>
+  [ 27] objcall 57 .............................. <pFriends.getaProp(tChatID)>
+  [ 29] setlocal 0 .............................. tFriend = pFriends.getaProp(tChatID)
+  [ 31] getlocal 0 .............................. <tFriend>
+  [ 33] pushsymb 87 ............................. <#online>
+  [ 35] pusharglist 2 ........................... <tFriend, #online>
+  [ 37] objcall 57 .............................. <tFriend.getaProp(#online)>
+  [ 39] setlocal 1 .............................. tOnline = tFriend.getaProp(#online)
+  [ 41] getparam 0 .............................. <me>
+  [ 43] getparam 1 .............................. <tChatID>
+  [ 45] pusharglist 2 ........................... <me, tChatID>
+  [ 47] objcall 17 .............................. <me.updateFriend(tChatID)>
+  [ 49] setlocal 2 .............................. tFriendUpdated = me.updateFriend(tChatID)
+  [ 51] getlocal 2 .............................. <tFriendUpdated>
+  [ 53] pushsymb 87 ............................. <#online>
+  [ 55] pusharglist 2 ........................... <tFriendUpdated, #online>
+  [ 57] objcall 57 .............................. <tFriendUpdated.getaProp(#online)>
+  [ 59] setlocal 3 .............................. tOnlineUpdated = tFriendUpdated.getaProp(#online)
+  [ 61] getlocal 3 .............................. <tOnlineUpdated>
+  [ 63] getlocal 1 .............................. <tOnline>
+  [ 65] nteq .................................... <tOnlineUpdated <> tOnline>
+  [ 66] jmpifz [ 97] ............................ if tOnlineUpdated <> tOnline then
+  [ 69] getlocal 3 .............................. <tOnlineUpdated>
+  [ 71] jmpifz [ 87] ............................ if tOnlineUpdated then / else
+  [ 74] getparam 0 .............................. <me>
+  [ 76] getparam 1 .............................. <tChatID>
+  [ 78] pushsymb 87 ............................. <#online>
+  [ 80] pusharglistnoret 3 ...................... <me, tChatID, #online>
+  [ 82] objcall 13 .............................. me.receiveNotification(tChatID, #online)
+  [ 84] jmp [ 97]
+  [ 87] getparam 0 .............................. <me>
+  [ 89] getparam 1 .............................. <tChatID>
+  [ 91] pushsymb 88 ............................. <#offline>
+  [ 93] pusharglistnoret 3 ...................... <me, tChatID, #offline>
+  [ 95] objcall 13 .............................. me.receiveNotification(tChatID, #offline)
+  [ 97] getprop 32 .............................. <pFriends>
+  [ 99] getparam 1 .............................. <tChatID>
+  [101] getlocal 2 .............................. <tFriendUpdated>
+  [103] pusharglistnoret 3 ...................... <pFriends, tChatID, tFriendUpdated>
+  [105] objcall 80 .............................. pFriends.setaProp(tChatID, tFriendUpdated)
+  [107] getparam 0 .............................. <me>
+  [109] pusharglist 1 ........................... <me>
+  [111] objcall 58 .............................. <me.getInterface()>
+  [113] pusharglistnoret 1 ...................... <me.getInterface()>
+  [115] objcall 89 .............................. me.getInterface().updateInterface()
+  [117] ret
+end
+
+on removeChat me, tChatID
+  [  0] getprop 31 .............................. <pChats>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglist 2 ........................... <pChats, tChatID>
+  [  6] objcall 86 .............................. <pChats.findPos(tChatID)>
+  [  8] pushzero ................................ <0>
+  [  9] eq ...................................... <pChats.findPos(tChatID) = 0>
+  [ 10] jmpifz [ 18] ............................ if pChats.findPos(tChatID) = 0 then
+  [ 13] pushzero ................................ <0>
+  [ 14] pusharglistnoret 1 ...................... <0>
+  [ 16] extcall 30 .............................. return 0
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglist 1 ........................... <me>
+  [ 22] objcall 58 .............................. <me.getInterface()>
+  [ 24] getparam 1 .............................. <tChatID>
+  [ 26] pusharglistnoret 2 ...................... <me.getInterface(), tChatID>
+  [ 28] objcall 8 ............................... me.getInterface().removeChat(tChatID)
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglistnoret 1 ...................... <1>
+  [ 34] extcall 30 .............................. return 1
+  [ 36] ret
+end
+
+on removeAllChats me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 31 .............................. pChats = [:]
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglist 1 ........................... <me>
+  [  9] objcall 58 .............................. <me.getInterface()>
+  [ 11] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 13] objcall 9 ............................... me.getInterface().removeAllChats()
+  [ 15] ret
+end
+
+on getChat me, tChatID
+  [  0] getprop 31 .............................. <pChats>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglist 2 ........................... <pChats, tChatID>
+  [  6] objcall 57 .............................. <pChats.getaProp(tChatID)>
+  [  8] setlocal 0 .............................. tChat = pChats.getaProp(tChatID)
+  [ 10] getlocal 0 .............................. <tChat>
+  [ 12] pusharglist 1 ........................... <tChat>
+  [ 14] extcall 79 .............................. <voidp(tChat)>
+  [ 16] jmpifz [ 46] ............................ if voidp(tChat) then
+  [ 19] getparam 0 .............................. <me>
+  [ 21] getparam 1 .............................. <tChatID>
+  [ 23] pusharglist 2 ........................... <me, tChatID>
+  [ 25] objcall 6 ............................... <me.addChat(tChatID)>
+  [ 27] not ..................................... <not me.addChat(tChatID)>
+  [ 28] jmpifz [ 36] ............................ if not me.addChat(tChatID) then
+  [ 31] pushzero ................................ <0>
+  [ 32] pusharglistnoret 1 ...................... <0>
+  [ 34] extcall 30 .............................. return 0
+  [ 36] getprop 31 .............................. <pChats>
+  [ 38] getparam 1 .............................. <tChatID>
+  [ 40] pusharglist 2 ........................... <pChats, tChatID>
+  [ 42] objcall 57 .............................. <pChats.getaProp(tChatID)>
+  [ 44] setlocal 0 .............................. tChat = pChats.getaProp(tChatID)
+  [ 46] getlocal 0 .............................. <tChat>
+  [ 48] pusharglistnoret 1 ...................... <tChat>
+  [ 50] extcall 30 .............................. return tChat
+  [ 52] ret
+end
+
+on receiveMessage me, tSenderId, tText
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tEntry = [:]
+  [  5] getlocal 0 .............................. <tEntry>
+  [  7] pushsymb 93 ............................. <#type>
+  [  9] pushsymb 94 ............................. <#message>
+  [ 11] pusharglistnoret 3 ...................... <tEntry, #type, #message>
+  [ 13] objcall 80 .............................. tEntry.setaProp(#type, #message)
+  [ 15] getlocal 0 .............................. <tEntry>
+  [ 17] pushsymb 95 ............................. <#userID>
+  [ 19] getparam 1 .............................. <tSenderId>
+  [ 21] pusharglistnoret 3 ...................... <tEntry, #userID, tSenderId>
+  [ 23] objcall 80 .............................. tEntry.setaProp(#userID, tSenderId)
+  [ 25] getlocal 0 .............................. <tEntry>
+  [ 27] pushsymb 96 ............................. <#Msg>
+  [ 29] getparam 2 .............................. <tText>
+  [ 31] pusharglistnoret 3 ...................... <tEntry, #Msg, tText>
+  [ 33] objcall 80 .............................. tEntry.setaProp(#Msg, tText)
+  [ 35] getlocal 0 .............................. <tEntry>
+  [ 37] pushsymb 97 ............................. <#time>
+  [ 39] pusharglist 0 ........................... <>
+  [ 41] thebuiltin 97 ........................... <the time>
+  [ 43] pusharglistnoret 3 ...................... <tEntry, #time, the time>
+  [ 45] objcall 80 .............................. tEntry.setaProp(#time, the time)
+  [ 47] getparam 0 .............................. <me>
+  [ 49] getparam 1 .............................. <tSenderId>
+  [ 51] getlocal 0 .............................. <tEntry>
+  [ 53] pusharglistnoret 3 ...................... <me, tSenderId, tEntry>
+  [ 55] objcall 16 .............................. me.addMessage(tSenderId, tEntry)
+  [ 57] ret
+end
+
+on receiveError me, tChatID, ttype
+  [  0] getparam 2 .............................. <ttype>
+  [  2] peek 0 .................................. case ttype of
+  [  4] pushint8 3 .............................. <3>
+  [  6] eq
+  [  7] jmpifz [ 17] ............................ (case) 3:
+  [ 10] pushcons 5 .............................. <"im_error_receiver_muted">
+  [ 12] setlocal 0 .............................. tTextKey = "im_error_receiver_muted"
+  [ 14] jmp [ 81]
+  [ 17] peek 0
+  [ 19] pushint8 4 .............................. <4>
+  [ 21] eq
+  [ 22] jmpifz [ 32] ............................ (case) 4:
+  [ 25] pushcons 6 .............................. <"im_error_sender_muted">
+  [ 27] setlocal 0 .............................. tTextKey = "im_error_sender_muted"
+  [ 29] jmp [ 81]
+  [ 32] peek 0
+  [ 34] pushint8 5 .............................. <5>
+  [ 36] eq
+  [ 37] jmpifz [ 47] ............................ (case) 5:
+  [ 40] pushcons 7 .............................. <"im_error_offline">
+  [ 42] setlocal 0 .............................. tTextKey = "im_error_offline"
+  [ 44] jmp [ 81]
+  [ 47] peek 0
+  [ 49] pushint8 6 .............................. <6>
+  [ 51] eq
+  [ 52] jmpifz [ 62] ............................ (case) 6:
+  [ 55] pushcons 8 .............................. <"im_error_not_friend">
+  [ 57] setlocal 0 .............................. tTextKey = "im_error_not_friend"
+  [ 59] jmp [ 81]
+  [ 62] peek 0
+  [ 64] pushint8 7 .............................. <7>
+  [ 66] eq
+  [ 67] jmpifz [ 77] ............................ (case) 7:
+  [ 70] pushcons 9 .............................. <"im_error_busy">
+  [ 72] setlocal 0 .............................. tTextKey = "im_error_busy"
+  [ 74] jmp [ 81] ............................... (case) otherwise:
+  [ 77] pushcons 10 ............................. <"im_error_undefined">
+  [ 79] setlocal 0 .............................. tTextKey = "im_error_undefined"
+  [ 81] pop 1 ................................... end case
+  [ 83] pusharglist 0 ........................... <[:]>
+  [ 85] pushproplist ............................ <[:]>
+  [ 86] setlocal 1 .............................. tEntry = [:]
+  [ 88] getlocal 1 .............................. <tEntry>
+  [ 90] pushsymb 93 ............................. <#type>
+  [ 92] pushsymb 27 ............................. <#error>
+  [ 94] pusharglistnoret 3 ...................... <tEntry, #type, #error>
+  [ 96] objcall 80 .............................. tEntry.setaProp(#type, #error)
+  [ 98] getlocal 1 .............................. <tEntry>
+  [100] pushsymb 96 ............................. <#Msg>
+  [102] getlocal 0 .............................. <tTextKey>
+  [104] pusharglist 1 ........................... <tTextKey>
+  [106] extcall 100 ............................. <getText(tTextKey)>
+  [108] pusharglistnoret 3 ...................... <tEntry, #Msg, getText(tTextKey)>
+  [110] objcall 80 .............................. tEntry.setaProp(#Msg, getText(tTextKey))
+  [112] getlocal 1 .............................. <tEntry>
+  [114] pushsymb 97 ............................. <#time>
+  [116] pusharglist 0 ........................... <>
+  [118] thebuiltin 97 ........................... <the time>
+  [120] pusharglistnoret 3 ...................... <tEntry, #time, the time>
+  [122] objcall 80 .............................. tEntry.setaProp(#time, the time)
+  [124] getparam 0 .............................. <me>
+  [126] getparam 1 .............................. <tChatID>
+  [128] getlocal 1 .............................. <tEntry>
+  [130] pusharglistnoret 3 ...................... <me, tChatID, tEntry>
+  [132] objcall 16 .............................. me.addMessage(tChatID, tEntry)
+  [134] ret
+end
+
+on receiveNotification me, tChatID, ttype
+  [  0] pushcons 11 ............................. <"im_notification_">
+  [  2] getparam 2 .............................. <ttype>
+  [  4] pusharglist 1 ........................... <ttype>
+  [  6] extcall 72 .............................. <string(ttype)>
+  [  8] joinstr ................................. <"im_notification_" & string(ttype)>
+  [  9] setlocal 0 .............................. tTextKey = "im_notification_" & string(ttype)
+  [ 11] pusharglist 0 ........................... <[:]>
+  [ 13] pushproplist ............................ <[:]>
+  [ 14] setlocal 1 .............................. tEntry = [:]
+  [ 16] getlocal 1 .............................. <tEntry>
+  [ 18] pushsymb 93 ............................. <#type>
+  [ 20] pushsymb 103 ............................ <#notification>
+  [ 22] pusharglistnoret 3 ...................... <tEntry, #type, #notification>
+  [ 24] objcall 80 .............................. tEntry.setaProp(#type, #notification)
+  [ 26] getlocal 1 .............................. <tEntry>
+  [ 28] pushsymb 96 ............................. <#Msg>
+  [ 30] getlocal 0 .............................. <tTextKey>
+  [ 32] pusharglist 1 ........................... <tTextKey>
+  [ 34] extcall 100 ............................. <getText(tTextKey)>
+  [ 36] pusharglistnoret 3 ...................... <tEntry, #Msg, getText(tTextKey)>
+  [ 38] objcall 80 .............................. tEntry.setaProp(#Msg, getText(tTextKey))
+  [ 40] getlocal 1 .............................. <tEntry>
+  [ 42] pushsymb 97 ............................. <#time>
+  [ 44] pusharglist 0 ........................... <>
+  [ 46] thebuiltin 97 ........................... <the time>
+  [ 48] pusharglistnoret 3 ...................... <tEntry, #time, the time>
+  [ 50] objcall 80 .............................. tEntry.setaProp(#time, the time)
+  [ 52] getparam 0 .............................. <me>
+  [ 54] getparam 1 .............................. <tChatID>
+  [ 56] getlocal 1 .............................. <tEntry>
+  [ 58] pusharglistnoret 3 ...................... <me, tChatID, tEntry>
+  [ 60] objcall 16 .............................. me.addMessage(tChatID, tEntry)
+  [ 62] ret
+end
+
+on receiveInvitation me, tChatID, tText
+  [  0] pushcons 12 ............................. <"im_invitation">
+  [  2] pusharglist 1 ........................... <"im_invitation">
+  [  4] extcall 100 ............................. <getText("im_invitation")>
+  [  6] pushcons 13 ............................. <RETURN>
+  [  8] joinstr ................................. <getText("im_invitation") & RETURN>
+  [  9] pushcons 13 ............................. <RETURN>
+  [ 11] joinstr ................................. <getText("im_invitation") & RETURN & RETURN>
+  [ 12] getparam 2 .............................. <tText>
+  [ 14] joinstr ................................. <getText("im_invitation") & RETURN & RETURN & tText>
+  [ 15] setparam 2 .............................. tText = getText("im_invitation") & RETURN & RETURN & tText
+  [ 17] pusharglist 0 ........................... <[:]>
+  [ 19] pushproplist ............................ <[:]>
+  [ 20] setlocal 0 .............................. tEntry = [:]
+  [ 22] getlocal 0 .............................. <tEntry>
+  [ 24] pushsymb 93 ............................. <#type>
+  [ 26] pushsymb 104 ............................ <#invitation>
+  [ 28] pusharglistnoret 3 ...................... <tEntry, #type, #invitation>
+  [ 30] objcall 80 .............................. tEntry.setaProp(#type, #invitation)
+  [ 32] getlocal 0 .............................. <tEntry>
+  [ 34] pushsymb 95 ............................. <#userID>
+  [ 36] getparam 1 .............................. <tChatID>
+  [ 38] pusharglistnoret 3 ...................... <tEntry, #userID, tChatID>
+  [ 40] objcall 80 .............................. tEntry.setaProp(#userID, tChatID)
+  [ 42] getlocal 0 .............................. <tEntry>
+  [ 44] pushsymb 96 ............................. <#Msg>
+  [ 46] getparam 2 .............................. <tText>
+  [ 48] pusharglistnoret 3 ...................... <tEntry, #Msg, tText>
+  [ 50] objcall 80 .............................. tEntry.setaProp(#Msg, tText)
+  [ 52] getlocal 0 .............................. <tEntry>
+  [ 54] pushsymb 97 ............................. <#time>
+  [ 56] pusharglist 0 ........................... <>
+  [ 58] thebuiltin 97 ........................... <the time>
+  [ 60] pusharglistnoret 3 ...................... <tEntry, #time, the time>
+  [ 62] objcall 80 .............................. tEntry.setaProp(#time, the time)
+  [ 64] getparam 0 .............................. <me>
+  [ 66] getparam 1 .............................. <tChatID>
+  [ 68] getlocal 0 .............................. <tEntry>
+  [ 70] pusharglistnoret 3 ...................... <me, tChatID, tEntry>
+  [ 72] objcall 16 .............................. me.addMessage(tChatID, tEntry)
+  [ 74] ret
+end
+
+on sendMessage me, tReceiverID, tText
+  [  0] getparam 1 .............................. <tReceiverID>
+  [  2] pusharglist 1 ........................... <tReceiverID>
+  [  4] extcall 79 .............................. <voidp(tReceiverID)>
+  [  6] jmpifz [ 14] ............................ if voidp(tReceiverID) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 30 .............................. return 0
+  [ 14] pusharglist 0 ........................... <[:]>
+  [ 16] pushproplist ............................ <[:]>
+  [ 17] setlocal 0 .............................. tEntry = [:]
+  [ 19] getlocal 0 .............................. <tEntry>
+  [ 21] pushsymb 93 ............................. <#type>
+  [ 23] pushsymb 94 ............................. <#message>
+  [ 25] pusharglistnoret 3 ...................... <tEntry, #type, #message>
+  [ 27] objcall 80 .............................. tEntry.setaProp(#type, #message)
+  [ 29] getlocal 0 .............................. <tEntry>
+  [ 31] pushsymb 95 ............................. <#userID>
+  [ 33] getprop 47 .............................. <pUserId>
+  [ 35] pusharglistnoret 3 ...................... <tEntry, #userID, pUserId>
+  [ 37] objcall 80 .............................. tEntry.setaProp(#userID, pUserId)
+  [ 39] getlocal 0 .............................. <tEntry>
+  [ 41] pushsymb 96 ............................. <#Msg>
+  [ 43] getparam 2 .............................. <tText>
+  [ 45] pusharglistnoret 3 ...................... <tEntry, #Msg, tText>
+  [ 47] objcall 80 .............................. tEntry.setaProp(#Msg, tText)
+  [ 49] getlocal 0 .............................. <tEntry>
+  [ 51] pushsymb 97 ............................. <#time>
+  [ 53] pusharglist 0 ........................... <>
+  [ 55] thebuiltin 97 ........................... <the time>
+  [ 57] pusharglistnoret 3 ...................... <tEntry, #time, the time>
+  [ 59] objcall 80 .............................. tEntry.setaProp(#time, the time)
+  [ 61] getparam 0 .............................. <me>
+  [ 63] getparam 1 .............................. <tReceiverID>
+  [ 65] getlocal 0 .............................. <tEntry>
+  [ 67] pusharglistnoret 3 ...................... <me, tReceiverID, tEntry>
+  [ 69] objcall 16 .............................. me.addMessage(tReceiverID, tEntry)
+  [ 71] pusharglist 0 ........................... <>
+  [ 73] extcall 105 ............................. <getStringServices()>
+  [ 75] getparam 2 .............................. <tText>
+  [ 77] pushint8 1 .............................. <1>
+  [ 79] pusharglist 3 ........................... <getStringServices(), tText, 1>
+  [ 81] objcall 106 ............................. <getStringServices().convertSpecialChars(tText, 1)>
+  [ 83] setparam 2 .............................. tText = getStringServices().convertSpecialChars(tText, 1)
+  [ 85] pusharglist 0 ........................... <[:]>
+  [ 87] pushproplist ............................ <[:]>
+  [ 88] setlocal 1 .............................. tdata = [:]
+  [ 90] getlocal 1 .............................. <tdata>
+  [ 92] pushsymb 69 ............................. <#integer>
+  [ 94] getparam 1 .............................. <tReceiverID>
+  [ 96] pusharglist 1 ........................... <tReceiverID>
+  [ 98] extcall 69 .............................. <integer(tReceiverID)>
+  [100] pusharglistnoret 3 ...................... <tdata, #integer, integer(tReceiverID)>
+  [102] objcall 70 .............................. tdata.addProp(#integer, integer(tReceiverID))
+  [104] getlocal 1 .............................. <tdata>
+  [106] pushsymb 72 ............................. <#string>
+  [108] getparam 2 .............................. <tText>
+  [110] pusharglistnoret 3 ...................... <tdata, #string, tText>
+  [112] objcall 70 .............................. tdata.addProp(#string, tText)
+  [114] pushcons 3 .............................. <"connection.info.id">
+  [116] pusharglist 1 ........................... <"connection.info.id">
+  [118] extcall 74 .............................. <getVariable("connection.info.id")>
+  [120] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [122] extcall 73 .............................. <getConnection(getVariable("connection.info.id"))>
+  [124] pushcons 14 ............................. <"MESSENGER_SENDMSG">
+  [126] getlocal 1 .............................. <tdata>
+  [128] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "MESSENGER_SENDMSG", tdata>
+  [130] objcall 75 .............................. <getConnection(getVariable("connection.info.id")).send("MESSENGER_SENDMSG", tdata)>
+  [132] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("MESSENGER_SENDMSG", tdata)>
+  [134] extcall 30 .............................. return getConnection(getVariable("connection.info.id")).send("MESSENGER_SENDMSG", tdata)
+  [136] ret
+end
+
+on addMessage me, tChatID, tEntry
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglist 2 ........................... <me, tChatID>
+  [  6] objcall 10 .............................. <me.getChat(tChatID)>
+  [  8] setlocal 0 .............................. tChat = me.getChat(tChatID)
+  [ 10] getlocal 0 .............................. <tChat>
+  [ 12] not ..................................... <not tChat>
+  [ 13] jmpifz [ 21] ............................ if not tChat then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 30 .............................. return 0
+  [ 21] getlocal 0 .............................. <tChat>
+  [ 23] getparam 2 .............................. <tEntry>
+  [ 25] pusharglistnoret 2 ...................... <tChat, tEntry>
+  [ 27] objcall 108 ............................. tChat.add(tEntry)
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pusharglist 1 ........................... <me>
+  [ 33] objcall 58 .............................. <me.getInterface()>
+  [ 35] getparam 1 .............................. <tChatID>
+  [ 37] getparam 2 .............................. <tEntry>
+  [ 39] pusharglistnoret 3 ...................... <me.getInterface(), tChatID, tEntry>
+  [ 41] objcall 16 .............................. me.getInterface().addMessage(tChatID, tEntry)
+  [ 43] ret
+end
+
+on updateFriend me, tUserID
+  [  0] pushsymb 110 ............................ <#friend_list_component>
+  [  2] pusharglist 1 ........................... <#friend_list_component>
+  [  4] extcall 109 ............................. <objectExists(#friend_list_component)>
+  [  6] not ..................................... <not objectExists(#friend_list_component)>
+  [  7] jmpifz [ 26] ............................ if not objectExists(#friend_list_component) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 15 ............................. <"Can't find friend list component">
+  [ 14] pushsymb 18 ............................. <#getFriend>
+  [ 16] pushsymb 111 ............................ <#major>
+  [ 18] pusharglist 4 ........................... <me, "Can't find friend list component", #getFriend, #major>
+  [ 20] extcall 27 .............................. <error(me, "Can't find friend list component", #getFriend, #major)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Can't find friend list component", #getFriend, #major)>
+  [ 24] extcall 30 .............................. return error(me, "Can't find friend list component", #getFriend, #major)
+  [ 26] pushsymb 110 ............................ <#friend_list_component>
+  [ 28] pusharglist 1 ........................... <#friend_list_component>
+  [ 30] extcall 48 .............................. <getObject(#friend_list_component)>
+  [ 32] getparam 1 .............................. <tUserID>
+  [ 34] pusharglist 2 ........................... <getObject(#friend_list_component), tUserID>
+  [ 36] objcall 112 ............................. <getObject(#friend_list_component).getFriendByID(tUserID)>
+  [ 38] setlocal 0 .............................. tFriend = getObject(#friend_list_component).getFriendByID(tUserID)
+  [ 40] getlocal 0 .............................. <tFriend>
+  [ 42] pusharglistnoret 1 ...................... <tFriend>
+  [ 44] extcall 30 .............................. return tFriend
+  [ 46] ret
+end
+
+on getFriend me, tUserID
+  [  0] getprop 32 .............................. <pFriends>
+  [  2] getparam 1 .............................. <tUserID>
+  [  4] pusharglist 2 ........................... <pFriends, tUserID>
+  [  6] objcall 57 .............................. <pFriends.getaProp(tUserID)>
+  [  8] pusharglistnoret 1 ...................... <pFriends.getaProp(tUserID)>
+  [ 10] extcall 30 .............................. return pFriends.getaProp(tUserID)
+  [ 12] ret
+end

@@ -1,0 +1,768 @@
+property pListenerList, pCommandsList, pClassString, pLastMessageData
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 1020 ............................ pLastMessageData = [:]
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglist 0 ........................... <[]>
+  [ 10] pushlist ................................ <[]>
+  [ 11] setobjprop 735 .......................... me.pItemList = []
+  [ 14] getparam 0 .............................. <me>
+  [ 16] getchainedprop 735 ...................... <me.pItemList>
+  [ 19] pusharglistnoret 1 ...................... <me.pItemList>
+  [ 21] objcall 736 ............................. me.pItemList.sort()
+  [ 24] pusharglist 0 ........................... <[:]>
+  [ 26] pushproplist ............................ <[:]>
+  [ 27] setprop 1021 ............................ pListenerList = [:]
+  [ 30] getprop 1021 ............................ <pListenerList>
+  [ 33] pusharglistnoret 1 ...................... <pListenerList>
+  [ 35] objcall 736 ............................. pListenerList.sort()
+  [ 38] pusharglist 0 ........................... <[:]>
+  [ 40] pushproplist ............................ <[:]>
+  [ 41] setprop 1022 ............................ pCommandsList = [:]
+  [ 44] getprop 1022 ............................ <pCommandsList>
+  [ 47] pusharglistnoret 1 ...................... <pCommandsList>
+  [ 49] objcall 736 ............................. pCommandsList.sort()
+  [ 52] pushcons 0 .............................. <"connection.instance.class">
+  [ 54] setprop 1023 ............................ pClassString = "connection.instance.class"
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] pusharglistnoret 1 ...................... <1>
+  [ 61] extcall 11 .............................. return 1
+  [ 63] ret
+end
+
+on create me, tID, tHost, tPort
+  [  0] getparam 1 .............................. <tID>
+  [  2] pusharglist 1 ........................... <tID>
+  [  4] extcall 130 ............................. <symbolp(tID)>
+  [  6] not ..................................... <not symbolp(tID)>
+  [  7] getparam 1 .............................. <tID>
+  [  9] pusharglist 1 ........................... <tID>
+  [ 11] extcall 121 ............................. <stringp(tID)>
+  [ 13] not ..................................... <not stringp(tID)>
+  [ 14] and ..................................... <not symbolp(tID) and not stringp(tID)>
+  [ 15] jmpifz [ 37] ............................ if not symbolp(tID) and not stringp(tID) then
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pushcons 1 .............................. <"Symbol or string expected:">
+  [ 22] getparam 1 .............................. <tID>
+  [ 24] joinpadstr .............................. <"Symbol or string expected:" && tID>
+  [ 25] pushsymb 164 ............................ <#create>
+  [ 27] pushsymb 123 ............................ <#major>
+  [ 29] pusharglist 4 ........................... <me, "Symbol or string expected:" && tID, #create, #major>
+  [ 31] extcall 122 ............................. <error(me, "Symbol or string expected:" && tID, #create, #major)>
+  [ 33] pusharglistnoret 1 ...................... <error(me, "Symbol or string expected:" && tID, #create, #major)>
+  [ 35] extcall 11 .............................. return error(me, "Symbol or string expected:" && tID, #create, #major)
+  [ 37] getparam 2 .............................. <tHost>
+  [ 39] pusharglist 1 ........................... <tHost>
+  [ 41] extcall 121 ............................. <stringp(tHost)>
+  [ 43] not ..................................... <not stringp(tHost)>
+  [ 44] jmpifz [ 66] ............................ if not stringp(tHost) then
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pushcons 2 .............................. <"String expected:">
+  [ 51] getparam 2 .............................. <tHost>
+  [ 53] joinpadstr .............................. <"String expected:" && tHost>
+  [ 54] pushsymb 164 ............................ <#create>
+  [ 56] pushsymb 123 ............................ <#major>
+  [ 58] pusharglist 4 ........................... <me, "String expected:" && tHost, #create, #major>
+  [ 60] extcall 122 ............................. <error(me, "String expected:" && tHost, #create, #major)>
+  [ 62] pusharglistnoret 1 ...................... <error(me, "String expected:" && tHost, #create, #major)>
+  [ 64] extcall 11 .............................. return error(me, "String expected:" && tHost, #create, #major)
+  [ 66] getparam 3 .............................. <tPort>
+  [ 68] pusharglist 1 ........................... <tPort>
+  [ 70] extcall 792 ............................. <integerp(tPort)>
+  [ 73] not ..................................... <not integerp(tPort)>
+  [ 74] jmpifz [ 96] ............................ if not integerp(tPort) then
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pushcons 3 .............................. <"Integer expected:">
+  [ 81] getparam 3 .............................. <tPort>
+  [ 83] joinpadstr .............................. <"Integer expected:" && tPort>
+  [ 84] pushsymb 164 ............................ <#create>
+  [ 86] pushsymb 123 ............................ <#major>
+  [ 88] pusharglist 4 ........................... <me, "Integer expected:" && tPort, #create, #major>
+  [ 90] extcall 122 ............................. <error(me, "Integer expected:" && tPort, #create, #major)>
+  [ 92] pusharglistnoret 1 ...................... <error(me, "Integer expected:" && tPort, #create, #major)>
+  [ 94] extcall 11 .............................. return error(me, "Integer expected:" && tPort, #create, #major)
+  [ 96] pushcons 4 .............................. <"connection.log.level">
+  [ 98] pusharglist 1 ........................... <"connection.log.level">
+  [100] extcall 462 ............................. <getIntVariable("connection.log.level")>
+  [103] pushint8 2 .............................. <2>
+  [105] eq ...................................... <getIntVariable("connection.log.level") = 2>
+  [106] getmovieprop 165 ........................ <the runMode>
+  [108] pushcons 5 .............................. <"Author">
+  [110] containsstr ............................. <the runMode contains "Author">
+  [111] and ..................................... <(getIntVariable("connection.log.level") = 2) and (the runMode contains "Author")>
+  [112] jmpifz [204] ............................ if (getIntVariable("connection.log.level") = 2) and (the runMode contains "Author") then
+  [115] pushcons 6 .............................. <"connectionLog.text">
+  [117] pusharglist 1 ........................... <"connectionLog.text">
+  [119] extcall 257 ............................. <memberExists("connectionLog.text")>
+  [122] not ..................................... <not memberExists("connectionLog.text")>
+  [123] jmpifz [170] ............................ if not memberExists("connectionLog.text") then / else
+  [126] pushcons 6 .............................. <"connectionLog.text">
+  [128] pushsymb 943 ............................ <#field>
+  [131] pusharglist 2 ........................... <"connectionLog.text", #field>
+  [133] extcall 251 ............................. <createMember("connectionLog.text", #field)>
+  [135] pusharglist 1 ........................... <createMember("connectionLog.text", #field)>
+  [137] extcall 125 ............................. <member(createMember("connectionLog.text", #field))>
+  [139] setlocal 0 .............................. tLogField = member(createMember("connectionLog.text", #field))
+  [141] getlocal 0 .............................. <tLogField>
+  [143] pushsymb 1024 ........................... <#scroll>
+  [146] setobjprop 1025 ......................... tLogField.boxType = #scroll
+  [149] getlocal 0 .............................. <tLogField>
+  [151] pushzero ................................ <0>
+  [152] pushzero ................................ <0>
+  [153] pushint16 300 ........................... <300>
+  [156] pushint16 250 ........................... <250>
+  [159] pusharglist 4 ........................... <0, 0, 300, 250>
+  [161] extcall 652 ............................. <rect(0, 0, 300, 250)>
+  [164] setobjprop 652 .......................... tLogField.rect = rect(0, 0, 300, 250)
+  [167] jmp [182]
+  [170] pushcons 6 .............................. <"connectionLog.text">
+  [172] pusharglist 1 ........................... <"connectionLog.text">
+  [174] extcall 136 ............................. <getmemnum("connectionLog.text")>
+  [176] pusharglist 1 ........................... <getmemnum("connectionLog.text")>
+  [178] extcall 125 ............................. <member(getmemnum("connectionLog.text"))>
+  [180] setlocal 0 .............................. tLogField = member(getmemnum("connectionLog.text"))
+  [182] getlocal 0 .............................. <tLogField>
+  [184] getlocal 0 .............................. <tLogField>
+  [186] getobjprop 612 .......................... <tLogField.text>
+  [189] pushcons 7 .............................. <RETURN>
+  [191] joinstr ................................. <tLogField.text & RETURN>
+  [192] pushcons 8 .............................. <"Connection logging">
+  [194] joinstr ................................. <tLogField.text & RETURN & "Connection logging">
+  [195] getparam 1 .............................. <tID>
+  [197] joinpadstr .............................. <tLogField.text & RETURN & "Connection logging" && tID>
+  [198] pushcons 7 .............................. <RETURN>
+  [200] joinstr ................................. <tLogField.text & RETURN & "Connection logging" && tID & RETURN>
+  [201] setobjprop 612 .......................... tLogField.text = tLogField.text & RETURN & "Connection logging" && tID & RETURN
+  [204] getparam 0 .............................. <me>
+  [206] getparam 1 .............................. <tID>
+  [208] pusharglist 2 ........................... <me, tID>
+  [210] objcall 171 ............................. <me.exists(tID)>
+  [212] not ..................................... <not me.exists(tID)>
+  [213] jmpifz [263] ............................ if not me.exists(tID) then
+  [216] getparam 1 .............................. <tID>
+  [218] getprop 1023 ............................ <pClassString>
+  [221] pusharglist 1 ........................... <pClassString>
+  [223] extcall 242 ............................. <getClassVariable(pClassString)>
+  [225] pusharglist 2 ........................... <tID, getClassVariable(pClassString)>
+  [227] extcall 177 ............................. <createObject(tID, getClassVariable(pClassString))>
+  [229] not ..................................... <not createObject(tID, getClassVariable(pClassString))>
+  [230] jmpifz [252] ............................ if not createObject(tID, getClassVariable(pClassString)) then
+  [233] getparam 0 .............................. <me>
+  [235] pushcons 9 .............................. <"Failed to initialize connection:">
+  [237] getparam 1 .............................. <tID>
+  [239] joinpadstr .............................. <"Failed to initialize connection:" && tID>
+  [240] pushsymb 164 ............................ <#create>
+  [242] pushsymb 123 ............................ <#major>
+  [244] pusharglist 4 ........................... <me, "Failed to initialize connection:" && tID, #create, #major>
+  [246] extcall 122 ............................. <error(me, "Failed to initialize connection:" && tID, #create, #major)>
+  [248] pusharglistnoret 1 ...................... <error(me, "Failed to initialize connection:" && tID, #create, #major)>
+  [250] extcall 11 .............................. return error(me, "Failed to initialize connection:" && tID, #create, #major)
+  [252] getparam 0 .............................. <me>
+  [254] getchainedprop 735 ...................... <me.pItemList>
+  [257] getparam 1 .............................. <tID>
+  [259] pusharglistnoret 2 ...................... <me.pItemList, tID>
+  [261] objcall 60 .............................. me.pItemList.add(tID)
+  [263] getprop 1021 ............................ <pListenerList>
+  [266] getparam 1 .............................. <tID>
+  [268] pusharglist 2 ........................... <pListenerList, tID>
+  [270] objcall 29 .............................. <pListenerList[tID]>
+  [272] pusharglist 1 ........................... <pListenerList[tID]>
+  [274] extcall 14 .............................. <voidp(pListenerList[tID])>
+  [276] jmpifz [313] ............................ if voidp(pListenerList[tID]) then / else
+  [279] pushcons 10 ............................. <"struct.pointer">
+  [281] pusharglist 1 ........................... <"struct.pointer">
+  [283] extcall 463 ............................. <getStructVariable("struct.pointer")>
+  [286] setlocal 1 .............................. tMsgPtr = getStructVariable("struct.pointer")
+  [288] getlocal 1 .............................. <tMsgPtr>
+  [290] pushsymb 15 ............................. <#value>
+  [292] pusharglist 0 ........................... <[:]>
+  [294] pushproplist ............................ <[:]>
+  [295] pusharglistnoret 3 ...................... <tMsgPtr, #value, [:]>
+  [297] objcall 208 ............................. tMsgPtr.setaProp(#value, [:])
+  [299] getprop 1021 ............................ <pListenerList>
+  [302] getparam 1 .............................. <tID>
+  [304] getlocal 1 .............................. <tMsgPtr>
+  [306] pusharglistnoret 3 ...................... <pListenerList, tID, tMsgPtr>
+  [308] objcall 23 .............................. pListenerList[tID] = tMsgPtr
+  [310] jmp [324]
+  [313] getprop 1021 ............................ <pListenerList>
+  [316] getparam 1 .............................. <tID>
+  [318] pusharglist 2 ........................... <pListenerList, tID>
+  [320] objcall 29 .............................. <pListenerList[tID]>
+  [322] setlocal 1 .............................. tMsgPtr = pListenerList[tID]
+  [324] getprop 1022 ............................ <pCommandsList>
+  [327] getparam 1 .............................. <tID>
+  [329] pusharglist 2 ........................... <pCommandsList, tID>
+  [331] objcall 29 .............................. <pCommandsList[tID]>
+  [333] pusharglist 1 ........................... <pCommandsList[tID]>
+  [335] extcall 14 .............................. <voidp(pCommandsList[tID])>
+  [337] jmpifz [374] ............................ if voidp(pCommandsList[tID]) then / else
+  [340] pushcons 10 ............................. <"struct.pointer">
+  [342] pusharglist 1 ........................... <"struct.pointer">
+  [344] extcall 463 ............................. <getStructVariable("struct.pointer")>
+  [347] setlocal 2 .............................. tCmdPtr = getStructVariable("struct.pointer")
+  [349] getlocal 2 .............................. <tCmdPtr>
+  [351] pushsymb 15 ............................. <#value>
+  [353] pusharglist 0 ........................... <[:]>
+  [355] pushproplist ............................ <[:]>
+  [356] pusharglistnoret 3 ...................... <tCmdPtr, #value, [:]>
+  [358] objcall 208 ............................. tCmdPtr.setaProp(#value, [:])
+  [360] getprop 1022 ............................ <pCommandsList>
+  [363] getparam 1 .............................. <tID>
+  [365] getlocal 2 .............................. <tCmdPtr>
+  [367] pusharglistnoret 3 ...................... <pCommandsList, tID, tCmdPtr>
+  [369] objcall 23 .............................. pCommandsList[tID] = tCmdPtr
+  [371] jmp [385]
+  [374] getprop 1022 ............................ <pCommandsList>
+  [377] getparam 1 .............................. <tID>
+  [379] pusharglist 2 ........................... <pCommandsList, tID>
+  [381] objcall 29 .............................. <pCommandsList[tID]>
+  [383] setlocal 2 .............................. tCmdPtr = pCommandsList[tID]
+  [385] getparam 0 .............................. <me>
+  [387] getparam 1 .............................. <tID>
+  [389] pusharglist 2 ........................... <me, tID>
+  [391] objcall 173 ............................. <me.GET(tID)>
+  [393] pushsymb 1026 ........................... <#listener>
+  [396] getlocal 1 .............................. <tMsgPtr>
+  [398] pusharglistnoret 3 ...................... <me.GET(tID), #listener, tMsgPtr>
+  [400] objcall 849 ............................. me.GET(tID).setProperty(#listener, tMsgPtr)
+  [403] getparam 0 .............................. <me>
+  [405] getparam 1 .............................. <tID>
+  [407] pusharglist 2 ........................... <me, tID>
+  [409] objcall 173 ............................. <me.GET(tID)>
+  [411] pushsymb 1027 ........................... <#commands>
+  [414] getlocal 2 .............................. <tCmdPtr>
+  [416] pusharglistnoret 3 ...................... <me.GET(tID), #commands, tCmdPtr>
+  [418] objcall 849 ............................. me.GET(tID).setProperty(#commands, tCmdPtr)
+  [421] getparam 0 .............................. <me>
+  [423] getparam 1 .............................. <tID>
+  [425] pusharglist 2 ........................... <me, tID>
+  [427] objcall 173 ............................. <me.GET(tID)>
+  [429] getparam 2 .............................. <tHost>
+  [431] getparam 3 .............................. <tPort>
+  [433] pusharglistnoret 3 ...................... <me.GET(tID), tHost, tPort>
+  [435] objcall 1028 ............................ me.GET(tID).connect(tHost, tPort)
+  [438] pushint8 1 .............................. <1>
+  [440] pusharglistnoret 1 ...................... <1>
+  [442] extcall 11 .............................. return 1
+  [444] ret
+end
+
+on closeAll me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getparam 0 .............................. <me>
+  [  8] pushsymb 735 ............................ <#pItemList>
+  [ 11] pusharglist 2 ........................... <me, #pItemList>
+  [ 13] objcall 28 .............................. <me.pItemList.count>
+  [ 15] lteq
+  [ 16] jmpifz [ 61] ............................ repeat with i = 1 to me.pItemList.count
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushsymb 735 ............................ <#pItemList>
+  [ 24] getlocal 0 .............................. <i>
+  [ 26] pusharglist 3 ........................... <me, #pItemList, i>
+  [ 28] objcall 22 .............................. <me.pItemList[i]>
+  [ 30] pusharglist 1 ........................... <me.pItemList[i]>
+  [ 32] extcall 150 ............................. <objectExists(me.pItemList[i])>
+  [ 34] jmpifz [ 52] ............................ if objectExists(me.pItemList[i]) then
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pushsymb 735 ............................ <#pItemList>
+  [ 42] getlocal 0 .............................. <i>
+  [ 44] pusharglist 3 ........................... <me, #pItemList, i>
+  [ 46] objcall 22 .............................. <me.pItemList[i]>
+  [ 48] pusharglistnoret 1 ...................... <me.pItemList[i]>
+  [ 50] extcall 178 ............................. removeObject(me.pItemList[i])
+  [ 52] pushint8 1
+  [ 54] getlocal 0
+  [ 56] add
+  [ 57] setlocal 0
+  [ 59] endrepeat [  4]
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglist 0 ........................... <[]>
+  [ 65] pushlist ................................ <[]>
+  [ 66] setobjprop 735 .......................... me.pItemList = []
+  [ 69] ret
+end
+
+on registerListener me, tID, tObjID, tMsgList
+  [  0] getparam 1 .............................. <tID>
+  [  2] getobjprop 586 .......................... <tID.ilk>
+  [  5] pushsymb 667 ............................ <#symbol>
+  [  8] nteq .................................... <tID.ilk <> #symbol>
+  [  9] getparam 1 .............................. <tID>
+  [ 11] getobjprop 586 .......................... <tID.ilk>
+  [ 14] pushsymb 13 ............................. <#string>
+  [ 16] nteq .................................... <tID.ilk <> #string>
+  [ 17] and ..................................... <(tID.ilk <> #symbol) and (tID.ilk <> #string)>
+  [ 18] jmpifz [ 41] ............................ if (tID.ilk <> #symbol) and (tID.ilk <> #string) then
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pushcons 11 ............................. <"Invalid message header ID:">
+  [ 25] getparam 1 .............................. <tID>
+  [ 27] joinpadstr .............................. <"Invalid message header ID:" && tID>
+  [ 28] pushsymb 312 ............................ <#registerListener>
+  [ 31] pushsymb 123 ............................ <#major>
+  [ 33] pusharglist 4 ........................... <me, "Invalid message header ID:" && tID, #registerListener, #major>
+  [ 35] extcall 122 ............................. <error(me, "Invalid message header ID:" && tID, #registerListener, #major)>
+  [ 37] pusharglistnoret 1 ...................... <error(me, "Invalid message header ID:" && tID, #registerListener, #major)>
+  [ 39] extcall 11 .............................. return error(me, "Invalid message header ID:" && tID, #registerListener, #major)
+  [ 41] getparam 2 .............................. <tObjID>
+  [ 43] pusharglist 1 ........................... <tObjID>
+  [ 45] extcall 141 ............................. <getObject(tObjID)>
+  [ 47] setlocal 0 .............................. tObject = getObject(tObjID)
+  [ 49] getlocal 0 .............................. <tObject>
+  [ 51] pushzero ................................ <0>
+  [ 52] eq ...................................... <tObject = 0>
+  [ 53] jmpifz [ 76] ............................ if tObject = 0 then
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pushcons 12 ............................. <"Object not found:">
+  [ 60] getparam 2 .............................. <tObjID>
+  [ 62] joinpadstr .............................. <"Object not found:" && tObjID>
+  [ 63] pushsymb 312 ............................ <#registerListener>
+  [ 66] pushsymb 123 ............................ <#major>
+  [ 68] pusharglist 4 ........................... <me, "Object not found:" && tObjID, #registerListener, #major>
+  [ 70] extcall 122 ............................. <error(me, "Object not found:" && tObjID, #registerListener, #major)>
+  [ 72] pusharglistnoret 1 ...................... <error(me, "Object not found:" && tObjID, #registerListener, #major)>
+  [ 74] extcall 11 .............................. return error(me, "Object not found:" && tObjID, #registerListener, #major)
+  [ 76] getprop 1021 ............................ <pListenerList>
+  [ 79] getparam 1 .............................. <tID>
+  [ 81] pusharglist 2 ........................... <pListenerList, tID>
+  [ 83] objcall 29 .............................. <pListenerList[tID]>
+  [ 85] pusharglist 1 ........................... <pListenerList[tID]>
+  [ 87] extcall 14 .............................. <voidp(pListenerList[tID])>
+  [ 89] jmpifz [126] ............................ if voidp(pListenerList[tID]) then / else
+  [ 92] pushcons 10 ............................. <"struct.pointer">
+  [ 94] pusharglist 1 ........................... <"struct.pointer">
+  [ 96] extcall 463 ............................. <getStructVariable("struct.pointer")>
+  [ 99] setlocal 1 .............................. tPtr = getStructVariable("struct.pointer")
+  [101] getlocal 1 .............................. <tPtr>
+  [103] pushsymb 15 ............................. <#value>
+  [105] pusharglist 0 ........................... <[:]>
+  [107] pushproplist ............................ <[:]>
+  [108] pusharglistnoret 3 ...................... <tPtr, #value, [:]>
+  [110] objcall 208 ............................. tPtr.setaProp(#value, [:])
+  [112] getprop 1021 ............................ <pListenerList>
+  [115] getparam 1 .............................. <tID>
+  [117] getlocal 1 .............................. <tPtr>
+  [119] pusharglistnoret 3 ...................... <pListenerList, tID, tPtr>
+  [121] objcall 23 .............................. pListenerList[tID] = tPtr
+  [123] jmp [137]
+  [126] getprop 1021 ............................ <pListenerList>
+  [129] getparam 1 .............................. <tID>
+  [131] pusharglist 2 ........................... <pListenerList, tID>
+  [133] objcall 29 .............................. <pListenerList[tID]>
+  [135] setlocal 1 .............................. tPtr = pListenerList[tID]
+  [137] pushint8 1 .............................. <1>
+  [139] setlocal 2
+  [141] getlocal 2
+  [143] getparam 3 .............................. <tMsgList>
+  [145] getobjprop 28 ........................... <tMsgList.count>
+  [147] lteq
+  [148] jmpifz [280] ............................ repeat with i = 1 to tMsgList.count
+  [151] getparam 3 .............................. <tMsgList>
+  [153] getlocal 2 .............................. <i>
+  [155] pusharglist 2 ........................... <tMsgList, i>
+  [157] objcall 111 ............................. <tMsgList.getPropAt(i)>
+  [159] setlocal 3 .............................. tMsg = tMsgList.getPropAt(i)
+  [161] getparam 3 .............................. <tMsgList>
+  [163] getlocal 2 .............................. <i>
+  [165] pusharglist 2 ........................... <tMsgList, i>
+  [167] objcall 29 .............................. <tMsgList[i]>
+  [169] setlocal 4 .............................. tMethod = tMsgList[i]
+  [171] getlocal 0 .............................. <tObject>
+  [173] getlocal 4 .............................. <tMethod>
+  [175] pusharglist 2 ........................... <tObject, tMethod>
+  [177] objcall 7 ............................... <tObject.handler(tMethod)>
+  [179] not ..................................... <not tObject.handler(tMethod)>
+  [180] jmpifz [208] ............................ if not tObject.handler(tMethod) then
+  [183] getparam 0 .............................. <me>
+  [185] pushcons 13 ............................. <"Method not found:">
+  [187] getlocal 4 .............................. <tMethod>
+  [189] joinpadstr .............................. <"Method not found:" && tMethod>
+  [190] pushcons 14 ............................. <"/">
+  [192] joinstr ................................. <"Method not found:" && tMethod & "/">
+  [193] getparam 2 .............................. <tObjID>
+  [195] joinstr ................................. <"Method not found:" && tMethod & "/" & tObjID>
+  [196] pushsymb 312 ............................ <#registerListener>
+  [199] pushsymb 123 ............................ <#major>
+  [201] pusharglistnoret 4 ...................... <me, "Method not found:" && tMethod & "/" & tObjID, #registerListener, #major>
+  [203] extcall 122 ............................. error(me, "Method not found:" && tMethod & "/" & tObjID, #registerListener, #major)
+  [205] jmp [271] ............................... next repeat
+  [208] getlocal 1 .............................. <tPtr>
+  [210] pushsymb 15 ............................. <#value>
+  [212] pusharglist 2 ........................... <tPtr, #value>
+  [214] objcall 115 ............................. <tPtr.getaProp(#value)>
+  [216] getlocal 3 .............................. <tMsg>
+  [218] pusharglist 2 ........................... <tPtr.getaProp(#value), tMsg>
+  [220] objcall 115 ............................. <tPtr.getaProp(#value).getaProp(tMsg)>
+  [222] pusharglist 1 ........................... <tPtr.getaProp(#value).getaProp(tMsg)>
+  [224] extcall 14 .............................. <voidp(tPtr.getaProp(#value).getaProp(tMsg))>
+  [226] jmpifz [246] ............................ if voidp(tPtr.getaProp(#value).getaProp(tMsg)) then
+  [229] getlocal 1 .............................. <tPtr>
+  [231] pushsymb 15 ............................. <#value>
+  [233] pusharglist 2 ........................... <tPtr, #value>
+  [235] objcall 115 ............................. <tPtr.getaProp(#value)>
+  [237] getlocal 3 .............................. <tMsg>
+  [239] pusharglist 0 ........................... <[]>
+  [241] pushlist ................................ <[]>
+  [242] pusharglistnoret 3 ...................... <tPtr.getaProp(#value), tMsg, []>
+  [244] objcall 208 ............................. tPtr.getaProp(#value).setaProp(tMsg, [])
+  [246] getlocal 1 .............................. <tPtr>
+  [248] pushsymb 15 ............................. <#value>
+  [250] pusharglist 2 ........................... <tPtr, #value>
+  [252] objcall 115 ............................. <tPtr.getaProp(#value)>
+  [254] getlocal 3 .............................. <tMsg>
+  [256] pusharglist 2 ........................... <tPtr.getaProp(#value), tMsg>
+  [258] objcall 115 ............................. <tPtr.getaProp(#value).getaProp(tMsg)>
+  [260] getparam 2 .............................. <tObjID>
+  [262] getlocal 4 .............................. <tMethod>
+  [264] pusharglist 2 ........................... <[tObjID, tMethod]>
+  [266] pushlist ................................ <[tObjID, tMethod]>
+  [267] pusharglistnoret 2 ...................... <tPtr.getaProp(#value).getaProp(tMsg), [tObjID, tMethod]>
+  [269] objcall 60 .............................. tPtr.getaProp(#value).getaProp(tMsg).add([tObjID, tMethod])
+  [271] pushint8 1
+  [273] getlocal 2
+  [275] add
+  [276] setlocal 2
+  [278] endrepeat [141]
+  [280] pushint8 1 .............................. <1>
+  [282] pusharglistnoret 1 ...................... <1>
+  [284] extcall 11 .............................. return 1
+  [286] ret
+end
+
+on unregisterListener me, tID, tObjID, tMsgList
+  [  0] getparam 1 .............................. <tID>
+  [  2] getobjprop 586 .......................... <tID.ilk>
+  [  5] pushsymb 667 ............................ <#symbol>
+  [  8] nteq .................................... <tID.ilk <> #symbol>
+  [  9] getparam 1 .............................. <tID>
+  [ 11] getobjprop 586 .......................... <tID.ilk>
+  [ 14] pushsymb 13 ............................. <#string>
+  [ 16] nteq .................................... <tID.ilk <> #string>
+  [ 17] and ..................................... <(tID.ilk <> #symbol) and (tID.ilk <> #string)>
+  [ 18] jmpifz [ 41] ............................ if (tID.ilk <> #symbol) and (tID.ilk <> #string) then
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pushcons 11 ............................. <"Invalid message header ID:">
+  [ 25] getparam 1 .............................. <tID>
+  [ 27] joinpadstr .............................. <"Invalid message header ID:" && tID>
+  [ 28] pushsymb 312 ............................ <#registerListener>
+  [ 31] pushsymb 123 ............................ <#major>
+  [ 33] pusharglist 4 ........................... <me, "Invalid message header ID:" && tID, #registerListener, #major>
+  [ 35] extcall 122 ............................. <error(me, "Invalid message header ID:" && tID, #registerListener, #major)>
+  [ 37] pusharglistnoret 1 ...................... <error(me, "Invalid message header ID:" && tID, #registerListener, #major)>
+  [ 39] extcall 11 .............................. return error(me, "Invalid message header ID:" && tID, #registerListener, #major)
+  [ 41] getprop 1021 ............................ <pListenerList>
+  [ 44] getparam 1 .............................. <tID>
+  [ 46] pusharglist 2 ........................... <pListenerList, tID>
+  [ 48] objcall 29 .............................. <pListenerList[tID]>
+  [ 50] setlocal 0 .............................. tPtr = pListenerList[tID]
+  [ 52] getlocal 0 .............................. <tPtr>
+  [ 54] pusharglist 1 ........................... <tPtr>
+  [ 56] extcall 14 .............................. <voidp(tPtr)>
+  [ 58] jmpifz [ 66] ............................ if voidp(tPtr) then
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 11 .............................. return 0
+  [ 66] getlocal 0 .............................. <tPtr>
+  [ 68] pushsymb 15 ............................. <#value>
+  [ 70] pusharglist 2 ........................... <tPtr, #value>
+  [ 72] objcall 115 ............................. <tPtr.getaProp(#value)>
+  [ 74] setlocal 1 .............................. tList = tPtr.getaProp(#value)
+  [ 76] pushint8 1 .............................. <1>
+  [ 78] setlocal 2
+  [ 80] getlocal 2
+  [ 82] getparam 3 .............................. <tMsgList>
+  [ 84] getobjprop 28 ........................... <tMsgList.count>
+  [ 86] lteq
+  [ 87] jmpifz [249] ............................ repeat with i = 1 to tMsgList.count
+  [ 90] getparam 3 .............................. <tMsgList>
+  [ 92] getlocal 2 .............................. <i>
+  [ 94] pusharglist 2 ........................... <tMsgList, i>
+  [ 96] objcall 111 ............................. <tMsgList.getPropAt(i)>
+  [ 98] setlocal 3 .............................. tMsg = tMsgList.getPropAt(i)
+  [100] getparam 3 .............................. <tMsgList>
+  [102] getlocal 2 .............................. <i>
+  [104] pusharglist 2 ........................... <tMsgList, i>
+  [106] objcall 29 .............................. <tMsgList[i]>
+  [108] setlocal 4 .............................. tMethod = tMsgList[i]
+  [110] getlocal 1 .............................. <tList>
+  [112] getlocal 3 .............................. <tMsg>
+  [114] pusharglist 2 ........................... <tList, tMsg>
+  [116] objcall 115 ............................. <tList.getaProp(tMsg)>
+  [118] pusharglist 1 ........................... <tList.getaProp(tMsg)>
+  [120] extcall 14 .............................. <voidp(tList.getaProp(tMsg))>
+  [122] jmpifz [151] ............................ if voidp(tList.getaProp(tMsg)) then
+  [125] getparam 0 .............................. <me>
+  [127] pushcons 15 ............................. <"No listeners for message:">
+  [129] getlocal 3 .............................. <tMsg>
+  [131] joinpadstr .............................. <"No listeners for message:" && tMsg>
+  [132] pushcons 14 ............................. <"/">
+  [134] joinpadstr .............................. <"No listeners for message:" && tMsg && "/">
+  [135] getparam 1 .............................. <tID>
+  [137] joinpadstr .............................. <"No listeners for message:" && tMsg && "/" && tID>
+  [138] pushsymb 313 ............................ <#unregisterListener>
+  [141] pushsymb 764 ............................ <#minor>
+  [144] pusharglistnoret 4 ...................... <me, "No listeners for message:" && tMsg && "/" && tID, #unregisterListener, #minor>
+  [146] extcall 122 ............................. error(me, "No listeners for message:" && tMsg && "/" && tID, #unregisterListener, #minor)
+  [148] jmp [240] ............................... next repeat
+  [151] pushint8 1 .............................. <1>
+  [153] setlocal 5
+  [155] getlocal 5
+  [157] getlocal 1 .............................. <tList>
+  [159] getlocal 3 .............................. <tMsg>
+  [161] pusharglist 2 ........................... <tList, tMsg>
+  [163] objcall 115 ............................. <tList.getaProp(tMsg)>
+  [165] getobjprop 28 ........................... <tList.getaProp(tMsg).count>
+  [167] lteq
+  [168] jmpifz [240] ............................ repeat with j = 1 to tList.getaProp(tMsg).count
+  [171] getlocal 1 .............................. <tList>
+  [173] getlocal 3 .............................. <tMsg>
+  [175] pusharglist 2 ........................... <tList, tMsg>
+  [177] objcall 115 ............................. <tList.getaProp(tMsg)>
+  [179] getlocal 5 .............................. <j>
+  [181] pusharglist 2 ........................... <tList.getaProp(tMsg), j>
+  [183] objcall 29 .............................. <tList.getaProp(tMsg)[j]>
+  [185] setlocal 6 .............................. tCallback = tList.getaProp(tMsg)[j]
+  [187] getlocal 6 .............................. <tCallback>
+  [189] pushint8 1 .............................. <1>
+  [191] pusharglist 2 ........................... <tCallback, 1>
+  [193] objcall 29 .............................. <tCallback[1]>
+  [195] getparam 2 .............................. <tObjID>
+  [197] eq ...................................... <tCallback[1] = tObjID>
+  [198] getlocal 6 .............................. <tCallback>
+  [200] pushint8 2 .............................. <2>
+  [202] pusharglist 2 ........................... <tCallback, 2>
+  [204] objcall 29 .............................. <tCallback[2]>
+  [206] getlocal 4 .............................. <tMethod>
+  [208] eq ...................................... <tCallback[2] = tMethod>
+  [209] and ..................................... <(tCallback[1] = tObjID) and (tCallback[2] = tMethod)>
+  [210] jmpifz [231] ............................ if (tCallback[1] = tObjID) and (tCallback[2] = tMethod) then
+  [213] getlocal 1 .............................. <tList>
+  [215] getlocal 3 .............................. <tMsg>
+  [217] pusharglist 2 ........................... <tList, tMsg>
+  [219] objcall 115 ............................. <tList.getaProp(tMsg)>
+  [221] getlocal 5 .............................. <j>
+  [223] pusharglistnoret 2 ...................... <tList.getaProp(tMsg), j>
+  [225] objcall 624 ............................. tList.getaProp(tMsg).deleteAt(j)
+  [228] jmp [240] ............................... exit repeat
+  [231] pushint8 1
+  [233] getlocal 5
+  [235] add
+  [236] setlocal 5
+  [238] endrepeat [155]
+  [240] pushint8 1
+  [242] getlocal 2
+  [244] add
+  [245] setlocal 2
+  [247] endrepeat [ 80]
+  [249] pushint8 1 .............................. <1>
+  [251] pusharglistnoret 1 ...................... <1>
+  [253] extcall 11 .............................. return 1
+  [255] ret
+end
+
+on registerCommands me, tID, tObjID, tCmdList
+  [  0] getparam 1 .............................. <tID>
+  [  2] getobjprop 586 .......................... <tID.ilk>
+  [  5] pushsymb 667 ............................ <#symbol>
+  [  8] nteq .................................... <tID.ilk <> #symbol>
+  [  9] getparam 1 .............................. <tID>
+  [ 11] getobjprop 586 .......................... <tID.ilk>
+  [ 14] pushsymb 13 ............................. <#string>
+  [ 16] nteq .................................... <tID.ilk <> #string>
+  [ 17] and ..................................... <(tID.ilk <> #symbol) and (tID.ilk <> #string)>
+  [ 18] jmpifz [ 41] ............................ if (tID.ilk <> #symbol) and (tID.ilk <> #string) then
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pushcons 11 ............................. <"Invalid message header ID:">
+  [ 25] getparam 1 .............................. <tID>
+  [ 27] joinpadstr .............................. <"Invalid message header ID:" && tID>
+  [ 28] pushsymb 312 ............................ <#registerListener>
+  [ 31] pushsymb 123 ............................ <#major>
+  [ 33] pusharglist 4 ........................... <me, "Invalid message header ID:" && tID, #registerListener, #major>
+  [ 35] extcall 122 ............................. <error(me, "Invalid message header ID:" && tID, #registerListener, #major)>
+  [ 37] pusharglistnoret 1 ...................... <error(me, "Invalid message header ID:" && tID, #registerListener, #major)>
+  [ 39] extcall 11 .............................. return error(me, "Invalid message header ID:" && tID, #registerListener, #major)
+  [ 41] getprop 1022 ............................ <pCommandsList>
+  [ 44] getparam 1 .............................. <tID>
+  [ 46] pusharglist 2 ........................... <pCommandsList, tID>
+  [ 48] objcall 29 .............................. <pCommandsList[tID]>
+  [ 50] pusharglist 1 ........................... <pCommandsList[tID]>
+  [ 52] extcall 14 .............................. <voidp(pCommandsList[tID])>
+  [ 54] jmpifz [ 91] ............................ if voidp(pCommandsList[tID]) then / else
+  [ 57] pushcons 10 ............................. <"struct.pointer">
+  [ 59] pusharglist 1 ........................... <"struct.pointer">
+  [ 61] extcall 463 ............................. <getStructVariable("struct.pointer")>
+  [ 64] setlocal 0 .............................. tPtr = getStructVariable("struct.pointer")
+  [ 66] getlocal 0 .............................. <tPtr>
+  [ 68] pushsymb 15 ............................. <#value>
+  [ 70] pusharglist 0 ........................... <[:]>
+  [ 72] pushproplist ............................ <[:]>
+  [ 73] pusharglistnoret 3 ...................... <tPtr, #value, [:]>
+  [ 75] objcall 208 ............................. tPtr.setaProp(#value, [:])
+  [ 77] getprop 1022 ............................ <pCommandsList>
+  [ 80] getparam 1 .............................. <tID>
+  [ 82] getlocal 0 .............................. <tPtr>
+  [ 84] pusharglistnoret 3 ...................... <pCommandsList, tID, tPtr>
+  [ 86] objcall 23 .............................. pCommandsList[tID] = tPtr
+  [ 88] jmp [102]
+  [ 91] getprop 1022 ............................ <pCommandsList>
+  [ 94] getparam 1 .............................. <tID>
+  [ 96] pusharglist 2 ........................... <pCommandsList, tID>
+  [ 98] objcall 29 .............................. <pCommandsList[tID]>
+  [100] setlocal 0 .............................. tPtr = pCommandsList[tID]
+  [102] pushint8 1 .............................. <1>
+  [104] setlocal 1
+  [106] getlocal 1
+  [108] getparam 3 .............................. <tCmdList>
+  [110] getobjprop 28 ........................... <tCmdList.count>
+  [112] lteq
+  [113] jmpifz [265] ............................ repeat with i = 1 to tCmdList.count
+  [116] getparam 3 .............................. <tCmdList>
+  [118] getlocal 1 .............................. <i>
+  [120] pusharglist 2 ........................... <tCmdList, i>
+  [122] objcall 111 ............................. <tCmdList.getPropAt(i)>
+  [124] setlocal 2 .............................. tCmd = tCmdList.getPropAt(i)
+  [126] getparam 3 .............................. <tCmdList>
+  [128] getlocal 1 .............................. <i>
+  [130] pusharglist 2 ........................... <tCmdList, i>
+  [132] objcall 29 .............................. <tCmdList[i]>
+  [134] setlocal 3 .............................. tNum = tCmdList[i]
+  [136] getlocal 0 .............................. <tPtr>
+  [138] pushsymb 15 ............................. <#value>
+  [140] pusharglist 2 ........................... <tPtr, #value>
+  [142] objcall 115 ............................. <tPtr.getaProp(#value)>
+  [144] getlocal 2 .............................. <tCmd>
+  [146] pusharglist 2 ........................... <tPtr.getaProp(#value), tCmd>
+  [148] objcall 115 ............................. <tPtr.getaProp(#value).getaProp(tCmd)>
+  [150] setlocal 4 .............................. tOld = tPtr.getaProp(#value).getaProp(tCmd)
+  [152] pushint8 64 ............................. <64>
+  [154] getlocal 3 .............................. <tNum>
+  [156] pushint8 64 ............................. <64>
+  [158] div ..................................... <tNum / 64>
+  [159] pusharglist 2 ........................... <64, tNum / 64>
+  [161] extcall 86 .............................. <bitOr(64, tNum / 64)>
+  [163] pusharglist 1 ........................... <bitOr(64, tNum / 64)>
+  [165] extcall 33 .............................. <numToChar(bitOr(64, tNum / 64))>
+  [167] setlocal 5 .............................. tBy1 = numToChar(bitOr(64, tNum / 64))
+  [169] pushint8 64 ............................. <64>
+  [171] pushint8 63 ............................. <63>
+  [173] getlocal 3 .............................. <tNum>
+  [175] pusharglist 2 ........................... <63, tNum>
+  [177] extcall 26 .............................. <bitAnd(63, tNum)>
+  [179] pusharglist 2 ........................... <64, bitAnd(63, tNum)>
+  [181] extcall 86 .............................. <bitOr(64, bitAnd(63, tNum))>
+  [183] pusharglist 1 ........................... <bitOr(64, bitAnd(63, tNum))>
+  [185] extcall 33 .............................. <numToChar(bitOr(64, bitAnd(63, tNum)))>
+  [187] setlocal 6 .............................. tBy2 = numToChar(bitOr(64, bitAnd(63, tNum)))
+  [189] getlocal 5 .............................. <tBy1>
+  [191] getlocal 6 .............................. <tBy2>
+  [193] joinstr ................................. <tBy1 & tBy2>
+  [194] setlocal 7 .............................. tNew = tBy1 & tBy2
+  [196] getlocal 4 .............................. <tOld>
+  [198] pusharglist 0 ........................... <>
+  [200] extcall 9 ............................... <VOID>
+  [202] nteq .................................... <tOld <> VOID>
+  [203] jmpifz [240] ............................ if tOld <> VOID then
+  [206] getlocal 4 .............................. <tOld>
+  [208] getlocal 7 .............................. <tNew>
+  [210] nteq .................................... <tOld <> tNew>
+  [211] jmpifz [240] ............................ if tOld <> tNew then
+  [214] getparam 0 .............................. <me>
+  [216] pushcons 16 ............................. <"Registered command override:">
+  [218] getlocal 2 .............................. <tCmd>
+  [220] joinpadstr .............................. <"Registered command override:" && tCmd>
+  [221] pushcons 14 ............................. <"/">
+  [223] joinpadstr .............................. <"Registered command override:" && tCmd && "/">
+  [224] getlocal 4 .............................. <tOld>
+  [226] joinpadstr .............................. <"Registered command override:" && tCmd && "/" && tOld>
+  [227] pushcons 17 ............................. <"->">
+  [229] joinpadstr .............................. <"Registered command override:" && tCmd && "/" && tOld && "->">
+  [230] getlocal 7 .............................. <tNew>
+  [232] joinpadstr .............................. <"Registered command override:" && tCmd && "/" && tOld && "->" && tNew>
+  [233] pushsymb 764 ............................ <#minor>
+  [236] pusharglistnoret 3 ...................... <me, "Registered command override:" && tCmd && "/" && tOld && "->" && tNew, #minor>
+  [238] extcall 122 ............................. error(me, "Registered command override:" && tCmd && "/" && tOld && "->" && tNew, #minor)
+  [240] getlocal 0 .............................. <tPtr>
+  [242] pushsymb 15 ............................. <#value>
+  [244] pusharglist 2 ........................... <tPtr, #value>
+  [246] objcall 115 ............................. <tPtr.getaProp(#value)>
+  [248] getlocal 2 .............................. <tCmd>
+  [250] getlocal 7 .............................. <tNew>
+  [252] pusharglistnoret 3 ...................... <tPtr.getaProp(#value), tCmd, tNew>
+  [254] objcall 208 ............................. tPtr.getaProp(#value).setaProp(tCmd, tNew)
+  [256] pushint8 1
+  [258] getlocal 1
+  [260] add
+  [261] setlocal 1
+  [263] endrepeat [106]
+  [265] pushint8 1 .............................. <1>
+  [267] pusharglistnoret 1 ...................... <1>
+  [269] extcall 11 .............................. return 1
+  [271] ret
+end
+
+on unregisterCommands me, tID, tObjID, tCmdList
+  [  0] getparam 1 .............................. <tID>
+  [  2] getobjprop 586 .......................... <tID.ilk>
+  [  5] pushsymb 667 ............................ <#symbol>
+  [  8] nteq .................................... <tID.ilk <> #symbol>
+  [  9] getparam 1 .............................. <tID>
+  [ 11] getobjprop 586 .......................... <tID.ilk>
+  [ 14] pushsymb 13 ............................. <#string>
+  [ 16] nteq .................................... <tID.ilk <> #string>
+  [ 17] and ..................................... <(tID.ilk <> #symbol) and (tID.ilk <> #string)>
+  [ 18] jmpifz [ 41] ............................ if (tID.ilk <> #symbol) and (tID.ilk <> #string) then
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pushcons 11 ............................. <"Invalid message header ID:">
+  [ 25] getparam 1 .............................. <tID>
+  [ 27] joinpadstr .............................. <"Invalid message header ID:" && tID>
+  [ 28] pushsymb 312 ............................ <#registerListener>
+  [ 31] pushsymb 123 ............................ <#major>
+  [ 33] pusharglist 4 ........................... <me, "Invalid message header ID:" && tID, #registerListener, #major>
+  [ 35] extcall 122 ............................. <error(me, "Invalid message header ID:" && tID, #registerListener, #major)>
+  [ 37] pusharglistnoret 1 ...................... <error(me, "Invalid message header ID:" && tID, #registerListener, #major)>
+  [ 39] extcall 11 .............................. return error(me, "Invalid message header ID:" && tID, #registerListener, #major)
+  [ 41] getprop 1022 ............................ <pCommandsList>
+  [ 44] getparam 1 .............................. <tID>
+  [ 46] pusharglist 2 ........................... <pCommandsList, tID>
+  [ 48] objcall 29 .............................. <pCommandsList[tID]>
+  [ 50] setlocal 0 .............................. tPtr = pCommandsList[tID]
+  [ 52] getlocal 0 .............................. <tPtr>
+  [ 54] pusharglist 1 ........................... <tPtr>
+  [ 56] extcall 14 .............................. <voidp(tPtr)>
+  [ 58] jmpifz [ 66] ............................ if voidp(tPtr) then
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 11 .............................. return 0
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] pusharglistnoret 1 ...................... <1>
+  [ 70] extcall 11 .............................. return 1
+  [ 72] ret
+end
+
+on registerLastMessage me, tmessageId, tMessage
+  [  0] getprop 1020 ............................ <pLastMessageData>
+  [  3] pushsymb 117 ............................ <#id>
+  [  5] getparam 1 .............................. <tmessageId>
+  [  7] pusharglistnoret 3 ...................... <pLastMessageData, #id, tmessageId>
+  [  9] objcall 23 .............................. pLastMessageData[#id] = tmessageId
+  [ 11] getprop 1020 ............................ <pLastMessageData>
+  [ 14] pushsymb 1039 ........................... <#message>
+  [ 17] getparam 2 .............................. <tMessage>
+  [ 19] pusharglistnoret 3 ...................... <pLastMessageData, #message, tMessage>
+  [ 21] objcall 23 .............................. pLastMessageData[#message] = tMessage
+  [ 23] ret
+end
+
+on getLastMessageData me
+  [  0] getprop 1020 ............................ <pLastMessageData>
+  [  3] pushsymb 117 ............................ <#id>
+  [  5] pusharglist 2 ........................... <pLastMessageData, #id>
+  [  7] objcall 29 .............................. <pLastMessageData[#id]>
+  [  9] pusharglistnoret 1 ...................... <pLastMessageData[#id]>
+  [ 11] extcall 11 .............................. return pLastMessageData[#id]
+  [ 13] ret
+end

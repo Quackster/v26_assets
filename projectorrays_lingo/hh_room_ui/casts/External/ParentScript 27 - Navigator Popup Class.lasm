@@ -1,0 +1,489 @@
+property pPopupWindowID, pVisible, pNodeInfo, pBlend, pTargetElementID
+
+on construct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 563 ............................. <getUniqueID()>
+  [  5] setprop 618 ............................. pPopupWindowID = getUniqueID()
+  [  8] pusharglist 0 ........................... <>
+  [ 10] extcall 563 ............................. <getUniqueID()>
+  [ 13] setlocal 0 .............................. pHideTimeoutID = getUniqueID()
+  [ 15] pusharglist 0 ........................... <>
+  [ 17] extcall 563 ............................. <getUniqueID()>
+  [ 20] setlocal 1 .............................. pShowTimeOutID = getUniqueID()
+  [ 22] pushzero ................................ <0>
+  [ 23] setprop 619 ............................. pVisible = 0
+  [ 26] pusharglist 0 ........................... <[:]>
+  [ 28] pushproplist ............................ <[:]>
+  [ 29] setprop 620 ............................. pNodeInfo = [:]
+  [ 32] pushzero ................................ <0>
+  [ 33] setprop 621 ............................. pBlend = 0
+  [ 36] pushsymb 386 ............................ <#show_hide_navigator>
+  [ 39] getparam 0 .............................. <me>
+  [ 41] pusharglist 1 ........................... <me>
+  [ 43] objcall 34 .............................. <me.getID()>
+  [ 45] pushsymb 64 ............................. <#hide>
+  [ 47] pusharglistnoret 3 ...................... <#show_hide_navigator, me.getID(), #hide>
+  [ 49] extcall 33 .............................. registerMessage(#show_hide_navigator, me.getID(), #hide)
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] pusharglistnoret 1 ...................... <1>
+  [ 55] extcall 52 .............................. return 1
+  [ 57] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 386 ............................ <#show_hide_navigator>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 34 .............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#show_hide_navigator, me.getID()>
+  [ 11] extcall 54 .............................. unregisterMessage(#show_hide_navigator, me.getID())
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] pusharglistnoret 1 ...................... <1>
+  [ 17] extcall 52 .............................. return 1
+  [ 19] ret
+end
+
+on Init me, tTargetElementID
+  [  0] getparam 1 .............................. <tTargetElementID>
+  [  2] setprop 622 ............................. pTargetElementID = tTargetElementID
+  [  5] pushsymb 623 ............................ <#navigator_component>
+  [  8] pusharglist 1 ........................... <#navigator_component>
+  [ 10] extcall 49 .............................. <getObject(#navigator_component)>
+  [ 12] setlocal 0 .............................. tNavComponent = getObject(#navigator_component)
+  [ 14] getlocal 0 .............................. <tNavComponent>
+  [ 16] pushzero ................................ <0>
+  [ 17] nteq .................................... <tNavComponent <> 0>
+  [ 18] jmpifz [ 28] ............................ if tNavComponent <> 0 then
+  [ 21] getlocal 0 .............................. <tNavComponent>
+  [ 23] pusharglistnoret 1 ...................... <tNavComponent>
+  [ 25] objcall 624 ............................. tNavComponent.updateRecomRooms()
+  [ 28] ret
+end
+
+on show me
+  [  0] getprop 619 ............................. <pVisible>
+  [  3] jmpifz [ 12] ............................ if pVisible then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 52 .............................. return 1
+  [ 12] pushsymb 627 ............................ <#navigator_interface>
+  [ 15] pusharglist 1 ........................... <#navigator_interface>
+  [ 17] extcall 49 .............................. <getObject(#navigator_interface)>
+  [ 19] setlocal 0 .............................. tNavInterface = getObject(#navigator_interface)
+  [ 21] getlocal 0 .............................. <tNavInterface>
+  [ 23] pushzero ................................ <0>
+  [ 24] nteq .................................... <tNavInterface <> 0>
+  [ 25] jmpifz [ 43] ............................ if tNavInterface <> 0 then
+  [ 28] getlocal 0 .............................. <tNavInterface>
+  [ 30] pusharglist 1 ........................... <tNavInterface>
+  [ 32] objcall 628 ............................. <tNavInterface.isOpen()>
+  [ 35] jmpifz [ 43] ............................ if tNavInterface.isOpen() then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 52 .............................. return 0
+  [ 43] getprop 618 ............................. <pPopupWindowID>
+  [ 46] pushcons 0 .............................. <"nav_popup_bg.window">
+  [ 48] pusharglistnoret 2 ...................... <pPopupWindowID, "nav_popup_bg.window">
+  [ 50] extcall 60 .............................. createWindow(pPopupWindowID, "nav_popup_bg.window")
+  [ 52] getprop 618 ............................. <pPopupWindowID>
+  [ 55] pusharglist 1 ........................... <pPopupWindowID>
+  [ 57] extcall 61 .............................. <getWindow(pPopupWindowID)>
+  [ 59] setlocal 1 .............................. tWindow = getWindow(pPopupWindowID)
+  [ 61] getlocal 1 .............................. <tWindow>
+  [ 63] pushcons 1 .............................. <"navigator_popup.window">
+  [ 65] pusharglistnoret 2 ...................... <tWindow, "navigator_popup.window">
+  [ 67] objcall 328 ............................. tWindow.merge("navigator_popup.window")
+  [ 70] pushcons 2 .............................. <"RoomBarID">
+  [ 72] pusharglist 1 ........................... <"RoomBarID">
+  [ 74] extcall 61 .............................. <getWindow("RoomBarID")>
+  [ 76] setlocal 2 .............................. tRoomBar = getWindow("RoomBarID")
+  [ 78] getlocal 2 .............................. <tRoomBar>
+  [ 80] getprop 622 ............................. <pTargetElementID>
+  [ 83] pusharglist 2 ........................... <tRoomBar, pTargetElementID>
+  [ 85] objcall 95 .............................. <tRoomBar.getElement(pTargetElementID)>
+  [ 87] setlocal 3 .............................. tNavIcon = tRoomBar.getElement(pTargetElementID)
+  [ 89] getlocal 2 .............................. <tRoomBar>
+  [ 91] pushsymb 542 ............................ <#locX>
+  [ 94] pusharglist 2 ........................... <tRoomBar, #locX>
+  [ 96] objcall 63 .............................. <tRoomBar.getProperty(#locX)>
+  [ 98] setlocal 4 .............................. tBarLocX = tRoomBar.getProperty(#locX)
+  [100] getlocal 2 .............................. <tRoomBar>
+  [102] pushsymb 166 ............................ <#locY>
+  [104] pusharglist 2 ........................... <tRoomBar, #locY>
+  [106] objcall 63 .............................. <tRoomBar.getProperty(#locY)>
+  [108] setlocal 5 .............................. tBarLocY = tRoomBar.getProperty(#locY)
+  [110] getlocal 3 .............................. <tNavIcon>
+  [112] pushsymb 542 ............................ <#locX>
+  [115] pusharglist 2 ........................... <tNavIcon, #locX>
+  [117] objcall 63 .............................. <tNavIcon.getProperty(#locX)>
+  [119] setlocal 6 .............................. tIconLocX = tNavIcon.getProperty(#locX)
+  [121] getlocal 3 .............................. <tNavIcon>
+  [123] pushsymb 166 ............................ <#locY>
+  [125] pusharglist 2 ........................... <tNavIcon, #locY>
+  [127] objcall 63 .............................. <tNavIcon.getProperty(#locY)>
+  [129] setlocal 7 .............................. tIconLocY = tNavIcon.getProperty(#locY)
+  [131] getlocal 3 .............................. <tNavIcon>
+  [133] pushsymb 96 ............................. <#width>
+  [135] pusharglist 2 ........................... <tNavIcon, #width>
+  [137] objcall 63 .............................. <tNavIcon.getProperty(#width)>
+  [139] setlocal 8 .............................. tIconWidth = tNavIcon.getProperty(#width)
+  [141] pushint8 2 .............................. <2>
+  [143] setlocal 9 .............................. tMargin = 2
+  [145] getlocal 4 .............................. <tBarLocX>
+  [147] getlocal 6 .............................. <tIconLocX>
+  [149] add ..................................... <tBarLocX + tIconLocX>
+  [150] getlocal 8 .............................. <tIconWidth>
+  [152] pushint8 2 .............................. <2>
+  [154] div ..................................... <tIconWidth / 2>
+  [155] add ..................................... <tBarLocX + tIconLocX + (tIconWidth / 2)>
+  [156] getlocal 1 .............................. <tWindow>
+  [158] pushsymb 96 ............................. <#width>
+  [160] pusharglist 2 ........................... <tWindow, #width>
+  [162] objcall 63 .............................. <tWindow.getProperty(#width)>
+  [164] pushint8 2 .............................. <2>
+  [166] div ..................................... <tWindow.getProperty(#width) / 2>
+  [167] sub ..................................... <tBarLocX + tIconLocX + (tIconWidth / 2) - (tWindow.getProperty(#width) / 2)>
+  [168] setlocal 10 ............................. tLocX = tBarLocX + tIconLocX + (tIconWidth / 2) - (tWindow.getProperty(#width) / 2)
+  [170] getlocal 5 .............................. <tBarLocY>
+  [172] getlocal 7 .............................. <tIconLocY>
+  [174] add ..................................... <tBarLocY + tIconLocY>
+  [175] getlocal 1 .............................. <tWindow>
+  [177] pushsymb 98 ............................. <#height>
+  [179] pusharglist 2 ........................... <tWindow, #height>
+  [181] objcall 63 .............................. <tWindow.getProperty(#height)>
+  [183] sub ..................................... <tBarLocY + tIconLocY - tWindow.getProperty(#height)>
+  [184] setlocal 11 ............................. tLocY = tBarLocY + tIconLocY - tWindow.getProperty(#height)
+  [186] getlocal 1 .............................. <tWindow>
+  [188] pushsymb 96 ............................. <#width>
+  [190] pusharglist 2 ........................... <tWindow, #width>
+  [192] objcall 63 .............................. <tWindow.getProperty(#width)>
+  [194] getlocal 10 ............................. <tLocX>
+  [196] add ..................................... <tWindow.getProperty(#width) + tLocX>
+  [197] getmovieprop 541 ........................ <the stage>
+  [200] getchainedprop 201 ...................... <(the stage).rect>
+  [202] getobjprop 96 ........................... <(the stage).rect.width>
+  [204] sub ..................................... <tWindow.getProperty(#width) + tLocX - (the stage).rect.width>
+  [205] getlocal 9 .............................. <tMargin>
+  [207] sub ..................................... <tWindow.getProperty(#width) + tLocX - (the stage).rect.width - tMargin>
+  [208] setlocal 12 ............................. tOffset = tWindow.getProperty(#width) + tLocX - (the stage).rect.width - tMargin
+  [210] getlocal 12 ............................. <tOffset>
+  [212] pushzero ................................ <0>
+  [213] gt ...................................... <tOffset > 0>
+  [214] jmpifz [244] ............................ if tOffset > 0 then
+  [217] getlocal 10 ............................. <tLocX>
+  [219] getlocal 12 ............................. <tOffset>
+  [221] sub ..................................... <tLocX - tOffset>
+  [222] setlocal 10 ............................. tLocX = tLocX - tOffset
+  [224] getlocal 1 .............................. <tWindow>
+  [226] pushcons 3 .............................. <"pointer">
+  [228] pusharglist 2 ........................... <tWindow, "pointer">
+  [230] objcall 95 .............................. <tWindow.getElement("pointer")>
+  [232] setlocal 13 ............................. tPointerElem = tWindow.getElement("pointer")
+  [234] getlocal 13 ............................. <tPointerElem>
+  [236] getlocal 12 ............................. <tOffset>
+  [238] pushzero ................................ <0>
+  [239] pusharglistnoret 3 ...................... <tPointerElem, tOffset, 0>
+  [241] objcall 629 ............................. tPointerElem.moveBy(tOffset, 0)
+  [244] getlocal 1 .............................. <tWindow>
+  [246] getlocal 10 ............................. <tLocX>
+  [248] getlocal 11 ............................. <tLocY>
+  [250] pusharglistnoret 3 ...................... <tWindow, tLocX, tLocY>
+  [252] objcall 167 ............................. tWindow.moveTo(tLocX, tLocY)
+  [254] getlocal 1 .............................. <tWindow>
+  [256] pushsymb 604 ............................ <#popupEntered>
+  [259] getparam 0 .............................. <me>
+  [261] pusharglist 1 ........................... <me>
+  [263] objcall 34 .............................. <me.getID()>
+  [265] pushsymb 121 ............................ <#mouseEnter>
+  [267] pusharglistnoret 4 ...................... <tWindow, #popupEntered, me.getID(), #mouseEnter>
+  [269] objcall 120 ............................. tWindow.registerProcedure(#popupEntered, me.getID(), #mouseEnter)
+  [271] getlocal 1 .............................. <tWindow>
+  [273] pushsymb 605 ............................ <#popupLeft>
+  [276] getparam 0 .............................. <me>
+  [278] pusharglist 1 ........................... <me>
+  [280] objcall 34 .............................. <me.getID()>
+  [282] pushsymb 123 ............................ <#mouseLeave>
+  [284] pusharglistnoret 4 ...................... <tWindow, #popupLeft, me.getID(), #mouseLeave>
+  [286] objcall 120 ............................. tWindow.registerProcedure(#popupLeft, me.getID(), #mouseLeave)
+  [288] getlocal 1 .............................. <tWindow>
+  [290] pushsymb 17 ............................. <#eventProc>
+  [292] getparam 0 .............................. <me>
+  [294] pusharglist 1 ........................... <me>
+  [296] objcall 34 .............................. <me.getID()>
+  [298] pushsymb 119 ............................ <#mouseUp>
+  [300] pusharglistnoret 4 ...................... <tWindow, #eventProc, me.getID(), #mouseUp>
+  [302] objcall 120 ............................. tWindow.registerProcedure(#eventProc, me.getID(), #mouseUp)
+  [304] getparam 0 .............................. <me>
+  [306] pusharglistnoret 1 ...................... <me>
+  [308] objcall 617 ............................. me.fetchNodeInfo()
+  [311] pushint8 1 .............................. <1>
+  [313] setlocal 14
+  [315] getlocal 14
+  [317] pushint8 3 .............................. <3>
+  [319] lteq
+  [320] jmpifz [558] ............................ repeat with i = 1 to 3
+  [323] getlocal 14 ............................. <i>
+  [325] getprop 620 ............................. <pNodeInfo>
+  [328] pushsymb 630 ............................ <#children>
+  [331] pusharglist 2 ........................... <pNodeInfo, #children>
+  [333] objcall 57 .............................. <pNodeInfo.children.count>
+  [335] gt ...................................... <i > pNodeInfo.children.count>
+  [336] jmpifz [342] ............................ if i > pNodeInfo.children.count then
+  [339] jmp [558] ............................... exit repeat
+  [342] getprop 620 ............................. <pNodeInfo>
+  [345] pushsymb 630 ............................ <#children>
+  [348] getlocal 14 ............................. <i>
+  [350] pusharglist 3 ........................... <pNodeInfo, #children, i>
+  [352] objcall 199 ............................. <pNodeInfo.children[i]>
+  [354] setlocal 15 ............................. tRoom = pNodeInfo.children[i]
+  [356] getlocal 1 .............................. <tWindow>
+  [358] pushcons 4 .............................. <"nav_popup_link">
+  [360] getlocal 14 ............................. <i>
+  [362] joinstr ................................. <"nav_popup_link" & i>
+  [363] pusharglist 2 ........................... <tWindow, "nav_popup_link" & i>
+  [365] objcall 95 .............................. <tWindow.getElement("nav_popup_link" & i)>
+  [367] setlocal 16 ............................. tElem = tWindow.getElement("nav_popup_link" & i)
+  [369] getlocal 15 ............................. <tRoom>
+  [371] pushsymb 106 ............................ <#name>
+  [373] pusharglist 2 ........................... <tRoom, #name>
+  [375] objcall 91 .............................. <tRoom.getaProp(#name)>
+  [377] setlocal 17 ............................. tRoomName = tRoom.getaProp(#name)
+  [379] getlocal 16 ............................. <tElem>
+  [381] getlocal 17 ............................. <tRoomName>
+  [383] pusharglistnoret 2 ...................... <tElem, tRoomName>
+  [385] objcall 205 ............................. tElem.setText(tRoomName)
+  [387] getlocal 15 ............................. <tRoom>
+  [389] pushsymb 631 ............................ <#usercount>
+  [392] pusharglist 2 ........................... <tRoom, #usercount>
+  [394] objcall 58 .............................. <tRoom[#usercount]>
+  [396] getlocal 15 ............................. <tRoom>
+  [398] pushsymb 632 ............................ <#maxUsers>
+  [401] pusharglist 2 ........................... <tRoom, #maxUsers>
+  [403] objcall 58 .............................. <tRoom[#maxUsers]>
+  [405] and ..................................... <tRoom[#usercount] and tRoom[#maxUsers]>
+  [406] jmpifz [438] ............................ if tRoom[#usercount] and tRoom[#maxUsers] then / else
+  [409] getlocal 15 ............................. <tRoom>
+  [411] pushsymb 631 ............................ <#usercount>
+  [414] pusharglist 2 ........................... <tRoom, #usercount>
+  [416] objcall 58 .............................. <tRoom[#usercount]>
+  [418] pusharglist 1 ........................... <tRoom[#usercount]>
+  [420] extcall 633 ............................. <float(tRoom[#usercount])>
+  [423] getlocal 15 ............................. <tRoom>
+  [425] pushsymb 632 ............................ <#maxUsers>
+  [428] pusharglist 2 ........................... <tRoom, #maxUsers>
+  [430] objcall 58 .............................. <tRoom[#maxUsers]>
+  [432] div ..................................... <float(tRoom[#usercount]) / tRoom[#maxUsers]>
+  [433] setlocal 18 ............................. tOccupancy = float(tRoom[#usercount]) / tRoom[#maxUsers]
+  [435] jmp [441]
+  [438] pushzero ................................ <0>
+  [439] setlocal 18 ............................. tOccupancy = 0
+  [441] getlocal 1 .............................. <tWindow>
+  [443] pushcons 5 .............................. <"nav_popup_occupancy">
+  [445] getlocal 14 ............................. <i>
+  [447] joinstr ................................. <"nav_popup_occupancy" & i>
+  [448] pusharglist 2 ........................... <tWindow, "nav_popup_occupancy" & i>
+  [450] objcall 95 .............................. <tWindow.getElement("nav_popup_occupancy" & i)>
+  [452] setlocal 16 ............................. tElem = tWindow.getElement("nav_popup_occupancy" & i)
+  [454] getlocal 18 ............................. <tOccupancy>
+  [456] pushcons 6 .............................. <0.67000000000000004>
+  [458] gt ...................................... <tOccupancy > 0.67000000000000004>
+  [459] jmpifz [472] ............................ if tOccupancy > 0.67000000000000004 then / else
+  [462] pushcons 7 .............................. <"room.occupancy.">
+  [464] pushint8 3 .............................. <3>
+  [466] joinstr ................................. <"room.occupancy." & 3>
+  [467] setlocal 19 ............................. tmember = "room.occupancy." & 3
+  [469] jmp [513]
+  [472] getlocal 18 ............................. <tOccupancy>
+  [474] pushcons 8 .............................. <0.34000000000000002>
+  [476] gt ...................................... <tOccupancy > 0.34000000000000002>
+  [477] jmpifz [490] ............................ if tOccupancy > 0.34000000000000002 then / else
+  [480] pushcons 7 .............................. <"room.occupancy.">
+  [482] pushint8 2 .............................. <2>
+  [484] joinstr ................................. <"room.occupancy." & 2>
+  [485] setlocal 19 ............................. tmember = "room.occupancy." & 2
+  [487] jmp [513]
+  [490] getlocal 18 ............................. <tOccupancy>
+  [492] pushzero ................................ <0>
+  [493] gt ...................................... <tOccupancy > 0>
+  [494] jmpifz [507] ............................ if tOccupancy > 0 then / else
+  [497] pushcons 7 .............................. <"room.occupancy.">
+  [499] pushint8 1 .............................. <1>
+  [501] joinstr ................................. <"room.occupancy." & 1>
+  [502] setlocal 19 ............................. tmember = "room.occupancy." & 1
+  [504] jmp [513]
+  [507] pushcons 7 .............................. <"room.occupancy.">
+  [509] pushzero ................................ <0>
+  [510] joinstr ................................. <"room.occupancy." & 0>
+  [511] setlocal 19 ............................. tmember = "room.occupancy." & 0
+  [513] getlocal 19 ............................. <tmember>
+  [515] pusharglist 1 ........................... <tmember>
+  [517] extcall 352 ............................. <getmemnum(tmember)>
+  [520] pusharglist 1 ........................... <getmemnum(tmember)>
+  [522] extcall 187 ............................. <member(getmemnum(tmember))>
+  [524] getobjprop 186 .......................... <member(getmemnum(tmember)).image>
+  [526] setlocal 20 ............................. tImage = member(getmemnum(tmember)).image
+  [528] getlocal 1 .............................. <tWindow>
+  [530] pushcons 9 .............................. <"nav_popup_link_occupancy">
+  [532] getlocal 14 ............................. <i>
+  [534] joinstr ................................. <"nav_popup_link_occupancy" & i>
+  [535] pusharglist 2 ........................... <tWindow, "nav_popup_link_occupancy" & i>
+  [537] objcall 95 .............................. <tWindow.getElement("nav_popup_link_occupancy" & i)>
+  [539] setlocal 16 ............................. tElem = tWindow.getElement("nav_popup_link_occupancy" & i)
+  [541] getlocal 16 ............................. <tElem>
+  [543] getlocal 20 ............................. <tImage>
+  [545] pusharglistnoret 2 ...................... <tElem, tImage>
+  [547] objcall 101 ............................. tElem.feedImage(tImage)
+  [549] pushint8 1
+  [551] getlocal 14
+  [553] add
+  [554] setlocal 14
+  [556] endrepeat [315]
+  [558] getlocal 1 .............................. <tWindow>
+  [560] pushzero ................................ <0>
+  [561] pusharglistnoret 2 ...................... <tWindow, 0>
+  [563] objcall 634 ............................. tWindow.setBlend(0)
+  [566] pushzero ................................ <0>
+  [567] setprop 621 ............................. pBlend = 0
+  [570] getparam 0 .............................. <me>
+  [572] pusharglist 1 ........................... <me>
+  [574] objcall 34 .............................. <me.getID()>
+  [576] pusharglistnoret 1 ...................... <me.getID()>
+  [578] extcall 594 ............................. receiveUpdate(me.getID())
+  [581] pushint8 1 .............................. <1>
+  [583] setprop 619 ............................. pVisible = 1
+  [586] ret
+end
+
+on hide me
+  [  0] getprop 619 ............................. <pVisible>
+  [  3] not ..................................... <not pVisible>
+  [  4] jmpifz [ 13] ............................ if not pVisible then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 52 .............................. return 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pusharglist 1 ........................... <me>
+  [ 17] objcall 34 .............................. <me.getID()>
+  [ 19] pusharglistnoret 1 ...................... <me.getID()>
+  [ 21] extcall 595 ............................. removeUpdate(me.getID())
+  [ 24] getprop 618 ............................. <pPopupWindowID>
+  [ 27] pusharglistnoret 1 ...................... <pPopupWindowID>
+  [ 29] extcall 337 ............................. removeWindow(pPopupWindowID)
+  [ 32] pushsymb 651 ............................ <#popupClosed>
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 34 .............................. <me.getID()>
+  [ 41] pusharglistnoret 2 ...................... <#popupClosed, me.getID()>
+  [ 43] extcall 217 ............................. executeMessage(#popupClosed, me.getID())
+  [ 45] pushzero ................................ <0>
+  [ 46] setprop 619 ............................. pVisible = 0
+  [ 49] ret
+end
+
+on fetchNodeInfo me
+  [  0] pushsymb 623 ............................ <#navigator_component>
+  [  3] pusharglist 1 ........................... <#navigator_component>
+  [  5] extcall 49 .............................. <getObject(#navigator_component)>
+  [  7] pusharglist 1 ........................... <getObject(#navigator_component)>
+  [  9] objcall 652 ............................. <getObject(#navigator_component).getRecomNodeInfo()>
+  [ 12] setprop 620 ............................. pNodeInfo = getObject(#navigator_component).getRecomNodeInfo()
+  [ 15] ret
+end
+
+on update me
+  [  0] getprop 621 ............................. <pBlend>
+  [  3] pushint8 25 ............................. <25>
+  [  5] add ..................................... <pBlend + 25>
+  [  6] setprop 621 ............................. pBlend = pBlend + 25
+  [  9] getprop 621 ............................. <pBlend>
+  [ 12] pushint8 100 ............................ <100>
+  [ 14] gteq .................................... <pBlend >= 100>
+  [ 15] jmpifz [ 34] ............................ if pBlend >= 100 then
+  [ 18] pushint8 100 ............................ <100>
+  [ 20] setprop 621 ............................. pBlend = 100
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglist 1 ........................... <me>
+  [ 27] objcall 34 .............................. <me.getID()>
+  [ 29] pusharglistnoret 1 ...................... <me.getID()>
+  [ 31] extcall 595 ............................. removeUpdate(me.getID())
+  [ 34] getprop 618 ............................. <pPopupWindowID>
+  [ 37] pusharglist 1 ........................... <pPopupWindowID>
+  [ 39] extcall 61 .............................. <getWindow(pPopupWindowID)>
+  [ 41] setlocal 0 .............................. tWindow = getWindow(pPopupWindowID)
+  [ 43] getlocal 0 .............................. <tWindow>
+  [ 45] getprop 621 ............................. <pBlend>
+  [ 48] pusharglistnoret 2 ...................... <tWindow, pBlend>
+  [ 50] objcall 634 ............................. tWindow.setBlend(pBlend)
+  [ 53] ret
+end
+
+on popupEntered me
+  [  0] pushsymb 604 ............................ <#popupEntered>
+  [  3] getprop 622 ............................. <pTargetElementID>
+  [  6] pusharglistnoret 2 ...................... <#popupEntered, pTargetElementID>
+  [  8] extcall 217 ............................. executeMessage(#popupEntered, pTargetElementID)
+  [ 10] ret
+end
+
+on popupLeft me
+  [  0] pushsymb 605 ............................ <#popupLeft>
+  [  3] getprop 622 ............................. <pTargetElementID>
+  [  6] pusharglistnoret 2 ...................... <#popupLeft, pTargetElementID>
+  [  8] extcall 217 ............................. executeMessage(#popupLeft, pTargetElementID)
+  [ 10] ret
+end
+
+on eventProc me, tEvent, tSprID, tParam, tWndID
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 119 ............................ <#mouseUp>
+  [  4] nteq .................................... <tEvent <> #mouseUp>
+  [  5] jmpifz [ 13] ............................ if tEvent <> #mouseUp then
+  [  8] pushzero ................................ <0>
+  [  9] pusharglistnoret 1 ...................... <0>
+  [ 11] extcall 52 .............................. return 0
+  [ 13] getparam 2 .............................. <tSprID>
+  [ 15] pushcons 4 .............................. <"nav_popup_link">
+  [ 17] containsstr ............................. <tSprID contains "nav_popup_link">
+  [ 18] jmpifz [ 86] ............................ if tSprID contains "nav_popup_link" then
+  [ 21] getparam 2 .............................. <tSprID>
+  [ 23] pushsymb 197 ............................ <#char>
+  [ 25] getparam 2 .............................. <tSprID>
+  [ 27] getobjprop 198 .......................... <tSprID.length>
+  [ 29] pusharglist 3 ........................... <tSprID, #char, tSprID.length>
+  [ 31] objcall 199 ............................. <tSprID.char[tSprID.length]>
+  [ 33] pusharglist 1 ........................... <tSprID.char[tSprID.length]>
+  [ 35] extcall 196 ............................. <value(tSprID.char[tSprID.length])>
+  [ 37] setlocal 0 .............................. tLinkNum = value(tSprID.char[tSprID.length])
+  [ 39] getprop 620 ............................. <pNodeInfo>
+  [ 42] pushsymb 630 ............................ <#children>
+  [ 45] getlocal 0 .............................. <tLinkNum>
+  [ 47] pusharglist 3 ........................... <pNodeInfo, #children, tLinkNum>
+  [ 49] objcall 199 ............................. <pNodeInfo.children[tLinkNum]>
+  [ 51] setlocal 1 .............................. tRoom = pNodeInfo.children[tLinkNum]
+  [ 53] getlocal 1 .............................. <tRoom>
+  [ 55] pusharglist 1 ........................... <tRoom>
+  [ 57] extcall 69 .............................. <voidp(tRoom)>
+  [ 59] not ..................................... <not voidp(tRoom)>
+  [ 60] jmpifz [ 86] ............................ if not voidp(tRoom) then
+  [ 63] getlocal 1 .............................. <tRoom>
+  [ 65] pushsymb 653 ............................ <#id>
+  [ 68] pusharglist 2 ........................... <tRoom, #id>
+  [ 70] objcall 58 .............................. <tRoom[#id]>
+  [ 72] setlocal 2 .............................. tRoomID = tRoom[#id]
+  [ 74] pushsymb 654 ............................ <#roomForward>
+  [ 77] getlocal 2 .............................. <tRoomID>
+  [ 79] pushsymb 439 ............................ <#private>
+  [ 82] pusharglistnoret 3 ...................... <#roomForward, tRoomID, #private>
+  [ 84] extcall 217 ............................. executeMessage(#roomForward, tRoomID, #private)
+  [ 86] getparam 2 .............................. <tSprID>
+  [ 88] pushcons 10 ............................. <"nav_popup_nav_link">
+  [ 90] eq ...................................... <tSprID = "nav_popup_nav_link">
+  [ 91] jmpifz [107] ............................ if tSprID = "nav_popup_nav_link" then
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pusharglistnoret 1 ...................... <me>
+  [ 98] objcall 64 .............................. me.hide()
+  [100] pushsymb 655 ............................ <#show_navigator>
+  [103] pusharglistnoret 1 ...................... <#show_navigator>
+  [105] extcall 217 ............................. executeMessage(#show_navigator)
+  [107] ret
+end

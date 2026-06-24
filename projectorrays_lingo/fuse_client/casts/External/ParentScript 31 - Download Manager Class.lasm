@@ -1,0 +1,1484 @@
+property pTaskQueue, pActiveTasks, pReceivedTasks, pCompleteTasks, pTypeDefList, pOwnDomain, pLastError
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 899 ............................. pTaskQueue = [:]
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 900 ............................. pActiveTasks = [:]
+  [ 12] pusharglist 0 ........................... <[]>
+  [ 14] pushlist ................................ <[]>
+  [ 15] setprop 901 ............................. pReceivedTasks = []
+  [ 18] pusharglist 0 ........................... <[]>
+  [ 20] pushlist ................................ <[]>
+  [ 21] setprop 902 ............................. pCompleteTasks = []
+  [ 24] pusharglist 0 ........................... <[:]>
+  [ 26] pushproplist ............................ <[:]>
+  [ 27] setprop 903 ............................. pTypeDefList = [:]
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglistnoret 1 ...................... <me>
+  [ 34] objcall 897 ............................. me.emptyCookies()
+  [ 37] pusharglist 0 ........................... <>
+  [ 39] extcall 170 ............................. <getMoviePath()>
+  [ 41] pusharglist 1 ........................... <getMoviePath()>
+  [ 43] extcall 500 ............................. <getDomainPart(getMoviePath())>
+  [ 46] setprop 904 ............................. pOwnDomain = getDomainPart(getMoviePath())
+  [ 49] pushzero ................................ <0>
+  [ 50] setprop 905 ............................. pLastError = 0
+  [ 53] pushint8 1 .............................. <1>
+  [ 55] pusharglistnoret 1 ...................... <1>
+  [ 57] extcall 11 .............................. return 1
+  [ 59] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 899 ............................. pTaskQueue = [:]
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 900 ............................. pActiveTasks = [:]
+  [ 12] pusharglist 0 ........................... <[]>
+  [ 14] pushlist ................................ <[]>
+  [ 15] setprop 901 ............................. pReceivedTasks = []
+  [ 18] pusharglist 0 ........................... <[]>
+  [ 20] pushlist ................................ <[]>
+  [ 21] setprop 902 ............................. pCompleteTasks = []
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglistnoret 1 ...................... <1>
+  [ 28] extcall 11 .............................. return 1
+  [ 30] ret
+end
+
+on create me, tURL, tMemName, ttype, tForceFlag
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tURL>
+  [  4] getparam 2 .............................. <tMemName>
+  [  6] getparam 3 .............................. <ttype>
+  [  8] getparam 4 .............................. <tForceFlag>
+  [ 10] pusharglist 5 ........................... <me, tURL, tMemName, ttype, tForceFlag>
+  [ 12] localcall 5 ............................. <queue(me, tURL, tMemName, ttype, tForceFlag)>
+  [ 14] pusharglistnoret 1 ...................... <queue(me, tURL, tMemName, ttype, tForceFlag)>
+  [ 16] extcall 11 .............................. return queue(me, tURL, tMemName, ttype, tForceFlag)
+  [ 18] ret
+end
+
+on Remove me, tMemNameOrNum
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tMemNameOrNum>
+  [  4] pusharglist 2 ........................... <me, tMemNameOrNum>
+  [  6] objcall 303 ............................. <me.abort(tMemNameOrNum)>
+  [  9] pusharglistnoret 1 ...................... <me.abort(tMemNameOrNum)>
+  [ 11] extcall 11 .............................. return me.abort(tMemNameOrNum)
+  [ 13] ret
+end
+
+on exists me, tMemName
+  [  0] getprop 899 ............................. <pTaskQueue>
+  [  3] getparam 1 .............................. <tMemName>
+  [  5] pusharglist 2 ........................... <pTaskQueue, tMemName>
+  [  7] objcall 29 .............................. <pTaskQueue[tMemName]>
+  [  9] pusharglist 1 ........................... <pTaskQueue[tMemName]>
+  [ 11] extcall 14 .............................. <voidp(pTaskQueue[tMemName])>
+  [ 13] not ..................................... <not voidp(pTaskQueue[tMemName])>
+  [ 14] getprop 900 ............................. <pActiveTasks>
+  [ 17] getparam 1 .............................. <tMemName>
+  [ 19] pusharglist 2 ........................... <pActiveTasks, tMemName>
+  [ 21] objcall 29 .............................. <pActiveTasks[tMemName]>
+  [ 23] pusharglist 1 ........................... <pActiveTasks[tMemName]>
+  [ 25] extcall 14 .............................. <voidp(pActiveTasks[tMemName])>
+  [ 27] not ..................................... <not voidp(pActiveTasks[tMemName])>
+  [ 28] or ...................................... <not voidp(pTaskQueue[tMemName]) or not voidp(pActiveTasks[tMemName])>
+  [ 29] pusharglistnoret 1 ...................... <not voidp(pTaskQueue[tMemName]) or not voidp(pActiveTasks[tMemName])>
+  [ 31] extcall 11 .............................. return not voidp(pTaskQueue[tMemName]) or not voidp(pActiveTasks[tMemName])
+  [ 33] ret
+end
+
+on queue me, tURL, tMemName, ttype, tForceFlag, tDownloadMethod, tRedirectType, tTarget
+  [  0] getparam 1 .............................. <tURL>
+  [  2] pushsymb 13 ............................. <#string>
+  [  4] pusharglist 2 ........................... <tURL, #string>
+  [  6] extcall 586 ............................. <ilk(tURL, #string)>
+  [  9] not ..................................... <not ilk(tURL, #string)>
+  [ 10] jmpifz [ 33] ............................ if not ilk(tURL, #string) then
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushcons 0 .............................. <"Missing or invalid URL:">
+  [ 17] getparam 1 .............................. <tURL>
+  [ 19] joinpadstr .............................. <"Missing or invalid URL:" && tURL>
+  [ 20] pushsymb 297 ............................ <#queue>
+  [ 23] pushsymb 123 ............................ <#major>
+  [ 25] pusharglist 4 ........................... <me, "Missing or invalid URL:" && tURL, #queue, #major>
+  [ 27] extcall 122 ............................. <error(me, "Missing or invalid URL:" && tURL, #queue, #major)>
+  [ 29] pusharglistnoret 1 ...................... <error(me, "Missing or invalid URL:" && tURL, #queue, #major)>
+  [ 31] extcall 11 .............................. return error(me, "Missing or invalid URL:" && tURL, #queue, #major)
+  [ 33] getparam 2 .............................. <tMemName>
+  [ 35] pushsymb 13 ............................. <#string>
+  [ 37] pusharglist 2 ........................... <tMemName, #string>
+  [ 39] extcall 586 ............................. <ilk(tMemName, #string)>
+  [ 42] not ..................................... <not ilk(tMemName, #string)>
+  [ 43] jmpifz [ 50] ............................ if not ilk(tMemName, #string) then
+  [ 46] getparam 1 .............................. <tURL>
+  [ 48] setparam 2 .............................. tMemName = tURL
+  [ 50] getparam 3 .............................. <ttype>
+  [ 52] pushsymb 667 ............................ <#symbol>
+  [ 55] pusharglist 2 ........................... <ttype, #symbol>
+  [ 57] extcall 586 ............................. <ilk(ttype, #symbol)>
+  [ 60] not ..................................... <not ilk(ttype, #symbol)>
+  [ 61] jmpifz [ 75] ............................ if not ilk(ttype, #symbol) then
+  [ 64] getparam 0 .............................. <me>
+  [ 66] getparam 1 .............................. <tURL>
+  [ 68] pusharglist 2 ........................... <me, tURL>
+  [ 70] objcall 896 ............................. <me.recognizeMemberType(tURL)>
+  [ 73] setparam 3 .............................. ttype = me.recognizeMemberType(tURL)
+  [ 75] getparam 1 .............................. <tURL>
+  [ 77] pusharglist 1 ........................... <tURL>
+  [ 79] extcall 499 ............................. <getPredefinedURL(tURL)>
+  [ 82] setparam 1 .............................. tURL = getPredefinedURL(tURL)
+  [ 84] pusharglist 0 ........................... <>
+  [ 86] extcall 170 ............................. <getMoviePath()>
+  [ 88] pusharglist 1 ........................... <getMoviePath()>
+  [ 90] extcall 500 ............................. <getDomainPart(getMoviePath())>
+  [ 93] setlocal 0 .............................. tOwnDomain = getDomainPart(getMoviePath())
+  [ 95] getparam 1 .............................. <tURL>
+  [ 97] pusharglist 1 ........................... <tURL>
+  [ 99] extcall 500 ............................. <getDomainPart(tURL)>
+  [102] setlocal 1 .............................. tDownloadDomain = getDomainPart(tURL)
+  [104] getlocal 0 .............................. <tOwnDomain>
+  [106] getlocal 1 .............................. <tDownloadDomain>
+  [108] nteq .................................... <tOwnDomain <> tDownloadDomain>
+  [109] getparam 1 .............................. <tURL>
+  [111] pushcons 1 .............................. <"http://">
+  [113] containsstr ............................. <tURL contains "http://">
+  [114] getparam 1 .............................. <tURL>
+  [116] pushcons 2 .............................. <"https://">
+  [118] containsstr ............................. <tURL contains "https://">
+  [119] or ...................................... <(tURL contains "http://") or (tURL contains "https://")>
+  [120] and ..................................... <(tOwnDomain <> tDownloadDomain) and ((tURL contains "http://") or (tURL contains "https://"))>
+  [121] getparam 1 .............................. <tURL>
+  [123] pushcons 3 .............................. <"://localhost">
+  [125] containsstr ............................. <tURL contains "://localhost">
+  [126] not ..................................... <not (tURL contains "://localhost")>
+  [127] and ..................................... <(tOwnDomain <> tDownloadDomain) and ((tURL contains "http://") or (tURL contains "https://")) and not (tURL contains "://localhost")>
+  [128] jmpifz [261] ............................ if (tOwnDomain <> tDownloadDomain) and ((tURL contains "http://") or (tURL contains "https://")) and not (tURL contains "://localhost") then
+  [131] pushzero ................................ <0>
+  [132] setlocal 2 .............................. tAllowCrossDomain = 0
+  [134] pushcons 4 .............................. <"client.allow.cross.domain">
+  [136] pusharglist 1 ........................... <"client.allow.cross.domain">
+  [138] extcall 465 ............................. <variableExists("client.allow.cross.domain")>
+  [141] jmpifz [157] ............................ if variableExists("client.allow.cross.domain") then
+  [144] pushcons 4 .............................. <"client.allow.cross.domain">
+  [146] pusharglist 1 ........................... <"client.allow.cross.domain">
+  [148] extcall 461 ............................. <getVariable("client.allow.cross.domain")>
+  [151] pusharglist 1 ........................... <getVariable("client.allow.cross.domain")>
+  [153] extcall 15 .............................. <value(getVariable("client.allow.cross.domain"))>
+  [155] setlocal 2 .............................. tAllowCrossDomain = value(getVariable("client.allow.cross.domain"))
+  [157] pushint8 1 .............................. <1>
+  [159] setlocal 3 .............................. tNotifyCrossDomain = 1
+  [161] pushcons 5 .............................. <"client.notify.cross.domain">
+  [163] pusharglist 1 ........................... <"client.notify.cross.domain">
+  [165] extcall 465 ............................. <variableExists("client.notify.cross.domain")>
+  [168] jmpifz [184] ............................ if variableExists("client.notify.cross.domain") then
+  [171] pushcons 5 .............................. <"client.notify.cross.domain">
+  [173] pusharglist 1 ........................... <"client.notify.cross.domain">
+  [175] extcall 461 ............................. <getVariable("client.notify.cross.domain")>
+  [178] pusharglist 1 ........................... <getVariable("client.notify.cross.domain")>
+  [180] extcall 15 .............................. <value(getVariable("client.notify.cross.domain"))>
+  [182] setlocal 3 .............................. tNotifyCrossDomain = value(getVariable("client.notify.cross.domain"))
+  [184] getlocal 3 .............................. <tNotifyCrossDomain>
+  [186] jmpifz [198] ............................ if tNotifyCrossDomain then
+  [189] pushcons 6 .............................. <"crossDomainDownload">
+  [191] getparam 1 .............................. <tURL>
+  [193] pusharglistnoret 2 ...................... <"crossDomainDownload", tURL>
+  [195] extcall 446 ............................. executeMessage("crossDomainDownload", tURL)
+  [198] getlocal 2 .............................. <tAllowCrossDomain>
+  [200] not ..................................... <not tAllowCrossDomain>
+  [201] jmpifz [261] ............................ if not tAllowCrossDomain then
+  [204] pushcons 7 .............................. <"CrossDomainAlert.txt">
+  [206] pusharglist 1 ........................... <"CrossDomainAlert.txt">
+  [208] extcall 906 ............................. <getPref("CrossDomainAlert.txt")>
+  [211] setlocal 4 .............................. tPref = getPref("CrossDomainAlert.txt")
+  [213] pushcons 7 .............................. <"CrossDomainAlert.txt">
+  [215] getparam 1 .............................. <tURL>
+  [217] pusharglist 0 ........................... <>
+  [219] extcall 802 ............................. <date()>
+  [222] joinpadstr .............................. <tURL && date()>
+  [223] pusharglist 0 ........................... <>
+  [225] extcall 790 ............................. <time()>
+  [228] joinpadstr .............................. <tURL && date() && time()>
+  [229] pushcons 8 .............................. <RETURN>
+  [231] joinstr ................................. <tURL && date() && time() & RETURN>
+  [232] getlocal 4 .............................. <tPref>
+  [234] joinstr ................................. <tURL && date() && time() & RETURN & tPref>
+  [235] pusharglistnoret 2 ...................... <"CrossDomainAlert.txt", tURL && date() && time() & RETURN & tPref>
+  [237] extcall 815 ............................. setPref("CrossDomainAlert.txt", tURL && date() && time() & RETURN & tPref)
+  [240] getparam 0 .............................. <me>
+  [242] pushcons 9 .............................. <"Cross domain download not allowed:">
+  [244] getparam 1 .............................. <tURL>
+  [246] joinpadstr .............................. <"Cross domain download not allowed:" && tURL>
+  [247] pushsymb 297 ............................ <#queue>
+  [250] pushsymb 764 ............................ <#minor>
+  [253] pusharglist 4 ........................... <me, "Cross domain download not allowed:" && tURL, #queue, #minor>
+  [255] extcall 122 ............................. <error(me, "Cross domain download not allowed:" && tURL, #queue, #minor)>
+  [257] pusharglistnoret 1 ...................... <error(me, "Cross domain download not allowed:" && tURL, #queue, #minor)>
+  [259] extcall 11 .............................. return error(me, "Cross domain download not allowed:" && tURL, #queue, #minor)
+  [261] getprop 899 ............................. <pTaskQueue>
+  [264] getparam 2 .............................. <tMemName>
+  [266] pusharglist 2 ........................... <pTaskQueue, tMemName>
+  [268] objcall 29 .............................. <pTaskQueue[tMemName]>
+  [270] pusharglist 1 ........................... <pTaskQueue[tMemName]>
+  [272] extcall 14 .............................. <voidp(pTaskQueue[tMemName])>
+  [274] not ..................................... <not voidp(pTaskQueue[tMemName])>
+  [275] getprop 900 ............................. <pActiveTasks>
+  [278] getparam 2 .............................. <tMemName>
+  [280] pusharglist 2 ........................... <pActiveTasks, tMemName>
+  [282] objcall 29 .............................. <pActiveTasks[tMemName]>
+  [284] pusharglist 1 ........................... <pActiveTasks[tMemName]>
+  [286] extcall 14 .............................. <voidp(pActiveTasks[tMemName])>
+  [288] not ..................................... <not voidp(pActiveTasks[tMemName])>
+  [289] or ...................................... <not voidp(pTaskQueue[tMemName]) or not voidp(pActiveTasks[tMemName])>
+  [290] jmpifz [314] ............................ if not voidp(pTaskQueue[tMemName]) or not voidp(pActiveTasks[tMemName]) then
+  [293] getparam 0 .............................. <me>
+  [295] pushcons 10 ............................. <"File already downloading:">
+  [297] getparam 2 .............................. <tMemName>
+  [299] joinpadstr .............................. <"File already downloading:" && tMemName>
+  [300] pushsymb 297 ............................ <#queue>
+  [303] pushsymb 764 ............................ <#minor>
+  [306] pusharglist 4 ........................... <me, "File already downloading:" && tMemName, #queue, #minor>
+  [308] extcall 122 ............................. <error(me, "File already downloading:" && tMemName, #queue, #minor)>
+  [310] pusharglistnoret 1 ...................... <error(me, "File already downloading:" && tMemName, #queue, #minor)>
+  [312] extcall 11 .............................. return error(me, "File already downloading:" && tMemName, #queue, #minor)
+  [314] getparam 2 .............................. <tMemName>
+  [316] pusharglist 1 ........................... <tMemName>
+  [318] extcall 257 ............................. <memberExists(tMemName)>
+  [321] jmpifz [353] ............................ if memberExists(tMemName) then / else
+  [324] getparam 4 .............................. <tForceFlag>
+  [326] jmpifz [340] ............................ if tForceFlag then / else
+  [329] getparam 2 .............................. <tMemName>
+  [331] pusharglist 1 ........................... <tMemName>
+  [333] extcall 136 ............................. <getmemnum(tMemName)>
+  [335] setlocal 5 .............................. tMemNum = getmemnum(tMemName)
+  [337] jmp [350]
+  [340] getparam 2 .............................. <tMemName>
+  [342] pusharglist 1 ........................... <tMemName>
+  [344] extcall 136 ............................. <getmemnum(tMemName)>
+  [346] pusharglistnoret 1 ...................... <getmemnum(tMemName)>
+  [348] extcall 11 .............................. return getmemnum(tMemName)
+  [350] jmp [363]
+  [353] getparam 2 .............................. <tMemName>
+  [355] getparam 3 .............................. <ttype>
+  [357] pusharglist 2 ........................... <tMemName, ttype>
+  [359] extcall 251 ............................. <createMember(tMemName, ttype)>
+  [361] setlocal 5 .............................. tMemNum = createMember(tMemName, ttype)
+  [363] getlocal 5 .............................. <tMemNum>
+  [365] pushint8 1 .............................. <1>
+  [367] lt ...................................... <tMemNum < 1>
+  [368] jmpifz [391] ............................ if tMemNum < 1 then / else
+  [371] getparam 0 .............................. <me>
+  [373] pushcons 11 ............................. <"Failed to create member!">
+  [375] pushsymb 297 ............................ <#queue>
+  [378] pushsymb 123 ............................ <#major>
+  [380] pusharglist 4 ........................... <me, "Failed to create member!", #queue, #major>
+  [382] extcall 122 ............................. <error(me, "Failed to create member!", #queue, #major)>
+  [384] pusharglistnoret 1 ...................... <error(me, "Failed to create member!", #queue, #major)>
+  [386] extcall 11 .............................. return error(me, "Failed to create member!", #queue, #major)
+  [388] jmp [427]
+  [391] getlocal 5 .............................. <tMemNum>
+  [393] pusharglist 1 ........................... <tMemNum>
+  [395] extcall 125 ............................. <member(tMemNum)>
+  [397] getobjprop 552 .......................... <member(tMemNum).type>
+  [400] pushsymb 863 ............................ <#bitmap>
+  [403] eq ...................................... <member(tMemNum).type = #bitmap>
+  [404] jmpifz [427] ............................ if member(tMemNum).type = #bitmap then
+  [407] getlocal 5 .............................. <tMemNum>
+  [409] pusharglist 1 ........................... <tMemNum>
+  [411] extcall 125 ............................. <member(tMemNum)>
+  [413] pushint8 1 .............................. <1>
+  [415] pushint8 1 .............................. <1>
+  [417] pushint8 8 .............................. <8>
+  [419] pusharglist 3 ........................... <1, 1, 8>
+  [421] extcall 598 ............................. <image(1, 1, 8)>
+  [424] setobjprop 598 .......................... member(tMemNum).image = image(1, 1, 8)
+  [427] getprop 901 ............................. <pReceivedTasks>
+  [430] getparam 2 .............................. <tMemName>
+  [432] pusharglistnoret 2 ...................... <pReceivedTasks, tMemName>
+  [434] objcall 60 .............................. pReceivedTasks.add(tMemName)
+  [436] pushsymb 907 ............................ <#url>
+  [439] getparam 1 .............................. <tURL>
+  [441] pushsymb 908 ............................ <#memNum>
+  [444] getlocal 5 .............................. <tMemNum>
+  [446] pushsymb 552 ............................ <#type>
+  [449] getparam 3 .............................. <ttype>
+  [451] pushsymb 909 ............................ <#callback>
+  [454] pusharglist 0 ........................... <>
+  [456] extcall 9 ............................... <VOID>
+  [458] pusharglist 8 ........................... <[#url: tURL, #memNum: tMemNum, #type: ttype, #callback: VOID]>
+  [460] pushproplist ............................ <[#url: tURL, #memNum: tMemNum, #type: ttype, #callback: VOID]>
+  [461] setlocal 6 .............................. tTempTask = [#url: tURL, #memNum: tMemNum, #type: ttype, #callback: VOID]
+  [463] getlocal 6 .............................. <tTempTask>
+  [465] pushsymb 910 ............................ <#downloadMethod>
+  [468] getparam 5 .............................. <tDownloadMethod>
+  [470] pusharglistnoret 3 ...................... <tTempTask, #downloadMethod, tDownloadMethod>
+  [472] objcall 23 .............................. tTempTask[#downloadMethod] = tDownloadMethod
+  [474] getlocal 6 .............................. <tTempTask>
+  [476] pushsymb 911 ............................ <#redirectType>
+  [479] getparam 6 .............................. <tRedirectType>
+  [481] pusharglistnoret 3 ...................... <tTempTask, #redirectType, tRedirectType>
+  [483] objcall 23 .............................. tTempTask[#redirectType] = tRedirectType
+  [485] getlocal 6 .............................. <tTempTask>
+  [487] pushsymb 912 ............................ <#target>
+  [490] getparam 7 .............................. <tTarget>
+  [492] pusharglistnoret 3 ...................... <tTempTask, #target, tTarget>
+  [494] objcall 23 .............................. tTempTask[#target] = tTarget
+  [496] getprop 899 ............................. <pTaskQueue>
+  [499] getparam 2 .............................. <tMemName>
+  [501] getlocal 6 .............................. <tTempTask>
+  [503] pusharglistnoret 3 ...................... <pTaskQueue, tMemName, tTempTask>
+  [505] objcall 23 .............................. pTaskQueue[tMemName] = tTempTask
+  [507] getparam 0 .............................. <me>
+  [509] pusharglistnoret 1 ...................... <me>
+  [511] objcall 893 ............................. me.updateQueue()
+  [514] getlocal 5 .............................. <tMemNum>
+  [516] pusharglistnoret 1 ...................... <tMemNum>
+  [518] extcall 11 .............................. return tMemNum
+  [520] ret
+end
+
+on registerCallback me, tMemNameOrNum, tMethod, tClientID, tArgument
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tMemNameOrNum>
+  [  4] pusharglist 2 ........................... <me, tMemNameOrNum>
+  [  6] objcall 892 ............................. <me.searchTask(tMemNameOrNum)>
+  [  9] setlocal 0 .............................. tTaskData = me.searchTask(tMemNameOrNum)
+  [ 11] getlocal 0 .............................. <tTaskData>
+  [ 13] not ..................................... <not tTaskData>
+  [ 14] jmpifz [140] ............................ if not tTaskData then
+  [ 17] getparam 1 .............................. <tMemNameOrNum>
+  [ 19] pusharglist 1 ........................... <tMemNameOrNum>
+  [ 21] extcall 121 ............................. <stringp(tMemNameOrNum)>
+  [ 23] jmpifz [ 60] ............................ if stringp(tMemNameOrNum) then / else
+  [ 26] getparam 1 .............................. <tMemNameOrNum>
+  [ 28] pusharglist 1 ........................... <tMemNameOrNum>
+  [ 30] extcall 136 ............................. <getmemnum(tMemNameOrNum)>
+  [ 32] pushzero ................................ <0>
+  [ 33] eq ...................................... <getmemnum(tMemNameOrNum) = 0>
+  [ 34] jmpifz [ 57] ............................ if getmemnum(tMemNameOrNum) = 0 then
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pushcons 12 ............................. <"Task doesn't exist:">
+  [ 41] getparam 1 .............................. <tMemNameOrNum>
+  [ 43] joinpadstr .............................. <"Task doesn't exist:" && tMemNameOrNum>
+  [ 44] pushsymb 280 ............................ <#registerCallback>
+  [ 47] pushsymb 123 ............................ <#major>
+  [ 49] pusharglist 4 ........................... <me, "Task doesn't exist:" && tMemNameOrNum, #registerCallback, #major>
+  [ 51] extcall 122 ............................. <error(me, "Task doesn't exist:" && tMemNameOrNum, #registerCallback, #major)>
+  [ 53] pusharglistnoret 1 ...................... <error(me, "Task doesn't exist:" && tMemNameOrNum, #registerCallback, #major)>
+  [ 55] extcall 11 .............................. return error(me, "Task doesn't exist:" && tMemNameOrNum, #registerCallback, #major)
+  [ 57] jmp [129]
+  [ 60] getparam 1 .............................. <tMemNameOrNum>
+  [ 62] pusharglist 1 ........................... <tMemNameOrNum>
+  [ 64] extcall 792 ............................. <integerp(tMemNameOrNum)>
+  [ 67] jmpifz [109] ............................ if integerp(tMemNameOrNum) then / else
+  [ 70] getparam 1 .............................. <tMemNameOrNum>
+  [ 72] pusharglist 1 ........................... <tMemNameOrNum>
+  [ 74] extcall 125 ............................. <member(tMemNameOrNum)>
+  [ 76] getobjprop 552 .......................... <member(tMemNameOrNum).type>
+  [ 79] pushsymb 889 ............................ <#empty>
+  [ 82] eq ...................................... <member(tMemNameOrNum).type = #empty>
+  [ 83] jmpifz [106] ............................ if member(tMemNameOrNum).type = #empty then
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pushcons 12 ............................. <"Task doesn't exist:">
+  [ 90] getparam 1 .............................. <tMemNameOrNum>
+  [ 92] joinpadstr .............................. <"Task doesn't exist:" && tMemNameOrNum>
+  [ 93] pushsymb 280 ............................ <#registerCallback>
+  [ 96] pushsymb 123 ............................ <#major>
+  [ 98] pusharglist 4 ........................... <me, "Task doesn't exist:" && tMemNameOrNum, #registerCallback, #major>
+  [100] extcall 122 ............................. <error(me, "Task doesn't exist:" && tMemNameOrNum, #registerCallback, #major)>
+  [102] pusharglistnoret 1 ...................... <error(me, "Task doesn't exist:" && tMemNameOrNum, #registerCallback, #major)>
+  [104] extcall 11 .............................. return error(me, "Task doesn't exist:" && tMemNameOrNum, #registerCallback, #major)
+  [106] jmp [129]
+  [109] getparam 0 .............................. <me>
+  [111] pushcons 13 ............................. <"Member's name or number expected:">
+  [113] getparam 1 .............................. <tMemNameOrNum>
+  [115] joinpadstr .............................. <"Member's name or number expected:" && tMemNameOrNum>
+  [116] pushsymb 280 ............................ <#registerCallback>
+  [119] pushsymb 123 ............................ <#major>
+  [121] pusharglist 4 ........................... <me, "Member's name or number expected:" && tMemNameOrNum, #registerCallback, #major>
+  [123] extcall 122 ............................. <error(me, "Member's name or number expected:" && tMemNameOrNum, #registerCallback, #major)>
+  [125] pusharglistnoret 1 ...................... <error(me, "Member's name or number expected:" && tMemNameOrNum, #registerCallback, #major)>
+  [127] extcall 11 .............................. return error(me, "Member's name or number expected:" && tMemNameOrNum, #registerCallback, #major)
+  [129] pushsymb 920 ............................ <#status>
+  [132] pushsymb 921 ............................ <#complete>
+  [135] pusharglist 2 ........................... <[#status: #complete]>
+  [137] pushproplist ............................ <[#status: #complete]>
+  [138] setlocal 0 .............................. tTaskData = [#status: #complete]
+  [140] getparam 2 .............................. <tMethod>
+  [142] pusharglist 1 ........................... <tMethod>
+  [144] extcall 130 ............................. <symbolp(tMethod)>
+  [146] not ..................................... <not symbolp(tMethod)>
+  [147] jmpifz [170] ............................ if not symbolp(tMethod) then
+  [150] getparam 0 .............................. <me>
+  [152] pushcons 14 ............................. <"Symbol referring to a handler expected:">
+  [154] getparam 2 .............................. <tMethod>
+  [156] joinpadstr .............................. <"Symbol referring to a handler expected:" && tMethod>
+  [157] pushsymb 280 ............................ <#registerCallback>
+  [160] pushsymb 123 ............................ <#major>
+  [162] pusharglist 4 ........................... <me, "Symbol referring to a handler expected:" && tMethod, #registerCallback, #major>
+  [164] extcall 122 ............................. <error(me, "Symbol referring to a handler expected:" && tMethod, #registerCallback, #major)>
+  [166] pusharglistnoret 1 ...................... <error(me, "Symbol referring to a handler expected:" && tMethod, #registerCallback, #major)>
+  [168] extcall 11 .............................. return error(me, "Symbol referring to a handler expected:" && tMethod, #registerCallback, #major)
+  [170] getparam 3 .............................. <tClientID>
+  [172] pusharglist 1 ........................... <tClientID>
+  [174] extcall 150 ............................. <objectExists(tClientID)>
+  [176] not ..................................... <not objectExists(tClientID)>
+  [177] jmpifz [200] ............................ if not objectExists(tClientID) then
+  [180] getparam 0 .............................. <me>
+  [182] pushcons 15 ............................. <"Object not found:">
+  [184] getparam 3 .............................. <tClientID>
+  [186] joinpadstr .............................. <"Object not found:" && tClientID>
+  [187] pushsymb 280 ............................ <#registerCallback>
+  [190] pushsymb 123 ............................ <#major>
+  [192] pusharglist 4 ........................... <me, "Object not found:" && tClientID, #registerCallback, #major>
+  [194] extcall 122 ............................. <error(me, "Object not found:" && tClientID, #registerCallback, #major)>
+  [196] pusharglistnoret 1 ...................... <error(me, "Object not found:" && tClientID, #registerCallback, #major)>
+  [198] extcall 11 .............................. return error(me, "Object not found:" && tClientID, #registerCallback, #major)
+  [200] getparam 3 .............................. <tClientID>
+  [202] pusharglist 1 ........................... <tClientID>
+  [204] extcall 141 ............................. <getObject(tClientID)>
+  [206] getparam 2 .............................. <tMethod>
+  [208] pusharglist 2 ........................... <getObject(tClientID), tMethod>
+  [210] objcall 7 ............................... <getObject(tClientID).handler(tMethod)>
+  [212] not ..................................... <not getObject(tClientID).handler(tMethod)>
+  [213] jmpifz [238] ............................ if not getObject(tClientID).handler(tMethod) then
+  [216] getparam 0 .............................. <me>
+  [218] pushcons 16 ............................. <"Handler not found in object:">
+  [220] getparam 2 .............................. <tMethod>
+  [222] joinpadstr .............................. <"Handler not found in object:" && tMethod>
+  [223] getparam 3 .............................. <tClientID>
+  [225] pushsymb 280 ............................ <#registerCallback>
+  [228] pushsymb 123 ............................ <#major>
+  [230] pusharglist 5 ........................... <me, "Handler not found in object:" && tMethod, tClientID, #registerCallback, #major>
+  [232] extcall 122 ............................. <error(me, "Handler not found in object:" && tMethod, tClientID, #registerCallback, #major)>
+  [234] pusharglistnoret 1 ...................... <error(me, "Handler not found in object:" && tMethod, tClientID, #registerCallback, #major)>
+  [236] extcall 11 .............................. return error(me, "Handler not found in object:" && tMethod, tClientID, #registerCallback, #major)
+  [238] getlocal 0 .............................. <tTaskData>
+  [240] pushsymb 920 ............................ <#status>
+  [243] pusharglist 2 ........................... <tTaskData, #status>
+  [245] objcall 29 .............................. <tTaskData[#status]>
+  [247] peek 0 .................................. case tTaskData[#status] of
+  [249] pushsymb 921 ............................ <#complete>
+  [252] eq
+  [253] jmpifz [273] ............................ (case) #complete:
+  [256] getparam 2 .............................. <tMethod>
+  [258] getparam 3 .............................. <tClientID>
+  [260] pusharglist 1 ........................... <tClientID>
+  [262] extcall 141 ............................. <getObject(tClientID)>
+  [264] getparam 4 .............................. <tArgument>
+  [266] pusharglistnoret 3 ...................... <tMethod, getObject(tClientID), tArgument>
+  [268] extcall 151 ............................. call(tMethod, getObject(tClientID), tArgument)
+  [270] jmp [372]
+  [273] peek 0
+  [275] pushsymb 297 ............................ <#queue>
+  [278] eq
+  [279] jmpifz [326] ............................ (case) #queue:
+  [282] getprop 899 ............................. <pTaskQueue>
+  [285] getlocal 0 .............................. <tTaskData>
+  [287] pushsymb 865 ............................ <#name>
+  [290] pusharglist 2 ........................... <tTaskData, #name>
+  [292] objcall 29 .............................. <tTaskData[#name]>
+  [294] pusharglist 2 ........................... <pTaskQueue, tTaskData[#name]>
+  [296] objcall 29 .............................. <pTaskQueue[tTaskData[#name]]>
+  [298] pushsymb 909 ............................ <#callback>
+  [301] pushsymb 922 ............................ <#method>
+  [304] getparam 2 .............................. <tMethod>
+  [306] pushsymb 923 ............................ <#client>
+  [309] getparam 3 .............................. <tClientID>
+  [311] pushsymb 924 ............................ <#argument>
+  [314] getparam 4 .............................. <tArgument>
+  [316] pusharglist 6 ........................... <[#method: tMethod, #client: tClientID, #argument: tArgument]>
+  [318] pushproplist ............................ <[#method: tMethod, #client: tClientID, #argument: tArgument]>
+  [319] pusharglistnoret 3 ...................... <pTaskQueue[tTaskData[#name]], #callback, [#method: tMethod, #client: tClientID, #argument: tArgument]>
+  [321] objcall 23 .............................. pTaskQueue[tTaskData[#name]][#callback] = [#method: tMethod, #client: tClientID, #argument: tArgument]
+  [323] jmp [372]
+  [326] peek 0
+  [328] pushsymb 925 ............................ <#Active>
+  [331] eq
+  [332] jmpifz [372] ............................ (case) #Active:
+  [335] pushsymb 926 ............................ <#addCallBack>
+  [338] getprop 900 ............................. <pActiveTasks>
+  [341] getlocal 0 .............................. <tTaskData>
+  [343] pushsymb 865 ............................ <#name>
+  [346] pusharglist 2 ........................... <tTaskData, #name>
+  [348] objcall 29 .............................. <tTaskData[#name]>
+  [350] pushsymb 922 ............................ <#method>
+  [353] getparam 2 .............................. <tMethod>
+  [355] pushsymb 923 ............................ <#client>
+  [358] getparam 3 .............................. <tClientID>
+  [360] pushsymb 924 ............................ <#argument>
+  [363] getparam 4 .............................. <tArgument>
+  [365] pusharglist 6 ........................... <[#method: tMethod, #client: tClientID, #argument: tArgument]>
+  [367] pushproplist ............................ <[#method: tMethod, #client: tClientID, #argument: tArgument]>
+  [368] pusharglistnoret 4 ...................... <#addCallBack, pActiveTasks, tTaskData[#name], [#method: tMethod, #client: tClientID, #argument: tArgument]>
+  [370] extcall 151 ............................. call(#addCallBack, pActiveTasks, tTaskData[#name], [#method: tMethod, #client: tClientID, #argument: tArgument])
+  [372] pop 1 ................................... end case
+  [374] pushint8 1 .............................. <1>
+  [376] pusharglistnoret 1 ...................... <1>
+  [378] extcall 11 .............................. return 1
+  [380] ret
+end
+
+on getLoadPercent me, tMemNameOrNum
+  [  0] getparam 1 .............................. <tMemNameOrNum>
+  [  2] pusharglist 1 ........................... <tMemNameOrNum>
+  [  4] extcall 792 ............................. <integerp(tMemNameOrNum)>
+  [  7] jmpifz [ 24] ............................ if integerp(tMemNameOrNum) then / else
+  [ 10] getparam 1 .............................. <tMemNameOrNum>
+  [ 12] pusharglist 1 ........................... <tMemNameOrNum>
+  [ 14] extcall 125 ............................. <member(tMemNameOrNum)>
+  [ 16] getobjprop 865 .......................... <member(tMemNameOrNum).name>
+  [ 19] setlocal 0 .............................. tMemName = member(tMemNameOrNum).name
+  [ 21] jmp [ 61]
+  [ 24] getparam 1 .............................. <tMemNameOrNum>
+  [ 26] pusharglist 1 ........................... <tMemNameOrNum>
+  [ 28] extcall 121 ............................. <stringp(tMemNameOrNum)>
+  [ 30] jmpifz [ 40] ............................ if stringp(tMemNameOrNum) then / else
+  [ 33] getparam 1 .............................. <tMemNameOrNum>
+  [ 35] setlocal 0 .............................. tMemName = tMemNameOrNum
+  [ 37] jmp [ 61]
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pushcons 13 ............................. <"Member's name or number expected:">
+  [ 44] getparam 1 .............................. <tMemNameOrNum>
+  [ 46] joinpadstr .............................. <"Member's name or number expected:" && tMemNameOrNum>
+  [ 47] pushsymb 285 ............................ <#getLoadPercent>
+  [ 50] pushsymb 764 ............................ <#minor>
+  [ 53] pusharglist 4 ........................... <me, "Member's name or number expected:" && tMemNameOrNum, #getLoadPercent, #minor>
+  [ 55] extcall 122 ............................. <error(me, "Member's name or number expected:" && tMemNameOrNum, #getLoadPercent, #minor)>
+  [ 57] pusharglistnoret 1 ...................... <error(me, "Member's name or number expected:" && tMemNameOrNum, #getLoadPercent, #minor)>
+  [ 59] extcall 11 .............................. return error(me, "Member's name or number expected:" && tMemNameOrNum, #getLoadPercent, #minor)
+  [ 61] getprop 901 ............................. <pReceivedTasks>
+  [ 64] getlocal 0 .............................. <tMemName>
+  [ 66] pusharglist 2 ........................... <pReceivedTasks, tMemName>
+  [ 68] objcall 739 ............................. <pReceivedTasks.getOne(tMemName)>
+  [ 71] pushzero ................................ <0>
+  [ 72] eq ...................................... <pReceivedTasks.getOne(tMemName) = 0>
+  [ 73] jmpifz [ 97] ............................ if pReceivedTasks.getOne(tMemName) = 0 then
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pushcons 17 ............................. <"Downloaded file not found:">
+  [ 80] getlocal 0 .............................. <tMemName>
+  [ 82] joinpadstr .............................. <"Downloaded file not found:" && tMemName>
+  [ 83] pushsymb 285 ............................ <#getLoadPercent>
+  [ 86] pushsymb 764 ............................ <#minor>
+  [ 89] pusharglist 4 ........................... <me, "Downloaded file not found:" && tMemName, #getLoadPercent, #minor>
+  [ 91] extcall 122 ............................. <error(me, "Downloaded file not found:" && tMemName, #getLoadPercent, #minor)>
+  [ 93] pusharglistnoret 1 ...................... <error(me, "Downloaded file not found:" && tMemName, #getLoadPercent, #minor)>
+  [ 95] extcall 11 .............................. return error(me, "Downloaded file not found:" && tMemName, #getLoadPercent, #minor)
+  [ 97] getprop 900 ............................. <pActiveTasks>
+  [100] getlocal 0 .............................. <tMemName>
+  [102] pusharglist 2 ........................... <pActiveTasks, tMemName>
+  [104] objcall 29 .............................. <pActiveTasks[tMemName]>
+  [106] pusharglist 1 ........................... <pActiveTasks[tMemName]>
+  [108] extcall 14 .............................. <voidp(pActiveTasks[tMemName])>
+  [110] not ..................................... <not voidp(pActiveTasks[tMemName])>
+  [111] jmpifz [138] ............................ if not voidp(pActiveTasks[tMemName]) then / else
+  [114] getprop 900 ............................. <pActiveTasks>
+  [117] getlocal 0 .............................. <tMemName>
+  [119] pusharglist 2 ........................... <pActiveTasks, tMemName>
+  [121] objcall 29 .............................. <pActiveTasks[tMemName]>
+  [123] pushsymb 928 ............................ <#Percent>
+  [126] pusharglist 2 ........................... <pActiveTasks[tMemName], #Percent>
+  [128] objcall 540 ............................. <pActiveTasks[tMemName].getProperty(#Percent)>
+  [131] pusharglistnoret 1 ...................... <pActiveTasks[tMemName].getProperty(#Percent)>
+  [133] extcall 11 .............................. return pActiveTasks[tMemName].getProperty(#Percent)
+  [135] jmp [189]
+  [138] getprop 899 ............................. <pTaskQueue>
+  [141] getlocal 0 .............................. <tMemName>
+  [143] pusharglist 2 ........................... <pTaskQueue, tMemName>
+  [145] objcall 29 .............................. <pTaskQueue[tMemName]>
+  [147] pusharglist 1 ........................... <pTaskQueue[tMemName]>
+  [149] extcall 14 .............................. <voidp(pTaskQueue[tMemName])>
+  [151] not ..................................... <not voidp(pTaskQueue[tMemName])>
+  [152] jmpifz [167] ............................ if not voidp(pTaskQueue[tMemName]) then / else
+  [155] pushfloat32 0.0 ......................... <0.0>
+  [160] pusharglistnoret 1 ...................... <0.0>
+  [162] extcall 11 .............................. return 0.0
+  [164] jmp [189]
+  [167] getprop 902 ............................. <pCompleteTasks>
+  [170] getlocal 0 .............................. <tMemName>
+  [172] pusharglist 2 ........................... <pCompleteTasks, tMemName>
+  [174] objcall 739 ............................. <pCompleteTasks.getOne(tMemName)>
+  [177] jmpifz [189] ............................ if pCompleteTasks.getOne(tMemName) then
+  [180] pushfloat32 1.0 ......................... <1.0>
+  [185] pusharglistnoret 1 ...................... <1.0>
+  [187] extcall 11 .............................. return 1.0
+  [189] pushfloat32 1.0 ......................... <1.0>
+  [194] pusharglistnoret 1 ...................... <1.0>
+  [196] extcall 11 .............................. return 1.0
+  [198] ret
+end
+
+on getProperty me, tPropID
+  [  0] getparam 1 .............................. <tPropID>
+  [  2] peek 0 .................................. case tPropID of
+  [  4] pushsymb 929 ............................ <#curTaskCount>
+  [  7] eq
+  [  8] jmpifz [ 31] ............................ (case) #curTaskCount:
+  [ 11] pop 1
+  [ 13] getprop 899 ............................. <pTaskQueue>
+  [ 16] getobjprop 28 ........................... <pTaskQueue.count>
+  [ 18] getprop 900 ............................. <pActiveTasks>
+  [ 21] getobjprop 28 ........................... <pActiveTasks.count>
+  [ 23] add ..................................... <pTaskQueue.count + pActiveTasks.count>
+  [ 24] pusharglistnoret 1 ...................... <pTaskQueue.count + pActiveTasks.count>
+  [ 26] extcall 11 .............................. return pTaskQueue.count + pActiveTasks.count
+  [ 28] jmp [108]
+  [ 31] peek 0
+  [ 33] pushsymb 930 ............................ <#actTaskCount>
+  [ 36] eq
+  [ 37] jmpifz [ 54] ............................ (case) #actTaskCount:
+  [ 40] pop 1
+  [ 42] getprop 900 ............................. <pActiveTasks>
+  [ 45] getobjprop 28 ........................... <pActiveTasks.count>
+  [ 47] pusharglistnoret 1 ...................... <pActiveTasks.count>
+  [ 49] extcall 11 .............................. return pActiveTasks.count
+  [ 51] jmp [108]
+  [ 54] peek 0
+  [ 56] pushsymb 931 ............................ <#maxTaskCount>
+  [ 59] eq
+  [ 60] jmpifz [ 79] ............................ (case) #maxTaskCount:
+  [ 63] pop 1
+  [ 65] pushcons 18 ............................. <"net.operation.count">
+  [ 67] pusharglist 1 ........................... <"net.operation.count">
+  [ 69] extcall 462 ............................. <getIntVariable("net.operation.count")>
+  [ 72] pusharglistnoret 1 ...................... <getIntVariable("net.operation.count")>
+  [ 74] extcall 11 .............................. return getIntVariable("net.operation.count")
+  [ 76] jmp [108]
+  [ 79] peek 0
+  [ 81] pushsymb 932 ............................ <#defaultURL>
+  [ 84] eq
+  [ 85] jmpifz [101] ............................ (case) #defaultURL:
+  [ 88] pop 1
+  [ 90] pusharglist 0 ........................... <>
+  [ 92] extcall 170 ............................. <getMoviePath()>
+  [ 94] pusharglistnoret 1 ...................... <getMoviePath()>
+  [ 96] extcall 11 .............................. return getMoviePath()
+  [ 98] jmp [108] ............................... (case) otherwise:
+  [101] pop 1
+  [103] pushzero ................................ <0>
+  [104] pusharglistnoret 1 ...................... <0>
+  [106] extcall 11 .............................. return 0
+  [108] pop 1 ................................... end case
+  [110] ret
+end
+
+on setProperty me, tPropID, tValue
+  [  0] getparam 1 .............................. <tPropID>
+  [  2] jmp [ 12] ............................... case tPropID of / otherwise:
+  [  5] pop 1
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 11 .............................. return 0
+  [ 12] pop 1 ................................... end case
+  [ 14] ret
+end
+
+on solveNetErrorMsg me, tErrorCode
+  [  0] getparam 1 .............................. <tErrorCode>
+  [  2] peek 0 .................................. case tErrorCode of
+  [  4] pushint8 4 .............................. <4>
+  [  6] eq
+  [  7] jmpifz [ 21] ............................ (case) 4:
+  [ 10] pop 1
+  [ 12] pushcons 19 ............................. <"Bad MOA class. The required network or nonnetwork Xtras are improperly installed or not installed at all.">
+  [ 14] pusharglistnoret 1 ...................... <"Bad MOA class. The required network or nonnetwork Xtras are improperly installed or not installed at all.">
+  [ 16] extcall 11 .............................. return "Bad MOA class. The required network or nonnetwork Xtras are improperly installed or not installed at all."
+  [ 18] jmp [366]
+  [ 21] peek 0
+  [ 23] pushint8 5 .............................. <5>
+  [ 25] eq
+  [ 26] jmpifz [ 40] ............................ (case) 5:
+  [ 29] pop 1
+  [ 31] pushcons 20 ............................. <"Bad MOA Interface. The required network or nonnetwork Xtras are improperly installed or not installed at all.">
+  [ 33] pusharglistnoret 1 ...................... <"Bad MOA Interface. The required network or nonnetwork Xtras are improperly installed or not installed at all.">
+  [ 35] extcall 11 .............................. return "Bad MOA Interface. The required network or nonnetwork Xtras are improperly installed or not installed at all."
+  [ 37] jmp [366]
+  [ 40] peek 0
+  [ 42] pushint8 6 .............................. <6>
+  [ 44] eq
+  [ 45] jmpifz [ 59] ............................ (case) 6:
+  [ 48] pop 1
+  [ 50] pushcons 21 ............................. <"Bad URL or Bad MOA class. The required network or nonnetwork Xtras are improperly installed or not installed at all.">
+  [ 52] pusharglistnoret 1 ...................... <"Bad URL or Bad MOA class. The required network or nonnetwork Xtras are improperly installed or not installed at all.">
+  [ 54] extcall 11 .............................. return "Bad URL or Bad MOA class. The required network or nonnetwork Xtras are improperly installed or not installed at all."
+  [ 56] jmp [366]
+  [ 59] peek 0
+  [ 61] pushint8 20 ............................. <20>
+  [ 63] eq
+  [ 64] jmpifz [ 78] ............................ (case) 20:
+  [ 67] pop 1
+  [ 69] pushcons 22 ............................. <"Internal error. Returned by netError() in the Netscape browser if the browser detected a network or internal error.">
+  [ 71] pusharglistnoret 1 ...................... <"Internal error. Returned by netError() in the Netscape browser if the browser detected a network or internal error.">
+  [ 73] extcall 11 .............................. return "Internal error. Returned by netError() in the Netscape browser if the browser detected a network or internal error."
+  [ 75] jmp [366]
+  [ 78] peek 0
+  [ 80] pushint16 4146 .......................... <4146>
+  [ 83] eq
+  [ 84] jmpifz [ 98] ............................ (case) 4146:
+  [ 87] pop 1
+  [ 89] pushcons 23 ............................. <"Connection could not be established with the remote host.">
+  [ 91] pusharglistnoret 1 ...................... <"Connection could not be established with the remote host.">
+  [ 93] extcall 11 .............................. return "Connection could not be established with the remote host."
+  [ 95] jmp [366]
+  [ 98] peek 0
+  [100] pushint16 4149 .......................... <4149>
+  [103] eq
+  [104] jmpifz [118] ............................ (case) 4149:
+  [107] pop 1
+  [109] pushcons 24 ............................. <"Data supplied by the server was in an unexpected format.">
+  [111] pusharglistnoret 1 ...................... <"Data supplied by the server was in an unexpected format.">
+  [113] extcall 11 .............................. return "Data supplied by the server was in an unexpected format."
+  [115] jmp [366]
+  [118] peek 0
+  [120] pushint16 4150 .......................... <4150>
+  [123] eq
+  [124] jmpifz [138] ............................ (case) 4150:
+  [127] pop 1
+  [129] pushcons 25 ............................. <"Unexpected early closing of connection.">
+  [131] pusharglistnoret 1 ...................... <"Unexpected early closing of connection.">
+  [133] extcall 11 .............................. return "Unexpected early closing of connection."
+  [135] jmp [366]
+  [138] peek 0
+  [140] pushint16 4154 .......................... <4154>
+  [143] eq
+  [144] jmpifz [158] ............................ (case) 4154:
+  [147] pop 1
+  [149] pushcons 26 ............................. <"Operation could not be completed due to timeout.">
+  [151] pusharglistnoret 1 ...................... <"Operation could not be completed due to timeout.">
+  [153] extcall 11 .............................. return "Operation could not be completed due to timeout."
+  [155] jmp [366]
+  [158] peek 0
+  [160] pushint16 4155 .......................... <4155>
+  [163] eq
+  [164] jmpifz [178] ............................ (case) 4155:
+  [167] pop 1
+  [169] pushcons 27 ............................. <"Not enough memory available to complete the transaction.">
+  [171] pusharglistnoret 1 ...................... <"Not enough memory available to complete the transaction.">
+  [173] extcall 11 .............................. return "Not enough memory available to complete the transaction."
+  [175] jmp [366]
+  [178] peek 0
+  [180] pushint16 4156 .......................... <4156>
+  [183] eq
+  [184] jmpifz [198] ............................ (case) 4156:
+  [187] pop 1
+  [189] pushcons 28 ............................. <"Protocol reply to request indicates an error in the reply.">
+  [191] pusharglistnoret 1 ...................... <"Protocol reply to request indicates an error in the reply.">
+  [193] extcall 11 .............................. return "Protocol reply to request indicates an error in the reply."
+  [195] jmp [366]
+  [198] peek 0
+  [200] pushint16 4157 .......................... <4157>
+  [203] eq
+  [204] jmpifz [218] ............................ (case) 4157:
+  [207] pop 1
+  [209] pushcons 29 ............................. <"Transaction failed to be authenticated.">
+  [211] pusharglistnoret 1 ...................... <"Transaction failed to be authenticated.">
+  [213] extcall 11 .............................. return "Transaction failed to be authenticated."
+  [215] jmp [366]
+  [218] peek 0
+  [220] pushint16 4159 .......................... <4159>
+  [223] eq
+  [224] jmpifz [238] ............................ (case) 4159:
+  [227] pop 1
+  [229] pushcons 30 ............................. <"Invalid URL.">
+  [231] pusharglistnoret 1 ...................... <"Invalid URL.">
+  [233] extcall 11 .............................. return "Invalid URL."
+  [235] jmp [366]
+  [238] peek 0
+  [240] pushint16 4164 .......................... <4164>
+  [243] eq
+  [244] jmpifz [258] ............................ (case) 4164:
+  [247] pop 1
+  [249] pushcons 31 ............................. <"Could not create a socket.">
+  [251] pusharglistnoret 1 ...................... <"Could not create a socket.">
+  [253] extcall 11 .............................. return "Could not create a socket."
+  [255] jmp [366]
+  [258] peek 0
+  [260] pushint16 4165 .......................... <4165>
+  [263] eq
+  [264] jmpifz [278] ............................ (case) 4165:
+  [267] pop 1
+  [269] pushcons 32 ............................. <"Requested object could not be found (URL may be incorrect).">
+  [271] pusharglistnoret 1 ...................... <"Requested object could not be found (URL may be incorrect).">
+  [273] extcall 11 .............................. return "Requested object could not be found (URL may be incorrect)."
+  [275] jmp [366]
+  [278] peek 0
+  [280] pushint16 4166 .......................... <4166>
+  [283] eq
+  [284] jmpifz [298] ............................ (case) 4166:
+  [287] pop 1
+  [289] pushcons 33 ............................. <"Generic proxy failure.">
+  [291] pusharglistnoret 1 ...................... <"Generic proxy failure.">
+  [293] extcall 11 .............................. return "Generic proxy failure."
+  [295] jmp [366]
+  [298] peek 0
+  [300] pushint16 4167 .......................... <4167>
+  [303] eq
+  [304] jmpifz [318] ............................ (case) 4167:
+  [307] pop 1
+  [309] pushcons 34 ............................. <"Transfer was intentionally interrupted by client.">
+  [311] pusharglistnoret 1 ...................... <"Transfer was intentionally interrupted by client.">
+  [313] extcall 11 .............................. return "Transfer was intentionally interrupted by client."
+  [315] jmp [366]
+  [318] peek 0
+  [320] pushint16 4242 .......................... <4242>
+  [323] eq
+  [324] jmpifz [338] ............................ (case) 4242:
+  [327] pop 1
+  [329] pushcons 35 ............................. <"Download stopped by netAbort(url).">
+  [331] pusharglistnoret 1 ...................... <"Download stopped by netAbort(url).">
+  [333] extcall 11 .............................. return "Download stopped by netAbort(url)."
+  [335] jmp [366]
+  [338] peek 0
+  [340] pushint16 4836 .......................... <4836>
+  [343] eq
+  [344] jmpifz [358] ............................ (case) 4836:
+  [347] pop 1
+  [349] pushcons 36 ............................. <"Download stopped for an unknown reason, possibly a network error, or the download was abandoned.">
+  [351] pusharglistnoret 1 ...................... <"Download stopped for an unknown reason, possibly a network error, or the download was abandoned.">
+  [353] extcall 11 .............................. return "Download stopped for an unknown reason, possibly a network error, or the download was abandoned."
+  [355] jmp [366] ............................... (case) otherwise:
+  [358] pop 1
+  [360] pushcons 37 ............................. <"Unknown error!">
+  [362] pusharglistnoret 1 ...................... <"Unknown error!">
+  [364] extcall 11 .............................. return "Unknown error!"
+  [366] pop 1 ................................... end case
+  [368] ret
+end
+
+on print me
+  [  0] getprop 900 ............................. <pActiveTasks>
+  [  3] getprop 899 ............................. <pTaskQueue>
+  [  6] getprop 901 ............................. <pReceivedTasks>
+  [  9] pusharglist 3 ........................... <[pActiveTasks, pTaskQueue, pReceivedTasks]>
+  [ 11] pushlist ................................ <[pActiveTasks, pTaskQueue, pReceivedTasks]>
+  [ 12] setlocal 0 .............................. tListList = [pActiveTasks, pTaskQueue, pReceivedTasks]
+  [ 14] getlocal 0 .............................. <tListList>
+  [ 16] peek 0
+  [ 18] pusharglist 1
+  [ 20] extcall 28
+  [ 22] pushint8 1
+  [ 24] peek 0
+  [ 26] peek 2
+  [ 28] lteq
+  [ 29] jmpifz [140] ............................ repeat with tList in tListList
+  [ 32] peek 2
+  [ 34] peek 1
+  [ 36] pusharglist 2
+  [ 38] extcall 29
+  [ 40] setlocal 1
+  [ 42] getlocal 1 .............................. <tList>
+  [ 44] pusharglist 1 ........................... <tList>
+  [ 46] extcall 586 ............................. <ilk(tList)>
+  [ 49] setlocal 2 .............................. tListMode = ilk(tList)
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] setlocal 3
+  [ 55] getlocal 3
+  [ 57] getlocal 1 .............................. <tList>
+  [ 59] getobjprop 28 ........................... <tList.count>
+  [ 61] lteq
+  [ 62] jmpifz [135] ............................ repeat with i = 1 to tList.count
+  [ 65] getlocal 2 .............................. <tListMode>
+  [ 67] pushsymb 587 ............................ <#list>
+  [ 70] eq ...................................... <tListMode = #list>
+  [ 71] jmpifz [ 81] ............................ if tListMode = #list then / else
+  [ 74] getlocal 3 .............................. <i>
+  [ 76] setlocal 4 .............................. tID = i
+  [ 78] jmp [ 91]
+  [ 81] getlocal 1 .............................. <tList>
+  [ 83] getlocal 3 .............................. <i>
+  [ 85] pusharglist 2 ........................... <tList, i>
+  [ 87] objcall 111 ............................. <tList.getPropAt(i)>
+  [ 89] setlocal 4 .............................. tID = tList.getPropAt(i)
+  [ 91] getlocal 4 .............................. <tID>
+  [ 93] pusharglist 1 ........................... <tID>
+  [ 95] extcall 130 ............................. <symbolp(tID)>
+  [ 97] jmpifz [107] ............................ if symbolp(tID) then
+  [100] pushcons 38 ............................. <"#">
+  [102] getlocal 4 .............................. <tID>
+  [104] joinstr ................................. <"#" & tID>
+  [105] setlocal 4 .............................. tID = "#" & tID
+  [107] getlocal 4 .............................. <tID>
+  [109] pushcons 39 ............................. <":">
+  [111] joinpadstr .............................. <tID && ":">
+  [112] getlocal 1 .............................. <tList>
+  [114] getlocal 3 .............................. <i>
+  [116] pusharglist 2 ........................... <tList, i>
+  [118] objcall 29 .............................. <tList[i]>
+  [120] joinpadstr .............................. <tID && ":" && tList[i]>
+  [121] pusharglistnoret 1 ...................... <tID && ":" && tList[i]>
+  [123] extcall 740 ............................. put tID && ":" && tList[i]
+  [126] pushint8 1
+  [128] getlocal 3
+  [130] add
+  [131] setlocal 3
+  [133] endrepeat [ 55]
+  [135] pushint8 1
+  [137] add
+  [138] endrepeat [ 24]
+  [140] pop 3
+  [142] pushint8 1 .............................. <1>
+  [144] pusharglistnoret 1 ...................... <1>
+  [146] extcall 11 .............................. return 1
+  [148] ret
+end
+
+on GetLastError me
+  [  0] getprop 905 ............................. <pLastError>
+  [  3] pusharglistnoret 1 ...................... <pLastError>
+  [  5] extcall 11 .............................. return pLastError
+  [  7] ret
+end
+
+on update me
+  [  0] pushsymb 766 ............................ <#update>
+  [  3] getprop 900 ............................. <pActiveTasks>
+  [  6] pusharglistnoret 2 ...................... <#update, pActiveTasks>
+  [  8] extcall 151 ............................. call(#update, pActiveTasks)
+  [ 10] ret
+end
+
+on searchTask me, tMemNameOrNum
+  [  0] getparam 1 .............................. <tMemNameOrNum>
+  [  2] pusharglist 1 ........................... <tMemNameOrNum>
+  [  4] extcall 121 ............................. <stringp(tMemNameOrNum)>
+  [  6] jmpifz [200] ............................ if stringp(tMemNameOrNum) then / else
+  [  9] getprop 901 ............................. <pReceivedTasks>
+  [ 12] getparam 1 .............................. <tMemNameOrNum>
+  [ 14] pusharglist 2 ........................... <pReceivedTasks, tMemNameOrNum>
+  [ 16] objcall 615 ............................. <pReceivedTasks.getPos(tMemNameOrNum)>
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] lt ...................................... <pReceivedTasks.getPos(tMemNameOrNum) < 1>
+  [ 22] jmpifz [ 30] ............................ if pReceivedTasks.getPos(tMemNameOrNum) < 1 then
+  [ 25] pushzero ................................ <0>
+  [ 26] pusharglistnoret 1 ...................... <0>
+  [ 28] extcall 11 .............................. return 0
+  [ 30] pushsymb 865 ............................ <#name>
+  [ 33] getparam 1 .............................. <tMemNameOrNum>
+  [ 35] pushsymb 752 ............................ <#number>
+  [ 38] getparam 1 .............................. <tMemNameOrNum>
+  [ 40] pusharglist 1 ........................... <tMemNameOrNum>
+  [ 42] extcall 136 ............................. <getmemnum(tMemNameOrNum)>
+  [ 44] pushsymb 920 ............................ <#status>
+  [ 47] pusharglist 0 ........................... <>
+  [ 49] extcall 9 ............................... <VOID>
+  [ 51] pusharglist 6 ........................... <[#name: tMemNameOrNum, #number: getmemnum(tMemNameOrNum), #status: VOID]>
+  [ 53] pushproplist ............................ <[#name: tMemNameOrNum, #number: getmemnum(tMemNameOrNum), #status: VOID]>
+  [ 54] setlocal 0 .............................. tTaskData = [#name: tMemNameOrNum, #number: getmemnum(tMemNameOrNum), #status: VOID]
+  [ 56] getprop 899 ............................. <pTaskQueue>
+  [ 59] getparam 1 .............................. <tMemNameOrNum>
+  [ 61] pusharglist 2 ........................... <pTaskQueue, tMemNameOrNum>
+  [ 63] objcall 29 .............................. <pTaskQueue[tMemNameOrNum]>
+  [ 65] setlocal 1 .............................. tResource = pTaskQueue[tMemNameOrNum]
+  [ 67] getlocal 1 .............................. <tResource>
+  [ 69] pusharglist 1 ........................... <tResource>
+  [ 71] extcall 14 .............................. <voidp(tResource)>
+  [ 73] not ..................................... <not voidp(tResource)>
+  [ 74] jmpifz [ 89] ............................ if not voidp(tResource) then
+  [ 77] getlocal 0 .............................. <tTaskData>
+  [ 79] pushsymb 920 ............................ <#status>
+  [ 82] pushsymb 297 ............................ <#queue>
+  [ 85] pusharglistnoret 3 ...................... <tTaskData, #status, #queue>
+  [ 87] objcall 23 .............................. tTaskData[#status] = #queue
+  [ 89] getprop 900 ............................. <pActiveTasks>
+  [ 92] getparam 1 .............................. <tMemNameOrNum>
+  [ 94] pusharglist 2 ........................... <pActiveTasks, tMemNameOrNum>
+  [ 96] objcall 29 .............................. <pActiveTasks[tMemNameOrNum]>
+  [ 98] setlocal 1 .............................. tResource = pActiveTasks[tMemNameOrNum]
+  [100] getlocal 1 .............................. <tResource>
+  [102] pusharglist 1 ........................... <tResource>
+  [104] extcall 14 .............................. <voidp(tResource)>
+  [106] not ..................................... <not voidp(tResource)>
+  [107] jmpifz [122] ............................ if not voidp(tResource) then
+  [110] getlocal 0 .............................. <tTaskData>
+  [112] pushsymb 920 ............................ <#status>
+  [115] pushsymb 925 ............................ <#Active>
+  [118] pusharglistnoret 3 ...................... <tTaskData, #status, #Active>
+  [120] objcall 23 .............................. tTaskData[#status] = #Active
+  [122] getprop 902 ............................. <pCompleteTasks>
+  [125] getparam 1 .............................. <tMemNameOrNum>
+  [127] pusharglist 2 ........................... <pCompleteTasks, tMemNameOrNum>
+  [129] objcall 615 ............................. <pCompleteTasks.getPos(tMemNameOrNum)>
+  [132] setlocal 1 .............................. tResource = pCompleteTasks.getPos(tMemNameOrNum)
+  [134] getlocal 1 .............................. <tResource>
+  [136] pushzero ................................ <0>
+  [137] gt ...................................... <tResource > 0>
+  [138] jmpifz [153] ............................ if tResource > 0 then
+  [141] getlocal 0 .............................. <tTaskData>
+  [143] pushsymb 920 ............................ <#status>
+  [146] pushsymb 921 ............................ <#complete>
+  [149] pusharglistnoret 3 ...................... <tTaskData, #status, #complete>
+  [151] objcall 23 .............................. tTaskData[#status] = #complete
+  [153] getlocal 0 .............................. <tTaskData>
+  [155] pushsymb 920 ............................ <#status>
+  [158] pusharglist 2 ........................... <tTaskData, #status>
+  [160] objcall 29 .............................. <tTaskData[#status]>
+  [162] pusharglist 0 ........................... <>
+  [164] extcall 9 ............................... <VOID>
+  [166] nteq .................................... <tTaskData[#status] <> VOID>
+  [167] jmpifz [176] ............................ if tTaskData[#status] <> VOID then
+  [170] getlocal 0 .............................. <tTaskData>
+  [172] pusharglistnoret 1 ...................... <tTaskData>
+  [174] extcall 11 .............................. return tTaskData
+  [176] getparam 0 .............................. <me>
+  [178] pushcons 40 ............................. <"Referred task not found:">
+  [180] getparam 1 .............................. <tMemNameOrNum>
+  [182] joinpadstr .............................. <"Referred task not found:" && tMemNameOrNum>
+  [183] pushsymb 892 ............................ <#searchTask>
+  [186] pushsymb 764 ............................ <#minor>
+  [189] pusharglist 4 ........................... <me, "Referred task not found:" && tMemNameOrNum, #searchTask, #minor>
+  [191] extcall 122 ............................. <error(me, "Referred task not found:" && tMemNameOrNum, #searchTask, #minor)>
+  [193] pusharglistnoret 1 ...................... <error(me, "Referred task not found:" && tMemNameOrNum, #searchTask, #minor)>
+  [195] extcall 11 .............................. return error(me, "Referred task not found:" && tMemNameOrNum, #searchTask, #minor)
+  [197] jmp [229]
+  [200] getparam 1 .............................. <tMemNameOrNum>
+  [202] pusharglist 1 ........................... <tMemNameOrNum>
+  [204] extcall 792 ............................. <integerp(tMemNameOrNum)>
+  [207] jmpifz [229] ............................ if integerp(tMemNameOrNum) then
+  [210] getparam 0 .............................. <me>
+  [212] getparam 1 .............................. <tMemNameOrNum>
+  [214] pusharglist 1 ........................... <tMemNameOrNum>
+  [216] extcall 125 ............................. <member(tMemNameOrNum)>
+  [218] getobjprop 865 .......................... <member(tMemNameOrNum).name>
+  [221] pusharglist 2 ........................... <me, member(tMemNameOrNum).name>
+  [223] localcall 14 ............................ <searchTask(me, member(tMemNameOrNum).name)>
+  [225] pusharglistnoret 1 ...................... <searchTask(me, member(tMemNameOrNum).name)>
+  [227] extcall 11 .............................. return searchTask(me, member(tMemNameOrNum).name)
+  [229] getparam 0 .............................. <me>
+  [231] pushcons 13 ............................. <"Member's name or number expected:">
+  [233] getparam 1 .............................. <tMemNameOrNum>
+  [235] joinpadstr .............................. <"Member's name or number expected:" && tMemNameOrNum>
+  [236] pushsymb 892 ............................ <#searchTask>
+  [239] pushsymb 764 ............................ <#minor>
+  [242] pusharglist 4 ........................... <me, "Member's name or number expected:" && tMemNameOrNum, #searchTask, #minor>
+  [244] extcall 122 ............................. <error(me, "Member's name or number expected:" && tMemNameOrNum, #searchTask, #minor)>
+  [246] pusharglistnoret 1 ...................... <error(me, "Member's name or number expected:" && tMemNameOrNum, #searchTask, #minor)>
+  [248] extcall 11 .............................. return error(me, "Member's name or number expected:" && tMemNameOrNum, #searchTask, #minor)
+  [250] ret
+end
+
+on updateQueue me
+  [  0] getprop 900 ............................. <pActiveTasks>
+  [  3] getobjprop 28 ........................... <pActiveTasks.count>
+  [  5] pushcons 18 ............................. <"net.operation.count">
+  [  7] pusharglist 1 ........................... <"net.operation.count">
+  [  9] extcall 462 ............................. <getIntVariable("net.operation.count")>
+  [ 12] lt ...................................... <pActiveTasks.count < getIntVariable("net.operation.count")>
+  [ 13] jmpifz [157] ............................ if pActiveTasks.count < getIntVariable("net.operation.count") then
+  [ 16] getprop 899 ............................. <pTaskQueue>
+  [ 19] getobjprop 28 ........................... <pTaskQueue.count>
+  [ 21] pushzero ................................ <0>
+  [ 22] gt ...................................... <pTaskQueue.count > 0>
+  [ 23] jmpifz [157] ............................ if pTaskQueue.count > 0 then
+  [ 26] pushzero ................................ <0>
+  [ 27] setprop 905 ............................. pLastError = 0
+  [ 30] getprop 899 ............................. <pTaskQueue>
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglist 2 ........................... <pTaskQueue, 1>
+  [ 37] objcall 111 ............................. <pTaskQueue.getPropAt(1)>
+  [ 39] setlocal 0 .............................. tTaskName = pTaskQueue.getPropAt(1)
+  [ 41] getprop 899 ............................. <pTaskQueue>
+  [ 44] getlocal 0 .............................. <tTaskName>
+  [ 46] pusharglist 2 ........................... <pTaskQueue, tTaskName>
+  [ 48] objcall 29 .............................. <pTaskQueue[tTaskName]>
+  [ 50] setlocal 1 .............................. tTaskData = pTaskQueue[tTaskName]
+  [ 52] getprop 899 ............................. <pTaskQueue>
+  [ 55] getlocal 0 .............................. <tTaskName>
+  [ 57] pusharglistnoret 2 ...................... <pTaskQueue, tTaskName>
+  [ 59] objcall 753 ............................. pTaskQueue.deleteProp(tTaskName)
+  [ 62] getlocal 1 .............................. <tTaskData>
+  [ 64] pushsymb 910 ............................ <#downloadMethod>
+  [ 67] pusharglist 2 ........................... <tTaskData, #downloadMethod>
+  [ 69] objcall 29 .............................. <tTaskData[#downloadMethod]>
+  [ 71] pushsymb 936 ............................ <#httpcookie>
+  [ 74] eq ...................................... <tTaskData[#downloadMethod] = #httpcookie>
+  [ 75] jmpifz [105] ............................ if tTaskData[#downloadMethod] = #httpcookie then / else
+  [ 78] getprop 900 ............................. <pActiveTasks>
+  [ 81] getlocal 0 .............................. <tTaskName>
+  [ 83] pusharglist 0 ........................... <>
+  [ 85] extcall 497 ............................. <getUniqueID()>
+  [ 88] pushcons 41 ............................. <"httpcookie.instance.class">
+  [ 90] pusharglist 1 ........................... <"httpcookie.instance.class">
+  [ 92] extcall 242 ............................. <getClassVariable("httpcookie.instance.class")>
+  [ 94] pusharglist 2 ........................... <getUniqueID(), getClassVariable("httpcookie.instance.class")>
+  [ 96] extcall 177 ............................. <createObject(getUniqueID(), getClassVariable("httpcookie.instance.class"))>
+  [ 98] pusharglistnoret 3 ...................... <pActiveTasks, tTaskName, createObject(getUniqueID(), getClassVariable("httpcookie.instance.class"))>
+  [100] objcall 23 .............................. pActiveTasks[tTaskName] = createObject(getUniqueID(), getClassVariable("httpcookie.instance.class"))
+  [102] jmp [129]
+  [105] getprop 900 ............................. <pActiveTasks>
+  [108] getlocal 0 .............................. <tTaskName>
+  [110] pusharglist 0 ........................... <>
+  [112] extcall 497 ............................. <getUniqueID()>
+  [115] pushcons 42 ............................. <"download.instance.class">
+  [117] pusharglist 1 ........................... <"download.instance.class">
+  [119] extcall 242 ............................. <getClassVariable("download.instance.class")>
+  [121] pusharglist 2 ........................... <getUniqueID(), getClassVariable("download.instance.class")>
+  [123] extcall 177 ............................. <createObject(getUniqueID(), getClassVariable("download.instance.class"))>
+  [125] pusharglistnoret 3 ...................... <pActiveTasks, tTaskName, createObject(getUniqueID(), getClassVariable("download.instance.class"))>
+  [127] objcall 23 .............................. pActiveTasks[tTaskName] = createObject(getUniqueID(), getClassVariable("download.instance.class"))
+  [129] getprop 900 ............................. <pActiveTasks>
+  [132] getlocal 0 .............................. <tTaskName>
+  [134] pusharglist 2 ........................... <pActiveTasks, tTaskName>
+  [136] objcall 29 .............................. <pActiveTasks[tTaskName]>
+  [138] getlocal 0 .............................. <tTaskName>
+  [140] getlocal 1 .............................. <tTaskData>
+  [142] pusharglistnoret 3 ...................... <pActiveTasks[tTaskName], tTaskName, tTaskData>
+  [144] objcall 532 ............................. pActiveTasks[tTaskName].define(tTaskName, tTaskData)
+  [147] getparam 0 .............................. <me>
+  [149] pusharglist 1 ........................... <me>
+  [151] objcall 92 .............................. <me.getID()>
+  [153] pusharglistnoret 1 ...................... <me.getID()>
+  [155] extcall 191 ............................. receiveUpdate(me.getID())
+  [157] getprop 900 ............................. <pActiveTasks>
+  [160] getobjprop 28 ........................... <pActiveTasks.count>
+  [162] pushzero ................................ <0>
+  [163] eq ...................................... <pActiveTasks.count = 0>
+  [164] jmpifz [177] ............................ if pActiveTasks.count = 0 then
+  [167] getparam 0 .............................. <me>
+  [169] pusharglist 1 ........................... <me>
+  [171] objcall 92 .............................. <me.getID()>
+  [173] pusharglistnoret 1 ...................... <me.getID()>
+  [175] extcall 192 ............................. removeUpdate(me.getID())
+  [177] pushint8 1 .............................. <1>
+  [179] pusharglistnoret 1 ...................... <1>
+  [181] extcall 11 .............................. return 1
+  [183] ret
+end
+
+on removeActiveTask me, tMemName, tCallback, tSuccess
+  [  0] getparam 3 .............................. <tSuccess>
+  [  2] pusharglist 1 ........................... <tSuccess>
+  [  4] extcall 14 .............................. <voidp(tSuccess)>
+  [  6] jmpifz [ 13] ............................ if voidp(tSuccess) then
+  [  9] pushint8 1 .............................. <1>
+  [ 11] setparam 3 .............................. tSuccess = 1
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] setlocal 0
+  [ 17] getlocal 0
+  [ 19] getprop 900 ............................. <pActiveTasks>
+  [ 22] getobjprop 28 ........................... <pActiveTasks.count>
+  [ 24] lteq
+  [ 25] jmpifz [123] ............................ repeat with i = 1 to pActiveTasks.count
+  [ 28] getprop 900 ............................. <pActiveTasks>
+  [ 31] getlocal 0 .............................. <i>
+  [ 33] pusharglist 2 ........................... <pActiveTasks, i>
+  [ 35] objcall 29 .............................. <pActiveTasks[i]>
+  [ 37] getobjprop 938 .......................... <pActiveTasks[i].pMemName>
+  [ 40] getparam 1 .............................. <tMemName>
+  [ 42] eq ...................................... <pActiveTasks[i].pMemName = tMemName>
+  [ 43] jmpifz [114] ............................ if pActiveTasks[i].pMemName = tMemName then
+  [ 46] getparam 3 .............................. <tSuccess>
+  [ 48] not ..................................... <not tSuccess>
+  [ 49] jmpifz [ 72] ............................ if not tSuccess then
+  [ 52] getprop 900 ............................. <pActiveTasks>
+  [ 55] getlocal 0 .............................. <i>
+  [ 57] pusharglist 2 ........................... <pActiveTasks, i>
+  [ 59] objcall 29 .............................. <pActiveTasks[i]>
+  [ 61] getobjprop 940 .......................... <pActiveTasks[i].pNetId>
+  [ 64] pusharglist 1 ........................... <pActiveTasks[i].pNetId>
+  [ 66] extcall 939 ............................. <netError(pActiveTasks[i].pNetId)>
+  [ 69] setprop 905 ............................. pLastError = netError(pActiveTasks[i].pNetId)
+  [ 72] getprop 900 ............................. <pActiveTasks>
+  [ 75] getlocal 0 .............................. <i>
+  [ 77] pusharglist 2 ........................... <pActiveTasks, i>
+  [ 79] objcall 29 .............................. <pActiveTasks[i]>
+  [ 81] pusharglistnoret 1 ...................... <pActiveTasks[i]>
+  [ 83] objcall 200 ............................. pActiveTasks[i].deconstruct()
+  [ 85] getprop 900 ............................. <pActiveTasks>
+  [ 88] getlocal 0 .............................. <i>
+  [ 90] pusharglistnoret 2 ...................... <pActiveTasks, i>
+  [ 92] objcall 624 ............................. pActiveTasks.deleteAt(i)
+  [ 95] getprop 902 ............................. <pCompleteTasks>
+  [ 98] getparam 1 .............................. <tMemName>
+  [100] pusharglistnoret 2 ...................... <pCompleteTasks, tMemName>
+  [102] objcall 60 .............................. pCompleteTasks.add(tMemName)
+  [104] getparam 0 .............................. <me>
+  [106] pusharglistnoret 1 ...................... <me>
+  [108] objcall 893 ............................. me.updateQueue()
+  [111] jmp [123] ............................... exit repeat
+  [114] pushint8 1
+  [116] getlocal 0
+  [118] add
+  [119] setlocal 0
+  [121] endrepeat [ 17]
+  [123] getparam 2 .............................. <tCallback>
+  [125] pusharglist 1 ........................... <tCallback>
+  [127] extcall 14 .............................. <voidp(tCallback)>
+  [129] not ..................................... <not voidp(tCallback)>
+  [130] jmpifz [186] ............................ if not voidp(tCallback) then
+  [133] getparam 2 .............................. <tCallback>
+  [135] pushsymb 923 ............................ <#client>
+  [138] pusharglist 2 ........................... <tCallback, #client>
+  [140] objcall 29 .............................. <tCallback[#client]>
+  [142] pusharglist 1 ........................... <tCallback[#client]>
+  [144] extcall 150 ............................. <objectExists(tCallback[#client])>
+  [146] jmpifz [186] ............................ if objectExists(tCallback[#client]) then
+  [149] getparam 2 .............................. <tCallback>
+  [151] pushsymb 922 ............................ <#method>
+  [154] pusharglist 2 ........................... <tCallback, #method>
+  [156] objcall 29 .............................. <tCallback[#method]>
+  [158] getparam 2 .............................. <tCallback>
+  [160] pushsymb 923 ............................ <#client>
+  [163] pusharglist 2 ........................... <tCallback, #client>
+  [165] objcall 29 .............................. <tCallback[#client]>
+  [167] pusharglist 1 ........................... <tCallback[#client]>
+  [169] extcall 141 ............................. <getObject(tCallback[#client])>
+  [171] getparam 2 .............................. <tCallback>
+  [173] pushsymb 924 ............................ <#argument>
+  [176] pusharglist 2 ........................... <tCallback, #argument>
+  [178] objcall 29 .............................. <tCallback[#argument]>
+  [180] getparam 3 .............................. <tSuccess>
+  [182] pusharglistnoret 4 ...................... <tCallback[#method], getObject(tCallback[#client]), tCallback[#argument], tSuccess>
+  [184] extcall 151 ............................. call(tCallback[#method], getObject(tCallback[#client]), tCallback[#argument], tSuccess)
+  [186] pushzero ................................ <0>
+  [187] pusharglistnoret 1 ...................... <0>
+  [189] extcall 11 .............................. return 0
+  [191] ret
+end
+
+on eraseDownloadedItems me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 901 ............................. <pReceivedTasks>
+  [  9] getobjprop 28 ........................... <pReceivedTasks.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 37] ............................ repeat with i = 1 to pReceivedTasks.count
+  [ 15] getprop 901 ............................. <pReceivedTasks>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pReceivedTasks, i>
+  [ 22] objcall 29 .............................. <pReceivedTasks[i]>
+  [ 24] pusharglistnoret 1 ...................... <pReceivedTasks[i]>
+  [ 26] extcall 252 ............................. removeMember(pReceivedTasks[i])
+  [ 28] pushint8 1
+  [ 30] getlocal 0
+  [ 32] add
+  [ 33] setlocal 0
+  [ 35] endrepeat [  4]
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 11 .............................. return 1
+  [ 43] ret
+end
+
+on recognizeMemberType me, tURL
+  [  0] getprop 903 ............................. <pTypeDefList>
+  [  3] getobjprop 28 ........................... <pTypeDefList.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pTypeDefList.count = 0>
+  [  7] jmpifz [ 17] ............................ if pTypeDefList.count = 0 then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 898 ............................. me.fillTypeDefinitions()
+  [ 17] getparam 1 .............................. <tURL>
+  [ 19] pushsymb 20 ............................. <#char>
+  [ 21] getparam 1 .............................. <tURL>
+  [ 23] pusharglist 1 ........................... <tURL>
+  [ 25] extcall 21 .............................. <length(tURL)>
+  [ 27] pushint8 5 .............................. <5>
+  [ 29] sub ..................................... <length(tURL) - 5>
+  [ 30] getparam 1 .............................. <tURL>
+  [ 32] pusharglist 1 ........................... <tURL>
+  [ 34] extcall 21 .............................. <length(tURL)>
+  [ 36] pusharglist 4 ........................... <tURL, #char, length(tURL) - 5, length(tURL)>
+  [ 38] objcall 22 .............................. <tURL.char[length(tURL) - 5..length(tURL)]>
+  [ 40] setlocal 0 .............................. tFileType = tURL.char[length(tURL) - 5..length(tURL)]
+  [ 42] getlocal 0 .............................. <tFileType>
+  [ 44] pushsymb 20 ............................. <#char>
+  [ 46] pushcons 43 ............................. <".">
+  [ 48] getlocal 0 .............................. <tFileType>
+  [ 50] pusharglist 2 ........................... <".", tFileType>
+  [ 52] extcall 380 ............................. <offset(".", tFileType)>
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] add ..................................... <offset(".", tFileType) + 1>
+  [ 58] getlocal 0 .............................. <tFileType>
+  [ 60] pusharglist 1 ........................... <tFileType>
+  [ 62] extcall 21 .............................. <length(tFileType)>
+  [ 64] pusharglist 4 ........................... <tFileType, #char, offset(".", tFileType) + 1, length(tFileType)>
+  [ 66] objcall 22 .............................. <tFileType.char[offset(".", tFileType) + 1..length(tFileType)]>
+  [ 68] setlocal 0 .............................. tFileType = tFileType.char[offset(".", tFileType) + 1..length(tFileType)]
+  [ 70] getprop 903 ............................. <pTypeDefList>
+  [ 73] getlocal 0 .............................. <tFileType>
+  [ 75] pusharglist 2 ........................... <pTypeDefList, tFileType>
+  [ 77] objcall 29 .............................. <pTypeDefList[tFileType]>
+  [ 79] setlocal 0 .............................. tFileType = pTypeDefList[tFileType]
+  [ 81] getlocal 0 .............................. <tFileType>
+  [ 83] pusharglist 1 ........................... <tFileType>
+  [ 85] extcall 130 ............................. <symbolp(tFileType)>
+  [ 87] not ..................................... <not symbolp(tFileType)>
+  [ 88] jmpifz [118] ............................ if not symbolp(tFileType) then / else
+  [ 91] getparam 0 .............................. <me>
+  [ 93] pushcons 44 ............................. <"Couldn't recognize member's type:">
+  [ 95] getparam 1 .............................. <tURL>
+  [ 97] joinpadstr .............................. <"Couldn't recognize member's type:" && tURL>
+  [ 98] pushsymb 896 ............................ <#recognizeMemberType>
+  [101] pushsymb 764 ............................ <#minor>
+  [104] pusharglistnoret 4 ...................... <me, "Couldn't recognize member's type:" && tURL, #recognizeMemberType, #minor>
+  [106] extcall 122 ............................. error(me, "Couldn't recognize member's type:" && tURL, #recognizeMemberType, #minor)
+  [108] pushsymb 943 ............................ <#field>
+  [111] pusharglistnoret 1 ...................... <#field>
+  [113] extcall 11 .............................. return #field
+  [115] jmp [124]
+  [118] getlocal 0 .............................. <tFileType>
+  [120] pusharglistnoret 1 ...................... <tFileType>
+  [122] extcall 11 .............................. return tFileType
+  [124] ret
+end
+
+on emptyCookies me
+  [  0] pushcons 45 ............................. <"httpcookie.pref.name">
+  [  2] pusharglist 1 ........................... <"httpcookie.pref.name">
+  [  4] extcall 461 ............................. <getVariable("httpcookie.pref.name")>
+  [  7] setlocal 0 .............................. tCookiePrefLoc = getVariable("httpcookie.pref.name")
+  [  9] getlocal 0 .............................. <tCookiePrefLoc>
+  [ 11] pushcons 46 ............................. <EMPTY>
+  [ 13] pusharglistnoret 2 ...................... <tCookiePrefLoc, EMPTY>
+  [ 15] extcall 815 ............................. setPref(tCookiePrefLoc, EMPTY)
+  [ 18] ret
+end
+
+on fillTypeDefinitions me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 903 ............................. pTypeDefList = [:]
+  [  6] getprop 903 ............................. <pTypeDefList>
+  [  9] pushcons 47 ............................. <"gif">
+  [ 11] pushsymb 863 ............................ <#bitmap>
+  [ 14] pusharglistnoret 3 ...................... <pTypeDefList, "gif", #bitmap>
+  [ 16] objcall 23 .............................. pTypeDefList["gif"] = #bitmap
+  [ 18] getprop 903 ............................. <pTypeDefList>
+  [ 21] pushcons 48 ............................. <"jpg">
+  [ 23] pushsymb 863 ............................ <#bitmap>
+  [ 26] pusharglistnoret 3 ...................... <pTypeDefList, "jpg", #bitmap>
+  [ 28] objcall 23 .............................. pTypeDefList["jpg"] = #bitmap
+  [ 30] getprop 903 ............................. <pTypeDefList>
+  [ 33] pushcons 49 ............................. <"bmp">
+  [ 35] pushsymb 863 ............................ <#bitmap>
+  [ 38] pusharglistnoret 3 ...................... <pTypeDefList, "bmp", #bitmap>
+  [ 40] objcall 23 .............................. pTypeDefList["bmp"] = #bitmap
+  [ 42] getprop 903 ............................. <pTypeDefList>
+  [ 45] pushcons 50 ............................. <"png">
+  [ 47] pushsymb 863 ............................ <#bitmap>
+  [ 50] pusharglistnoret 3 ...................... <pTypeDefList, "png", #bitmap>
+  [ 52] objcall 23 .............................. pTypeDefList["png"] = #bitmap
+  [ 54] getprop 903 ............................. <pTypeDefList>
+  [ 57] pushcons 51 ............................. <"tif">
+  [ 59] pushsymb 863 ............................ <#bitmap>
+  [ 62] pusharglistnoret 3 ...................... <pTypeDefList, "tif", #bitmap>
+  [ 64] objcall 23 .............................. pTypeDefList["tif"] = #bitmap
+  [ 66] getprop 903 ............................. <pTypeDefList>
+  [ 69] pushcons 52 ............................. <"tiff">
+  [ 71] pushsymb 863 ............................ <#bitmap>
+  [ 74] pusharglistnoret 3 ...................... <pTypeDefList, "tiff", #bitmap>
+  [ 76] objcall 23 .............................. pTypeDefList["tiff"] = #bitmap
+  [ 78] getprop 903 ............................. <pTypeDefList>
+  [ 81] pushcons 53 ............................. <"psd">
+  [ 83] pushsymb 863 ............................ <#bitmap>
+  [ 86] pusharglistnoret 3 ...................... <pTypeDefList, "psd", #bitmap>
+  [ 88] objcall 23 .............................. pTypeDefList["psd"] = #bitmap
+  [ 90] getprop 903 ............................. <pTypeDefList>
+  [ 93] pushcons 54 ............................. <"txt">
+  [ 95] pushsymb 943 ............................ <#field>
+  [ 98] pusharglistnoret 3 ...................... <pTypeDefList, "txt", #field>
+  [100] objcall 23 .............................. pTypeDefList["txt"] = #field
+  [102] getprop 903 ............................. <pTypeDefList>
+  [105] pushcons 55 ............................. <"html">
+  [107] pushsymb 943 ............................ <#field>
+  [110] pusharglistnoret 3 ...................... <pTypeDefList, "html", #field>
+  [112] objcall 23 .............................. pTypeDefList["html"] = #field
+  [114] getprop 903 ............................. <pTypeDefList>
+  [117] pushcons 56 ............................. <"htm">
+  [119] pushsymb 943 ............................ <#field>
+  [122] pusharglistnoret 3 ...................... <pTypeDefList, "htm", #field>
+  [124] objcall 23 .............................. pTypeDefList["htm"] = #field
+  [126] getprop 903 ............................. <pTypeDefList>
+  [129] pushcons 57 ............................. <"jsp">
+  [131] pushsymb 943 ............................ <#field>
+  [134] pusharglistnoret 3 ...................... <pTypeDefList, "jsp", #field>
+  [136] objcall 23 .............................. pTypeDefList["jsp"] = #field
+  [138] getprop 903 ............................. <pTypeDefList>
+  [141] pushcons 58 ............................. <"xml">
+  [143] pushsymb 943 ............................ <#field>
+  [146] pusharglistnoret 3 ...................... <pTypeDefList, "xml", #field>
+  [148] objcall 23 .............................. pTypeDefList["xml"] = #field
+  [150] getprop 903 ............................. <pTypeDefList>
+  [153] pushcons 59 ............................. <"nfo">
+  [155] pushsymb 943 ............................ <#field>
+  [158] pusharglistnoret 3 ...................... <pTypeDefList, "nfo", #field>
+  [160] objcall 23 .............................. pTypeDefList["nfo"] = #field
+  [162] getprop 903 ............................. <pTypeDefList>
+  [165] pushcons 60 ............................. <"js">
+  [167] pushsymb 943 ............................ <#field>
+  [170] pusharglistnoret 3 ...................... <pTypeDefList, "js", #field>
+  [172] objcall 23 .............................. pTypeDefList["js"] = #field
+  [174] getprop 903 ............................. <pTypeDefList>
+  [177] pushcons 61 ............................. <"css">
+  [179] pushsymb 943 ............................ <#field>
+  [182] pusharglistnoret 3 ...................... <pTypeDefList, "css", #field>
+  [184] objcall 23 .............................. pTypeDefList["css"] = #field
+  [186] getprop 903 ............................. <pTypeDefList>
+  [189] pushcons 62 ............................. <"avi">
+  [191] pushsymb 945 ............................ <#digitalVideo>
+  [194] pusharglistnoret 3 ...................... <pTypeDefList, "avi", #digitalVideo>
+  [196] objcall 23 .............................. pTypeDefList["avi"] = #digitalVideo
+  [198] getprop 903 ............................. <pTypeDefList>
+  [201] pushcons 63 ............................. <"mpg">
+  [203] pushsymb 945 ............................ <#digitalVideo>
+  [206] pusharglistnoret 3 ...................... <pTypeDefList, "mpg", #digitalVideo>
+  [208] objcall 23 .............................. pTypeDefList["mpg"] = #digitalVideo
+  [210] getprop 903 ............................. <pTypeDefList>
+  [213] pushcons 64 ............................. <"mpeg">
+  [215] pushsymb 945 ............................ <#digitalVideo>
+  [218] pusharglistnoret 3 ...................... <pTypeDefList, "mpeg", #digitalVideo>
+  [220] objcall 23 .............................. pTypeDefList["mpeg"] = #digitalVideo
+  [222] getprop 903 ............................. <pTypeDefList>
+  [225] pushcons 65 ............................. <"mp3">
+  [227] pushsymb 946 ............................ <#sound>
+  [230] pusharglistnoret 3 ...................... <pTypeDefList, "mp3", #sound>
+  [232] objcall 23 .............................. pTypeDefList["mp3"] = #sound
+  [234] getprop 903 ............................. <pTypeDefList>
+  [237] pushcons 66 ............................. <"wav">
+  [239] pushsymb 946 ............................ <#sound>
+  [242] pusharglistnoret 3 ...................... <pTypeDefList, "wav", #sound>
+  [244] objcall 23 .............................. pTypeDefList["wav"] = #sound
+  [246] getprop 903 ............................. <pTypeDefList>
+  [249] pushcons 67 ............................. <"snd">
+  [251] pushsymb 946 ............................ <#sound>
+  [254] pusharglistnoret 3 ...................... <pTypeDefList, "snd", #sound>
+  [256] objcall 23 .............................. pTypeDefList["snd"] = #sound
+  [258] getprop 903 ............................. <pTypeDefList>
+  [261] pushcons 68 ............................. <"swa">
+  [263] pushsymb 947 ............................ <#swa>
+  [266] pusharglistnoret 3 ...................... <pTypeDefList, "swa", #swa>
+  [268] objcall 23 .............................. pTypeDefList["swa"] = #swa
+  [270] getprop 903 ............................. <pTypeDefList>
+  [273] pushcons 69 ............................. <"fla">
+  [275] pushsymb 948 ............................ <#flash>
+  [278] pusharglistnoret 3 ...................... <pTypeDefList, "fla", #flash>
+  [280] objcall 23 .............................. pTypeDefList["fla"] = #flash
+  [282] getprop 903 ............................. <pTypeDefList>
+  [285] pushcons 70 ............................. <"fnt">
+  [287] pushsymb 690 ............................ <#font>
+  [290] pusharglistnoret 3 ...................... <pTypeDefList, "fnt", #font>
+  [292] objcall 23 .............................. pTypeDefList["fnt"] = #font
+  [294] getprop 903 ............................. <pTypeDefList>
+  [297] pushcons 71 ............................. <"ttf">
+  [299] pushsymb 690 ............................ <#font>
+  [302] pusharglistnoret 3 ...................... <pTypeDefList, "ttf", #font>
+  [304] objcall 23 .............................. pTypeDefList["ttf"] = #font
+  [306] getprop 903 ............................. <pTypeDefList>
+  [309] pushcons 72 ............................. <"cur">
+  [311] pushsymb 129 ............................ <#cursor>
+  [313] pusharglistnoret 3 ...................... <pTypeDefList, "cur", #cursor>
+  [315] objcall 23 .............................. pTypeDefList["cur"] = #cursor
+  [317] pushint8 1 .............................. <1>
+  [319] pusharglistnoret 1 ...................... <1>
+  [321] extcall 11 .............................. return 1
+  [323] ret
+end

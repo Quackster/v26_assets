@@ -1,0 +1,1154 @@
+property pWallPatterns, pWallDefined, pWallModel, pFloorPatterns, pFloorDefined, pFloorModel, pLandscapeMngr
+
+on construct me
+  [  0] pushcons 0 .............................. <"wallpattern_patterns">
+  [  2] pushzero ................................ <0>
+  [  3] getfield ................................ <field("wallpattern_patterns")>
+  [  4] setprop 109 ............................. pWallPatterns = field("wallpattern_patterns")
+  [  6] pushcons 1 .............................. <"floorpattern_patterns">
+  [  8] pushzero ................................ <0>
+  [  9] getfield ................................ <field("floorpattern_patterns")>
+  [ 10] setprop 110 ............................. pFloorPatterns = field("floorpattern_patterns")
+  [ 12] pushzero ................................ <0>
+  [ 13] setprop 111 ............................. pWallDefined = 0
+  [ 15] pushzero ................................ <0>
+  [ 16] setprop 112 ............................. pFloorDefined = 0
+  [ 18] pushcons 2 .............................. <"room.default.wall">
+  [ 20] pushcons 3 .............................. <"201">
+  [ 22] pusharglist 2 ........................... <"room.default.wall", "201">
+  [ 24] extcall 27 .............................. <getVariable("room.default.wall", "201")>
+  [ 26] pusharglist 1 ........................... <getVariable("room.default.wall", "201")>
+  [ 28] extcall 114 ............................. <string(getVariable("room.default.wall", "201"))>
+  [ 30] setprop 113 ............................. pWallModel = string(getVariable("room.default.wall", "201"))
+  [ 32] pushcons 4 .............................. <"room.default.floor">
+  [ 34] pushcons 5 .............................. <"203">
+  [ 36] pusharglist 2 ........................... <"room.default.floor", "203">
+  [ 38] extcall 27 .............................. <getVariable("room.default.floor", "203")>
+  [ 40] pusharglist 1 ........................... <getVariable("room.default.floor", "203")>
+  [ 42] extcall 114 ............................. <string(getVariable("room.default.floor", "203"))>
+  [ 44] setprop 115 ............................. pFloorModel = string(getVariable("room.default.floor", "203"))
+  [ 46] pushcons 6 .............................. <"landscape_manager">
+  [ 48] pushcons 7 .............................. <"Landscape Manager">
+  [ 50] pusharglist 2 ........................... <"landscape_manager", "Landscape Manager">
+  [ 52] extcall 11 .............................. <createObject("landscape_manager", "Landscape Manager")>
+  [ 54] setprop 116 ............................. pLandscapeMngr = createObject("landscape_manager", "Landscape Manager")
+  [ 56] pushsymb 118 ............................ <#colorizeRoom>
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglist 1 ........................... <me>
+  [ 62] objcall 45 .............................. <me.getID()>
+  [ 64] pushsymb 107 ............................ <#renderRoomBackground>
+  [ 66] pusharglistnoret 3 ...................... <#colorizeRoom, me.getID(), #renderRoomBackground>
+  [ 68] extcall 117 ............................. registerMessage(#colorizeRoom, me.getID(), #renderRoomBackground)
+  [ 70] pushsymb 119 ............................ <#setDimmerColor>
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglist 1 ........................... <me>
+  [ 76] objcall 45 .............................. <me.getID()>
+  [ 78] pushsymb 108 ............................ <#setRoomDimmerColor>
+  [ 80] pusharglistnoret 3 ...................... <#setDimmerColor, me.getID(), #setRoomDimmerColor>
+  [ 82] extcall 117 ............................. registerMessage(#setDimmerColor, me.getID(), #setRoomDimmerColor)
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pushint16 255 ........................... <255>
+  [ 89] pushint16 255 ........................... <255>
+  [ 92] pushint16 255 ........................... <255>
+  [ 95] pusharglist 3 ........................... <255, 255, 255>
+  [ 97] extcall 120 ............................. <rgb(255, 255, 255)>
+  [ 99] pusharglistnoret 2 ...................... <me, rgb(255, 255, 255)>
+  [101] objcall 108 ............................. me.setRoomDimmerColor(rgb(255, 255, 255))
+  [103] pushint8 1 .............................. <1>
+  [105] pusharglistnoret 1 ...................... <1>
+  [107] extcall 36 .............................. return 1
+  [109] ret
+end
+
+on deconstruct me
+  [  0] pushcons 6 .............................. <"landscape_manager">
+  [  2] pusharglist 1 ........................... <"landscape_manager">
+  [  4] extcall 41 .............................. <objectExists("landscape_manager")>
+  [  6] jmpifz [ 15] ............................ if objectExists("landscape_manager") then
+  [  9] pushcons 6 .............................. <"landscape_manager">
+  [ 11] pusharglistnoret 1 ...................... <"landscape_manager">
+  [ 13] extcall 42 .............................. removeObject("landscape_manager")
+  [ 15] pushsymb 118 ............................ <#colorizeRoom>
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglist 1 ........................... <me>
+  [ 21] objcall 45 .............................. <me.getID()>
+  [ 23] pusharglistnoret 2 ...................... <#colorizeRoom, me.getID()>
+  [ 25] extcall 121 ............................. unregisterMessage(#colorizeRoom, me.getID())
+  [ 27] pushsymb 119 ............................ <#setDimmerColor>
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pusharglist 1 ........................... <me>
+  [ 33] objcall 45 .............................. <me.getID()>
+  [ 35] pusharglistnoret 2 ...................... <#setDimmerColor, me.getID()>
+  [ 37] extcall 121 ............................. unregisterMessage(#setDimmerColor, me.getID())
+  [ 39] ret
+end
+
+on prepare me
+  [  0] pushcons 8 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. tStamp = EMPTY
+  [  4] pushint8 1 .............................. <1>
+  [  6] setlocal 1
+  [  8] getlocal 1
+  [ 10] pushint8 100 ............................ <100>
+  [ 12] lteq
+  [ 13] jmpifz [ 47] ............................ repeat with tNo = 1 to 100
+  [ 16] pushint8 48 ............................. <48>
+  [ 18] pusharglist 1 ........................... <48>
+  [ 20] extcall 123 ............................. <random(48)>
+  [ 22] pushint8 74 ............................. <74>
+  [ 24] add ..................................... <random(48) + 74>
+  [ 25] pusharglist 1 ........................... <random(48) + 74>
+  [ 27] extcall 122 ............................. <numToChar(random(48) + 74)>
+  [ 29] setlocal 2 .............................. tChar = numToChar(random(48) + 74)
+  [ 31] getlocal 0 .............................. <tStamp>
+  [ 33] getlocal 2 .............................. <tChar>
+  [ 35] joinstr ................................. <tStamp & tChar>
+  [ 36] setlocal 0 .............................. tStamp = tStamp & tChar
+  [ 38] pushint8 1
+  [ 40] getlocal 1
+  [ 42] add
+  [ 43] setlocal 1
+  [ 45] endrepeat [  8]
+  [ 47] pusharglist 0 ........................... <>
+  [ 49] extcall 124 ............................. <getSpecialServices()>
+  [ 51] getlocal 0 .............................. <tStamp>
+  [ 53] pusharglist 2 ........................... <getSpecialServices(), tStamp>
+  [ 55] objcall 125 ............................. <getSpecialServices().getReceipt(tStamp)>
+  [ 57] setlocal 3 .............................. tFuseReceipt = getSpecialServices().getReceipt(tStamp)
+  [ 59] pusharglist 0 ........................... <[]>
+  [ 61] pushlist ................................ <[]>
+  [ 62] setlocal 4 .............................. tReceipt = []
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] setlocal 5
+  [ 68] getlocal 5
+  [ 70] getlocal 0 .............................. <tStamp>
+  [ 72] getobjprop 126 .......................... <tStamp.length>
+  [ 74] lteq
+  [ 75] jmpifz [130] ............................ repeat with tCharNo = 1 to tStamp.length
+  [ 78] getlocal 0 .............................. <tStamp>
+  [ 80] getlocal 5 .............................. <tCharNo>
+  [ 82] getlocal 5 .............................. <tCharNo>
+  [ 84] pusharglist 3 ........................... <tStamp, tCharNo, tCharNo>
+  [ 86] extcall 127 ............................. <chars(tStamp, tCharNo, tCharNo)>
+  [ 88] setlocal 2 .............................. tChar = chars(tStamp, tCharNo, tCharNo)
+  [ 90] getlocal 2 .............................. <tChar>
+  [ 92] pusharglist 1 ........................... <tChar>
+  [ 94] extcall 128 ............................. <charToNum(tChar)>
+  [ 96] setlocal 2 .............................. tChar = charToNum(tChar)
+  [ 98] getlocal 2 .............................. <tChar>
+  [100] getlocal 5 .............................. <tCharNo>
+  [102] mul ..................................... <tChar * tCharNo>
+  [103] pushint32 309203 ........................ <309203>
+  [108] add ..................................... <(tChar * tCharNo) + 309203>
+  [109] setlocal 2 .............................. tChar = (tChar * tCharNo) + 309203
+  [111] getlocal 4 .............................. <tReceipt>
+  [113] getlocal 5 .............................. <tCharNo>
+  [115] getlocal 2 .............................. <tChar>
+  [117] pusharglistnoret 3 ...................... <tReceipt, tCharNo, tChar>
+  [119] objcall 72 .............................. tReceipt[tCharNo] = tChar
+  [121] pushint8 1
+  [123] getlocal 5
+  [125] add
+  [126] setlocal 5
+  [128] endrepeat [ 68]
+  [130] getlocal 4 .............................. <tReceipt>
+  [132] getlocal 3 .............................. <tFuseReceipt>
+  [134] nteq .................................... <tReceipt <> tFuseReceipt>
+  [135] jmpifz [181] ............................ if tReceipt <> tFuseReceipt then
+  [138] getparam 0 .............................. <me>
+  [140] pushcons 9 .............................. <"Invalid build structure">
+  [142] pushsymb 103 ............................ <#prepare>
+  [144] pushsymb 130 ............................ <#critical>
+  [146] pusharglistnoret 4 ...................... <me, "Invalid build structure", #prepare, #critical>
+  [148] extcall 129 ............................. error(me, "Invalid build structure", #prepare, #critical)
+  [150] pushsymb 132 ............................ <#builddisconnect>
+  [152] pushint16 3000 .......................... <3000>
+  [155] pushsymb 133 ............................ <#disconnect>
+  [157] pushsymb 134 ............................ <#login>
+  [159] pusharglist 1 ........................... <#login>
+  [161] extcall 18 .............................. <getThread(#login)>
+  [163] pusharglist 1 ........................... <getThread(#login)>
+  [165] objcall 34 .............................. <getThread(#login).getComponent()>
+  [167] pusharglist 1 ........................... <getThread(#login).getComponent()>
+  [169] objcall 45 .............................. <getThread(#login).getComponent().getID()>
+  [171] pusharglist 0 ........................... <>
+  [173] extcall 135 ............................. <VOID>
+  [175] pushint8 1 .............................. <1>
+  [177] pusharglistnoret 6 ...................... <#builddisconnect, 3000, #disconnect, getThread(#login).getComponent().getID(), VOID, 1>
+  [179] extcall 131 ............................. createTimeout(#builddisconnect, 3000, #disconnect, getThread(#login).getComponent().getID(), VOID, 1)
+  [181] getprop 111 ............................. <pWallDefined>
+  [183] not ..................................... <not pWallDefined>
+  [184] jmpifz [195] ............................ if not pWallDefined then
+  [187] getparam 0 .............................. <me>
+  [189] getprop 113 ............................. <pWallModel>
+  [191] pusharglistnoret 2 ...................... <me, pWallModel>
+  [193] objcall 105 ............................. me.setWallPaper(pWallModel)
+  [195] getprop 112 ............................. <pFloorDefined>
+  [197] not ..................................... <not pFloorDefined>
+  [198] jmpifz [209] ............................ if not pFloorDefined then
+  [201] getparam 0 .............................. <me>
+  [203] getprop 115 ............................. <pFloorModel>
+  [205] pusharglistnoret 2 ...................... <me, pFloorModel>
+  [207] objcall 106 ............................. me.setFloorPattern(pFloorModel)
+  [209] pushint8 1 .............................. <1>
+  [211] pusharglistnoret 1 ...................... <1>
+  [213] extcall 36 .............................. return 1
+  [215] ret
+end
+
+on setProperty me, tKey, tValue
+  [  0] getparam 1 .............................. <tKey>
+  [  2] peek 0 .................................. case tKey of
+  [  4] pushcons 10 ............................. <"wallpaper">
+  [  6] eq
+  [  7] jmpifz [ 27] ............................ (case) "wallpaper":
+  [ 10] pop 1
+  [ 12] getparam 0 .............................. <me>
+  [ 14] getparam 2 .............................. <tValue>
+  [ 16] pusharglist 2 ........................... <me, tValue>
+  [ 18] objcall 105 ............................. <me.setWallPaper(tValue)>
+  [ 20] pusharglistnoret 1 ...................... <me.setWallPaper(tValue)>
+  [ 22] extcall 36 .............................. return me.setWallPaper(tValue)
+  [ 24] jmp [ 49]
+  [ 27] peek 0
+  [ 29] pushcons 11 ............................. <"floor">
+  [ 31] eq
+  [ 32] jmpifz [ 49] ............................ (case) "floor":
+  [ 35] pop 1
+  [ 37] getparam 0 .............................. <me>
+  [ 39] getparam 2 .............................. <tValue>
+  [ 41] pusharglist 2 ........................... <me, tValue>
+  [ 43] objcall 106 ............................. <me.setFloorPattern(tValue)>
+  [ 45] pusharglistnoret 1 ...................... <me.setFloorPattern(tValue)>
+  [ 47] extcall 36 .............................. return me.setFloorPattern(tValue)
+  [ 49] pop 1 ................................... end case
+  [ 51] ret
+end
+
+on setWallPaper me, tIndex
+  [  0] getprop 109 ............................. <pWallPatterns>
+  [  2] pushsymb 144 ............................ <#line>
+  [  4] getparam 1 .............................. <tIndex>
+  [  6] pushsymb 145 ............................ <#char>
+  [  8] pushint8 1 .............................. <1>
+  [ 10] getparam 1 .............................. <tIndex>
+  [ 12] pusharglist 1 ........................... <tIndex>
+  [ 14] extcall 126 ............................. <length(tIndex)>
+  [ 16] pushint8 2 .............................. <2>
+  [ 18] sub ..................................... <length(tIndex) - 2>
+  [ 19] pusharglist 4 ........................... <tIndex, #char, 1, length(tIndex) - 2>
+  [ 21] objcall 71 .............................. <tIndex.char[1..length(tIndex) - 2]>
+  [ 23] pusharglist 1 ........................... <tIndex.char[1..length(tIndex) - 2]>
+  [ 25] extcall 26 .............................. <integer(tIndex.char[1..length(tIndex) - 2])>
+  [ 27] pusharglist 3 ........................... <pWallPatterns, #line, integer(tIndex.char[1..length(tIndex) - 2])>
+  [ 29] objcall 71 .............................. <pWallPatterns.line[integer(tIndex.char[1..length(tIndex) - 2])]>
+  [ 31] setlocal 0 .............................. tField = pWallPatterns.line[integer(tIndex.char[1..length(tIndex) - 2])]
+  [ 33] getlocal 0 .............................. <tField>
+  [ 35] pushcons 8 .............................. <EMPTY>
+  [ 37] eq ...................................... <tField = EMPTY>
+  [ 38] jmpifz [ 60] ............................ if tField = EMPTY then
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pushcons 12 ............................. <"Invalid wall color index:">
+  [ 45] getparam 1 .............................. <tIndex>
+  [ 47] joinpadstr .............................. <"Invalid wall color index:" && tIndex>
+  [ 48] pushsymb 105 ............................ <#setWallPaper>
+  [ 50] pushsymb 146 ............................ <#major>
+  [ 52] pusharglist 4 ........................... <me, "Invalid wall color index:" && tIndex, #setWallPaper, #major>
+  [ 54] extcall 129 ............................. <error(me, "Invalid wall color index:" && tIndex, #setWallPaper, #major)>
+  [ 56] pusharglistnoret 1 ...................... <error(me, "Invalid wall color index:" && tIndex, #setWallPaper, #major)>
+  [ 58] extcall 36 .............................. return error(me, "Invalid wall color index:" && tIndex, #setWallPaper, #major)
+  [ 60] getlocal 0 .............................. <tField>
+  [ 62] pusharglist 1 ........................... <tField>
+  [ 64] extcall 28 .............................. <memberExists(tField)>
+  [ 66] not ..................................... <not memberExists(tField)>
+  [ 67] jmpifz [105] ............................ if not memberExists(tField) then
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pushcons 12 ............................. <"Invalid wall color index:">
+  [ 74] getparam 1 .............................. <tIndex>
+  [ 76] joinpadstr .............................. <"Invalid wall color index:" && tIndex>
+  [ 77] pushsymb 105 ............................ <#setWallPaper>
+  [ 79] pushsymb 147 ............................ <#minor>
+  [ 81] pusharglistnoret 4 ...................... <me, "Invalid wall color index:" && tIndex, #setWallPaper, #minor>
+  [ 83] extcall 129 ............................. error(me, "Invalid wall color index:" && tIndex, #setWallPaper, #minor)
+  [ 85] getparam 0 .............................. <me>
+  [ 87] pushcons 2 .............................. <"room.default.wall">
+  [ 89] pusharglist 1 ........................... <"room.default.wall">
+  [ 91] extcall 27 .............................. <getVariable("room.default.wall")>
+  [ 93] pusharglist 1 ........................... <getVariable("room.default.wall")>
+  [ 95] extcall 114 ............................. <string(getVariable("room.default.wall"))>
+  [ 97] pusharglist 2 ........................... <me, string(getVariable("room.default.wall"))>
+  [ 99] objcall 105 ............................. <me.setWallPaper(string(getVariable("room.default.wall")))>
+  [101] pusharglistnoret 1 ...................... <me.setWallPaper(string(getVariable("room.default.wall")))>
+  [103] extcall 36 .............................. return me.setWallPaper(string(getVariable("room.default.wall")))
+  [105] getlocal 0 .............................. <tField>
+  [107] pushzero ................................ <0>
+  [108] getfield ................................ <field(tField)>
+  [109] setlocal 1 .............................. tmodel = field(tField)
+  [111] getlocal 1 .............................. <tmodel>
+  [113] pushsymb 144 ............................ <#line>
+  [115] getparam 1 .............................. <tIndex>
+  [117] pushsymb 145 ............................ <#char>
+  [119] getparam 1 .............................. <tIndex>
+  [121] pusharglist 1 ........................... <tIndex>
+  [123] extcall 114 ............................. <string(tIndex)>
+  [125] pusharglist 1 ........................... <string(tIndex)>
+  [127] extcall 126 ............................. <length(string(tIndex))>
+  [129] pushint8 1 .............................. <1>
+  [131] sub ..................................... <length(string(tIndex)) - 1>
+  [132] getparam 1 .............................. <tIndex>
+  [134] pusharglist 1 ........................... <tIndex>
+  [136] extcall 114 ............................. <string(tIndex)>
+  [138] pusharglist 1 ........................... <string(tIndex)>
+  [140] extcall 126 ............................. <length(string(tIndex))>
+  [142] pusharglist 4 ........................... <tIndex, #char, length(string(tIndex)) - 1, length(string(tIndex))>
+  [144] objcall 71 .............................. <tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))]>
+  [146] pusharglist 1 ........................... <tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))]>
+  [148] extcall 26 .............................. <integer(tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))])>
+  [150] pusharglist 3 ........................... <tmodel, #line, integer(tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))])>
+  [152] objcall 71 .............................. <tmodel.line[integer(tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))])]>
+  [154] setlocal 2 .............................. tPattern = tmodel.line[integer(tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))])]
+  [156] getlocal 2 .............................. <tPattern>
+  [158] pushcons 8 .............................. <EMPTY>
+  [160] eq ...................................... <tPattern = EMPTY>
+  [161] jmpifz [183] ............................ if tPattern = EMPTY then
+  [164] getparam 0 .............................. <me>
+  [166] pushcons 12 ............................. <"Invalid wall color index:">
+  [168] getparam 1 .............................. <tIndex>
+  [170] joinpadstr .............................. <"Invalid wall color index:" && tIndex>
+  [171] pushsymb 105 ............................ <#setWallPaper>
+  [173] pushsymb 146 ............................ <#major>
+  [175] pusharglist 4 ........................... <me, "Invalid wall color index:" && tIndex, #setWallPaper, #major>
+  [177] extcall 129 ............................. <error(me, "Invalid wall color index:" && tIndex, #setWallPaper, #major)>
+  [179] pusharglistnoret 1 ...................... <error(me, "Invalid wall color index:" && tIndex, #setWallPaper, #major)>
+  [181] extcall 36 .............................. return error(me, "Invalid wall color index:" && tIndex, #setWallPaper, #major)
+  [183] getmovieprop 69 ......................... <the itemDelimiter>
+  [185] setlocal 3 .............................. tDelim = the itemDelimiter
+  [187] pushcons 13 ............................. <",">
+  [189] setmovieprop 69 ......................... the itemDelimiter = ","
+  [191] getlocal 2 .............................. <tPattern>
+  [193] pushsymb 70 ............................. <#item>
+  [195] pushint8 1 .............................. <1>
+  [197] pusharglist 3 ........................... <tPattern, #item, 1>
+  [199] objcall 71 .............................. <tPattern.item[1]>
+  [201] setlocal 4 .............................. ttype = tPattern.item[1]
+  [203] getlocal 2 .............................. <tPattern>
+  [205] pushsymb 70 ............................. <#item>
+  [207] pushint8 2 .............................. <2>
+  [209] pusharglist 3 ........................... <tPattern, #item, 2>
+  [211] objcall 71 .............................. <tPattern.item[2]>
+  [213] setlocal 5 .............................. tPalette = tPattern.item[2]
+  [215] getlocal 2 .............................. <tPattern>
+  [217] pushsymb 70 ............................. <#item>
+  [219] pushint8 3 .............................. <3>
+  [221] pusharglist 3 ........................... <tPattern, #item, 3>
+  [223] objcall 71 .............................. <tPattern.item[3]>
+  [225] pusharglist 1 ........................... <tPattern.item[3]>
+  [227] extcall 26 .............................. <integer(tPattern.item[3])>
+  [229] setlocal 6 .............................. tR = integer(tPattern.item[3])
+  [231] getlocal 2 .............................. <tPattern>
+  [233] pushsymb 70 ............................. <#item>
+  [235] pushint8 4 .............................. <4>
+  [237] pusharglist 3 ........................... <tPattern, #item, 4>
+  [239] objcall 71 .............................. <tPattern.item[4]>
+  [241] pusharglist 1 ........................... <tPattern.item[4]>
+  [243] extcall 26 .............................. <integer(tPattern.item[4])>
+  [245] setlocal 7 .............................. tG = integer(tPattern.item[4])
+  [247] getlocal 2 .............................. <tPattern>
+  [249] pushsymb 70 ............................. <#item>
+  [251] pushint8 5 .............................. <5>
+  [253] pusharglist 3 ........................... <tPattern, #item, 5>
+  [255] objcall 71 .............................. <tPattern.item[5]>
+  [257] pusharglist 1 ........................... <tPattern.item[5]>
+  [259] extcall 26 .............................. <integer(tPattern.item[5])>
+  [261] setlocal 8 .............................. tB = integer(tPattern.item[5])
+  [263] getlocal 6 .............................. <tR>
+  [265] getlocal 7 .............................. <tG>
+  [267] getlocal 8 .............................. <tB>
+  [269] pusharglist 3 ........................... <tR, tG, tB>
+  [271] extcall 120 ............................. <rgb(tR, tG, tB)>
+  [273] setlocal 9 .............................. tColor = rgb(tR, tG, tB)
+  [275] pushcons 14 ............................. <"left">
+  [277] getlocal 9 .............................. <tColor>
+  [279] pushint8 16 ............................. <16>
+  [281] pushint8 16 ............................. <16>
+  [283] pushint8 16 ............................. <16>
+  [285] pusharglist 3 ........................... <16, 16, 16>
+  [287] extcall 120 ............................. <rgb(16, 16, 16)>
+  [289] sub ..................................... <tColor - rgb(16, 16, 16)>
+  [290] pushcons 15 ............................. <"right">
+  [292] getlocal 9 .............................. <tColor>
+  [294] pushcons 16 ............................. <"a">
+  [296] getlocal 9 .............................. <tColor>
+  [298] pushint8 16 ............................. <16>
+  [300] pushint8 16 ............................. <16>
+  [302] pushint8 16 ............................. <16>
+  [304] pusharglist 3 ........................... <16, 16, 16>
+  [306] extcall 120 ............................. <rgb(16, 16, 16)>
+  [308] sub ..................................... <tColor - rgb(16, 16, 16)>
+  [309] pushcons 17 ............................. <"b">
+  [311] getlocal 9 .............................. <tColor>
+  [313] pusharglist 8 ........................... <["left": tColor - rgb(16, 16, 16), "right": tColor, "a": tColor - rgb(16, 16, 16), "b": tColor]>
+  [315] pushproplist ............................ <["left": tColor - rgb(16, 16, 16), "right": tColor, "a": tColor - rgb(16, 16, 16), "b": tColor]>
+  [316] setlocal 10 ............................. tColors = ["left": tColor - rgb(16, 16, 16), "right": tColor, "a": tColor - rgb(16, 16, 16), "b": tColor]
+  [318] pushcons 18 ............................. <"_">
+  [320] setmovieprop 69 ......................... the itemDelimiter = "_"
+  [322] pushsymb 17 ............................. <#room>
+  [324] pusharglist 1 ........................... <#room>
+  [326] extcall 18 .............................. <getThread(#room)>
+  [328] pusharglist 1 ........................... <getThread(#room)>
+  [330] objcall 34 .............................. <getThread(#room).getComponent()>
+  [332] pushsymb 148 ............................ <#list>
+  [334] pusharglist 2 ........................... <getThread(#room).getComponent(), #list>
+  [336] objcall 149 ............................. <getThread(#room).getComponent().getPassiveObject(#list)>
+  [338] setlocal 11 ............................. tPieceList = getThread(#room).getComponent().getPassiveObject(#list)
+  [340] pushzero ................................ <0>
+  [341] setlocal 12 ............................. tObjPieceCount = 0
+  [343] getlocal 11 ............................. <tPieceList>
+  [345] peek 0
+  [347] pusharglist 1
+  [349] extcall 150
+  [351] pushint8 1
+  [353] peek 0
+  [355] peek 2
+  [357] lteq
+  [358] jmpifz [685] ............................ repeat with tPiece in tPieceList
+  [361] peek 2
+  [363] peek 1
+  [365] pusharglist 2
+  [367] extcall 151
+  [369] setlocal 13
+  [371] getlocal 13 ............................. <tPiece>
+  [373] pusharglist 1 ........................... <tPiece>
+  [375] objcall 152 ............................. <tPiece.getSprites()>
+  [377] setlocal 14 ............................. tSprList = tPiece.getSprites()
+  [379] getlocal 14 ............................. <tSprList>
+  [381] peek 0
+  [383] pusharglist 1
+  [385] extcall 150
+  [387] pushint8 1
+  [389] peek 0
+  [391] peek 2
+  [393] lteq
+  [394] jmpifz [677] ............................ repeat with tSpr in tSprList
+  [397] peek 2
+  [399] peek 1
+  [401] pusharglist 2
+  [403] extcall 151
+  [405] setlocal 15
+  [407] getlocal 15 ............................. <tSpr>
+  [409] getchainedprop 58 ....................... <tSpr.member>
+  [411] getchainedprop 153 ...................... <tSpr.member.name>
+  [413] pushsymb 70 ............................. <#item>
+  [415] pushint8 1 .............................. <1>
+  [417] pusharglist 3 ........................... <tSpr.member.name, #item, 1>
+  [419] objcall 71 .............................. <tSpr.member.name.item[1]>
+  [421] setlocal 16 ............................. tdir = tSpr.member.name.item[1]
+  [423] getlocal 15 ............................. <tSpr>
+  [425] getchainedprop 58 ....................... <tSpr.member>
+  [427] getchainedprop 153 ...................... <tSpr.member.name>
+  [429] pushsymb 70 ............................. <#item>
+  [431] pushint8 2 .............................. <2>
+  [433] pusharglist 3 ........................... <tSpr.member.name, #item, 2>
+  [435] objcall 71 .............................. <tSpr.member.name.item[2]>
+  [437] setlocal 17 ............................. tName = tSpr.member.name.item[2]
+  [439] getlocal 15 ............................. <tSpr>
+  [441] getchainedprop 58 ....................... <tSpr.member>
+  [443] getchainedprop 153 ...................... <tSpr.member.name>
+  [445] pushsymb 145 ............................ <#char>
+  [447] getlocal 15 ............................. <tSpr>
+  [449] getchainedprop 58 ....................... <tSpr.member>
+  [451] getobjprop 153 .......................... <tSpr.member.name>
+  [453] pusharglist 1 ........................... <tSpr.member.name>
+  [455] extcall 126 ............................. <length(tSpr.member.name)>
+  [457] pushint8 7 .............................. <7>
+  [459] sub ..................................... <length(tSpr.member.name) - 7>
+  [460] getlocal 15 ............................. <tSpr>
+  [462] getchainedprop 58 ....................... <tSpr.member>
+  [464] getobjprop 153 .......................... <tSpr.member.name>
+  [466] pusharglist 1 ........................... <tSpr.member.name>
+  [468] extcall 126 ............................. <length(tSpr.member.name)>
+  [470] pusharglist 4 ........................... <tSpr.member.name, #char, length(tSpr.member.name) - 7, length(tSpr.member.name)>
+  [472] objcall 71 .............................. <tSpr.member.name.char[length(tSpr.member.name) - 7..length(tSpr.member.name)]>
+  [474] setlocal 18 ............................. tdata = tSpr.member.name.char[length(tSpr.member.name) - 7..length(tSpr.member.name)]
+  [476] getlocal 16 ............................. <tdir>
+  [478] setlocal 9 .............................. tColor = tdir
+  [480] getlocal 9 .............................. <tColor>
+  [482] pushcons 19 ............................. <"corner">
+  [484] eq ...................................... <tColor = "corner">
+  [485] jmpifz [515] ............................ if tColor = "corner" then
+  [488] getlocal 18 ............................. <tdata>
+  [490] pushsymb 145 ............................ <#char>
+  [492] pushint8 2 .............................. <2>
+  [494] pusharglist 3 ........................... <tdata, #char, 2>
+  [496] objcall 71 .............................. <tdata.char[2]>
+  [498] pushcons 16 ............................. <"a">
+  [500] eq ...................................... <tdata.char[2] = "a">
+  [501] jmpifz [511] ............................ if tdata.char[2] = "a" then / else
+  [504] pushcons 15 ............................. <"right">
+  [506] setlocal 9 .............................. tColor = "right"
+  [508] jmp [515]
+  [511] pushcons 14 ............................. <"left">
+  [513] setlocal 9 .............................. tColor = "left"
+  [515] getlocal 16 ............................. <tdir>
+  [517] pushcons 18 ............................. <"_">
+  [519] joinstr ................................. <tdir & "_">
+  [520] getlocal 17 ............................. <tName>
+  [522] joinstr ................................. <tdir & "_" & tName>
+  [523] pushcons 18 ............................. <"_">
+  [525] joinstr ................................. <tdir & "_" & tName & "_">
+  [526] getlocal 4 .............................. <ttype>
+  [528] joinstr ................................. <tdir & "_" & tName & "_" & ttype>
+  [529] getlocal 18 ............................. <tdata>
+  [531] joinstr ................................. <tdir & "_" & tName & "_" & ttype & tdata>
+  [532] pusharglist 1 ........................... <tdir & "_" & tName & "_" & ttype & tdata>
+  [534] extcall 28 .............................. <memberExists(tdir & "_" & tName & "_" & ttype & tdata)>
+  [536] jmpifz [641] ............................ if memberExists(tdir & "_" & tName & "_" & ttype & tdata) then
+  [539] getlocal 15 ............................. <tSpr>
+  [541] getlocal 16 ............................. <tdir>
+  [543] pushcons 18 ............................. <"_">
+  [545] joinstr ................................. <tdir & "_">
+  [546] getlocal 17 ............................. <tName>
+  [548] joinstr ................................. <tdir & "_" & tName>
+  [549] pushcons 18 ............................. <"_">
+  [551] joinstr ................................. <tdir & "_" & tName & "_">
+  [552] getlocal 4 .............................. <ttype>
+  [554] joinstr ................................. <tdir & "_" & tName & "_" & ttype>
+  [555] getlocal 18 ............................. <tdata>
+  [557] joinstr ................................. <tdir & "_" & tName & "_" & ttype & tdata>
+  [558] pusharglist 1 ........................... <tdir & "_" & tName & "_" & ttype & tdata>
+  [560] extcall 154 ............................. <getmemnum(tdir & "_" & tName & "_" & ttype & tdata)>
+  [562] pusharglist 1 ........................... <getmemnum(tdir & "_" & tName & "_" & ttype & tdata)>
+  [564] extcall 58 .............................. <member(getmemnum(tdir & "_" & tName & "_" & ttype & tdata))>
+  [566] setobjprop 58 ........................... tSpr.member = member(getmemnum(tdir & "_" & tName & "_" & ttype & tdata))
+  [568] getlocal 15 ............................. <tSpr>
+  [570] getlocal 10 ............................. <tColors>
+  [572] getlocal 9 .............................. <tColor>
+  [574] pusharglist 2 ........................... <tColors, tColor>
+  [576] objcall 151 ............................. <tColors[tColor]>
+  [578] setobjprop 92 ........................... tSpr.bgColor = tColors[tColor]
+  [580] getlocal 15 ............................. <tSpr>
+  [582] getchainedprop 58 ....................... <tSpr.member>
+  [584] getlocal 5 .............................. <tPalette>
+  [586] pusharglist 1 ........................... <tPalette>
+  [588] extcall 154 ............................. <getmemnum(tPalette)>
+  [590] pusharglist 1 ........................... <getmemnum(tPalette)>
+  [592] extcall 58 .............................. <member(getmemnum(tPalette))>
+  [594] setobjprop 155 .......................... tSpr.member.paletteRef = member(getmemnum(tPalette))
+  [596] getlocal 12 ............................. <tObjPieceCount>
+  [598] pushint8 1 .............................. <1>
+  [600] add ..................................... <tObjPieceCount + 1>
+  [601] setlocal 12 ............................. tObjPieceCount = tObjPieceCount + 1
+  [603] getprop 111 ............................. <pWallDefined>
+  [605] pushzero ................................ <0>
+  [606] eq ...................................... <pWallDefined = 0>
+  [607] jmpifz [622] ............................ if pWallDefined = 0 then
+  [610] getlocal 15 ............................. <tSpr>
+  [612] getlocal 15 ............................. <tSpr>
+  [614] getobjprop 156 .......................... <tSpr.locZ>
+  [616] pushint16 975 ........................... <975>
+  [619] sub ..................................... <tSpr.locZ - 975>
+  [620] setobjprop 156 .......................... tSpr.locZ = tSpr.locZ - 975
+  [622] getlocal 15 ............................. <tSpr>
+  [624] getobjprop 59 ........................... <tSpr.blend>
+  [626] pushint8 100 ............................ <100>
+  [628] eq ...................................... <tSpr.blend = 100>
+  [629] jmpifz [638] ............................ if tSpr.blend = 100 then
+  [632] getlocal 15 ............................. <tSpr>
+  [634] pushint8 41 ............................. <41>
+  [636] setobjprop 91 ........................... tSpr.ink = 41
+  [638] jmp [671] ............................... next repeat
+  [641] getparam 0 .............................. <me>
+  [643] pushcons 20 ............................. <"Wall member not found:">
+  [645] getlocal 16 ............................. <tdir>
+  [647] joinpadstr .............................. <"Wall member not found:" && tdir>
+  [648] pushcons 18 ............................. <"_">
+  [650] joinstr ................................. <"Wall member not found:" && tdir & "_">
+  [651] getlocal 17 ............................. <tName>
+  [653] joinstr ................................. <"Wall member not found:" && tdir & "_" & tName>
+  [654] pushcons 18 ............................. <"_">
+  [656] joinstr ................................. <"Wall member not found:" && tdir & "_" & tName & "_">
+  [657] getlocal 4 .............................. <ttype>
+  [659] joinstr ................................. <"Wall member not found:" && tdir & "_" & tName & "_" & ttype>
+  [660] getlocal 18 ............................. <tdata>
+  [662] joinstr ................................. <"Wall member not found:" && tdir & "_" & tName & "_" & ttype & tdata>
+  [663] pushsymb 105 ............................ <#setWallPaper>
+  [665] pushsymb 147 ............................ <#minor>
+  [667] pusharglistnoret 4 ...................... <me, "Wall member not found:" && tdir & "_" & tName & "_" & ttype & tdata, #setWallPaper, #minor>
+  [669] extcall 129 ............................. error(me, "Wall member not found:" && tdir & "_" & tName & "_" & ttype & tdata, #setWallPaper, #minor)
+  [671] pushint8 1
+  [673] add
+  [674] endrepeat [389]
+  [677] pop 3
+  [679] pushint8 1
+  [681] add
+  [682] endrepeat [353]
+  [685] pop 3
+  [687] getlocal 3 .............................. <tDelim>
+  [689] setmovieprop 69 ......................... the itemDelimiter = tDelim
+  [691] getparam 0 .............................. <me>
+  [693] pusharglist 1 ........................... <me>
+  [695] objcall 7 ............................... <me.getRoomVisualizer()>
+  [697] setlocal 19 ............................. tViz = me.getRoomVisualizer()
+  [699] getlocal 19 ............................. <tViz>
+  [701] pusharglist 1 ........................... <tViz>
+  [703] extcall 54 .............................. <objectp(tViz)>
+  [705] jmpifz [817] ............................ if objectp(tViz) then
+  [708] getlocal 19 ............................. <tViz>
+  [710] pushsymb 157 ............................ <#wallleft>
+  [712] pushsymb 158 ............................ <#wallright>
+  [714] pusharglist 2 ........................... <[#wallleft, #wallright]>
+  [716] pushlist ................................ <[#wallleft, #wallright]>
+  [717] pusharglist 2 ........................... <tViz, [#wallleft, #wallright]>
+  [719] objcall 159 ............................. <tViz.getWrappedParts([#wallleft, #wallright])>
+  [721] setlocal 20 ............................. tWrappedWallParts = tViz.getWrappedParts([#wallleft, #wallright])
+  [723] getlocal 20 ............................. <tWrappedWallParts>
+  [725] getobjprop 150 .......................... <tWrappedWallParts.count>
+  [727] pushzero ................................ <0>
+  [728] gt ...................................... <tWrappedWallParts.count > 0>
+  [729] jmpifz [814] ............................ if tWrappedWallParts.count > 0 then / else
+  [732] getlocal 20 ............................. <tWrappedWallParts>
+  [734] peek 0
+  [736] pusharglist 1
+  [738] extcall 150
+  [740] pushint8 1
+  [742] peek 0
+  [744] peek 2
+  [746] lteq
+  [747] jmpifz [809] ............................ repeat with tWrapper in tWrappedWallParts
+  [750] peek 2
+  [752] peek 1
+  [754] pusharglist 2
+  [756] extcall 151
+  [758] setlocal 21
+  [760] getlocal 21 ............................. <tWrapper>
+  [762] getlocal 4 .............................. <ttype>
+  [764] getlocal 5 .............................. <tPalette>
+  [766] getlocal 10 ............................. <tColors>
+  [768] pushcons 14 ............................. <"left">
+  [770] pusharglist 2 ........................... <tColors, "left">
+  [772] objcall 151 ............................. <tColors["left"]>
+  [774] pushsymb 157 ............................ <#wallleft>
+  [776] pusharglistnoret 5 ...................... <tWrapper, ttype, tPalette, tColors["left"], #wallleft>
+  [778] objcall 160 ............................. tWrapper.setPartPattern(ttype, tPalette, tColors["left"], #wallleft)
+  [780] getlocal 21 ............................. <tWrapper>
+  [782] getlocal 4 .............................. <ttype>
+  [784] getlocal 5 .............................. <tPalette>
+  [786] getlocal 10 ............................. <tColors>
+  [788] pushcons 15 ............................. <"right">
+  [790] pusharglist 2 ........................... <tColors, "right">
+  [792] objcall 151 ............................. <tColors["right"]>
+  [794] pushsymb 158 ............................ <#wallright>
+  [796] pusharglistnoret 5 ...................... <tWrapper, ttype, tPalette, tColors["right"], #wallright>
+  [798] objcall 160 ............................. tWrapper.setPartPattern(ttype, tPalette, tColors["right"], #wallright)
+  [800] pushint8 1 .............................. <1>
+  [802] setlocal 22 ............................. tWrappedWallPartsDefined = 1
+  [804] pushint8 1
+  [806] add
+  [807] endrepeat [742]
+  [809] pop 3
+  [811] jmp [817]
+  [814] pushzero ................................ <0>
+  [815] setlocal 22 ............................. tWrappedWallPartsDefined = 0
+  [817] getlocal 11 ............................. <tPieceList>
+  [819] getobjprop 150 .......................... <tPieceList.count>
+  [821] pushzero ................................ <0>
+  [822] eq ...................................... <tPieceList.count = 0>
+  [823] getlocal 22 ............................. <tWrappedWallPartsDefined>
+  [825] not ..................................... <not tWrappedWallPartsDefined>
+  [826] and ..................................... <(tPieceList.count = 0) and not tWrappedWallPartsDefined>
+  [827] jmpifz [845] ............................ if (tPieceList.count = 0) and not tWrappedWallPartsDefined then / else
+  [830] getparam 1 .............................. <tIndex>
+  [832] setprop 113 ............................. pWallModel = tIndex
+  [834] pushzero ................................ <0>
+  [835] setprop 111 ............................. pWallDefined = 0
+  [837] pushzero ................................ <0>
+  [838] pusharglistnoret 1 ...................... <0>
+  [840] extcall 36 .............................. return 0
+  [842] jmp [855]
+  [845] pushint8 1 .............................. <1>
+  [847] setprop 111 ............................. pWallDefined = 1
+  [849] pushint8 1 .............................. <1>
+  [851] pusharglistnoret 1 ...................... <1>
+  [853] extcall 36 .............................. return 1
+  [855] ret
+end
+
+on setFloorPattern me, tIndex
+  [  0] getprop 110 ............................. <pFloorPatterns>
+  [  2] pushsymb 144 ............................ <#line>
+  [  4] getparam 1 .............................. <tIndex>
+  [  6] pushsymb 145 ............................ <#char>
+  [  8] pushint8 1 .............................. <1>
+  [ 10] getparam 1 .............................. <tIndex>
+  [ 12] pusharglist 1 ........................... <tIndex>
+  [ 14] extcall 126 ............................. <length(tIndex)>
+  [ 16] pushint8 2 .............................. <2>
+  [ 18] sub ..................................... <length(tIndex) - 2>
+  [ 19] pusharglist 4 ........................... <tIndex, #char, 1, length(tIndex) - 2>
+  [ 21] objcall 71 .............................. <tIndex.char[1..length(tIndex) - 2]>
+  [ 23] pusharglist 1 ........................... <tIndex.char[1..length(tIndex) - 2]>
+  [ 25] extcall 26 .............................. <integer(tIndex.char[1..length(tIndex) - 2])>
+  [ 27] pusharglist 3 ........................... <pFloorPatterns, #line, integer(tIndex.char[1..length(tIndex) - 2])>
+  [ 29] objcall 71 .............................. <pFloorPatterns.line[integer(tIndex.char[1..length(tIndex) - 2])]>
+  [ 31] setlocal 0 .............................. tField = pFloorPatterns.line[integer(tIndex.char[1..length(tIndex) - 2])]
+  [ 33] getlocal 0 .............................. <tField>
+  [ 35] pushcons 8 .............................. <EMPTY>
+  [ 37] eq ...................................... <tField = EMPTY>
+  [ 38] jmpifz [ 60] ............................ if tField = EMPTY then
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pushcons 21 ............................. <"Invalid floor color index:">
+  [ 45] getparam 1 .............................. <tIndex>
+  [ 47] joinpadstr .............................. <"Invalid floor color index:" && tIndex>
+  [ 48] pushsymb 106 ............................ <#setFloorPattern>
+  [ 50] pushsymb 146 ............................ <#major>
+  [ 52] pusharglist 4 ........................... <me, "Invalid floor color index:" && tIndex, #setFloorPattern, #major>
+  [ 54] extcall 129 ............................. <error(me, "Invalid floor color index:" && tIndex, #setFloorPattern, #major)>
+  [ 56] pusharglistnoret 1 ...................... <error(me, "Invalid floor color index:" && tIndex, #setFloorPattern, #major)>
+  [ 58] extcall 36 .............................. return error(me, "Invalid floor color index:" && tIndex, #setFloorPattern, #major)
+  [ 60] getlocal 0 .............................. <tField>
+  [ 62] pusharglist 1 ........................... <tField>
+  [ 64] extcall 28 .............................. <memberExists(tField)>
+  [ 66] not ..................................... <not memberExists(tField)>
+  [ 67] jmpifz [105] ............................ if not memberExists(tField) then
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pushcons 21 ............................. <"Invalid floor color index:">
+  [ 74] getparam 1 .............................. <tIndex>
+  [ 76] joinpadstr .............................. <"Invalid floor color index:" && tIndex>
+  [ 77] pushsymb 180 ............................ <#setFloorPatterns>
+  [ 79] pushsymb 147 ............................ <#minor>
+  [ 81] pusharglistnoret 4 ...................... <me, "Invalid floor color index:" && tIndex, #setFloorPatterns, #minor>
+  [ 83] extcall 129 ............................. error(me, "Invalid floor color index:" && tIndex, #setFloorPatterns, #minor)
+  [ 85] getparam 0 .............................. <me>
+  [ 87] pushcons 4 .............................. <"room.default.floor">
+  [ 89] pusharglist 1 ........................... <"room.default.floor">
+  [ 91] extcall 27 .............................. <getVariable("room.default.floor")>
+  [ 93] pusharglist 1 ........................... <getVariable("room.default.floor")>
+  [ 95] extcall 114 ............................. <string(getVariable("room.default.floor"))>
+  [ 97] pusharglist 2 ........................... <me, string(getVariable("room.default.floor"))>
+  [ 99] objcall 106 ............................. <me.setFloorPattern(string(getVariable("room.default.floor")))>
+  [101] pusharglistnoret 1 ...................... <me.setFloorPattern(string(getVariable("room.default.floor")))>
+  [103] extcall 36 .............................. return me.setFloorPattern(string(getVariable("room.default.floor")))
+  [105] getlocal 0 .............................. <tField>
+  [107] pushzero ................................ <0>
+  [108] getfield ................................ <field(tField)>
+  [109] setlocal 1 .............................. tmodel = field(tField)
+  [111] getlocal 1 .............................. <tmodel>
+  [113] pushsymb 144 ............................ <#line>
+  [115] getparam 1 .............................. <tIndex>
+  [117] pushsymb 145 ............................ <#char>
+  [119] getparam 1 .............................. <tIndex>
+  [121] pusharglist 1 ........................... <tIndex>
+  [123] extcall 114 ............................. <string(tIndex)>
+  [125] pusharglist 1 ........................... <string(tIndex)>
+  [127] extcall 126 ............................. <length(string(tIndex))>
+  [129] pushint8 1 .............................. <1>
+  [131] sub ..................................... <length(string(tIndex)) - 1>
+  [132] getparam 1 .............................. <tIndex>
+  [134] pusharglist 1 ........................... <tIndex>
+  [136] extcall 114 ............................. <string(tIndex)>
+  [138] pusharglist 1 ........................... <string(tIndex)>
+  [140] extcall 126 ............................. <length(string(tIndex))>
+  [142] pusharglist 4 ........................... <tIndex, #char, length(string(tIndex)) - 1, length(string(tIndex))>
+  [144] objcall 71 .............................. <tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))]>
+  [146] pusharglist 1 ........................... <tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))]>
+  [148] extcall 26 .............................. <integer(tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))])>
+  [150] pusharglist 3 ........................... <tmodel, #line, integer(tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))])>
+  [152] objcall 71 .............................. <tmodel.line[integer(tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))])]>
+  [154] setlocal 2 .............................. tPattern = tmodel.line[integer(tIndex.char[length(string(tIndex)) - 1..length(string(tIndex))])]
+  [156] getlocal 2 .............................. <tPattern>
+  [158] pushcons 8 .............................. <EMPTY>
+  [160] eq ...................................... <tPattern = EMPTY>
+  [161] jmpifz [183] ............................ if tPattern = EMPTY then
+  [164] getparam 0 .............................. <me>
+  [166] pushcons 21 ............................. <"Invalid floor color index:">
+  [168] getparam 1 .............................. <tIndex>
+  [170] joinpadstr .............................. <"Invalid floor color index:" && tIndex>
+  [171] pushsymb 106 ............................ <#setFloorPattern>
+  [173] pushsymb 146 ............................ <#major>
+  [175] pusharglist 4 ........................... <me, "Invalid floor color index:" && tIndex, #setFloorPattern, #major>
+  [177] extcall 129 ............................. <error(me, "Invalid floor color index:" && tIndex, #setFloorPattern, #major)>
+  [179] pusharglistnoret 1 ...................... <error(me, "Invalid floor color index:" && tIndex, #setFloorPattern, #major)>
+  [181] extcall 36 .............................. return error(me, "Invalid floor color index:" && tIndex, #setFloorPattern, #major)
+  [183] getmovieprop 69 ......................... <the itemDelimiter>
+  [185] setlocal 3 .............................. tDelim = the itemDelimiter
+  [187] pushcons 13 ............................. <",">
+  [189] setmovieprop 69 ......................... the itemDelimiter = ","
+  [191] getlocal 2 .............................. <tPattern>
+  [193] pushsymb 70 ............................. <#item>
+  [195] pushint8 1 .............................. <1>
+  [197] pusharglist 3 ........................... <tPattern, #item, 1>
+  [199] objcall 71 .............................. <tPattern.item[1]>
+  [201] setlocal 4 .............................. ttype = tPattern.item[1]
+  [203] getlocal 2 .............................. <tPattern>
+  [205] pushsymb 70 ............................. <#item>
+  [207] pushint8 2 .............................. <2>
+  [209] pusharglist 3 ........................... <tPattern, #item, 2>
+  [211] objcall 71 .............................. <tPattern.item[2]>
+  [213] setlocal 5 .............................. tPalette = tPattern.item[2]
+  [215] getlocal 2 .............................. <tPattern>
+  [217] pushsymb 70 ............................. <#item>
+  [219] pushint8 3 .............................. <3>
+  [221] pusharglist 3 ........................... <tPattern, #item, 3>
+  [223] objcall 71 .............................. <tPattern.item[3]>
+  [225] pusharglist 1 ........................... <tPattern.item[3]>
+  [227] extcall 26 .............................. <integer(tPattern.item[3])>
+  [229] setlocal 6 .............................. tR = integer(tPattern.item[3])
+  [231] getlocal 2 .............................. <tPattern>
+  [233] pushsymb 70 ............................. <#item>
+  [235] pushint8 4 .............................. <4>
+  [237] pusharglist 3 ........................... <tPattern, #item, 4>
+  [239] objcall 71 .............................. <tPattern.item[4]>
+  [241] pusharglist 1 ........................... <tPattern.item[4]>
+  [243] extcall 26 .............................. <integer(tPattern.item[4])>
+  [245] setlocal 7 .............................. tG = integer(tPattern.item[4])
+  [247] getlocal 2 .............................. <tPattern>
+  [249] pushsymb 70 ............................. <#item>
+  [251] pushint8 5 .............................. <5>
+  [253] pusharglist 3 ........................... <tPattern, #item, 5>
+  [255] objcall 71 .............................. <tPattern.item[5]>
+  [257] pusharglist 1 ........................... <tPattern.item[5]>
+  [259] extcall 26 .............................. <integer(tPattern.item[5])>
+  [261] setlocal 8 .............................. tB = integer(tPattern.item[5])
+  [263] getlocal 6 .............................. <tR>
+  [265] getlocal 7 .............................. <tG>
+  [267] getlocal 8 .............................. <tB>
+  [269] pusharglist 3 ........................... <tR, tG, tB>
+  [271] extcall 120 ............................. <rgb(tR, tG, tB)>
+  [273] setlocal 9 .............................. tColor = rgb(tR, tG, tB)
+  [275] getparam 0 .............................. <me>
+  [277] pusharglist 1 ........................... <me>
+  [279] objcall 7 ............................... <me.getRoomVisualizer()>
+  [281] setlocal 10 ............................. tVisualizer = me.getRoomVisualizer()
+  [283] getlocal 10 ............................. <tVisualizer>
+  [285] pusharglist 1 ........................... <tVisualizer>
+  [287] extcall 54 .............................. <objectp(tVisualizer)>
+  [289] not ..................................... <not objectp(tVisualizer)>
+  [290] jmpifz [305] ............................ if not objectp(tVisualizer) then
+  [293] getparam 1 .............................. <tIndex>
+  [295] setprop 115 ............................. pFloorModel = tIndex
+  [297] pushzero ................................ <0>
+  [298] setprop 112 ............................. pFloorDefined = 0
+  [300] pushzero ................................ <0>
+  [301] pusharglistnoret 1 ...................... <0>
+  [303] extcall 36 .............................. return 0
+  [305] getparam 0 .............................. <me>
+  [307] pusharglist 1 ........................... <me>
+  [309] objcall 7 ............................... <me.getRoomVisualizer()>
+  [311] setlocal 10 ............................. tVisualizer = me.getRoomVisualizer()
+  [313] getlocal 10 ............................. <tVisualizer>
+  [315] pusharglist 1 ........................... <tVisualizer>
+  [317] extcall 54 .............................. <objectp(tVisualizer)>
+  [319] not ..................................... <not objectp(tVisualizer)>
+  [320] jmpifz [328] ............................ if not objectp(tVisualizer) then
+  [323] pushzero ................................ <0>
+  [324] pusharglistnoret 1 ...................... <0>
+  [326] extcall 36 .............................. return 0
+  [328] pushint8 1 .............................. <1>
+  [330] setlocal 11 ............................. tPieceId = 1
+  [332] getlocal 10 ............................. <tVisualizer>
+  [334] pushcons 11 ............................. <"floor">
+  [336] getlocal 11 ............................. <tPieceId>
+  [338] joinstr ................................. <"floor" & tPieceId>
+  [339] pusharglist 2 ........................... <tVisualizer, "floor" & tPieceId>
+  [341] objcall 55 .............................. <tVisualizer.getSprById("floor" & tPieceId)>
+  [343] setlocal 12 ............................. tSpr = tVisualizer.getSprById("floor" & tPieceId)
+  [345] getmovieprop 69 ......................... <the itemDelimiter>
+  [347] setlocal 3 .............................. tDelim = the itemDelimiter
+  [349] pushcons 18 ............................. <"_">
+  [351] setmovieprop 69 ......................... the itemDelimiter = "_"
+  [353] getlocal 12 ............................. <tSpr>
+  [355] pushzero ................................ <0>
+  [356] eq ...................................... <tSpr = 0>
+  [357] not ..................................... <not (tSpr = 0)>
+  [358] jmpifz [560] ............................ repeat while not (tSpr = 0)
+  [361] getlocal 12 ............................. <tSpr>
+  [363] getchainedprop 58 ....................... <tSpr.member>
+  [365] getobjprop 153 .......................... <tSpr.member.name>
+  [367] setlocal 13 ............................. tMem = tSpr.member.name
+  [369] getlocal 13 ............................. <tMem>
+  [371] pushsymb 70 ............................. <#item>
+  [373] pushint8 1 .............................. <1>
+  [375] pusharglist 3 ........................... <tMem, #item, 1>
+  [377] objcall 71 .............................. <tMem.item[1]>
+  [379] pushcons 18 ............................. <"_">
+  [381] joinstr ................................. <tMem.item[1] & "_">
+  [382] getlocal 13 ............................. <tMem>
+  [384] pushsymb 70 ............................. <#item>
+  [386] pushint8 2 .............................. <2>
+  [388] pusharglist 3 ........................... <tMem, #item, 2>
+  [390] objcall 71 .............................. <tMem.item[2]>
+  [392] joinstr ................................. <tMem.item[1] & "_" & tMem.item[2]>
+  [393] pushcons 18 ............................. <"_">
+  [395] joinstr ................................. <tMem.item[1] & "_" & tMem.item[2] & "_">
+  [396] setlocal 14 ............................. tClass = tMem.item[1] & "_" & tMem.item[2] & "_"
+  [398] getlocal 13 ............................. <tMem>
+  [400] pushsymb 70 ............................. <#item>
+  [402] pushint8 4 .............................. <4>
+  [404] pusharglist 3 ........................... <tMem, #item, 4>
+  [406] objcall 71 .............................. <tMem.item[4]>
+  [408] pushcons 18 ............................. <"_">
+  [410] joinstr ................................. <tMem.item[4] & "_">
+  [411] setlocal 15 ............................. tLayer = tMem.item[4] & "_"
+  [413] getlocal 13 ............................. <tMem>
+  [415] pushsymb 70 ............................. <#item>
+  [417] pushint8 5 .............................. <5>
+  [419] pusharglist 3 ........................... <tMem, #item, 5>
+  [421] objcall 71 .............................. <tMem.item[5]>
+  [423] pushcons 18 ............................. <"_">
+  [425] joinstr ................................. <tMem.item[5] & "_">
+  [426] setlocal 16 ............................. tObs1 = tMem.item[5] & "_"
+  [428] getlocal 13 ............................. <tMem>
+  [430] pushsymb 70 ............................. <#item>
+  [432] pushint8 6 .............................. <6>
+  [434] pusharglist 3 ........................... <tMem, #item, 6>
+  [436] objcall 71 .............................. <tMem.item[6]>
+  [438] pushcons 18 ............................. <"_">
+  [440] joinstr ................................. <tMem.item[6] & "_">
+  [441] setlocal 17 ............................. tdir = tMem.item[6] & "_"
+  [443] getlocal 13 ............................. <tMem>
+  [445] pushsymb 70 ............................. <#item>
+  [447] pushint8 7 .............................. <7>
+  [449] pusharglist 3 ........................... <tMem, #item, 7>
+  [451] objcall 71 .............................. <tMem.item[7]>
+  [453] setlocal 18 ............................. tObs2 = tMem.item[7]
+  [455] getlocal 14 ............................. <tClass>
+  [457] getlocal 4 .............................. <ttype>
+  [459] joinstr ................................. <tClass & ttype>
+  [460] pushcons 18 ............................. <"_">
+  [462] joinstr ................................. <tClass & ttype & "_">
+  [463] getlocal 15 ............................. <tLayer>
+  [465] joinstr ................................. <tClass & ttype & "_" & tLayer>
+  [466] getlocal 16 ............................. <tObs1>
+  [468] joinstr ................................. <tClass & ttype & "_" & tLayer & tObs1>
+  [469] getlocal 17 ............................. <tdir>
+  [471] joinstr ................................. <tClass & ttype & "_" & tLayer & tObs1 & tdir>
+  [472] getlocal 18 ............................. <tObs2>
+  [474] joinstr ................................. <tClass & ttype & "_" & tLayer & tObs1 & tdir & tObs2>
+  [475] setlocal 19 ............................. tNewMemName = tClass & ttype & "_" & tLayer & tObs1 & tdir & tObs2
+  [477] getlocal 19 ............................. <tNewMemName>
+  [479] pusharglist 1 ........................... <tNewMemName>
+  [481] extcall 28 .............................. <memberExists(tNewMemName)>
+  [483] jmpifz [496] ............................ if memberExists(tNewMemName) then
+  [486] getlocal 12 ............................. <tSpr>
+  [488] getlocal 19 ............................. <tNewMemName>
+  [490] pusharglist 1 ........................... <tNewMemName>
+  [492] extcall 58 .............................. <member(tNewMemName)>
+  [494] setobjprop 58 ........................... tSpr.member = member(tNewMemName)
+  [496] getlocal 12 ............................. <tSpr>
+  [498] getlocal 9 .............................. <tColor>
+  [500] setobjprop 92 ........................... tSpr.bgColor = tColor
+  [502] getlocal 12 ............................. <tSpr>
+  [504] getchainedprop 58 ....................... <tSpr.member>
+  [506] getlocal 5 .............................. <tPalette>
+  [508] pusharglist 1 ........................... <tPalette>
+  [510] extcall 154 ............................. <getmemnum(tPalette)>
+  [512] pusharglist 1 ........................... <getmemnum(tPalette)>
+  [514] extcall 58 .............................. <member(getmemnum(tPalette))>
+  [516] setobjprop 155 .......................... tSpr.member.paletteRef = member(getmemnum(tPalette))
+  [518] getlocal 12 ............................. <tSpr>
+  [520] pushint8 41 ............................. <41>
+  [522] setobjprop 91 ........................... tSpr.ink = 41
+  [524] getlocal 12 ............................. <tSpr>
+  [526] getlocal 12 ............................. <tSpr>
+  [528] getobjprop 156 .......................... <tSpr.locZ>
+  [530] pushint32 1000000 ....................... <1000000>
+  [535] sub ..................................... <tSpr.locZ - 1000000>
+  [536] setobjprop 156 .......................... tSpr.locZ = tSpr.locZ - 1000000
+  [538] getlocal 11 ............................. <tPieceId>
+  [540] pushint8 1 .............................. <1>
+  [542] add ..................................... <tPieceId + 1>
+  [543] setlocal 11 ............................. tPieceId = tPieceId + 1
+  [545] getlocal 10 ............................. <tVisualizer>
+  [547] pushcons 11 ............................. <"floor">
+  [549] getlocal 11 ............................. <tPieceId>
+  [551] joinstr ................................. <"floor" & tPieceId>
+  [552] pusharglist 2 ........................... <tVisualizer, "floor" & tPieceId>
+  [554] objcall 55 .............................. <tVisualizer.getSprById("floor" & tPieceId)>
+  [556] setlocal 12 ............................. tSpr = tVisualizer.getSprById("floor" & tPieceId)
+  [558] endrepeat [353]
+  [560] getlocal 3 .............................. <tDelim>
+  [562] setmovieprop 69 ......................... the itemDelimiter = tDelim
+  [564] getlocal 10 ............................. <tVisualizer>
+  [566] pushsymb 181 ............................ <#floor>
+  [568] pusharglist 1 ........................... <[#floor]>
+  [570] pushlist ................................ <[#floor]>
+  [571] pusharglist 2 ........................... <tVisualizer, [#floor]>
+  [573] objcall 159 ............................. <tVisualizer.getWrappedParts([#floor])>
+  [575] setlocal 20 ............................. tWrappedParts = tVisualizer.getWrappedParts([#floor])
+  [577] getlocal 20 ............................. <tWrappedParts>
+  [579] peek 0
+  [581] pusharglist 1
+  [583] extcall 150
+  [585] pushint8 1
+  [587] peek 0
+  [589] peek 2
+  [591] lteq
+  [592] jmpifz [624] ............................ repeat with tWrapper in tWrappedParts
+  [595] peek 2
+  [597] peek 1
+  [599] pusharglist 2
+  [601] extcall 151
+  [603] setlocal 21
+  [605] getlocal 21 ............................. <tWrapper>
+  [607] getlocal 4 .............................. <ttype>
+  [609] getlocal 5 .............................. <tPalette>
+  [611] getlocal 9 .............................. <tColor>
+  [613] pushsymb 181 ............................ <#floor>
+  [615] pusharglistnoret 5 ...................... <tWrapper, ttype, tPalette, tColor, #floor>
+  [617] objcall 160 ............................. tWrapper.setPartPattern(ttype, tPalette, tColor, #floor)
+  [619] pushint8 1
+  [621] add
+  [622] endrepeat [587]
+  [624] pop 3
+  [626] getlocal 3 .............................. <tDelim>
+  [628] setmovieprop 69 ......................... the itemDelimiter = tDelim
+  [630] pushint8 1 .............................. <1>
+  [632] setprop 112 ............................. pFloorDefined = 1
+  [634] pushint8 1 .............................. <1>
+  [636] pusharglistnoret 1 ...................... <1>
+  [638] extcall 36 .............................. return 1
+  [640] ret
+end
+
+on renderRoomBackground me, tColor
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 7 ............................... <me.getRoomVisualizer()>
+  [  6] setlocal 0 .............................. tVisualizer = me.getRoomVisualizer()
+  [  8] getlocal 0 .............................. <tVisualizer>
+  [ 10] pusharglist 1 ........................... <tVisualizer>
+  [ 12] extcall 54 .............................. <objectp(tVisualizer)>
+  [ 14] jmpifz [ 25] ............................ if objectp(tVisualizer) then
+  [ 17] getlocal 0 .............................. <tVisualizer>
+  [ 19] getparam 1 .............................. <tColor>
+  [ 21] pusharglistnoret 2 ...................... <tVisualizer, tColor>
+  [ 23] objcall 190 ............................. tVisualizer.renderWrappedParts(tColor)
+  [ 25] ret
+end
+
+on setRoomDimmerColor me, tColor
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 7 ............................... <me.getRoomVisualizer()>
+  [  6] setlocal 0 .............................. tVisualizer = me.getRoomVisualizer()
+  [  8] getlocal 0 .............................. <tVisualizer>
+  [ 10] pusharglist 1 ........................... <tVisualizer>
+  [ 12] extcall 54 .............................. <objectp(tVisualizer)>
+  [ 14] jmpifz [ 25] ............................ if objectp(tVisualizer) then
+  [ 17] getlocal 0 .............................. <tVisualizer>
+  [ 19] getparam 1 .............................. <tColor>
+  [ 21] pusharglistnoret 2 ...................... <tVisualizer, tColor>
+  [ 23] objcall 119 ............................. tVisualizer.setDimmerColor(tColor)
+  [ 25] ret
+end
+
+on getRoomVisualizer me
+  [  0] pushsymb 17 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 16 .............................. <threadExists(#room)>
+  [  6] jmpifz [ 76] ............................ if threadExists(#room) then
+  [  9] pushsymb 17 ............................. <#room>
+  [ 11] pusharglist 1 ........................... <#room>
+  [ 13] extcall 18 .............................. <getThread(#room)>
+  [ 15] pusharglist 1 ........................... <getThread(#room)>
+  [ 17] objcall 19 .............................. <getThread(#room).getInterface()>
+  [ 19] setlocal 0 .............................. tInterface = getThread(#room).getInterface()
+  [ 21] pushsymb 17 ............................. <#room>
+  [ 23] pusharglist 1 ........................... <#room>
+  [ 25] extcall 18 .............................. <getThread(#room)>
+  [ 27] pusharglist 1 ........................... <getThread(#room)>
+  [ 29] objcall 34 .............................. <getThread(#room).getComponent()>
+  [ 31] setlocal 1 .............................. tComponent = getThread(#room).getComponent()
+  [ 33] getlocal 1 .............................. <tComponent>
+  [ 35] pusharglist 1 ........................... <tComponent>
+  [ 37] objcall 84 .............................. <tComponent.getRoomID()>
+  [ 39] pushcons 22 ............................. <"private">
+  [ 41] eq ...................................... <tComponent.getRoomID() = "private">
+  [ 42] jmpifz [ 76] ............................ if tComponent.getRoomID() = "private" then
+  [ 45] pushsymb 17 ............................. <#room>
+  [ 47] pusharglist 1 ........................... <#room>
+  [ 49] extcall 18 .............................. <getThread(#room)>
+  [ 51] pusharglist 1 ........................... <getThread(#room)>
+  [ 53] objcall 19 .............................. <getThread(#room).getInterface()>
+  [ 55] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 57] objcall 7 ............................... <getThread(#room).getInterface().getRoomVisualizer()>
+  [ 59] setlocal 2 .............................. tVisualizer = getThread(#room).getInterface().getRoomVisualizer()
+  [ 61] getlocal 2 .............................. <tVisualizer>
+  [ 63] pusharglist 1 ........................... <tVisualizer>
+  [ 65] extcall 54 .............................. <objectp(tVisualizer)>
+  [ 67] jmpifz [ 76] ............................ if objectp(tVisualizer) then
+  [ 70] getlocal 2 .............................. <tVisualizer>
+  [ 72] pusharglistnoret 1 ...................... <tVisualizer>
+  [ 74] extcall 36 .............................. return tVisualizer
+  [ 76] pushzero ................................ <0>
+  [ 77] pusharglistnoret 1 ...................... <0>
+  [ 79] extcall 36 .............................. return 0
+  [ 81] ret
+end
+
+on insertWallMaskItem me, tID, tClassID, tloc, tdir, tSize
+  [  0] getprop 116 ............................. <pLandscapeMngr>
+  [  2] pusharglist 1 ........................... <pLandscapeMngr>
+  [  4] extcall 54 .............................. <objectp(pLandscapeMngr)>
+  [  6] jmpifz [ 25] ............................ if objectp(pLandscapeMngr) then
+  [  9] getprop 116 ............................. <pLandscapeMngr>
+  [ 11] getparam 1 .............................. <tID>
+  [ 13] getparam 2 .............................. <tClassID>
+  [ 15] getparam 3 .............................. <tloc>
+  [ 17] getparam 4 .............................. <tdir>
+  [ 19] getparam 5 .............................. <tSize>
+  [ 21] pusharglistnoret 6 ...................... <pLandscapeMngr, tID, tClassID, tloc, tdir, tSize>
+  [ 23] objcall 2 ............................... pLandscapeMngr.insertWallMaskItem(tID, tClassID, tloc, tdir, tSize)
+  [ 25] ret
+end
+
+on removeWallMaskItem me, tID
+  [  0] getprop 116 ............................. <pLandscapeMngr>
+  [  2] pusharglist 1 ........................... <pLandscapeMngr>
+  [  4] extcall 54 .............................. <objectp(pLandscapeMngr)>
+  [  6] jmpifz [ 17] ............................ if objectp(pLandscapeMngr) then
+  [  9] getprop 116 ............................. <pLandscapeMngr>
+  [ 11] getparam 1 .............................. <tID>
+  [ 13] pusharglistnoret 2 ...................... <pLandscapeMngr, tID>
+  [ 15] objcall 3 ............................... pLandscapeMngr.removeWallMaskItem(tID)
+  [ 17] ret
+end
+
+on setLandscape me, ttype, tScale
+  [  0] getprop 116 ............................. <pLandscapeMngr>
+  [  2] pusharglist 1 ........................... <pLandscapeMngr>
+  [  4] extcall 54 .............................. <objectp(pLandscapeMngr)>
+  [  6] jmpifz [ 19] ............................ if objectp(pLandscapeMngr) then
+  [  9] getprop 116 ............................. <pLandscapeMngr>
+  [ 11] getparam 1 .............................. <ttype>
+  [ 13] getparam 2 .............................. <tScale>
+  [ 15] pusharglistnoret 3 ...................... <pLandscapeMngr, ttype, tScale>
+  [ 17] objcall 5 ............................... pLandscapeMngr.setLandscape(ttype, tScale)
+  [ 19] ret
+end
+
+on setLandscapeAnimation me, tID, tScale
+  [  0] getprop 116 ............................. <pLandscapeMngr>
+  [  2] pusharglist 1 ........................... <pLandscapeMngr>
+  [  4] extcall 54 .............................. <objectp(pLandscapeMngr)>
+  [  6] jmpifz [ 19] ............................ if objectp(pLandscapeMngr) then
+  [  9] getprop 116 ............................. <pLandscapeMngr>
+  [ 11] getparam 1 .............................. <tID>
+  [ 13] getparam 2 .............................. <tScale>
+  [ 15] pusharglistnoret 3 ...................... <pLandscapeMngr, tID, tScale>
+  [ 17] objcall 6 ............................... pLandscapeMngr.setLandscapeAnimation(tID, tScale)
+  [ 19] ret
+end
+
+on getWallMaskCount me
+  [  0] getprop 116 ............................. <pLandscapeMngr>
+  [  2] pusharglist 1 ........................... <pLandscapeMngr>
+  [  4] extcall 54 .............................. <objectp(pLandscapeMngr)>
+  [  6] jmpifz [ 20] ............................ if objectp(pLandscapeMngr) then
+  [  9] getprop 116 ............................. <pLandscapeMngr>
+  [ 11] pusharglist 1 ........................... <pLandscapeMngr>
+  [ 13] objcall 570 ............................. <pLandscapeMngr.getWallMaskCount()>
+  [ 16] pusharglistnoret 1 ...................... <pLandscapeMngr.getWallMaskCount()>
+  [ 18] extcall 36 .............................. return pLandscapeMngr.getWallMaskCount()
+  [ 20] ret
+end

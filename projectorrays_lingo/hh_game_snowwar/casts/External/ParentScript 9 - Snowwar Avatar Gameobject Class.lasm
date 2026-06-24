@@ -1,0 +1,2355 @@
+property SUBTURN_MOVEMENT, PLAYER_HEIGHT, pIsOwnPlayer, pRoomObject, pActiveEffects, pDump, pWalkLoop
+
+on construct me
+  [  0] pushcons 0 .............................. <"snowwar.object_avatar.subturn_movement">
+  [  2] pusharglist 1 ........................... <"snowwar.object_avatar.subturn_movement">
+  [  4] extcall 394 ............................. <getIntVariable("snowwar.object_avatar.subturn_movement")>
+  [  7] setprop 565 ............................. SUBTURN_MOVEMENT = getIntVariable("snowwar.object_avatar.subturn_movement")
+  [ 10] pusharglist 0 ........................... <[]>
+  [ 12] pushlist ................................ <[]>
+  [ 13] setprop 566 ............................. pActiveEffects = []
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] pusharglistnoret 1 ...................... <1>
+  [ 20] extcall 35 .............................. return 1
+  [ 22] ret
+end
+
+on deconstruct me
+  [  0] getprop 566 ............................. <pActiveEffects>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 123
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 40] ............................ repeat with tEffect in pActiveEffects
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 44
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tEffect>
+  [ 31] pusharglistnoret 1 ...................... <tEffect>
+  [ 33] objcall 1 ............................... tEffect.deconstruct()
+  [ 35] pushint8 1
+  [ 37] add
+  [ 38] endrepeat [ 11]
+  [ 40] pop 3
+  [ 42] pusharglist 0 ........................... <[]>
+  [ 44] pushlist ................................ <[]>
+  [ 45] setprop 566 ............................. pActiveEffects = []
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 228 ............................. <me.getGameSystem()>
+  [ 54] pusharglist 1 ........................... <me.getGameSystem()>
+  [ 56] objcall 435 ............................. <me.getGameSystem().getWorld()>
+  [ 59] setlocal 1 .............................. tWorld = me.getGameSystem().getWorld()
+  [ 61] getlocal 1 .............................. <tWorld>
+  [ 63] pushzero ................................ <0>
+  [ 64] nteq .................................... <tWorld <> 0>
+  [ 65] jmpifz [ 82] ............................ if tWorld <> 0 then
+  [ 68] getlocal 1 .............................. <tWorld>
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pusharglist 1 ........................... <me>
+  [ 74] objcall 567 ............................. <me.getObjectId()>
+  [ 77] pusharglistnoret 2 ...................... <tWorld, me.getObjectId()>
+  [ 79] objcall 568 ............................. tWorld.clearObjectFromTileSpace(me.getObjectId())
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pusharglistnoret 1 ...................... <me>
+  [ 86] objcall 563 ............................. me.stopWalkLoop()
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglistnoret 1 ...................... <me>
+  [ 93] objcall 560 ............................. me.removeRoomObject()
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] pusharglistnoret 1 ...................... <1>
+  [100] extcall 35 .............................. return 1
+  [102] ret
+end
+
+on define me, tGameObject
+  [  0] getparam 1 .............................. <tGameObject>
+  [  2] pusharglist 1 ........................... <tGameObject>
+  [  4] objcall 518 ............................. <tGameObject.duplicate()>
+  [  7] setparam 1 .............................. tGameObject = tGameObject.duplicate()
+  [  9] getparam 0 .............................. <me>
+  [ 11] getparam 1 .............................. <tGameObject>
+  [ 13] pusharglistnoret 2 ...................... <me, tGameObject>
+  [ 15] objcall 306 ............................. me.setGameObjectProperty(tGameObject)
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pushsymb 304 ............................ <#objectDataStruct>
+  [ 23] pusharglist 0 ........................... <>
+  [ 25] extcall 55 .............................. <VOID>
+  [ 27] pusharglistnoret 3 ...................... <me, #objectDataStruct, VOID>
+  [ 29] objcall 306 ............................. me.setGameObjectProperty(#objectDataStruct, VOID)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 228 ............................. <me.getGameSystem()>
+  [ 38] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [ 40] getlocal 0 .............................. <tGameSystem>
+  [ 42] pushzero ................................ <0>
+  [ 43] eq ...................................... <tGameSystem = 0>
+  [ 44] jmpifz [ 52] ............................ if tGameSystem = 0 then
+  [ 47] pushzero ................................ <0>
+  [ 48] pusharglistnoret 1 ...................... <0>
+  [ 50] extcall 35 .............................. return 0
+  [ 52] getparam 0 .............................. <me>
+  [ 54] getparam 1 .............................. <tGameObject>
+  [ 56] pusharglistnoret 2 ...................... <me, tGameObject>
+  [ 58] objcall 559 ............................. me.createRoomObject(tGameObject)
+  [ 61] getparam 1 .............................. <tGameObject>
+  [ 63] pushsymb 304 ............................ <#objectDataStruct>
+  [ 66] pusharglist 2 ........................... <tGameObject, #objectDataStruct>
+  [ 68] objcall 44 .............................. <tGameObject[#objectDataStruct]>
+  [ 70] pushsymb 529 ............................ <#next_tile_x>
+  [ 73] pusharglist 2 ........................... <tGameObject[#objectDataStruct], #next_tile_x>
+  [ 75] objcall 114 ............................. <tGameObject[#objectDataStruct].findPos(#next_tile_x)>
+  [ 77] pushzero ................................ <0>
+  [ 78] gt ...................................... <tGameObject[#objectDataStruct].findPos(#next_tile_x) > 0>
+  [ 79] getparam 1 .............................. <tGameObject>
+  [ 81] pushsymb 304 ............................ <#objectDataStruct>
+  [ 84] pusharglist 2 ........................... <tGameObject, #objectDataStruct>
+  [ 86] objcall 44 .............................. <tGameObject[#objectDataStruct]>
+  [ 88] pushsymb 530 ............................ <#next_tile_y>
+  [ 91] pusharglist 2 ........................... <tGameObject[#objectDataStruct], #next_tile_y>
+  [ 93] objcall 114 ............................. <tGameObject[#objectDataStruct].findPos(#next_tile_y)>
+  [ 95] pushzero ................................ <0>
+  [ 96] gt ...................................... <tGameObject[#objectDataStruct].findPos(#next_tile_y) > 0>
+  [ 97] and ..................................... <(tGameObject[#objectDataStruct].findPos(#next_tile_x) > 0) and (tGameObject[#objectDataStruct].findPos(#next_tile_y) > 0)>
+  [ 98] jmpifz [143] ............................ if (tGameObject[#objectDataStruct].findPos(#next_tile_x) > 0) and (tGameObject[#objectDataStruct].findPos(#next_tile_y) > 0) then
+  [101] getparam 0 .............................. <me>
+  [103] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [106] getparam 1 .............................. <tGameObject>
+  [108] pushsymb 304 ............................ <#objectDataStruct>
+  [111] pusharglist 2 ........................... <tGameObject, #objectDataStruct>
+  [113] objcall 44 .............................. <tGameObject[#objectDataStruct]>
+  [115] pushsymb 529 ............................ <#next_tile_x>
+  [118] pusharglist 2 ........................... <tGameObject[#objectDataStruct], #next_tile_x>
+  [120] objcall 44 .............................. <tGameObject[#objectDataStruct][#next_tile_x]>
+  [122] getparam 1 .............................. <tGameObject>
+  [124] pushsymb 304 ............................ <#objectDataStruct>
+  [127] pusharglist 2 ........................... <tGameObject, #objectDataStruct>
+  [129] objcall 44 .............................. <tGameObject[#objectDataStruct]>
+  [131] pushsymb 530 ............................ <#next_tile_y>
+  [134] pusharglist 2 ........................... <tGameObject[#objectDataStruct], #next_tile_y>
+  [136] objcall 44 .............................. <tGameObject[#objectDataStruct][#next_tile_y]>
+  [138] pusharglistnoret 3 ...................... <me.pGameObjectNextTarget, tGameObject[#objectDataStruct][#next_tile_x], tGameObject[#objectDataStruct][#next_tile_y]>
+  [140] objcall 572 ............................. me.pGameObjectNextTarget.setTileLoc(tGameObject[#objectDataStruct][#next_tile_x], tGameObject[#objectDataStruct][#next_tile_y])
+  [143] getparam 1 .............................. <tGameObject>
+  [145] pushsymb 304 ............................ <#objectDataStruct>
+  [148] pusharglist 2 ........................... <tGameObject, #objectDataStruct>
+  [150] objcall 44 .............................. <tGameObject[#objectDataStruct]>
+  [152] pushsymb 531 ............................ <#move_target_x>
+  [155] pusharglist 2 ........................... <tGameObject[#objectDataStruct], #move_target_x>
+  [157] objcall 114 ............................. <tGameObject[#objectDataStruct].findPos(#move_target_x)>
+  [159] pushzero ................................ <0>
+  [160] gt ...................................... <tGameObject[#objectDataStruct].findPos(#move_target_x) > 0>
+  [161] getparam 1 .............................. <tGameObject>
+  [163] pushsymb 304 ............................ <#objectDataStruct>
+  [166] pusharglist 2 ........................... <tGameObject, #objectDataStruct>
+  [168] objcall 44 .............................. <tGameObject[#objectDataStruct]>
+  [170] pushsymb 532 ............................ <#move_target_y>
+  [173] pusharglist 2 ........................... <tGameObject[#objectDataStruct], #move_target_y>
+  [175] objcall 114 ............................. <tGameObject[#objectDataStruct].findPos(#move_target_y)>
+  [177] pushzero ................................ <0>
+  [178] gt ...................................... <tGameObject[#objectDataStruct].findPos(#move_target_y) > 0>
+  [179] and ..................................... <(tGameObject[#objectDataStruct].findPos(#move_target_x) > 0) and (tGameObject[#objectDataStruct].findPos(#move_target_y) > 0)>
+  [180] jmpifz [225] ............................ if (tGameObject[#objectDataStruct].findPos(#move_target_x) > 0) and (tGameObject[#objectDataStruct].findPos(#move_target_y) > 0) then
+  [183] getparam 0 .............................. <me>
+  [185] getchainedprop 573 ...................... <me.pGameObjectFinalTarget>
+  [188] getparam 1 .............................. <tGameObject>
+  [190] pushsymb 304 ............................ <#objectDataStruct>
+  [193] pusharglist 2 ........................... <tGameObject, #objectDataStruct>
+  [195] objcall 44 .............................. <tGameObject[#objectDataStruct]>
+  [197] pushsymb 531 ............................ <#move_target_x>
+  [200] pusharglist 2 ........................... <tGameObject[#objectDataStruct], #move_target_x>
+  [202] objcall 44 .............................. <tGameObject[#objectDataStruct][#move_target_x]>
+  [204] getparam 1 .............................. <tGameObject>
+  [206] pushsymb 304 ............................ <#objectDataStruct>
+  [209] pusharglist 2 ........................... <tGameObject, #objectDataStruct>
+  [211] objcall 44 .............................. <tGameObject[#objectDataStruct]>
+  [213] pushsymb 532 ............................ <#move_target_y>
+  [216] pusharglist 2 ........................... <tGameObject[#objectDataStruct], #move_target_y>
+  [218] objcall 44 .............................. <tGameObject[#objectDataStruct][#move_target_y]>
+  [220] pusharglistnoret 3 ...................... <me.pGameObjectFinalTarget, tGameObject[#objectDataStruct][#move_target_x], tGameObject[#objectDataStruct][#move_target_y]>
+  [222] objcall 574 ............................. me.pGameObjectFinalTarget.setLoc(tGameObject[#objectDataStruct][#move_target_x], tGameObject[#objectDataStruct][#move_target_y])
+  [225] getparam 0 .............................. <me>
+  [227] pusharglistnoret 1 ...................... <me>
+  [229] objcall 548 ............................. me.reserveSpaceForObject()
+  [232] getparam 0 .............................. <me>
+  [234] pushsymb 576 ............................ <#gameobject_height>
+  [237] pusharglist 2 ........................... <me, #gameobject_height>
+  [239] objcall 239 ............................. <me.getGameObjectProperty(#gameobject_height)>
+  [241] setprop 575 ............................. PLAYER_HEIGHT = me.getGameObjectProperty(#gameobject_height)
+  [244] getparam 1 .............................. <tGameObject>
+  [246] pushsymb 358 ............................ <#name>
+  [249] pusharglist 2 ........................... <tGameObject, #name>
+  [251] objcall 44 .............................. <tGameObject[#name]>
+  [253] pushsymb 61 ............................. <#session>
+  [255] pusharglist 1 ........................... <#session>
+  [257] extcall 56 .............................. <getObject(#session)>
+  [259] pushsymb 263 ............................ <#userName>
+  [262] pusharglist 2 ........................... <getObject(#session), #userName>
+  [264] objcall 63 .............................. <getObject(#session).GET(#userName)>
+  [266] eq ...................................... <tGameObject[#name] = getObject(#session).GET(#userName)>
+  [267] jmpifz [327] ............................ if tGameObject[#name] = getObject(#session).GET(#userName) then
+  [270] pushint8 1 .............................. <1>
+  [272] setprop 577 ............................. pIsOwnPlayer = 1
+  [275] getparam 0 .............................. <me>
+  [277] pusharglist 1 ........................... <me>
+  [279] objcall 228 ............................. <me.getGameSystem()>
+  [281] pushsymb 578 ............................ <#statusbar_health_update>
+  [284] getparam 0 .............................. <me>
+  [286] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [289] pushsymb 526 ............................ <#hit_points>
+  [292] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #hit_points>
+  [294] objcall 139 ............................. <me.pGameObjectSyncValues[#hit_points]>
+  [296] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_health_update, me.pGameObjectSyncValues[#hit_points]>
+  [298] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_health_update, me.pGameObjectSyncValues[#hit_points])
+  [301] getparam 0 .............................. <me>
+  [303] pusharglist 1 ........................... <me>
+  [305] objcall 228 ............................. <me.getGameSystem()>
+  [307] pushsymb 579 ............................ <#statusbar_ballcount_update>
+  [310] getparam 0 .............................. <me>
+  [312] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [315] pushsymb 393 ............................ <#snowball_count>
+  [318] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [320] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [322] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count]>
+  [324] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count])
+  [327] pushint8 1 .............................. <1>
+  [329] pusharglistnoret 1 ...................... <1>
+  [331] extcall 35 .............................. return 1
+  [333] ret
+end
+
+on update me
+  [  0] getprop 566 ............................. <pActiveEffects>
+  [  3] getobjprop 123 .......................... <pActiveEffects.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pActiveEffects.count = 0>
+  [  7] jmpifz [ 16] ............................ if pActiveEffects.count = 0 then
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 35 .............................. return 1
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] setlocal 0
+  [ 20] getlocal 0
+  [ 22] getprop 566 ............................. <pActiveEffects>
+  [ 25] getobjprop 123 .......................... <pActiveEffects.count>
+  [ 27] lteq
+  [ 28] jmpifz [ 83] ............................ repeat with i = 1 to pActiveEffects.count
+  [ 31] getprop 566 ............................. <pActiveEffects>
+  [ 34] getlocal 0 .............................. <i>
+  [ 36] pusharglist 2 ........................... <pActiveEffects, i>
+  [ 38] objcall 44 .............................. <pActiveEffects[i]>
+  [ 40] setlocal 1 .............................. tEffect = pActiveEffects[i]
+  [ 42] getlocal 1 .............................. <tEffect>
+  [ 44] getobjprop 580 .......................... <tEffect.pActive>
+  [ 47] jmpifz [ 59] ............................ if tEffect.pActive then
+  [ 50] getlocal 1 .............................. <tEffect>
+  [ 52] pusharglistnoret 1 ...................... <tEffect>
+  [ 54] objcall 10 .............................. tEffect.update()
+  [ 56] jmp [ 74] ............................... next repeat
+  [ 59] getlocal 1 .............................. <tEffect>
+  [ 61] pusharglistnoret 1 ...................... <tEffect>
+  [ 63] objcall 1 ............................... tEffect.deconstruct()
+  [ 65] getprop 566 ............................. <pActiveEffects>
+  [ 68] getlocal 0 .............................. <i>
+  [ 70] pusharglistnoret 2 ...................... <pActiveEffects, i>
+  [ 72] objcall 183 ............................. pActiveEffects.deleteAt(i)
+  [ 74] pushint8 1
+  [ 76] getlocal 0
+  [ 78] add
+  [ 79] setlocal 0
+  [ 81] endrepeat [ 20]
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] pusharglistnoret 1 ...................... <1>
+  [ 87] extcall 35 .............................. return 1
+  [ 89] ret
+end
+
+on executeGameObjectEvent me, tEvent, tdata
+  [  0] getprop 29 .............................. <pDump>
+  [  2] jmpifz [ 28] ............................ if pDump then
+  [  5] pushcons 1 .............................. <"* executeGameObjectEvent on">
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 1 ........................... <me>
+  [ 11] objcall 567 ............................. <me.getObjectId()>
+  [ 14] joinpadstr .............................. <"* executeGameObjectEvent on" && me.getObjectId()>
+  [ 15] pushcons 2 .............................. <":">
+  [ 17] joinstr ................................. <"* executeGameObjectEvent on" && me.getObjectId() & ":">
+  [ 18] getparam 1 .............................. <tEvent>
+  [ 20] joinpadstr .............................. <"* executeGameObjectEvent on" && me.getObjectId() & ":" && tEvent>
+  [ 21] getparam 2 .............................. <tdata>
+  [ 23] joinpadstr .............................. <"* executeGameObjectEvent on" && me.getObjectId() & ":" && tEvent && tdata>
+  [ 24] pusharglistnoret 1 ...................... <"* executeGameObjectEvent on" && me.getObjectId() & ":" && tEvent && tdata>
+  [ 26] extcall 111 ............................. put "* executeGameObjectEvent on" && me.getObjectId() & ":" && tEvent && tdata
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 33] pushsymb 48 ............................. <#activity_state>
+  [ 35] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #activity_state>
+  [ 37] objcall 139 ............................. <me.pGameObjectSyncValues[#activity_state]>
+  [ 39] setlocal 0 .............................. tstate = me.pGameObjectSyncValues[#activity_state]
+  [ 41] pushcons 3 .............................. <"ACTIVITY_STATE_NORMAL">
+  [ 43] pusharglist 1 ........................... <"ACTIVITY_STATE_NORMAL">
+  [ 45] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_NORMAL")>
+  [ 48] pushcons 4 .............................. <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [ 50] pusharglist 1 ........................... <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [ 52] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")>
+  [ 55] pusharglist 2 ........................... <[getIntVariable("ACTIVITY_STATE_NORMAL"), getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")]>
+  [ 57] pushlist ................................ <[getIntVariable("ACTIVITY_STATE_NORMAL"), getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")]>
+  [ 58] setlocal 1 .............................. tPossibleStates = [getIntVariable("ACTIVITY_STATE_NORMAL"), getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")]
+  [ 60] getparam 1 .............................. <tEvent>
+  [ 62] peek 0 .................................. case tEvent of
+  [ 64] pushsymb 389 ............................ <#send_set_target_tile>
+  [ 67] eq
+  [ 68] jmpifz [161] ............................ (case) #send_set_target_tile:
+  [ 71] getparam 0 .............................. <me>
+  [ 73] pusharglist 1 ........................... <me>
+  [ 75] objcall 562 ............................. <me.getStateAllowsMoving()>
+  [ 78] not ..................................... <not me.getStateAllowsMoving()>
+  [ 79] jmpifz [ 90] ............................ if not me.getStateAllowsMoving() then
+  [ 82] pop 1
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] pusharglistnoret 1 ...................... <1>
+  [ 88] extcall 35 .............................. return 1
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglist 1 ........................... <me>
+  [ 94] objcall 228 ............................. <me.getGameSystem()>
+  [ 96] getparam 2 .............................. <tdata>
+  [ 98] pushsymb 390 ............................ <#tile_x>
+  [101] pusharglist 2 ........................... <tdata, #tile_x>
+  [103] objcall 44 .............................. <tdata[#tile_x]>
+  [105] getparam 2 .............................. <tdata>
+  [107] pushsymb 391 ............................ <#tile_y>
+  [110] pusharglist 2 ........................... <tdata, #tile_y>
+  [112] objcall 44 .............................. <tdata[#tile_y]>
+  [114] pusharglist 3 ........................... <me.getGameSystem(), tdata[#tile_x], tdata[#tile_y]>
+  [116] objcall 266 ............................. <me.getGameSystem().convertTileToWorldCoordinate(tdata[#tile_x], tdata[#tile_y])>
+  [119] setlocal 2 .............................. tWorldLoc = me.getGameSystem().convertTileToWorldCoordinate(tdata[#tile_x], tdata[#tile_y])
+  [121] getparam 0 .............................. <me>
+  [123] pusharglist 1 ........................... <me>
+  [125] objcall 228 ............................. <me.getGameSystem()>
+  [127] pushsymb 89 ............................. <#integer>
+  [129] pushzero ................................ <0>
+  [130] pushsymb 89 ............................. <#integer>
+  [132] getlocal 2 .............................. <tWorldLoc>
+  [134] pushint8 1 .............................. <1>
+  [136] pusharglist 2 ........................... <tWorldLoc, 1>
+  [138] objcall 44 .............................. <tWorldLoc[1]>
+  [140] pushsymb 89 ............................. <#integer>
+  [142] getlocal 2 .............................. <tWorldLoc>
+  [144] pushint8 2 .............................. <2>
+  [146] pusharglist 2 ........................... <tWorldLoc, 2>
+  [148] objcall 44 .............................. <tWorldLoc[2]>
+  [150] pusharglist 6 ........................... <[#integer: 0, #integer: tWorldLoc[1], #integer: tWorldLoc[2]]>
+  [152] pushproplist ............................ <[#integer: 0, #integer: tWorldLoc[1], #integer: tWorldLoc[2]]>
+  [153] pusharglistnoret 2 ...................... <me.getGameSystem(), [#integer: 0, #integer: tWorldLoc[1], #integer: tWorldLoc[2]]>
+  [155] objcall 581 ............................. me.getGameSystem().sendGameEventMessage([#integer: 0, #integer: tWorldLoc[1], #integer: tWorldLoc[2]])
+  [158] jmp [1616]
+  [161] peek 0
+  [163] pushsymb 69 ............................. <#send_throw_at_player>
+  [165] eq
+  [166] jmpifz [263] ............................ (case) #send_throw_at_player:
+  [169] getprop 577 ............................. <pIsOwnPlayer>
+  [172] jmpifz [218] ............................ if pIsOwnPlayer then
+  [175] getparam 0 .............................. <me>
+  [177] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [180] pushsymb 393 ............................ <#snowball_count>
+  [183] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [185] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [187] pushzero ................................ <0>
+  [188] lteq .................................... <me.pGameObjectSyncValues[#snowball_count] <= 0>
+  [189] jmpifz [218] ............................ if me.pGameObjectSyncValues[#snowball_count] <= 0 then
+  [192] getparam 0 .............................. <me>
+  [194] pusharglist 1 ........................... <me>
+  [196] objcall 228 ............................. <me.getGameSystem()>
+  [198] pushsymb 579 ............................ <#statusbar_ballcount_update>
+  [201] getparam 0 .............................. <me>
+  [203] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [206] pushsymb 393 ............................ <#snowball_count>
+  [209] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [211] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [213] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count]>
+  [215] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count])
+  [218] getparam 0 .............................. <me>
+  [220] pusharglist 1 ........................... <me>
+  [222] objcall 228 ............................. <me.getGameSystem()>
+  [224] pushsymb 89 ............................. <#integer>
+  [226] pushint8 1 .............................. <1>
+  [228] pushsymb 89 ............................. <#integer>
+  [230] getparam 2 .............................. <tdata>
+  [232] pushsymb 70 ............................. <#target_id>
+  [234] pusharglist 2 ........................... <tdata, #target_id>
+  [236] objcall 44 .............................. <tdata[#target_id]>
+  [238] pusharglist 1 ........................... <tdata[#target_id]>
+  [240] extcall 89 .............................. <integer(tdata[#target_id])>
+  [242] pushsymb 89 ............................. <#integer>
+  [244] getparam 2 .............................. <tdata>
+  [246] pushsymb 71 ............................. <#trajectory>
+  [248] pusharglist 2 ........................... <tdata, #trajectory>
+  [250] objcall 44 .............................. <tdata[#trajectory]>
+  [252] pusharglist 6 ........................... <[#integer: 1, #integer: integer(tdata[#target_id]), #integer: tdata[#trajectory]]>
+  [254] pushproplist ............................ <[#integer: 1, #integer: integer(tdata[#target_id]), #integer: tdata[#trajectory]]>
+  [255] pusharglistnoret 2 ...................... <me.getGameSystem(), [#integer: 1, #integer: integer(tdata[#target_id]), #integer: tdata[#trajectory]]>
+  [257] objcall 581 ............................. me.getGameSystem().sendGameEventMessage([#integer: 1, #integer: integer(tdata[#target_id]), #integer: tdata[#trajectory]])
+  [260] jmp [1616]
+  [263] peek 0
+  [265] pushsymb 382 ............................ <#send_throw_at_loc>
+  [268] eq
+  [269] jmpifz [376] ............................ (case) #send_throw_at_loc:
+  [272] getprop 577 ............................. <pIsOwnPlayer>
+  [275] jmpifz [321] ............................ if pIsOwnPlayer then
+  [278] getparam 0 .............................. <me>
+  [280] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [283] pushsymb 393 ............................ <#snowball_count>
+  [286] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [288] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [290] pushzero ................................ <0>
+  [291] lteq .................................... <me.pGameObjectSyncValues[#snowball_count] <= 0>
+  [292] jmpifz [321] ............................ if me.pGameObjectSyncValues[#snowball_count] <= 0 then
+  [295] getparam 0 .............................. <me>
+  [297] pusharglist 1 ........................... <me>
+  [299] objcall 228 ............................. <me.getGameSystem()>
+  [301] pushsymb 579 ............................ <#statusbar_ballcount_update>
+  [304] getparam 0 .............................. <me>
+  [306] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [309] pushsymb 393 ............................ <#snowball_count>
+  [312] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [314] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [316] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count]>
+  [318] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count])
+  [321] getparam 0 .............................. <me>
+  [323] pusharglist 1 ........................... <me>
+  [325] objcall 228 ............................. <me.getGameSystem()>
+  [327] pushsymb 89 ............................. <#integer>
+  [329] pushint8 2 .............................. <2>
+  [331] pushsymb 89 ............................. <#integer>
+  [333] getparam 2 .............................. <tdata>
+  [335] pushsymb 383 ............................ <#targetloc>
+  [338] pusharglist 2 ........................... <tdata, #targetloc>
+  [340] objcall 44 .............................. <tdata[#targetloc]>
+  [342] getobjprop 320 .......................... <tdata[#targetloc].x>
+  [345] pushsymb 89 ............................. <#integer>
+  [347] getparam 2 .............................. <tdata>
+  [349] pushsymb 383 ............................ <#targetloc>
+  [352] pusharglist 2 ........................... <tdata, #targetloc>
+  [354] objcall 44 .............................. <tdata[#targetloc]>
+  [356] getobjprop 321 .......................... <tdata[#targetloc].y>
+  [359] pushsymb 89 ............................. <#integer>
+  [361] getparam 2 .............................. <tdata>
+  [363] getobjprop 71 ........................... <tdata.trajectory>
+  [365] pusharglist 8 ........................... <[#integer: 2, #integer: tdata[#targetloc].x, #integer: tdata[#targetloc].y, #integer: tdata.trajectory]>
+  [367] pushproplist ............................ <[#integer: 2, #integer: tdata[#targetloc].x, #integer: tdata[#targetloc].y, #integer: tdata.trajectory]>
+  [368] pusharglistnoret 2 ...................... <me.getGameSystem(), [#integer: 2, #integer: tdata[#targetloc].x, #integer: tdata[#targetloc].y, #integer: tdata.trajectory]>
+  [370] objcall 581 ............................. me.getGameSystem().sendGameEventMessage([#integer: 2, #integer: tdata[#targetloc].x, #integer: tdata[#targetloc].y, #integer: tdata.trajectory])
+  [373] jmp [1616]
+  [376] peek 0
+  [378] pushsymb 65 ............................. <#send_create_snowball>
+  [380] eq
+  [381] jmpifz [455] ............................ (case) #send_create_snowball:
+  [384] getparam 0 .............................. <me>
+  [386] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [389] pushsymb 393 ............................ <#snowball_count>
+  [392] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [394] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [396] pushcons 5 .............................. <"snowwar.snowball.maximum">
+  [398] pusharglist 1 ........................... <"snowwar.snowball.maximum">
+  [400] extcall 394 ............................. <getIntVariable("snowwar.snowball.maximum")>
+  [403] gteq .................................... <me.pGameObjectSyncValues[#snowball_count] >= getIntVariable("snowwar.snowball.maximum")>
+  [404] jmpifz [415] ............................ if me.pGameObjectSyncValues[#snowball_count] >= getIntVariable("snowwar.snowball.maximum") then
+  [407] pop 1
+  [409] pushint8 1 .............................. <1>
+  [411] pusharglistnoret 1 ...................... <1>
+  [413] extcall 35 .............................. return 1
+  [415] getparam 0 .............................. <me>
+  [417] pusharglist 1 ........................... <me>
+  [419] objcall 562 ............................. <me.getStateAllowsMoving()>
+  [422] not ..................................... <not me.getStateAllowsMoving()>
+  [423] jmpifz [434] ............................ if not me.getStateAllowsMoving() then
+  [426] pop 1
+  [428] pushint8 1 .............................. <1>
+  [430] pusharglistnoret 1 ...................... <1>
+  [432] extcall 35 .............................. return 1
+  [434] getparam 0 .............................. <me>
+  [436] pusharglist 1 ........................... <me>
+  [438] objcall 228 ............................. <me.getGameSystem()>
+  [440] pushsymb 89 ............................. <#integer>
+  [442] pushint8 3 .............................. <3>
+  [444] pusharglist 2 ........................... <[#integer: 3]>
+  [446] pushproplist ............................ <[#integer: 3]>
+  [447] pusharglistnoret 2 ...................... <me.getGameSystem(), [#integer: 3]>
+  [449] objcall 581 ............................. me.getGameSystem().sendGameEventMessage([#integer: 3])
+  [452] jmp [1616]
+  [455] peek 0
+  [457] pushsymb 233 ............................ <#substract_ball_count>
+  [459] eq
+  [460] jmpifz [550] ............................ (case) #substract_ball_count:
+  [463] getparam 0 .............................. <me>
+  [465] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [468] pushsymb 393 ............................ <#snowball_count>
+  [471] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [473] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [475] pushzero ................................ <0>
+  [476] lteq .................................... <me.pGameObjectSyncValues[#snowball_count] <= 0>
+  [477] jmpifz [488] ............................ if me.pGameObjectSyncValues[#snowball_count] <= 0 then
+  [480] pop 1
+  [482] pushint8 1 .............................. <1>
+  [484] pusharglistnoret 1 ...................... <1>
+  [486] extcall 35 .............................. return 1
+  [488] getparam 0 .............................. <me>
+  [490] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [493] pushsymb 393 ............................ <#snowball_count>
+  [496] getparam 0 .............................. <me>
+  [498] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [501] pushsymb 393 ............................ <#snowball_count>
+  [504] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [506] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [508] pushint8 1 .............................. <1>
+  [510] sub ..................................... <me.pGameObjectSyncValues[#snowball_count] - 1>
+  [511] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #snowball_count, me.pGameObjectSyncValues[#snowball_count] - 1>
+  [513] objcall 93 .............................. me.pGameObjectSyncValues[#snowball_count] = me.pGameObjectSyncValues[#snowball_count] - 1
+  [515] getprop 577 ............................. <pIsOwnPlayer>
+  [518] jmpifz [547] ............................ if pIsOwnPlayer then
+  [521] getparam 0 .............................. <me>
+  [523] pusharglist 1 ........................... <me>
+  [525] objcall 228 ............................. <me.getGameSystem()>
+  [527] pushsymb 579 ............................ <#statusbar_ballcount_update>
+  [530] getparam 0 .............................. <me>
+  [532] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [535] pushsymb 393 ............................ <#snowball_count>
+  [538] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [540] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [542] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count]>
+  [544] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count])
+  [547] jmp [1616]
+  [550] peek 0
+  [552] pushsymb 582 ............................ <#increase_ball_count>
+  [555] eq
+  [556] jmpifz [627] ............................ (case) #increase_ball_count:
+  [559] getparam 0 .............................. <me>
+  [561] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [564] pushsymb 393 ............................ <#snowball_count>
+  [567] getparam 0 .............................. <me>
+  [569] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [572] pushsymb 393 ............................ <#snowball_count>
+  [575] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [577] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [579] pushint8 1 .............................. <1>
+  [581] add ..................................... <me.pGameObjectSyncValues[#snowball_count] + 1>
+  [582] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #snowball_count, me.pGameObjectSyncValues[#snowball_count] + 1>
+  [584] objcall 93 .............................. me.pGameObjectSyncValues[#snowball_count] = me.pGameObjectSyncValues[#snowball_count] + 1
+  [586] getprop 577 ............................. <pIsOwnPlayer>
+  [589] jmpifz [624] ............................ if pIsOwnPlayer then
+  [592] getparam 0 .............................. <me>
+  [594] pusharglist 1 ........................... <me>
+  [596] objcall 228 ............................. <me.getGameSystem()>
+  [598] pushsymb 579 ............................ <#statusbar_ballcount_update>
+  [601] getparam 0 .............................. <me>
+  [603] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [606] pushsymb 393 ............................ <#snowball_count>
+  [609] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [611] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [613] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count]>
+  [615] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count])
+  [618] pushcons 6 .............................. <"LS-getsnowball">
+  [620] pusharglistnoret 1 ...................... <"LS-getsnowball">
+  [622] extcall 236 ............................. playSound("LS-getsnowball")
+  [624] jmp [1616]
+  [627] peek 0
+  [629] pushsymb 395 ............................ <#set_ball_count>
+  [632] eq
+  [633] jmpifz [692] ............................ (case) #set_ball_count:
+  [636] getparam 0 .............................. <me>
+  [638] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [641] pushsymb 393 ............................ <#snowball_count>
+  [644] getparam 2 .............................. <tdata>
+  [646] pushsymb 396 ............................ <#value>
+  [649] pusharglist 2 ........................... <tdata, #value>
+  [651] objcall 44 .............................. <tdata[#value]>
+  [653] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #snowball_count, tdata[#value]>
+  [655] objcall 93 .............................. me.pGameObjectSyncValues[#snowball_count] = tdata[#value]
+  [657] getprop 577 ............................. <pIsOwnPlayer>
+  [660] jmpifz [689] ............................ if pIsOwnPlayer then
+  [663] getparam 0 .............................. <me>
+  [665] pusharglist 1 ........................... <me>
+  [667] objcall 228 ............................. <me.getGameSystem()>
+  [669] pushsymb 579 ............................ <#statusbar_ballcount_update>
+  [672] getparam 0 .............................. <me>
+  [674] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [677] pushsymb 393 ............................ <#snowball_count>
+  [680] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [682] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [684] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count]>
+  [686] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count])
+  [689] jmp [1616]
+  [692] peek 0
+  [694] pushsymb 238 ............................ <#substract_hit_points>
+  [696] eq
+  [697] jmpifz [787] ............................ (case) #substract_hit_points:
+  [700] getparam 0 .............................. <me>
+  [702] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [705] pushsymb 526 ............................ <#hit_points>
+  [708] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #hit_points>
+  [710] objcall 139 ............................. <me.pGameObjectSyncValues[#hit_points]>
+  [712] pushzero ................................ <0>
+  [713] lteq .................................... <me.pGameObjectSyncValues[#hit_points] <= 0>
+  [714] jmpifz [725] ............................ if me.pGameObjectSyncValues[#hit_points] <= 0 then
+  [717] pop 1
+  [719] pushint8 1 .............................. <1>
+  [721] pusharglistnoret 1 ...................... <1>
+  [723] extcall 35 .............................. return 1
+  [725] getparam 0 .............................. <me>
+  [727] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [730] pushsymb 526 ............................ <#hit_points>
+  [733] getparam 0 .............................. <me>
+  [735] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [738] pushsymb 526 ............................ <#hit_points>
+  [741] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #hit_points>
+  [743] objcall 139 ............................. <me.pGameObjectSyncValues[#hit_points]>
+  [745] pushint8 1 .............................. <1>
+  [747] sub ..................................... <me.pGameObjectSyncValues[#hit_points] - 1>
+  [748] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #hit_points, me.pGameObjectSyncValues[#hit_points] - 1>
+  [750] objcall 93 .............................. me.pGameObjectSyncValues[#hit_points] = me.pGameObjectSyncValues[#hit_points] - 1
+  [752] getprop 577 ............................. <pIsOwnPlayer>
+  [755] jmpifz [784] ............................ if pIsOwnPlayer then
+  [758] getparam 0 .............................. <me>
+  [760] pusharglist 1 ........................... <me>
+  [762] objcall 228 ............................. <me.getGameSystem()>
+  [764] pushsymb 578 ............................ <#statusbar_health_update>
+  [767] getparam 0 .............................. <me>
+  [769] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [772] pushsymb 526 ............................ <#hit_points>
+  [775] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #hit_points>
+  [777] objcall 139 ............................. <me.pGameObjectSyncValues[#hit_points]>
+  [779] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_health_update, me.pGameObjectSyncValues[#hit_points]>
+  [781] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_health_update, me.pGameObjectSyncValues[#hit_points])
+  [784] jmp [1616]
+  [787] peek 0
+  [789] pushsymb 583 ............................ <#player_resurrected>
+  [792] eq
+  [793] jmpifz [871] ............................ (case) #player_resurrected:
+  [796] getparam 0 .............................. <me>
+  [798] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [801] pushsymb 526 ............................ <#hit_points>
+  [804] pushcons 7 .............................. <"snowwar.health.maximum">
+  [806] pusharglist 1 ........................... <"snowwar.health.maximum">
+  [808] extcall 394 ............................. <getIntVariable("snowwar.health.maximum")>
+  [811] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #hit_points, getIntVariable("snowwar.health.maximum")>
+  [813] objcall 93 .............................. me.pGameObjectSyncValues[#hit_points] = getIntVariable("snowwar.health.maximum")
+  [815] getprop 577 ............................. <pIsOwnPlayer>
+  [818] jmpifz [861] ............................ if pIsOwnPlayer then
+  [821] getparam 0 .............................. <me>
+  [823] pusharglist 1 ........................... <me>
+  [825] objcall 228 ............................. <me.getGameSystem()>
+  [827] pushsymb 578 ............................ <#statusbar_health_update>
+  [830] getparam 0 .............................. <me>
+  [832] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [835] pushsymb 526 ............................ <#hit_points>
+  [838] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #hit_points>
+  [840] objcall 139 ............................. <me.pGameObjectSyncValues[#hit_points]>
+  [842] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_health_update, me.pGameObjectSyncValues[#hit_points]>
+  [844] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_health_update, me.pGameObjectSyncValues[#hit_points])
+  [847] getparam 0 .............................. <me>
+  [849] pusharglist 1 ........................... <me>
+  [851] objcall 228 ............................. <me.getGameSystem()>
+  [853] pushsymb 483 ............................ <#update_game_visuals>
+  [856] pusharglistnoret 2 ...................... <me.getGameSystem(), #update_game_visuals>
+  [858] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#update_game_visuals)
+  [861] getparam 0 .............................. <me>
+  [863] pusharglistnoret 1 ...................... <me>
+  [865] objcall 557 ............................. me.startInvincibleAnimation()
+  [868] jmp [1616]
+  [871] peek 0
+  [873] pushsymb 230 ............................ <#set_target>
+  [875] eq
+  [876] jmpifz [1063] ........................... (case) #set_target:
+  [879] getparam 0 .............................. <me>
+  [881] pusharglist 1 ........................... <me>
+  [883] objcall 562 ............................. <me.getStateAllowsMoving()>
+  [886] not ..................................... <not me.getStateAllowsMoving()>
+  [887] jmpifz [898] ............................ if not me.getStateAllowsMoving() then
+  [890] pop 1
+  [892] pushint8 1 .............................. <1>
+  [894] pusharglistnoret 1 ...................... <1>
+  [896] extcall 35 .............................. return 1
+  [898] getparam 0 .............................. <me>
+  [900] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [903] pushsymb 48 ............................. <#activity_state>
+  [905] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #activity_state>
+  [907] objcall 139 ............................. <me.pGameObjectSyncValues[#activity_state]>
+  [909] pushint8 1 .............................. <1>
+  [911] eq ...................................... <me.pGameObjectSyncValues[#activity_state] = 1>
+  [912] jmpifz [979] ............................ if me.pGameObjectSyncValues[#activity_state] = 1 then
+  [915] getparam 0 .............................. <me>
+  [917] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [920] pushsymb 48 ............................. <#activity_state>
+  [922] pushzero ................................ <0>
+  [923] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #activity_state, 0>
+  [925] objcall 93 .............................. me.pGameObjectSyncValues[#activity_state] = 0
+  [927] getparam 0 .............................. <me>
+  [929] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [932] pushsymb 528 ............................ <#activity_timer>
+  [935] pushzero ................................ <0>
+  [936] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #activity_timer, 0>
+  [938] objcall 93 .............................. me.pGameObjectSyncValues[#activity_timer] = 0
+  [940] getparam 0 .............................. <me>
+  [942] pusharglistnoret 1 ...................... <me>
+  [944] objcall 558 ............................. me.resetFigureAnimation()
+  [947] getprop 577 ............................. <pIsOwnPlayer>
+  [950] jmpifz [979] ............................ if pIsOwnPlayer then
+  [953] getparam 0 .............................. <me>
+  [955] pusharglist 1 ........................... <me>
+  [957] objcall 228 ............................. <me.getGameSystem()>
+  [959] pushsymb 584 ............................ <#statusbar_createball_stopped>
+  [962] getparam 0 .............................. <me>
+  [964] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [967] pushsymb 393 ............................ <#snowball_count>
+  [970] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #snowball_count>
+  [972] objcall 139 ............................. <me.pGameObjectSyncValues[#snowball_count]>
+  [974] pusharglistnoret 3 ...................... <me.getGameSystem(), #statusbar_createball_stopped, me.pGameObjectSyncValues[#snowball_count]>
+  [976] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#statusbar_createball_stopped, me.pGameObjectSyncValues[#snowball_count])
+  [979] getparam 0 .............................. <me>
+  [981] getchainedprop 573 ...................... <me.pGameObjectFinalTarget>
+  [984] getparam 2 .............................. <tdata>
+  [986] getobjprop 320 .......................... <tdata.x>
+  [989] getparam 2 .............................. <tdata>
+  [991] getobjprop 321 .......................... <tdata.y>
+  [994] pushzero ................................ <0>
+  [995] pusharglistnoret 4 ...................... <me.pGameObjectFinalTarget, tdata.x, tdata.y, 0>
+  [997] objcall 574 ............................. me.pGameObjectFinalTarget.setLoc(tdata.x, tdata.y, 0)
+  [1000] getparam 0 ............................. <me>
+  [1002] pushsymb 531 ........................... <#move_target_x>
+  [1005] getparam 2 ............................. <tdata>
+  [1007] getobjprop 320 ......................... <tdata.x>
+  [1010] pushsymb 532 ........................... <#move_target_y>
+  [1013] getparam 2 ............................. <tdata>
+  [1015] getobjprop 321 ......................... <tdata.y>
+  [1018] pusharglist 4 .......................... <[#move_target_x: tdata.x, #move_target_y: tdata.y]>
+  [1020] pushproplist ........................... <[#move_target_x: tdata.x, #move_target_y: tdata.y]>
+  [1021] pusharglistnoret 2 ..................... <me, [#move_target_x: tdata.x, #move_target_y: tdata.y]>
+  [1023] objcall 585 ............................ me.setGameObjectSyncProperty([#move_target_x: tdata.x, #move_target_y: tdata.y])
+  [1026] getprop 577 ............................ <pIsOwnPlayer>
+  [1029] jmpifz [1060] .......................... if pIsOwnPlayer then
+  [1032] getparam 0 ............................. <me>
+  [1034] pusharglistnoret 1 ..................... <me>
+  [1036] objcall 563 ............................ me.stopWalkLoop()
+  [1039] pushcons 8 ............................. <"LS-walk-loop-1">
+  [1041] pusharglist 0 .......................... <>
+  [1043] extcall 55 ............................. <VOID>
+  [1045] pushsymb 587 ........................... <#infiniteloop>
+  [1048] pushint8 1 ............................. <1>
+  [1050] pusharglist 2 .......................... <[#infiniteloop: 1]>
+  [1052] pushproplist ........................... <[#infiniteloop: 1]>
+  [1053] pusharglist 3 .......................... <"LS-walk-loop-1", VOID, [#infiniteloop: 1]>
+  [1055] extcall 236 ............................ <playSound("LS-walk-loop-1", VOID, [#infiniteloop: 1])>
+  [1057] setprop 586 ............................ pWalkLoop = playSound("LS-walk-loop-1", VOID, [#infiniteloop: 1])
+  [1060] jmp [1616]
+  [1063] peek 0
+  [1065] pushsymb 588 ........................... <#set_target_tile>
+  [1068] eq
+  [1069] jmpifz [1080] .......................... (case) #set_target_tile:
+  [1072] pusharglistnoret 0 ..................... <>
+  [1074] extcall 589 ............................ nothing()
+  [1077] jmp [1616]
+  [1080] peek 0
+  [1082] pushsymb 232 ........................... <#start_throw_snowball>
+  [1084] eq
+  [1085] jmpifz [1151] .......................... (case) #start_throw_snowball:
+  [1088] getparam 0 ............................. <me>
+  [1090] pusharglist 1 .......................... <me>
+  [1092] objcall 562 ............................ <me.getStateAllowsMoving()>
+  [1095] not .................................... <not me.getStateAllowsMoving()>
+  [1096] jmpifz [1107] .......................... if not me.getStateAllowsMoving() then
+  [1099] pop 1
+  [1101] pushint8 1 ............................. <1>
+  [1103] pusharglistnoret 1 ..................... <1>
+  [1105] extcall 35 ............................. return 1
+  [1107] getparam 0 ............................. <me>
+  [1109] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1112] pushsymb 393 ........................... <#snowball_count>
+  [1115] pusharglist 3 .......................... <me, #pGameObjectSyncValues, #snowball_count>
+  [1117] objcall 139 ............................ <me.pGameObjectSyncValues[#snowball_count]>
+  [1119] pushzero ............................... <0>
+  [1120] lteq ................................... <me.pGameObjectSyncValues[#snowball_count] <= 0>
+  [1121] jmpifz [1132] .......................... if me.pGameObjectSyncValues[#snowball_count] <= 0 then
+  [1124] pop 1
+  [1126] pushint8 1 ............................. <1>
+  [1128] pusharglistnoret 1 ..................... <1>
+  [1130] extcall 35 ............................. return 1
+  [1132] getparam 0 ............................. <me>
+  [1134] pusharglistnoret 1 ..................... <me>
+  [1136] objcall 552 ............................ me.stopMovement()
+  [1139] getparam 0 ............................. <me>
+  [1141] getparam 2 ............................. <tdata>
+  [1143] pusharglistnoret 2 ..................... <me, tdata>
+  [1145] objcall 554 ............................ me.startThrowAnimation(tdata)
+  [1148] jmp [1616]
+  [1151] peek 0
+  [1153] pushsymb 243 ........................... <#start_create_snowball>
+  [1155] eq
+  [1156] jmpifz [1305] .......................... (case) #start_create_snowball:
+  [1159] getparam 0 ............................. <me>
+  [1161] pusharglist 1 .......................... <me>
+  [1163] objcall 562 ............................ <me.getStateAllowsMoving()>
+  [1166] not .................................... <not me.getStateAllowsMoving()>
+  [1167] jmpifz [1178] .......................... if not me.getStateAllowsMoving() then
+  [1170] pop 1
+  [1172] pushint8 1 ............................. <1>
+  [1174] pusharglistnoret 1 ..................... <1>
+  [1176] extcall 35 ............................. return 1
+  [1178] getparam 0 ............................. <me>
+  [1180] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1183] pushsymb 48 ............................ <#activity_state>
+  [1185] pusharglist 3 .......................... <me, #pGameObjectSyncValues, #activity_state>
+  [1187] objcall 139 ............................ <me.pGameObjectSyncValues[#activity_state]>
+  [1189] pushint8 1 ............................. <1>
+  [1191] eq ..................................... <me.pGameObjectSyncValues[#activity_state] = 1>
+  [1192] jmpifz [1203] .......................... if me.pGameObjectSyncValues[#activity_state] = 1 then
+  [1195] pop 1
+  [1197] pushint8 1 ............................. <1>
+  [1199] pusharglistnoret 1 ..................... <1>
+  [1201] extcall 35 ............................. return 1
+  [1203] getparam 0 ............................. <me>
+  [1205] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1208] pushsymb 393 ........................... <#snowball_count>
+  [1211] pusharglist 3 .......................... <me, #pGameObjectSyncValues, #snowball_count>
+  [1213] objcall 139 ............................ <me.pGameObjectSyncValues[#snowball_count]>
+  [1215] pushcons 5 ............................. <"snowwar.snowball.maximum">
+  [1217] pusharglist 1 .......................... <"snowwar.snowball.maximum">
+  [1219] extcall 394 ............................ <getIntVariable("snowwar.snowball.maximum")>
+  [1222] gteq ................................... <me.pGameObjectSyncValues[#snowball_count] >= getIntVariable("snowwar.snowball.maximum")>
+  [1223] jmpifz [1234] .......................... if me.pGameObjectSyncValues[#snowball_count] >= getIntVariable("snowwar.snowball.maximum") then
+  [1226] pop 1
+  [1228] pushint8 1 ............................. <1>
+  [1230] pusharglistnoret 1 ..................... <1>
+  [1232] extcall 35 ............................. return 1
+  [1234] getparam 0 ............................. <me>
+  [1236] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1239] pushsymb 48 ............................ <#activity_state>
+  [1241] pushint8 1 ............................. <1>
+  [1243] pusharglistnoret 4 ..................... <me, #pGameObjectSyncValues, #activity_state, 1>
+  [1245] objcall 93 ............................. me.pGameObjectSyncValues[#activity_state] = 1
+  [1247] getparam 0 ............................. <me>
+  [1249] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1252] pushsymb 528 ........................... <#activity_timer>
+  [1255] pushcons 9 ............................. <"ACTIVITY_TIMER_CREATING">
+  [1257] pushint8 20 ............................ <20>
+  [1259] pusharglist 2 .......................... <"ACTIVITY_TIMER_CREATING", 20>
+  [1261] extcall 394 ............................ <getIntVariable("ACTIVITY_TIMER_CREATING", 20)>
+  [1264] pusharglistnoret 4 ..................... <me, #pGameObjectSyncValues, #activity_timer, getIntVariable("ACTIVITY_TIMER_CREATING", 20)>
+  [1266] objcall 93 ............................. me.pGameObjectSyncValues[#activity_timer] = getIntVariable("ACTIVITY_TIMER_CREATING", 20)
+  [1268] getparam 0 ............................. <me>
+  [1270] pusharglistnoret 1 ..................... <me>
+  [1272] objcall 552 ............................ me.stopMovement()
+  [1275] getparam 0 ............................. <me>
+  [1277] pusharglistnoret 1 ..................... <me>
+  [1279] objcall 555 ............................ me.startCreateSnowballAnimation()
+  [1282] getprop 577 ............................ <pIsOwnPlayer>
+  [1285] jmpifz [1302] .......................... if pIsOwnPlayer then
+  [1288] getparam 0 ............................. <me>
+  [1290] pusharglist 1 .......................... <me>
+  [1292] objcall 228 ............................ <me.getGameSystem()>
+  [1294] pushsymb 590 ........................... <#statusbar_createball_started>
+  [1297] pusharglistnoret 2 ..................... <me.getGameSystem(), #statusbar_createball_started>
+  [1299] objcall 447 ............................ me.getGameSystem().sendGameSystemEvent(#statusbar_createball_started)
+  [1302] jmp [1616]
+  [1305] peek 0
+  [1307] pushsymb 591 ........................... <#start_snowball_hit>
+  [1310] eq
+  [1311] jmpifz [1326] .......................... (case) #start_snowball_hit:
+  [1314] getparam 0 ............................. <me>
+  [1316] getparam 2 ............................. <tdata>
+  [1318] pusharglistnoret 2 ..................... <me, tdata>
+  [1320] objcall 553 ............................ me.startHitAnimation(tdata)
+  [1323] jmp [1616]
+  [1326] peek 0
+  [1328] pushsymb 247 ........................... <#start_stunned>
+  [1330] eq
+  [1331] jmpifz [1422] .......................... (case) #start_stunned:
+  [1334] getprop 577 ............................ <pIsOwnPlayer>
+  [1337] jmpifz [1369] .......................... if pIsOwnPlayer then
+  [1340] getparam 0 ............................. <me>
+  [1342] pusharglist 1 .......................... <me>
+  [1344] objcall 228 ............................ <me.getGameSystem()>
+  [1346] pushsymb 578 ........................... <#statusbar_health_update>
+  [1349] pushzero ............................... <0>
+  [1350] pusharglistnoret 3 ..................... <me.getGameSystem(), #statusbar_health_update, 0>
+  [1352] objcall 447 ............................ me.getGameSystem().sendGameSystemEvent(#statusbar_health_update, 0)
+  [1355] getparam 0 ............................. <me>
+  [1357] pusharglist 1 .......................... <me>
+  [1359] objcall 228 ............................ <me.getGameSystem()>
+  [1361] pushsymb 592 ........................... <#statusbar_disable_buttons>
+  [1364] pusharglistnoret 2 ..................... <me.getGameSystem(), #statusbar_disable_buttons>
+  [1366] objcall 447 ............................ me.getGameSystem().sendGameSystemEvent(#statusbar_disable_buttons)
+  [1369] getparam 0 ............................. <me>
+  [1371] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1374] pushsymb 48 ............................ <#activity_state>
+  [1376] pushint8 2 ............................. <2>
+  [1378] pusharglistnoret 4 ..................... <me, #pGameObjectSyncValues, #activity_state, 2>
+  [1380] objcall 93 ............................. me.pGameObjectSyncValues[#activity_state] = 2
+  [1382] getparam 0 ............................. <me>
+  [1384] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1387] pushsymb 528 ........................... <#activity_timer>
+  [1390] pushcons 10 ............................ <"ACTIVITY_TIMER_STUNNED">
+  [1392] pushint8 125 ........................... <125>
+  [1394] pusharglist 2 .......................... <"ACTIVITY_TIMER_STUNNED", 125>
+  [1396] extcall 394 ............................ <getIntVariable("ACTIVITY_TIMER_STUNNED", 125)>
+  [1399] pusharglistnoret 4 ..................... <me, #pGameObjectSyncValues, #activity_timer, getIntVariable("ACTIVITY_TIMER_STUNNED", 125)>
+  [1401] objcall 93 ............................. me.pGameObjectSyncValues[#activity_timer] = getIntVariable("ACTIVITY_TIMER_STUNNED", 125)
+  [1403] getparam 0 ............................. <me>
+  [1405] pusharglistnoret 1 ..................... <me>
+  [1407] objcall 552 ............................ me.stopMovement()
+  [1410] getparam 0 ............................. <me>
+  [1412] getparam 2 ............................. <tdata>
+  [1414] pusharglistnoret 2 ..................... <me, tdata>
+  [1416] objcall 556 ............................ me.startStunnedAnimation(tdata)
+  [1419] jmp [1616]
+  [1422] peek 0
+  [1424] pushsymb 248 ........................... <#zero_ball_count>
+  [1426] eq
+  [1427] jmpifz [1478] .......................... (case) #zero_ball_count:
+  [1430] getparam 0 ............................. <me>
+  [1432] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1435] pushsymb 393 ........................... <#snowball_count>
+  [1438] pushzero ............................... <0>
+  [1439] pusharglistnoret 4 ..................... <me, #pGameObjectSyncValues, #snowball_count, 0>
+  [1441] objcall 93 ............................. me.pGameObjectSyncValues[#snowball_count] = 0
+  [1443] getprop 577 ............................ <pIsOwnPlayer>
+  [1446] jmpifz [1475] .......................... if pIsOwnPlayer then
+  [1449] getparam 0 ............................. <me>
+  [1451] pusharglist 1 .......................... <me>
+  [1453] objcall 228 ............................ <me.getGameSystem()>
+  [1455] pushsymb 579 ........................... <#statusbar_ballcount_update>
+  [1458] getparam 0 ............................. <me>
+  [1460] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1463] pushsymb 393 ........................... <#snowball_count>
+  [1466] pusharglist 3 .......................... <me, #pGameObjectSyncValues, #snowball_count>
+  [1468] objcall 139 ............................ <me.pGameObjectSyncValues[#snowball_count]>
+  [1470] pusharglistnoret 3 ..................... <me.getGameSystem(), #statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count]>
+  [1472] objcall 447 ............................ me.getGameSystem().sendGameSystemEvent(#statusbar_ballcount_update, me.pGameObjectSyncValues[#snowball_count])
+  [1475] jmp [1616]
+  [1478] peek 0
+  [1480] pushsymb 241 ........................... <#award_hit_score>
+  [1482] eq
+  [1483] jmpifz [1503] .......................... (case) #award_hit_score:
+  [1486] getparam 0 ............................. <me>
+  [1488] pushcons 11 ............................ <"snowwar.score.hitaward">
+  [1490] pusharglist 1 .......................... <"snowwar.score.hitaward">
+  [1492] extcall 394 ............................ <getIntVariable("snowwar.score.hitaward")>
+  [1495] pusharglistnoret 2 ..................... <me, getIntVariable("snowwar.score.hitaward")>
+  [1497] objcall 564 ............................ me.incrementScoreBy(getIntVariable("snowwar.score.hitaward"))
+  [1500] jmp [1616]
+  [1503] peek 0
+  [1505] pushsymb 249 ........................... <#award_kill_score>
+  [1507] eq
+  [1508] jmpifz [1528] .......................... (case) #award_kill_score:
+  [1511] getparam 0 ............................. <me>
+  [1513] pushcons 12 ............................ <"snowwar.score.killaward">
+  [1515] pusharglist 1 .......................... <"snowwar.score.killaward">
+  [1517] extcall 394 ............................ <getIntVariable("snowwar.score.killaward")>
+  [1520] pusharglistnoret 2 ..................... <me, getIntVariable("snowwar.score.killaward")>
+  [1522] objcall 564 ............................ me.incrementScoreBy(getIntVariable("snowwar.score.killaward"))
+  [1525] jmp [1616]
+  [1528] peek 0
+  [1530] pushsymb 546 ........................... <#reset_player>
+  [1533] eq
+  [1534] jmpifz [1563] .......................... (case) #reset_player:
+  [1537] getparam 0 ............................. <me>
+  [1539] pushsymb 308 ........................... <#pGameObjectSyncValues>
+  [1542] pushsymb 533 ........................... <#player_id>
+  [1545] pushint8 1 ............................. <1>
+  [1547] inv .................................... <-1>
+  [1548] pusharglistnoret 4 ..................... <me, #pGameObjectSyncValues, #player_id, -1>
+  [1550] objcall 93 ............................. me.pGameObjectSyncValues[#player_id] = -1
+  [1552] pop 1
+  [1554] pushint8 1 ............................. <1>
+  [1556] pusharglistnoret 1 ..................... <1>
+  [1558] extcall 35 ............................. return 1
+  [1560] jmp [1616]
+  [1563] peek 0
+  [1565] pushsymb 593 ........................... <#reset_figure>
+  [1568] nteq
+  [1569] jmpifz [1581] .......................... (case) #reset_figure, ...
+  [1572] peek 0
+  [1574] pushsymb 292 ........................... <#gameend>
+  [1577] eq
+  [1578] jmpifz [1604] .......................... (case) ..., #gameend:
+  [1581] getparam 0 ............................. <me>
+  [1583] pusharglistnoret 1 ..................... <me>
+  [1585] objcall 563 ............................ me.stopWalkLoop()
+  [1588] pop 1
+  [1590] getparam 0 ............................. <me>
+  [1592] pusharglist 1 .......................... <me>
+  [1594] objcall 558 ............................ <me.resetFigureAnimation()>
+  [1597] pusharglistnoret 1 ..................... <me.resetFigureAnimation()>
+  [1599] extcall 35 ............................. return me.resetFigureAnimation()
+  [1601] jmp [1616] ............................. (case) otherwise:
+  [1604] pushcons 13 ............................ <"* TileWorldMover: UNDEFINED EVENT:">
+  [1606] getparam 1 ............................. <tEvent>
+  [1608] joinpadstr ............................. <"* TileWorldMover: UNDEFINED EVENT:" && tEvent>
+  [1609] getparam 2 ............................. <tdata>
+  [1611] joinpadstr ............................. <"* TileWorldMover: UNDEFINED EVENT:" && tEvent && tdata>
+  [1612] pusharglistnoret 1 ..................... <"* TileWorldMover: UNDEFINED EVENT:" && tEvent && tdata>
+  [1614] extcall 111 ............................ put "* TileWorldMover: UNDEFINED EVENT:" && tEvent && tdata
+  [1616] pop 1 .................................. end case
+  [1618] ret
+end
+
+on calculateFrameMovement me
+  [  0] getprop 595 ............................. <pRoomObject>
+  [  3] pusharglist 1 ........................... <pRoomObject>
+  [  5] extcall 33 .............................. <objectp(pRoomObject)>
+  [  7] not ..................................... <not objectp(pRoomObject)>
+  [  8] jmpifz [ 26] ............................ if not objectp(pRoomObject) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 14 ............................. <"Room object wrapper missing">
+  [ 15] pushsymb 547 ............................ <#calculateFrameMovement>
+  [ 18] pusharglist 3 ........................... <me, "Room object wrapper missing", #calculateFrameMovement>
+  [ 20] extcall 64 .............................. <error(me, "Room object wrapper missing", #calculateFrameMovement)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Room object wrapper missing", #calculateFrameMovement)>
+  [ 24] extcall 35 .............................. return error(me, "Room object wrapper missing", #calculateFrameMovement)
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 31] pushsymb 528 ............................ <#activity_timer>
+  [ 34] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #activity_timer>
+  [ 36] objcall 139 ............................. <me.pGameObjectSyncValues[#activity_timer]>
+  [ 38] setlocal 0 .............................. tActivityTimer = me.pGameObjectSyncValues[#activity_timer]
+  [ 40] getlocal 0 .............................. <tActivityTimer>
+  [ 42] pushzero ................................ <0>
+  [ 43] gt ...................................... <tActivityTimer > 0>
+  [ 44] jmpifz [ 89] ............................ if tActivityTimer > 0 then
+  [ 47] getlocal 0 .............................. <tActivityTimer>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] eq ...................................... <tActivityTimer = 1>
+  [ 52] jmpifz [ 62] ............................ if tActivityTimer = 1 then
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pusharglistnoret 1 ...................... <me>
+  [ 59] objcall 549 ............................. me.activityTimerTriggered()
+  [ 62] getparam 0 .............................. <me>
+  [ 64] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 67] pushsymb 528 ............................ <#activity_timer>
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 75] pushsymb 528 ............................ <#activity_timer>
+  [ 78] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #activity_timer>
+  [ 80] objcall 139 ............................. <me.pGameObjectSyncValues[#activity_timer]>
+  [ 82] pushint8 1 .............................. <1>
+  [ 84] sub ..................................... <me.pGameObjectSyncValues[#activity_timer] - 1>
+  [ 85] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #activity_timer, me.pGameObjectSyncValues[#activity_timer] - 1>
+  [ 87] objcall 93 .............................. me.pGameObjectSyncValues[#activity_timer] = me.pGameObjectSyncValues[#activity_timer] - 1
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglist 1 ........................... <me>
+  [ 93] objcall 596 ............................. <me.existsFinalTarget()>
+  [ 96] jmpifz [407] ............................ if me.existsFinalTarget() then / else
+  [ 99] getparam 0 .............................. <me>
+  [101] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [104] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [106] objcall 598 ............................. <me.pGameObjectLocation.getTileLoc()>
+  [109] setlocal 1 .............................. tOrigTileLocation = me.pGameObjectLocation.getTileLoc()
+  [111] getparam 0 .............................. <me>
+  [113] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [116] pusharglist 1 ........................... <me.pGameObjectNextTarget>
+  [118] objcall 265 ............................. <me.pGameObjectNextTarget.getLocation()>
+  [121] getparam 0 .............................. <me>
+  [123] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [126] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [128] objcall 265 ............................. <me.pGameObjectLocation.getLocation()>
+  [131] nteq .................................... <me.pGameObjectNextTarget.getLocation() <> me.pGameObjectLocation.getLocation()>
+  [132] jmpifz [147] ............................ if me.pGameObjectNextTarget.getLocation() <> me.pGameObjectLocation.getLocation() then
+  [135] getparam 0 .............................. <me>
+  [137] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [140] pusharglist 1 ........................... <me.pGameObjectNextTarget>
+  [142] objcall 265 ............................. <me.pGameObjectNextTarget.getLocation()>
+  [145] setlocal 2 .............................. tOrigNextTargetLoc = me.pGameObjectNextTarget.getLocation()
+  [147] getparam 0 .............................. <me>
+  [149] pusharglist 1 ........................... <me>
+  [151] objcall 562 ............................. <me.getStateAllowsMoving()>
+  [154] jmpifz [166] ............................ if me.getStateAllowsMoving() then
+  [157] getparam 0 .............................. <me>
+  [159] pusharglist 1 ........................... <me>
+  [161] objcall 550 ............................. <me.calculateMovement()>
+  [164] setlocal 3 .............................. tMoving = me.calculateMovement()
+  [166] getparam 0 .............................. <me>
+  [168] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [171] pushsymb 50 ............................. <#body_direction>
+  [173] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #body_direction>
+  [175] objcall 139 ............................. <me.pGameObjectSyncValues[#body_direction]>
+  [177] setlocal 4 .............................. tDirBody = me.pGameObjectSyncValues[#body_direction]
+  [179] getlocal 3 .............................. <tMoving>
+  [181] jmpifz [267] ............................ if tMoving then / else
+  [184] getlocal 2 .............................. <tOrigNextTargetLoc>
+  [186] getparam 0 .............................. <me>
+  [188] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [191] pusharglist 1 ........................... <me.pGameObjectNextTarget>
+  [193] objcall 265 ............................. <me.pGameObjectNextTarget.getLocation()>
+  [196] nteq .................................... <tOrigNextTargetLoc <> me.pGameObjectNextTarget.getLocation()>
+  [197] jmpifz [264] ............................ if tOrigNextTargetLoc <> me.pGameObjectNextTarget.getLocation() then
+  [200] getprop 595 ............................. <pRoomObject>
+  [203] getlocal 1 .............................. <tOrigTileLocation>
+  [205] getobjprop 320 .......................... <tOrigTileLocation.x>
+  [208] getlocal 1 .............................. <tOrigTileLocation>
+  [210] getobjprop 321 .......................... <tOrigTileLocation.y>
+  [213] pushfloat32 0.0 ......................... <0.0>
+  [218] getlocal 4 .............................. <tDirBody>
+  [220] getlocal 4 .............................. <tDirBody>
+  [222] pusharglistnoret 6 ...................... <pRoomObject, tOrigTileLocation.x, tOrigTileLocation.y, 0.0, tDirBody, tDirBody>
+  [224] objcall 5 ............................... pRoomObject.gameObjectRefreshLocation(tOrigTileLocation.x, tOrigTileLocation.y, 0.0, tDirBody, tDirBody)
+  [226] getprop 595 ............................. <pRoomObject>
+  [229] getparam 0 .............................. <me>
+  [231] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [234] pusharglist 1 ........................... <me.pGameObjectNextTarget>
+  [236] objcall 599 ............................. <me.pGameObjectNextTarget.getTileX()>
+  [239] getparam 0 .............................. <me>
+  [241] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [244] pusharglist 1 ........................... <me.pGameObjectNextTarget>
+  [246] objcall 600 ............................. <me.pGameObjectNextTarget.getTileY()>
+  [249] pushfloat32 0.0 ......................... <0.0>
+  [254] getlocal 4 .............................. <tDirBody>
+  [256] getlocal 4 .............................. <tDirBody>
+  [258] pushcons 15 ............................. <"wlk">
+  [260] pusharglistnoret 7 ...................... <pRoomObject, me.pGameObjectNextTarget.getTileX(), me.pGameObjectNextTarget.getTileY(), 0.0, tDirBody, tDirBody, "wlk">
+  [262] objcall 6 ............................... pRoomObject.gameObjectNewMoveTarget(me.pGameObjectNextTarget.getTileX(), me.pGameObjectNextTarget.getTileY(), 0.0, tDirBody, tDirBody, "wlk")
+  [264] jmp [404]
+  [267] getparam 0 .............................. <me>
+  [269] pusharglistnoret 1 ...................... <me>
+  [271] objcall 563 ............................. me.stopWalkLoop()
+  [274] getparam 0 .............................. <me>
+  [276] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [279] getparam 0 .............................. <me>
+  [281] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [284] getobjprop 320 .......................... <me.pGameObjectLocation.x>
+  [287] getparam 0 .............................. <me>
+  [289] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [292] getobjprop 321 .......................... <me.pGameObjectLocation.y>
+  [295] getparam 0 .............................. <me>
+  [297] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [300] getobjprop 322 .......................... <me.pGameObjectLocation.z>
+  [303] pusharglistnoret 4 ...................... <me.pGameObjectNextTarget, me.pGameObjectLocation.x, me.pGameObjectLocation.y, me.pGameObjectLocation.z>
+  [305] objcall 574 ............................. me.pGameObjectNextTarget.setLoc(me.pGameObjectLocation.x, me.pGameObjectLocation.y, me.pGameObjectLocation.z)
+  [308] getparam 0 .............................. <me>
+  [310] pushsymb 320 ............................ <#x>
+  [313] getparam 0 .............................. <me>
+  [315] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [318] getobjprop 320 .......................... <me.pGameObjectLocation.x>
+  [321] pushsymb 321 ............................ <#y>
+  [324] getparam 0 .............................. <me>
+  [326] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [329] getobjprop 321 .......................... <me.pGameObjectLocation.y>
+  [332] pushsymb 529 ............................ <#next_tile_x>
+  [335] getparam 0 .............................. <me>
+  [337] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [340] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [342] objcall 599 ............................. <me.pGameObjectLocation.getTileX()>
+  [345] pushsymb 530 ............................ <#next_tile_y>
+  [348] getparam 0 .............................. <me>
+  [350] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [353] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [355] objcall 600 ............................. <me.pGameObjectLocation.getTileY()>
+  [358] pusharglist 8 ........................... <[#x: me.pGameObjectLocation.x, #y: me.pGameObjectLocation.y, #next_tile_x: me.pGameObjectLocation.getTileX(), #next_tile_y: me.pGameObjectLocation.getTileY()]>
+  [360] pushproplist ............................ <[#x: me.pGameObjectLocation.x, #y: me.pGameObjectLocation.y, #next_tile_x: me.pGameObjectLocation.getTileX(), #next_tile_y: me.pGameObjectLocation.getTileY()]>
+  [361] pusharglistnoret 2 ...................... <me, [#x: me.pGameObjectLocation.x, #y: me.pGameObjectLocation.y, #next_tile_x: me.pGameObjectLocation.getTileX(), #next_tile_y: me.pGameObjectLocation.getTileY()]>
+  [363] objcall 585 ............................. me.setGameObjectSyncProperty([#x: me.pGameObjectLocation.x, #y: me.pGameObjectLocation.y, #next_tile_x: me.pGameObjectLocation.getTileX(), #next_tile_y: me.pGameObjectLocation.getTileY()])
+  [366] getprop 595 ............................. <pRoomObject>
+  [369] getparam 0 .............................. <me>
+  [371] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [374] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [376] objcall 599 ............................. <me.pGameObjectLocation.getTileX()>
+  [379] getparam 0 .............................. <me>
+  [381] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [384] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [386] objcall 600 ............................. <me.pGameObjectLocation.getTileY()>
+  [389] pushfloat32 0.0 ......................... <0.0>
+  [394] getlocal 4 .............................. <tDirBody>
+  [396] getlocal 4 .............................. <tDirBody>
+  [398] pushcons 16 ............................. <"std">
+  [400] pusharglistnoret 7 ...................... <pRoomObject, me.pGameObjectLocation.getTileX(), me.pGameObjectLocation.getTileY(), 0.0, tDirBody, tDirBody, "std">
+  [402] objcall 7 ............................... pRoomObject.gameObjectMoveDone(me.pGameObjectLocation.getTileX(), me.pGameObjectLocation.getTileY(), 0.0, tDirBody, tDirBody, "std")
+  [404] jmp [414]
+  [407] getparam 0 .............................. <me>
+  [409] pusharglistnoret 1 ...................... <me>
+  [411] objcall 563 ............................. me.stopWalkLoop()
+  [414] getparam 0 .............................. <me>
+  [416] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [419] pushsymb 48 ............................. <#activity_state>
+  [421] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #activity_state>
+  [423] objcall 139 ............................. <me.pGameObjectSyncValues[#activity_state]>
+  [425] setlocal 5 .............................. tActivityState = me.pGameObjectSyncValues[#activity_state]
+  [427] getlocal 5 .............................. <tActivityState>
+  [429] pushcons 17 ............................. <"ACTIVITY_STATE_STUNNED">
+  [431] pusharglist 1 ........................... <"ACTIVITY_STATE_STUNNED">
+  [433] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_STUNNED")>
+  [436] eq ...................................... <tActivityState = getIntVariable("ACTIVITY_STATE_STUNNED")>
+  [437] getlocal 5 .............................. <tActivityState>
+  [439] pushcons 4 .............................. <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [441] pusharglist 1 ........................... <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [443] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")>
+  [446] eq ...................................... <tActivityState = getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")>
+  [447] or ...................................... <(tActivityState = getIntVariable("ACTIVITY_STATE_STUNNED")) or (tActivityState = getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN"))>
+  [448] jmpifz [457] ............................ if (tActivityState = getIntVariable("ACTIVITY_STATE_STUNNED")) or (tActivityState = getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")) then
+  [451] pushint8 1 .............................. <1>
+  [453] pusharglistnoret 1 ...................... <1>
+  [455] extcall 35 .............................. return 1
+  [457] getparam 0 .............................. <me>
+  [459] pusharglistnoret 1 ...................... <me>
+  [461] objcall 551 ............................. me.checkForSnowballCollisions()
+  [464] ret
+end
+
+on reserveSpaceForObject me, tLocX, tLocY
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 228 ............................. <me.getGameSystem()>
+  [  6] pusharglist 1 ........................... <me.getGameSystem()>
+  [  8] objcall 435 ............................. <me.getGameSystem().getWorld()>
+  [ 11] setlocal 0 .............................. tWorld = me.getGameSystem().getWorld()
+  [ 13] getlocal 0 .............................. <tWorld>
+  [ 15] pushzero ................................ <0>
+  [ 16] eq ...................................... <tWorld = 0>
+  [ 17] jmpifz [ 25] ............................ if tWorld = 0 then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 35 .............................. return 0
+  [ 25] getlocal 0 .............................. <tWorld>
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglist 1 ........................... <me>
+  [ 31] objcall 567 ............................. <me.getObjectId()>
+  [ 34] pusharglistnoret 2 ...................... <tWorld, me.getObjectId()>
+  [ 36] objcall 568 ............................. tWorld.clearObjectFromTileSpace(me.getObjectId())
+  [ 39] getlocal 0 .............................. <tWorld>
+  [ 41] getparam 0 .............................. <me>
+  [ 43] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 46] pusharglist 1 ........................... <me.pGameObjectNextTarget>
+  [ 48] objcall 599 ............................. <me.pGameObjectNextTarget.getTileX()>
+  [ 51] getparam 0 .............................. <me>
+  [ 53] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 56] pusharglist 1 ........................... <me.pGameObjectNextTarget>
+  [ 58] objcall 600 ............................. <me.pGameObjectNextTarget.getTileY()>
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglist 1 ........................... <me>
+  [ 65] objcall 567 ............................. <me.getObjectId()>
+  [ 68] pushzero ................................ <0>
+  [ 69] pusharglistnoret 5 ...................... <tWorld, me.pGameObjectNextTarget.getTileX(), me.pGameObjectNextTarget.getTileY(), me.getObjectId(), 0>
+  [ 71] objcall 606 ............................. tWorld.reserveTileForObject(me.pGameObjectNextTarget.getTileX(), me.pGameObjectNextTarget.getTileY(), me.getObjectId(), 0)
+  [ 74] pushint8 1 .............................. <1>
+  [ 76] pusharglistnoret 1 ...................... <1>
+  [ 78] extcall 35 .............................. return 1
+  [ 80] ret
+end
+
+on activityTimerTriggered me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [  5] pushsymb 48 ............................. <#activity_state>
+  [  7] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #activity_state>
+  [  9] objcall 139 ............................. <me.pGameObjectSyncValues[#activity_state]>
+  [ 11] setlocal 0 .............................. tActivityState = me.pGameObjectSyncValues[#activity_state]
+  [ 13] getlocal 0 .............................. <tActivityState>
+  [ 15] pushcons 17 ............................. <"ACTIVITY_STATE_STUNNED">
+  [ 17] pusharglist 1 ........................... <"ACTIVITY_STATE_STUNNED">
+  [ 19] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_STUNNED")>
+  [ 22] eq ...................................... <tActivityState = getIntVariable("ACTIVITY_STATE_STUNNED")>
+  [ 23] jmpifz [ 78] ............................ if tActivityState = getIntVariable("ACTIVITY_STATE_STUNNED") then
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pushsymb 583 ............................ <#player_resurrected>
+  [ 31] pusharglistnoret 2 ...................... <me, #player_resurrected>
+  [ 33] objcall 66 .............................. me.executeGameObjectEvent(#player_resurrected)
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 40] pushsymb 528 ............................ <#activity_timer>
+  [ 43] pushcons 18 ............................. <"ACTIVITY_TIMER_INVINCIBLE_AFTER_STUN">
+  [ 45] pusharglist 1 ........................... <"ACTIVITY_TIMER_INVINCIBLE_AFTER_STUN">
+  [ 47] extcall 394 ............................. <getIntVariable("ACTIVITY_TIMER_INVINCIBLE_AFTER_STUN")>
+  [ 50] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #activity_timer, getIntVariable("ACTIVITY_TIMER_INVINCIBLE_AFTER_STUN")>
+  [ 52] objcall 93 .............................. me.pGameObjectSyncValues[#activity_timer] = getIntVariable("ACTIVITY_TIMER_INVINCIBLE_AFTER_STUN")
+  [ 54] getparam 0 .............................. <me>
+  [ 56] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 59] pushsymb 48 ............................. <#activity_state>
+  [ 61] pushcons 4 .............................. <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [ 63] pusharglist 1 ........................... <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [ 65] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")>
+  [ 68] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #activity_state, getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")>
+  [ 70] objcall 93 .............................. me.pGameObjectSyncValues[#activity_state] = getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 1 ...................... <1>
+  [ 76] extcall 35 .............................. return 1
+  [ 78] getlocal 0 .............................. <tActivityState>
+  [ 80] pushcons 4 .............................. <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [ 82] pusharglist 1 ........................... <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [ 84] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")>
+  [ 87] eq ...................................... <tActivityState = getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")>
+  [ 88] jmpifz [ 98] ............................ if tActivityState = getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN") then
+  [ 91] getparam 0 .............................. <me>
+  [ 93] pusharglistnoret 1 ...................... <me>
+  [ 95] objcall 558 ............................. me.resetFigureAnimation()
+  [ 98] getlocal 0 .............................. <tActivityState>
+  [100] pushcons 19 ............................. <"ACTIVITY_STATE_CREATING">
+  [102] pusharglist 1 ........................... <"ACTIVITY_STATE_CREATING">
+  [104] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_CREATING")>
+  [107] eq ...................................... <tActivityState = getIntVariable("ACTIVITY_STATE_CREATING")>
+  [108] jmpifz [127] ............................ if tActivityState = getIntVariable("ACTIVITY_STATE_CREATING") then
+  [111] getparam 0 .............................. <me>
+  [113] pushsymb 582 ............................ <#increase_ball_count>
+  [116] pusharglistnoret 2 ...................... <me, #increase_ball_count>
+  [118] objcall 66 .............................. me.executeGameObjectEvent(#increase_ball_count)
+  [120] getparam 0 .............................. <me>
+  [122] pusharglistnoret 1 ...................... <me>
+  [124] objcall 558 ............................. me.resetFigureAnimation()
+  [127] getparam 0 .............................. <me>
+  [129] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [132] pushsymb 48 ............................. <#activity_state>
+  [134] pushcons 3 .............................. <"ACTIVITY_STATE_NORMAL">
+  [136] pusharglist 1 ........................... <"ACTIVITY_STATE_NORMAL">
+  [138] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_NORMAL")>
+  [141] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #activity_state, getIntVariable("ACTIVITY_STATE_NORMAL")>
+  [143] objcall 93 .............................. me.pGameObjectSyncValues[#activity_state] = getIntVariable("ACTIVITY_STATE_NORMAL")
+  [145] ret
+end
+
+on calculateMovement me
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 573 .......................... <me.pGameObjectFinalTarget>
+  [  5] setlocal 0 .............................. tMoveTarget = me.pGameObjectFinalTarget
+  [  7] getparam 0 .............................. <me>
+  [  9] getobjprop 571 .......................... <me.pGameObjectNextTarget>
+  [ 12] setlocal 1 .............................. tNextTarget = me.pGameObjectNextTarget
+  [ 14] getlocal 0 .............................. <tMoveTarget>
+  [ 16] pusharglist 1 ........................... <tMoveTarget>
+  [ 18] extcall 33 .............................. <objectp(tMoveTarget)>
+  [ 20] not ..................................... <not objectp(tMoveTarget)>
+  [ 21] jmpifz [ 29] ............................ if not objectp(tMoveTarget) then
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 1 ...................... <0>
+  [ 27] extcall 35 .............................. return 0
+  [ 29] getlocal 0 .............................. <tMoveTarget>
+  [ 31] getobjprop 320 .......................... <tMoveTarget.x>
+  [ 34] setlocal 2 .............................. tMoveTargetX = tMoveTarget.x
+  [ 36] getlocal 0 .............................. <tMoveTarget>
+  [ 38] getobjprop 321 .......................... <tMoveTarget.y>
+  [ 41] setlocal 3 .............................. tMoveTargetY = tMoveTarget.y
+  [ 43] getparam 0 .............................. <me>
+  [ 45] getobjprop 597 .......................... <me.pGameObjectLocation>
+  [ 48] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [ 50] extcall 33 .............................. <objectp(me.pGameObjectLocation)>
+  [ 52] not ..................................... <not objectp(me.pGameObjectLocation)>
+  [ 53] jmpifz [ 61] ............................ if not objectp(me.pGameObjectLocation) then
+  [ 56] pushzero ................................ <0>
+  [ 57] pusharglistnoret 1 ...................... <0>
+  [ 59] extcall 35 .............................. return 0
+  [ 61] getparam 0 .............................. <me>
+  [ 63] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [ 66] getobjprop 320 .......................... <me.pGameObjectLocation.x>
+  [ 69] setlocal 4 .............................. tCurrentX = me.pGameObjectLocation.x
+  [ 71] getparam 0 .............................. <me>
+  [ 73] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [ 76] getobjprop 321 .......................... <me.pGameObjectLocation.y>
+  [ 79] setlocal 5 .............................. tCurrentY = me.pGameObjectLocation.y
+  [ 81] getlocal 1 .............................. <tNextTarget>
+  [ 83] pusharglist 1 ........................... <tNextTarget>
+  [ 85] extcall 33 .............................. <objectp(tNextTarget)>
+  [ 87] not ..................................... <not objectp(tNextTarget)>
+  [ 88] jmpifz [ 96] ............................ if not objectp(tNextTarget) then
+  [ 91] pushzero ................................ <0>
+  [ 92] pusharglistnoret 1 ...................... <0>
+  [ 94] extcall 35 .............................. return 0
+  [ 96] getlocal 1 .............................. <tNextTarget>
+  [ 98] getobjprop 320 .......................... <tNextTarget.x>
+  [101] setlocal 6 .............................. tNextTargetX = tNextTarget.x
+  [103] getlocal 1 .............................. <tNextTarget>
+  [105] getobjprop 321 .......................... <tNextTarget.y>
+  [108] setlocal 7 .............................. tNextTargetY = tNextTarget.y
+  [110] getlocal 4 .............................. <tCurrentX>
+  [112] getlocal 2 .............................. <tMoveTargetX>
+  [114] eq ...................................... <tCurrentX = tMoveTargetX>
+  [115] getlocal 5 .............................. <tCurrentY>
+  [117] getlocal 3 .............................. <tMoveTargetY>
+  [119] eq ...................................... <tCurrentY = tMoveTargetY>
+  [120] and ..................................... <(tCurrentX = tMoveTargetX) and (tCurrentY = tMoveTargetY)>
+  [121] jmpifz [129] ............................ if (tCurrentX = tMoveTargetX) and (tCurrentY = tMoveTargetY) then
+  [124] pushzero ................................ <0>
+  [125] pusharglistnoret 1 ...................... <0>
+  [127] extcall 35 .............................. return 0
+  [129] getlocal 6 .............................. <tNextTargetX>
+  [131] getlocal 4 .............................. <tCurrentX>
+  [133] nteq .................................... <tNextTargetX <> tCurrentX>
+  [134] getlocal 7 .............................. <tNextTargetY>
+  [136] getlocal 5 .............................. <tCurrentY>
+  [138] nteq .................................... <tNextTargetY <> tCurrentY>
+  [139] or ...................................... <(tNextTargetX <> tCurrentX) or (tNextTargetY <> tCurrentY)>
+  [140] jmpifz [374] ............................ if (tNextTargetX <> tCurrentX) or (tNextTargetY <> tCurrentY) then / else
+  [143] getlocal 4 .............................. <tCurrentX>
+  [145] setlocal 8 .............................. tOldX = tCurrentX
+  [147] getlocal 5 .............................. <tCurrentY>
+  [149] setlocal 9 .............................. tOldY = tCurrentY
+  [151] getlocal 1 .............................. <tNextTarget>
+  [153] getobjprop 320 .......................... <tNextTarget.x>
+  [156] setlocal 10 ............................. tTargetX = tNextTarget.x
+  [158] getlocal 10 ............................. <tTargetX>
+  [160] getlocal 4 .............................. <tCurrentX>
+  [162] sub ..................................... <tTargetX - tCurrentX>
+  [163] setlocal 11 ............................. tDeltaX = tTargetX - tCurrentX
+  [165] getlocal 11 ............................. <tDeltaX>
+  [167] pushzero ................................ <0>
+  [168] lt ...................................... <tDeltaX < 0>
+  [169] jmpifz [200] ............................ if tDeltaX < 0 then / else
+  [172] getlocal 11 ............................. <tDeltaX>
+  [174] getprop 565 ............................. <SUBTURN_MOVEMENT>
+  [177] inv ..................................... <-SUBTURN_MOVEMENT>
+  [178] gt ...................................... <tDeltaX > -SUBTURN_MOVEMENT>
+  [179] jmpifz [189] ............................ if tDeltaX > -SUBTURN_MOVEMENT then / else
+  [182] getlocal 10 ............................. <tTargetX>
+  [184] setlocal 4 .............................. tCurrentX = tTargetX
+  [186] jmp [197]
+  [189] getlocal 4 .............................. <tCurrentX>
+  [191] getprop 565 ............................. <SUBTURN_MOVEMENT>
+  [194] sub ..................................... <tCurrentX - SUBTURN_MOVEMENT>
+  [195] setlocal 4 .............................. tCurrentX = tCurrentX - SUBTURN_MOVEMENT
+  [197] jmp [231]
+  [200] getlocal 11 ............................. <tDeltaX>
+  [202] pushzero ................................ <0>
+  [203] gt ...................................... <tDeltaX > 0>
+  [204] jmpifz [231] ............................ if tDeltaX > 0 then
+  [207] getlocal 11 ............................. <tDeltaX>
+  [209] getprop 565 ............................. <SUBTURN_MOVEMENT>
+  [212] lt ...................................... <tDeltaX < SUBTURN_MOVEMENT>
+  [213] jmpifz [223] ............................ if tDeltaX < SUBTURN_MOVEMENT then / else
+  [216] getlocal 10 ............................. <tTargetX>
+  [218] setlocal 4 .............................. tCurrentX = tTargetX
+  [220] jmp [231]
+  [223] getlocal 4 .............................. <tCurrentX>
+  [225] getprop 565 ............................. <SUBTURN_MOVEMENT>
+  [228] add ..................................... <tCurrentX + SUBTURN_MOVEMENT>
+  [229] setlocal 4 .............................. tCurrentX = tCurrentX + SUBTURN_MOVEMENT
+  [231] getlocal 1 .............................. <tNextTarget>
+  [233] getobjprop 321 .......................... <tNextTarget.y>
+  [236] setlocal 12 ............................. tTargetY = tNextTarget.y
+  [238] getlocal 12 ............................. <tTargetY>
+  [240] getlocal 5 .............................. <tCurrentY>
+  [242] sub ..................................... <tTargetY - tCurrentY>
+  [243] setlocal 13 ............................. tDeltaY = tTargetY - tCurrentY
+  [245] getlocal 13 ............................. <tDeltaY>
+  [247] pushzero ................................ <0>
+  [248] lt ...................................... <tDeltaY < 0>
+  [249] jmpifz [280] ............................ if tDeltaY < 0 then / else
+  [252] getlocal 13 ............................. <tDeltaY>
+  [254] getprop 565 ............................. <SUBTURN_MOVEMENT>
+  [257] inv ..................................... <-SUBTURN_MOVEMENT>
+  [258] gt ...................................... <tDeltaY > -SUBTURN_MOVEMENT>
+  [259] jmpifz [269] ............................ if tDeltaY > -SUBTURN_MOVEMENT then / else
+  [262] getlocal 12 ............................. <tTargetY>
+  [264] setlocal 5 .............................. tCurrentY = tTargetY
+  [266] jmp [277]
+  [269] getlocal 5 .............................. <tCurrentY>
+  [271] getprop 565 ............................. <SUBTURN_MOVEMENT>
+  [274] sub ..................................... <tCurrentY - SUBTURN_MOVEMENT>
+  [275] setlocal 5 .............................. tCurrentY = tCurrentY - SUBTURN_MOVEMENT
+  [277] jmp [311]
+  [280] getlocal 13 ............................. <tDeltaY>
+  [282] pushzero ................................ <0>
+  [283] gt ...................................... <tDeltaY > 0>
+  [284] jmpifz [311] ............................ if tDeltaY > 0 then
+  [287] getlocal 13 ............................. <tDeltaY>
+  [289] getprop 565 ............................. <SUBTURN_MOVEMENT>
+  [292] lt ...................................... <tDeltaY < SUBTURN_MOVEMENT>
+  [293] jmpifz [303] ............................ if tDeltaY < SUBTURN_MOVEMENT then / else
+  [296] getlocal 12 ............................. <tTargetY>
+  [298] setlocal 5 .............................. tCurrentY = tTargetY
+  [300] jmp [311]
+  [303] getlocal 5 .............................. <tCurrentY>
+  [305] getprop 565 ............................. <SUBTURN_MOVEMENT>
+  [308] add ..................................... <tCurrentY + SUBTURN_MOVEMENT>
+  [309] setlocal 5 .............................. tCurrentY = tCurrentY + SUBTURN_MOVEMENT
+  [311] getparam 0 .............................. <me>
+  [313] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [316] getlocal 4 .............................. <tCurrentX>
+  [318] getlocal 5 .............................. <tCurrentY>
+  [320] pushzero ................................ <0>
+  [321] pusharglistnoret 4 ...................... <me.pGameObjectLocation, tCurrentX, tCurrentY, 0>
+  [323] objcall 574 ............................. me.pGameObjectLocation.setLoc(tCurrentX, tCurrentY, 0)
+  [326] getparam 0 .............................. <me>
+  [328] pushsymb 320 ............................ <#x>
+  [331] getlocal 4 .............................. <tCurrentX>
+  [333] pushsymb 321 ............................ <#y>
+  [336] getlocal 5 .............................. <tCurrentY>
+  [338] pusharglist 4 ........................... <[#x: tCurrentX, #y: tCurrentY]>
+  [340] pushproplist ............................ <[#x: tCurrentX, #y: tCurrentY]>
+  [341] pusharglistnoret 2 ...................... <me, [#x: tCurrentX, #y: tCurrentY]>
+  [343] objcall 585 ............................. me.setGameObjectSyncProperty([#x: tCurrentX, #y: tCurrentY])
+  [346] getlocal 4 .............................. <tCurrentX>
+  [348] getlocal 2 .............................. <tMoveTargetX>
+  [350] eq ...................................... <tCurrentX = tMoveTargetX>
+  [351] getlocal 5 .............................. <tCurrentY>
+  [353] getlocal 3 .............................. <tMoveTargetY>
+  [355] eq ...................................... <tCurrentY = tMoveTargetY>
+  [356] and ..................................... <(tCurrentX = tMoveTargetX) and (tCurrentY = tMoveTargetY)>
+  [357] jmpifz [365] ............................ if (tCurrentX = tMoveTargetX) and (tCurrentY = tMoveTargetY) then
+  [360] pushzero ................................ <0>
+  [361] pusharglistnoret 1 ...................... <0>
+  [363] extcall 35 .............................. return 0
+  [365] pushint8 1 .............................. <1>
+  [367] pusharglistnoret 1 ...................... <1>
+  [369] extcall 35 .............................. return 1
+  [371] jmp [696]
+  [374] getparam 0 .............................. <me>
+  [376] pusharglist 1 ........................... <me>
+  [378] objcall 228 ............................. <me.getGameSystem()>
+  [380] setlocal 14 ............................. tGameSystem = me.getGameSystem()
+  [382] getlocal 14 ............................. <tGameSystem>
+  [384] pusharglist 1 ........................... <tGameSystem>
+  [386] objcall 245 ............................. <tGameSystem.getGeometry()>
+  [388] setlocal 15 ............................. tGeometry = tGameSystem.getGeometry()
+  [390] getlocal 14 ............................. <tGameSystem>
+  [392] pusharglist 1 ........................... <tGameSystem>
+  [394] objcall 435 ............................. <tGameSystem.getWorld()>
+  [397] setlocal 16 ............................. tWorld = tGameSystem.getWorld()
+  [399] getparam 0 .............................. <me>
+  [401] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [404] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [406] objcall 599 ............................. <me.pGameObjectLocation.getTileX()>
+  [409] setlocal 17 ............................. tTileX = me.pGameObjectLocation.getTileX()
+  [411] getparam 0 .............................. <me>
+  [413] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [416] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [418] objcall 600 ............................. <me.pGameObjectLocation.getTileY()>
+  [421] setlocal 18 ............................. tTileY = me.pGameObjectLocation.getTileY()
+  [423] getlocal 15 ............................. <tGeometry>
+  [425] getlocal 2 .............................. <tMoveTargetX>
+  [427] getlocal 4 .............................. <tCurrentX>
+  [429] sub ..................................... <tMoveTargetX - tCurrentX>
+  [430] getlocal 3 .............................. <tMoveTargetY>
+  [432] getlocal 5 .............................. <tCurrentY>
+  [434] sub ..................................... <tMoveTargetY - tCurrentY>
+  [435] pusharglist 3 ........................... <tGeometry, tMoveTargetX - tCurrentX, tMoveTargetY - tCurrentY>
+  [437] objcall 607 ............................. <tGeometry.getAngleFromComponents(tMoveTargetX - tCurrentX, tMoveTargetY - tCurrentY)>
+  [440] setlocal 19 ............................. tMoveDirection360 = tGeometry.getAngleFromComponents(tMoveTargetX - tCurrentX, tMoveTargetY - tCurrentY)
+  [442] getlocal 15 ............................. <tGeometry>
+  [444] getlocal 19 ............................. <tMoveDirection360>
+  [446] pusharglist 2 ........................... <tGeometry, tMoveDirection360>
+  [448] objcall 246 ............................. <tGeometry.direction360to8(tMoveDirection360)>
+  [450] setlocal 20 ............................. tNextDir = tGeometry.direction360to8(tMoveDirection360)
+  [452] getlocal 16 ............................. <tWorld>
+  [454] getlocal 17 ............................. <tTileX>
+  [456] getlocal 18 ............................. <tTileY>
+  [458] getlocal 20 ............................. <tNextDir>
+  [460] pusharglist 4 ........................... <tWorld, tTileX, tTileY, tNextDir>
+  [462] objcall 608 ............................. <tWorld.getTileNeighborInDirection(tTileX, tTileY, tNextDir)>
+  [465] setlocal 21 ............................. tNextTile = tWorld.getTileNeighborInDirection(tTileX, tTileY, tNextDir)
+  [467] getlocal 21 ............................. <tNextTile>
+  [469] pushzero ................................ <0>
+  [470] nteq .................................... <tNextTile <> 0>
+  [471] setlocal 22 ............................. tNextAvailable = tNextTile <> 0
+  [473] getlocal 22 ............................. <tNextAvailable>
+  [475] jmpifz [487] ............................ if tNextAvailable then
+  [478] getlocal 21 ............................. <tNextTile>
+  [480] pusharglist 1 ........................... <tNextTile>
+  [482] objcall 609 ............................. <tNextTile.isAvailable()>
+  [485] setlocal 22 ............................. tNextAvailable = tNextTile.isAvailable()
+  [487] getlocal 22 ............................. <tNextAvailable>
+  [489] not ..................................... <not tNextAvailable>
+  [490] jmpifz [612] ............................ if not tNextAvailable then
+  [493] getlocal 15 ............................. <tGeometry>
+  [495] getlocal 15 ............................. <tGeometry>
+  [497] getlocal 19 ............................. <tMoveDirection360>
+  [499] pusharglist 2 ........................... <tGeometry, tMoveDirection360>
+  [501] objcall 610 ............................. <tGeometry.rotateDirection45DegreesCCW(tMoveDirection360)>
+  [504] pusharglist 2 ........................... <tGeometry, tGeometry.rotateDirection45DegreesCCW(tMoveDirection360)>
+  [506] objcall 246 ............................. <tGeometry.direction360to8(tGeometry.rotateDirection45DegreesCCW(tMoveDirection360))>
+  [508] setlocal 20 ............................. tNextDir = tGeometry.direction360to8(tGeometry.rotateDirection45DegreesCCW(tMoveDirection360))
+  [510] getlocal 16 ............................. <tWorld>
+  [512] getlocal 17 ............................. <tTileX>
+  [514] getlocal 18 ............................. <tTileY>
+  [516] getlocal 20 ............................. <tNextDir>
+  [518] pusharglist 4 ........................... <tWorld, tTileX, tTileY, tNextDir>
+  [520] objcall 608 ............................. <tWorld.getTileNeighborInDirection(tTileX, tTileY, tNextDir)>
+  [523] setlocal 21 ............................. tNextTile = tWorld.getTileNeighborInDirection(tTileX, tTileY, tNextDir)
+  [525] getlocal 21 ............................. <tNextTile>
+  [527] pushzero ................................ <0>
+  [528] nteq .................................... <tNextTile <> 0>
+  [529] setlocal 22 ............................. tNextAvailable = tNextTile <> 0
+  [531] getlocal 22 ............................. <tNextAvailable>
+  [533] jmpifz [545] ............................ if tNextAvailable then
+  [536] getlocal 21 ............................. <tNextTile>
+  [538] pusharglist 1 ........................... <tNextTile>
+  [540] objcall 609 ............................. <tNextTile.isAvailable()>
+  [543] setlocal 22 ............................. tNextAvailable = tNextTile.isAvailable()
+  [545] getlocal 22 ............................. <tNextAvailable>
+  [547] not ..................................... <not tNextAvailable>
+  [548] jmpifz [612] ............................ if not tNextAvailable then
+  [551] getlocal 15 ............................. <tGeometry>
+  [553] getlocal 15 ............................. <tGeometry>
+  [555] getlocal 19 ............................. <tMoveDirection360>
+  [557] pusharglist 2 ........................... <tGeometry, tMoveDirection360>
+  [559] objcall 611 ............................. <tGeometry.rotateDirection45DegreesCW(tMoveDirection360)>
+  [562] pusharglist 2 ........................... <tGeometry, tGeometry.rotateDirection45DegreesCW(tMoveDirection360)>
+  [564] objcall 246 ............................. <tGeometry.direction360to8(tGeometry.rotateDirection45DegreesCW(tMoveDirection360))>
+  [566] setlocal 20 ............................. tNextDir = tGeometry.direction360to8(tGeometry.rotateDirection45DegreesCW(tMoveDirection360))
+  [568] getlocal 16 ............................. <tWorld>
+  [570] getlocal 17 ............................. <tTileX>
+  [572] getlocal 18 ............................. <tTileY>
+  [574] getlocal 20 ............................. <tNextDir>
+  [576] pusharglist 4 ........................... <tWorld, tTileX, tTileY, tNextDir>
+  [578] objcall 608 ............................. <tWorld.getTileNeighborInDirection(tTileX, tTileY, tNextDir)>
+  [581] setlocal 21 ............................. tNextTile = tWorld.getTileNeighborInDirection(tTileX, tTileY, tNextDir)
+  [583] getlocal 21 ............................. <tNextTile>
+  [585] pushzero ................................ <0>
+  [586] nteq .................................... <tNextTile <> 0>
+  [587] setlocal 22 ............................. tNextAvailable = tNextTile <> 0
+  [589] getlocal 22 ............................. <tNextAvailable>
+  [591] jmpifz [603] ............................ if tNextAvailable then
+  [594] getlocal 21 ............................. <tNextTile>
+  [596] pusharglist 1 ........................... <tNextTile>
+  [598] objcall 609 ............................. <tNextTile.isAvailable()>
+  [601] setlocal 22 ............................. tNextAvailable = tNextTile.isAvailable()
+  [603] getlocal 22 ............................. <tNextAvailable>
+  [605] not ..................................... <not tNextAvailable>
+  [606] jmpifz [612] ............................ if not tNextAvailable then
+  [609] pushzero ................................ <0>
+  [610] setlocal 21 ............................. tNextTile = 0
+  [612] getlocal 21 ............................. <tNextTile>
+  [614] pushzero ................................ <0>
+  [615] nteq .................................... <tNextTile <> 0>
+  [616] jmpifz [696] ............................ if tNextTile <> 0 then
+  [619] getparam 0 .............................. <me>
+  [621] pushsymb 50 ............................. <#body_direction>
+  [623] getlocal 20 ............................. <tNextDir>
+  [625] pushsymb 529 ............................ <#next_tile_x>
+  [628] getlocal 21 ............................. <tNextTile>
+  [630] pusharglist 1 ........................... <tNextTile>
+  [632] objcall 612 ............................. <tNextTile.getX()>
+  [635] pushsymb 530 ............................ <#next_tile_y>
+  [638] getlocal 21 ............................. <tNextTile>
+  [640] pusharglist 1 ........................... <tNextTile>
+  [642] objcall 613 ............................. <tNextTile.getY()>
+  [645] pusharglist 6 ........................... <[#body_direction: tNextDir, #next_tile_x: tNextTile.getX(), #next_tile_y: tNextTile.getY()]>
+  [647] pushproplist ............................ <[#body_direction: tNextDir, #next_tile_x: tNextTile.getX(), #next_tile_y: tNextTile.getY()]>
+  [648] pusharglistnoret 2 ...................... <me, [#body_direction: tNextDir, #next_tile_x: tNextTile.getX(), #next_tile_y: tNextTile.getY()]>
+  [650] objcall 585 ............................. me.setGameObjectSyncProperty([#body_direction: tNextDir, #next_tile_x: tNextTile.getX(), #next_tile_y: tNextTile.getY()])
+  [653] getparam 0 .............................. <me>
+  [655] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [658] getlocal 21 ............................. <tNextTile>
+  [660] pusharglist 1 ........................... <tNextTile>
+  [662] objcall 612 ............................. <tNextTile.getX()>
+  [665] getlocal 21 ............................. <tNextTile>
+  [667] pusharglist 1 ........................... <tNextTile>
+  [669] objcall 613 ............................. <tNextTile.getY()>
+  [672] pushzero ................................ <0>
+  [673] pusharglistnoret 4 ...................... <me.pGameObjectNextTarget, tNextTile.getX(), tNextTile.getY(), 0>
+  [675] objcall 572 ............................. me.pGameObjectNextTarget.setTileLoc(tNextTile.getX(), tNextTile.getY(), 0)
+  [678] getparam 0 .............................. <me>
+  [680] pusharglistnoret 1 ...................... <me>
+  [682] objcall 548 ............................. me.reserveSpaceForObject()
+  [685] getparam 0 .............................. <me>
+  [687] pusharglist 1 ........................... <me>
+  [689] objcall 550 ............................. <me.calculateMovement()>
+  [692] pusharglistnoret 1 ...................... <me.calculateMovement()>
+  [694] extcall 35 .............................. return me.calculateMovement()
+  [696] pushzero ................................ <0>
+  [697] pusharglistnoret 1 ...................... <0>
+  [699] extcall 35 .............................. return 0
+  [701] ret
+end
+
+on checkForSnowballCollisions me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 228 ............................. <me.getGameSystem()>
+  [  6] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [  8] getlocal 0 .............................. <tGameSystem>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tGameSystem = 0>
+  [ 12] jmpifz [ 20] ............................ if tGameSystem = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 35 .............................. return 0
+  [ 20] getlocal 0 .............................. <tGameSystem>
+  [ 22] getchainedprop 635 ...................... <tGameSystem.pThread>
+  [ 25] pusharglist 1 ........................... <tGameSystem.pThread>
+  [ 27] objcall 376 ............................. <tGameSystem.pThread.getComponent()>
+  [ 30] pusharglist 1 ........................... <tGameSystem.pThread.getComponent()>
+  [ 32] objcall 636 ............................. <tGameSystem.pThread.getComponent().getCollision()>
+  [ 35] setlocal 1 .............................. tCollision = tGameSystem.pThread.getComponent().getCollision()
+  [ 37] getlocal 0 .............................. <tGameSystem>
+  [ 39] pushcons 20 ............................. <"snowball">
+  [ 41] pusharglist 2 ........................... <tGameSystem, "snowball">
+  [ 43] objcall 315 ............................. <tGameSystem.getGameObjectIdsOfType("snowball")>
+  [ 46] setlocal 2 .............................. tBallObjectIdList = tGameSystem.getGameObjectIdsOfType("snowball")
+  [ 48] getlocal 2 .............................. <tBallObjectIdList>
+  [ 50] getobjprop 123 .......................... <tBallObjectIdList.count>
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] lt ...................................... <tBallObjectIdList.count < 1>
+  [ 55] jmpifz [ 63] ............................ if tBallObjectIdList.count < 1 then
+  [ 58] pushzero ................................ <0>
+  [ 59] pusharglistnoret 1 ...................... <0>
+  [ 61] extcall 35 .............................. return 0
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pusharglist 1 ........................... <me>
+  [ 67] objcall 567 ............................. <me.getObjectId()>
+  [ 70] setlocal 3 .............................. tOwnId = me.getObjectId()
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglist 1 ........................... <me>
+  [ 76] objcall 265 ............................. <me.getLocation()>
+  [ 79] setlocal 4 .............................. tlocation = me.getLocation()
+  [ 81] getlocal 2 .............................. <tBallObjectIdList>
+  [ 83] peek 0
+  [ 85] pusharglist 1
+  [ 87] extcall 123
+  [ 89] pushint8 1
+  [ 91] peek 0
+  [ 93] peek 2
+  [ 95] lteq
+  [ 96] jmpifz [284] ............................ repeat with tBallObjectId in tBallObjectIdList
+  [ 99] peek 2
+  [101] peek 1
+  [103] pusharglist 2
+  [105] extcall 44
+  [107] setlocal 5
+  [109] getlocal 0 .............................. <tGameSystem>
+  [111] getlocal 5 .............................. <tBallObjectId>
+  [113] pusharglist 2 ........................... <tGameSystem, tBallObjectId>
+  [115] objcall 305 ............................. <tGameSystem.getGameObject(tBallObjectId)>
+  [118] setlocal 6 .............................. tBallObject = tGameSystem.getGameObject(tBallObjectId)
+  [120] getlocal 6 .............................. <tBallObject>
+  [122] pushsymb 240 ............................ <#int_thrower_id>
+  [124] pusharglist 2 ........................... <tBallObject, #int_thrower_id>
+  [126] objcall 239 ............................. <tBallObject.getGameObjectProperty(#int_thrower_id)>
+  [128] pusharglist 1 ........................... <tBallObject.getGameObjectProperty(#int_thrower_id)>
+  [130] extcall 42 .............................. <string(tBallObject.getGameObjectProperty(#int_thrower_id))>
+  [132] setlocal 7 .............................. tThrowerId = string(tBallObject.getGameObjectProperty(#int_thrower_id))
+  [134] getlocal 7 .............................. <tThrowerId>
+  [136] getlocal 3 .............................. <tOwnId>
+  [138] nteq .................................... <tThrowerId <> tOwnId>
+  [139] getlocal 6 .............................. <tBallObject>
+  [141] pusharglist 1 ........................... <tBallObject>
+  [143] objcall 637 ............................. <tBallObject.getActive()>
+  [146] and ..................................... <(tThrowerId <> tOwnId) and tBallObject.getActive()>
+  [147] jmpifz [279] ............................ if (tThrowerId <> tOwnId) and tBallObject.getActive() then
+  [150] getlocal 6 .............................. <tBallObject>
+  [152] pusharglist 1 ........................... <tBallObject>
+  [154] objcall 265 ............................. <tBallObject.getLocation()>
+  [157] getobjprop 322 .......................... <tBallObject.getLocation().z>
+  [160] getprop 575 ............................. <PLAYER_HEIGHT>
+  [163] lt ...................................... <tBallObject.getLocation().z < PLAYER_HEIGHT>
+  [164] jmpifz [279] ............................ if tBallObject.getLocation().z < PLAYER_HEIGHT then
+  [167] getlocal 1 .............................. <tCollision>
+  [169] getparam 0 .............................. <me>
+  [171] getlocal 6 .............................. <tBallObject>
+  [173] pusharglist 3 ........................... <tCollision, me, tBallObject>
+  [175] objcall 638 ............................. <tCollision.testForObjectToObjectCollision(me, tBallObject)>
+  [178] jmpifz [279] ............................ if tCollision.testForObjectToObjectCollision(me, tBallObject) then
+  [181] getlocal 6 .............................. <tBallObject>
+  [183] pusharglist 1 ........................... <tBallObject>
+  [185] objcall 265 ............................. <tBallObject.getLocation()>
+  [188] getobjprop 320 .......................... <tBallObject.getLocation().x>
+  [191] setlocal 8 .............................. tBallLocX = tBallObject.getLocation().x
+  [193] getlocal 6 .............................. <tBallObject>
+  [195] pusharglist 1 ........................... <tBallObject>
+  [197] objcall 265 ............................. <tBallObject.getLocation()>
+  [200] getobjprop 321 .......................... <tBallObject.getLocation().y>
+  [203] setlocal 9 .............................. tBallLocY = tBallObject.getLocation().y
+  [205] getlocal 6 .............................. <tBallObject>
+  [207] pusharglist 1 ........................... <tBallObject>
+  [209] objcall 265 ............................. <tBallObject.getLocation()>
+  [212] getobjprop 322 .......................... <tBallObject.getLocation().z>
+  [215] setlocal 10 ............................. tBallLocZ = tBallObject.getLocation().z
+  [217] getlocal 0 .............................. <tGameSystem>
+  [219] getlocal 8 .............................. <tBallLocX>
+  [221] getlocal 4 .............................. <tlocation>
+  [223] getobjprop 320 .......................... <tlocation.x>
+  [226] sub ..................................... <tBallLocX - tlocation.x>
+  [227] getlocal 9 .............................. <tBallLocY>
+  [229] getlocal 4 .............................. <tlocation>
+  [231] getobjprop 321 .......................... <tlocation.y>
+  [234] sub ..................................... <tBallLocY - tlocation.y>
+  [235] pusharglist 3 ........................... <tGameSystem, tBallLocX - tlocation.x, tBallLocY - tlocation.y>
+  [237] objcall 639 ............................. <tGameSystem.get360AngleFromComponents(tBallLocX - tlocation.x, tBallLocY - tlocation.y)>
+  [240] setlocal 11 ............................. tBallDirection = tGameSystem.get360AngleFromComponents(tBallLocX - tlocation.x, tBallLocY - tlocation.y)
+  [242] getlocal 6 .............................. <tBallObject>
+  [244] pusharglistnoret 1 ...................... <tBallObject>
+  [246] objcall 223 ............................. tBallObject.Remove()
+  [248] getparam 0 .............................. <me>
+  [250] pushsymb 591 ............................ <#start_snowball_hit>
+  [253] pushsymb 320 ............................ <#x>
+  [256] getlocal 8 .............................. <tBallLocX>
+  [258] pushsymb 321 ............................ <#y>
+  [261] getlocal 9 .............................. <tBallLocY>
+  [263] pushsymb 322 ............................ <#z>
+  [266] getlocal 10 ............................. <tBallLocZ>
+  [268] pushsymb 119 ............................ <#direction>
+  [270] getlocal 11 ............................. <tBallDirection>
+  [272] pusharglist 8 ........................... <[#x: tBallLocX, #y: tBallLocY, #z: tBallLocZ, #direction: tBallDirection]>
+  [274] pushproplist ............................ <[#x: tBallLocX, #y: tBallLocY, #z: tBallLocZ, #direction: tBallDirection]>
+  [275] pusharglistnoret 3 ...................... <me, #start_snowball_hit, [#x: tBallLocX, #y: tBallLocY, #z: tBallLocZ, #direction: tBallDirection]>
+  [277] objcall 66 .............................. me.executeGameObjectEvent(#start_snowball_hit, [#x: tBallLocX, #y: tBallLocY, #z: tBallLocZ, #direction: tBallDirection])
+  [279] pushint8 1
+  [281] add
+  [282] endrepeat [ 91]
+  [284] pop 3
+  [286] pushint8 1 .............................. <1>
+  [288] pusharglistnoret 1 ...................... <1>
+  [290] extcall 35 .............................. return 1
+  [292] ret
+end
+
+on stopMovement me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 563 ............................. me.stopWalkLoop()
+  [  7] getparam 0 .............................. <me>
+  [  9] getparam 0 .............................. <me>
+  [ 11] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 14] getobjprop 320 .......................... <me.pGameObjectNextTarget.x>
+  [ 17] getparam 0 .............................. <me>
+  [ 19] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 22] getobjprop 321 .......................... <me.pGameObjectNextTarget.y>
+  [ 25] getparam 0 .............................. <me>
+  [ 27] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 30] getobjprop 320 .......................... <me.pGameObjectNextTarget.x>
+  [ 33] pusharglistnoret 4 ...................... <me, me.pGameObjectNextTarget.x, me.pGameObjectNextTarget.y, me.pGameObjectNextTarget.x>
+  [ 35] objcall 650 ............................. me.setLocation(me.pGameObjectNextTarget.x, me.pGameObjectNextTarget.y, me.pGameObjectNextTarget.x)
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pushsymb 320 ............................ <#x>
+  [ 43] getparam 0 .............................. <me>
+  [ 45] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 48] getobjprop 320 .......................... <me.pGameObjectNextTarget.x>
+  [ 51] pushsymb 321 ............................ <#y>
+  [ 54] getparam 0 .............................. <me>
+  [ 56] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 59] getobjprop 321 .......................... <me.pGameObjectNextTarget.y>
+  [ 62] pushsymb 531 ............................ <#move_target_x>
+  [ 65] getparam 0 .............................. <me>
+  [ 67] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 70] getobjprop 320 .......................... <me.pGameObjectNextTarget.x>
+  [ 73] pushsymb 532 ............................ <#move_target_y>
+  [ 76] getparam 0 .............................. <me>
+  [ 78] getchainedprop 571 ...................... <me.pGameObjectNextTarget>
+  [ 81] getobjprop 321 .......................... <me.pGameObjectNextTarget.y>
+  [ 84] pusharglist 8 ........................... <[#x: me.pGameObjectNextTarget.x, #y: me.pGameObjectNextTarget.y, #move_target_x: me.pGameObjectNextTarget.x, #move_target_y: me.pGameObjectNextTarget.y]>
+  [ 86] pushproplist ............................ <[#x: me.pGameObjectNextTarget.x, #y: me.pGameObjectNextTarget.y, #move_target_x: me.pGameObjectNextTarget.x, #move_target_y: me.pGameObjectNextTarget.y]>
+  [ 87] pusharglistnoret 2 ...................... <me, [#x: me.pGameObjectNextTarget.x, #y: me.pGameObjectNextTarget.y, #move_target_x: me.pGameObjectNextTarget.x, #move_target_y: me.pGameObjectNextTarget.y]>
+  [ 89] objcall 585 ............................. me.setGameObjectSyncProperty([#x: me.pGameObjectNextTarget.x, #y: me.pGameObjectNextTarget.y, #move_target_x: me.pGameObjectNextTarget.x, #move_target_y: me.pGameObjectNextTarget.y])
+  [ 92] getparam 0 .............................. <me>
+  [ 94] pusharglistnoret 1 ...................... <me>
+  [ 96] objcall 651 ............................. me.resetTargets()
+  [ 99] getprop 595 ............................. <pRoomObject>
+  [102] pusharglist 1 ........................... <pRoomObject>
+  [104] extcall 33 .............................. <objectp(pRoomObject)>
+  [106] not ..................................... <not objectp(pRoomObject)>
+  [107] jmpifz [125] ............................ if not objectp(pRoomObject) then
+  [110] getparam 0 .............................. <me>
+  [112] pushcons 14 ............................. <"Room object wrapper missing">
+  [114] pushsymb 552 ............................ <#stopMovement>
+  [117] pusharglist 3 ........................... <me, "Room object wrapper missing", #stopMovement>
+  [119] extcall 64 .............................. <error(me, "Room object wrapper missing", #stopMovement)>
+  [121] pusharglistnoret 1 ...................... <error(me, "Room object wrapper missing", #stopMovement)>
+  [123] extcall 35 .............................. return error(me, "Room object wrapper missing", #stopMovement)
+  [125] getparam 0 .............................. <me>
+  [127] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [130] pushsymb 50 ............................. <#body_direction>
+  [132] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #body_direction>
+  [134] objcall 139 ............................. <me.pGameObjectSyncValues[#body_direction]>
+  [136] setlocal 0 .............................. tDirBody = me.pGameObjectSyncValues[#body_direction]
+  [138] getprop 595 ............................. <pRoomObject>
+  [141] getparam 0 .............................. <me>
+  [143] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [146] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [148] objcall 599 ............................. <me.pGameObjectLocation.getTileX()>
+  [151] getparam 0 .............................. <me>
+  [153] getchainedprop 597 ...................... <me.pGameObjectLocation>
+  [156] pusharglist 1 ........................... <me.pGameObjectLocation>
+  [158] objcall 600 ............................. <me.pGameObjectLocation.getTileY()>
+  [161] pushfloat32 0.0 ......................... <0.0>
+  [166] getlocal 0 .............................. <tDirBody>
+  [168] getlocal 0 .............................. <tDirBody>
+  [170] pushcons 16 ............................. <"std">
+  [172] pusharglistnoret 7 ...................... <pRoomObject, me.pGameObjectLocation.getTileX(), me.pGameObjectLocation.getTileY(), 0.0, tDirBody, tDirBody, "std">
+  [174] objcall 7 ............................... pRoomObject.gameObjectMoveDone(me.pGameObjectLocation.getTileX(), me.pGameObjectLocation.getTileY(), 0.0, tDirBody, tDirBody, "std")
+  [176] pushint8 1 .............................. <1>
+  [178] pusharglistnoret 1 ...................... <1>
+  [180] extcall 35 .............................. return 1
+  [182] ret
+end
+
+on startHitAnimation me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pushsymb 119 ............................ <#direction>
+  [  4] pusharglist 2 ........................... <tdata, #direction>
+  [  6] objcall 44 .............................. <tdata[#direction]>
+  [  8] setlocal 0 .............................. tDirection = tdata[#direction]
+  [ 10] getparam 1 .............................. <tdata>
+  [ 12] pushsymb 320 ............................ <#x>
+  [ 15] pusharglist 2 ........................... <tdata, #x>
+  [ 17] objcall 44 .............................. <tdata[#x]>
+  [ 19] setlocal 1 .............................. tX = tdata[#x]
+  [ 21] getparam 1 .............................. <tdata>
+  [ 23] pushsymb 321 ............................ <#y>
+  [ 26] pusharglist 2 ........................... <tdata, #y>
+  [ 28] objcall 44 .............................. <tdata[#y]>
+  [ 30] setlocal 2 .............................. tY = tdata[#y]
+  [ 32] getparam 1 .............................. <tdata>
+  [ 34] pushsymb 322 ............................ <#z>
+  [ 37] pusharglist 2 ........................... <tdata, #z>
+  [ 39] objcall 44 .............................. <tdata[#z]>
+  [ 41] setlocal 3 .............................. tZ = tdata[#z]
+  [ 43] getprop 595 ............................. <pRoomObject>
+  [ 46] pusharglist 1 ........................... <pRoomObject>
+  [ 48] extcall 33 .............................. <objectp(pRoomObject)>
+  [ 50] not ..................................... <not objectp(pRoomObject)>
+  [ 51] jmpifz [ 69] ............................ if not objectp(pRoomObject) then
+  [ 54] getparam 0 .............................. <me>
+  [ 56] pushcons 14 ............................. <"Room object wrapper missing">
+  [ 58] pushsymb 553 ............................ <#startHitAnimation>
+  [ 61] pusharglist 3 ........................... <me, "Room object wrapper missing", #startHitAnimation>
+  [ 63] extcall 64 .............................. <error(me, "Room object wrapper missing", #startHitAnimation)>
+  [ 65] pusharglistnoret 1 ...................... <error(me, "Room object wrapper missing", #startHitAnimation)>
+  [ 67] extcall 35 .............................. return error(me, "Room object wrapper missing", #startHitAnimation)
+  [ 69] getprop 595 ............................. <pRoomObject>
+  [ 72] pusharglist 1 ........................... <pRoomObject>
+  [ 74] objcall 652 ............................. <pRoomObject.getRoomObject()>
+  [ 77] setlocal 4 .............................. tHumanObject = pRoomObject.getRoomObject()
+  [ 79] getlocal 4 .............................. <tHumanObject>
+  [ 81] pushzero ................................ <0>
+  [ 82] eq ...................................... <tHumanObject = 0>
+  [ 83] jmpifz [101] ............................ if tHumanObject = 0 then
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pushcons 21 ............................. <"Room object missing">
+  [ 90] pushsymb 553 ............................ <#startHitAnimation>
+  [ 93] pusharglist 3 ........................... <me, "Room object missing", #startHitAnimation>
+  [ 95] extcall 64 .............................. <error(me, "Room object missing", #startHitAnimation)>
+  [ 97] pusharglistnoret 1 ...................... <error(me, "Room object missing", #startHitAnimation)>
+  [ 99] extcall 35 .............................. return error(me, "Room object missing", #startHitAnimation)
+  [101] getlocal 0 .............................. <tDirection>
+  [103] pushint16 225 ........................... <225>
+  [106] gteq .................................... <tDirection >= 225>
+  [107] getlocal 0 .............................. <tDirection>
+  [109] pushint8 45 ............................. <45>
+  [111] lteq .................................... <tDirection <= 45>
+  [112] or ...................................... <(tDirection >= 225) or (tDirection <= 45)>
+  [113] jmpifz [130] ............................ if (tDirection >= 225) or (tDirection <= 45) then / else
+  [116] getlocal 4 .............................. <tHumanObject>
+  [118] getchainedprop 116 ...................... <tHumanObject.pSprite>
+  [120] getobjprop 163 .......................... <tHumanObject.pSprite.locZ>
+  [122] pushint8 1 .............................. <1>
+  [124] add ..................................... <tHumanObject.pSprite.locZ + 1>
+  [125] setlocal 5 .............................. tlocz = tHumanObject.pSprite.locZ + 1
+  [127] jmp [141]
+  [130] getlocal 4 .............................. <tHumanObject>
+  [132] getchainedprop 116 ...................... <tHumanObject.pSprite>
+  [134] getobjprop 163 .......................... <tHumanObject.pSprite.locZ>
+  [136] pushint8 1 .............................. <1>
+  [138] add ..................................... <tHumanObject.pSprite.locZ + 1>
+  [139] setlocal 5 .............................. tlocz = tHumanObject.pSprite.locZ + 1
+  [141] getparam 0 .............................. <me>
+  [143] pusharglist 1 ........................... <me>
+  [145] objcall 228 ............................. <me.getGameSystem()>
+  [147] pusharglist 1 ........................... <me.getGameSystem()>
+  [149] objcall 435 ............................. <me.getGameSystem().getWorld()>
+  [152] getlocal 1 .............................. <tX>
+  [154] getlocal 2 .............................. <tY>
+  [156] getlocal 3 .............................. <tZ>
+  [158] pusharglist 4 ........................... <me.getGameSystem().getWorld(), tX, tY, tZ>
+  [160] objcall 267 ............................. <me.getGameSystem().getWorld().convertWorldToScreenCoordinate(tX, tY, tZ)>
+  [163] setlocal 6 .............................. tScreenLoc = me.getGameSystem().getWorld().convertWorldToScreenCoordinate(tX, tY, tZ)
+  [165] pushsymb 279 ............................ <#temp>
+  [168] pushcons 22 ............................. <"Snowwar Hit Animation Class">
+  [170] pusharglist 2 ........................... <#temp, "Snowwar Hit Animation Class">
+  [172] extcall 278 ............................. <createObject(#temp, "Snowwar Hit Animation Class")>
+  [175] setlocal 7 .............................. tEffect = createObject(#temp, "Snowwar Hit Animation Class")
+  [177] getlocal 7 .............................. <tEffect>
+  [179] getlocal 6 .............................. <tScreenLoc>
+  [181] getlocal 5 .............................. <tlocz>
+  [183] pusharglistnoret 3 ...................... <tEffect, tScreenLoc, tlocz>
+  [185] objcall 2 ............................... tEffect.define(tScreenLoc, tlocz)
+  [187] getprop 566 ............................. <pActiveEffects>
+  [190] getlocal 7 .............................. <tEffect>
+  [192] pusharglistnoret 2 ...................... <pActiveEffects, tEffect>
+  [194] objcall 184 ............................. pActiveEffects.append(tEffect)
+  [196] pushint8 1 .............................. <1>
+  [198] pusharglistnoret 1 ...................... <1>
+  [200] extcall 35 .............................. return 1
+  [202] ret
+end
+
+on startThrowAnimation me, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 228 ............................. <me.getGameSystem()>
+  [  6] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [  8] getparam 1 .............................. <tdata>
+  [ 10] pushsymb 535 ............................ <#int_target_id>
+  [ 13] pusharglist 2 ........................... <tdata, #int_target_id>
+  [ 15] objcall 114 ............................. <tdata.findPos(#int_target_id)>
+  [ 17] pushzero ................................ <0>
+  [ 18] gt ...................................... <tdata.findPos(#int_target_id) > 0>
+  [ 19] jmpifz [ 43] ............................ if tdata.findPos(#int_target_id) > 0 then
+  [ 22] getparam 1 .............................. <tdata>
+  [ 24] pushsymb 70 ............................. <#target_id>
+  [ 26] getparam 1 .............................. <tdata>
+  [ 28] pushsymb 535 ............................ <#int_target_id>
+  [ 31] pusharglist 2 ........................... <tdata, #int_target_id>
+  [ 33] objcall 44 .............................. <tdata[#int_target_id]>
+  [ 35] pusharglist 1 ........................... <tdata[#int_target_id]>
+  [ 37] extcall 42 .............................. <string(tdata[#int_target_id])>
+  [ 39] pusharglistnoret 3 ...................... <tdata, #target_id, string(tdata[#int_target_id])>
+  [ 41] objcall 32 .............................. tdata[#target_id] = string(tdata[#int_target_id])
+  [ 43] getparam 1 .............................. <tdata>
+  [ 45] pushsymb 70 ............................. <#target_id>
+  [ 47] pusharglist 2 ........................... <tdata, #target_id>
+  [ 49] objcall 114 ............................. <tdata.findPos(#target_id)>
+  [ 51] pushzero ................................ <0>
+  [ 52] gt ...................................... <tdata.findPos(#target_id) > 0>
+  [ 53] jmpifz [122] ............................ if tdata.findPos(#target_id) > 0 then / else
+  [ 56] getlocal 0 .............................. <tGameSystem>
+  [ 58] getparam 1 .............................. <tdata>
+  [ 60] pushsymb 70 ............................. <#target_id>
+  [ 62] pusharglist 2 ........................... <tdata, #target_id>
+  [ 64] objcall 44 .............................. <tdata[#target_id]>
+  [ 66] pusharglist 2 ........................... <tGameSystem, tdata[#target_id]>
+  [ 68] objcall 305 ............................. <tGameSystem.getGameObject(tdata[#target_id])>
+  [ 71] setlocal 1 .............................. tTargetObject = tGameSystem.getGameObject(tdata[#target_id])
+  [ 73] getlocal 1 .............................. <tTargetObject>
+  [ 75] pushzero ................................ <0>
+  [ 76] eq ...................................... <tTargetObject = 0>
+  [ 77] jmpifz [ 95] ............................ if tTargetObject = 0 then
+  [ 80] getparam 0 .............................. <me>
+  [ 82] pushcons 23 ............................. <"Target object not found!">
+  [ 84] pushsymb 554 ............................ <#startThrowAnimation>
+  [ 87] pusharglist 3 ........................... <me, "Target object not found!", #startThrowAnimation>
+  [ 89] extcall 64 .............................. <error(me, "Target object not found!", #startThrowAnimation)>
+  [ 91] pusharglistnoret 1 ...................... <error(me, "Target object not found!", #startThrowAnimation)>
+  [ 93] extcall 35 .............................. return error(me, "Target object not found!", #startThrowAnimation)
+  [ 95] getlocal 1 .............................. <tTargetObject>
+  [ 97] pusharglist 1 ........................... <tTargetObject>
+  [ 99] objcall 265 ............................. <tTargetObject.getLocation()>
+  [102] getobjprop 320 .......................... <tTargetObject.getLocation().x>
+  [105] setlocal 2 .............................. tTargetX = tTargetObject.getLocation().x
+  [107] getlocal 1 .............................. <tTargetObject>
+  [109] pusharglist 1 ........................... <tTargetObject>
+  [111] objcall 265 ............................. <tTargetObject.getLocation()>
+  [114] getobjprop 321 .......................... <tTargetObject.getLocation().y>
+  [117] setlocal 3 .............................. tTargetY = tTargetObject.getLocation().y
+  [119] jmp [144]
+  [122] getparam 1 .............................. <tdata>
+  [124] pushsymb 326 ............................ <#targetX>
+  [127] pusharglist 2 ........................... <tdata, #targetX>
+  [129] objcall 44 .............................. <tdata[#targetX]>
+  [131] setlocal 2 .............................. tTargetX = tdata[#targetX]
+  [133] getparam 1 .............................. <tdata>
+  [135] pushsymb 327 ............................ <#targetY>
+  [138] pusharglist 2 ........................... <tdata, #targetY>
+  [140] objcall 44 .............................. <tdata[#targetY]>
+  [142] setlocal 3 .............................. tTargetY = tdata[#targetY]
+  [144] getparam 0 .............................. <me>
+  [146] pusharglist 1 ........................... <me>
+  [148] objcall 265 ............................. <me.getLocation()>
+  [151] setlocal 4 .............................. tlocation = me.getLocation()
+  [153] getlocal 0 .............................. <tGameSystem>
+  [155] getlocal 2 .............................. <tTargetX>
+  [157] getlocal 4 .............................. <tlocation>
+  [159] getobjprop 320 .......................... <tlocation.x>
+  [162] sub ..................................... <tTargetX - tlocation.x>
+  [163] getlocal 3 .............................. <tTargetY>
+  [165] getlocal 4 .............................. <tlocation>
+  [167] getobjprop 321 .......................... <tlocation.y>
+  [170] sub ..................................... <tTargetY - tlocation.y>
+  [171] pusharglist 3 ........................... <tGameSystem, tTargetX - tlocation.x, tTargetY - tlocation.y>
+  [173] objcall 657 ............................. <tGameSystem.get8AngleFromComponents(tTargetX - tlocation.x, tTargetY - tlocation.y)>
+  [176] setlocal 5 .............................. tDirection = tGameSystem.get8AngleFromComponents(tTargetX - tlocation.x, tTargetY - tlocation.y)
+  [178] getparam 0 .............................. <me>
+  [180] pushsymb 50 ............................. <#body_direction>
+  [182] getlocal 5 .............................. <tDirection>
+  [184] pusharglist 2 ........................... <[#body_direction: tDirection]>
+  [186] pushproplist ............................ <[#body_direction: tDirection]>
+  [187] pusharglistnoret 2 ...................... <me, [#body_direction: tDirection]>
+  [189] objcall 585 ............................. me.setGameObjectSyncProperty([#body_direction: tDirection])
+  [192] getprop 595 ............................. <pRoomObject>
+  [195] pusharglist 1 ........................... <pRoomObject>
+  [197] extcall 33 .............................. <objectp(pRoomObject)>
+  [199] not ..................................... <not objectp(pRoomObject)>
+  [200] jmpifz [218] ............................ if not objectp(pRoomObject) then
+  [203] getparam 0 .............................. <me>
+  [205] pushcons 14 ............................. <"Room object wrapper missing">
+  [207] pushsymb 554 ............................ <#startThrowAnimation>
+  [210] pusharglist 3 ........................... <me, "Room object wrapper missing", #startThrowAnimation>
+  [212] extcall 64 .............................. <error(me, "Room object wrapper missing", #startThrowAnimation)>
+  [214] pusharglistnoret 1 ...................... <error(me, "Room object wrapper missing", #startThrowAnimation)>
+  [216] extcall 35 .............................. return error(me, "Room object wrapper missing", #startThrowAnimation)
+  [218] getprop 595 ............................. <pRoomObject>
+  [221] pushcons 24 ............................. <"start_throw">
+  [223] getlocal 5 .............................. <tDirection>
+  [225] pusharglistnoret 3 ...................... <pRoomObject, "start_throw", tDirection>
+  [227] objcall 8 ............................... pRoomObject.gameObjectAction("start_throw", tDirection)
+  [229] pushint8 1 .............................. <1>
+  [231] pusharglistnoret 1 ...................... <1>
+  [233] extcall 35 .............................. return 1
+  [235] ret
+end
+
+on startCreateSnowballAnimation me
+  [  0] getprop 595 ............................. <pRoomObject>
+  [  3] pusharglist 1 ........................... <pRoomObject>
+  [  5] extcall 33 .............................. <objectp(pRoomObject)>
+  [  7] not ..................................... <not objectp(pRoomObject)>
+  [  8] jmpifz [ 26] ............................ if not objectp(pRoomObject) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 14 ............................. <"Room object wrapper missing">
+  [ 15] pushsymb 555 ............................ <#startCreateSnowballAnimation>
+  [ 18] pusharglist 3 ........................... <me, "Room object wrapper missing", #startCreateSnowballAnimation>
+  [ 20] extcall 64 .............................. <error(me, "Room object wrapper missing", #startCreateSnowballAnimation)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Room object wrapper missing", #startCreateSnowballAnimation)>
+  [ 24] extcall 35 .............................. return error(me, "Room object wrapper missing", #startCreateSnowballAnimation)
+  [ 26] getprop 595 ............................. <pRoomObject>
+  [ 29] pushcons 25 ............................. <"start_create">
+  [ 31] pusharglistnoret 2 ...................... <pRoomObject, "start_create">
+  [ 33] objcall 8 ............................... pRoomObject.gameObjectAction("start_create")
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] pusharglistnoret 1 ...................... <1>
+  [ 39] extcall 35 .............................. return 1
+  [ 41] ret
+end
+
+on startStunnedAnimation me, tdata
+  [  0] getprop 595 ............................. <pRoomObject>
+  [  3] pusharglist 1 ........................... <pRoomObject>
+  [  5] extcall 33 .............................. <objectp(pRoomObject)>
+  [  7] not ..................................... <not objectp(pRoomObject)>
+  [  8] jmpifz [ 26] ............................ if not objectp(pRoomObject) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 14 ............................. <"Room object wrapper missing">
+  [ 15] pushsymb 556 ............................ <#startStunnedAnimation>
+  [ 18] pusharglist 3 ........................... <me, "Room object wrapper missing", #startStunnedAnimation>
+  [ 20] extcall 64 .............................. <error(me, "Room object wrapper missing", #startStunnedAnimation)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Room object wrapper missing", #startStunnedAnimation)>
+  [ 24] extcall 35 .............................. return error(me, "Room object wrapper missing", #startStunnedAnimation)
+  [ 26] getprop 595 ............................. <pRoomObject>
+  [ 29] pushcons 26 ............................. <"start_stunned">
+  [ 31] getparam 1 .............................. <tdata>
+  [ 33] pusharglistnoret 3 ...................... <pRoomObject, "start_stunned", tdata>
+  [ 35] objcall 8 ............................... pRoomObject.gameObjectAction("start_stunned", tdata)
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 35 .............................. return 1
+  [ 43] ret
+end
+
+on startInvincibleAnimation me
+  [  0] getprop 595 ............................. <pRoomObject>
+  [  3] pusharglist 1 ........................... <pRoomObject>
+  [  5] extcall 33 .............................. <objectp(pRoomObject)>
+  [  7] not ..................................... <not objectp(pRoomObject)>
+  [  8] jmpifz [ 26] ............................ if not objectp(pRoomObject) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 14 ............................. <"Room object wrapper missing">
+  [ 15] pushsymb 556 ............................ <#startStunnedAnimation>
+  [ 18] pusharglist 3 ........................... <me, "Room object wrapper missing", #startStunnedAnimation>
+  [ 20] extcall 64 .............................. <error(me, "Room object wrapper missing", #startStunnedAnimation)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Room object wrapper missing", #startStunnedAnimation)>
+  [ 24] extcall 35 .............................. return error(me, "Room object wrapper missing", #startStunnedAnimation)
+  [ 26] getprop 595 ............................. <pRoomObject>
+  [ 29] pushcons 27 ............................. <"start_invincible">
+  [ 31] pusharglistnoret 2 ...................... <pRoomObject, "start_invincible">
+  [ 33] objcall 8 ............................... pRoomObject.gameObjectAction("start_invincible")
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] pusharglistnoret 1 ...................... <1>
+  [ 39] extcall 35 .............................. return 1
+  [ 41] ret
+end
+
+on resetFigureAnimation me
+  [  0] getprop 595 ............................. <pRoomObject>
+  [  3] pusharglist 1 ........................... <pRoomObject>
+  [  5] extcall 33 .............................. <objectp(pRoomObject)>
+  [  7] not ..................................... <not objectp(pRoomObject)>
+  [  8] jmpifz [ 26] ............................ if not objectp(pRoomObject) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 14 ............................. <"Room object wrapper missing">
+  [ 15] pushsymb 558 ............................ <#resetFigureAnimation>
+  [ 18] pusharglist 3 ........................... <me, "Room object wrapper missing", #resetFigureAnimation>
+  [ 20] extcall 64 .............................. <error(me, "Room object wrapper missing", #resetFigureAnimation)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Room object wrapper missing", #resetFigureAnimation)>
+  [ 24] extcall 35 .............................. return error(me, "Room object wrapper missing", #resetFigureAnimation)
+  [ 26] getprop 29 .............................. <pDump>
+  [ 28] jmpifz [ 37] ............................ if pDump then
+  [ 31] pushcons 28 ............................. <"* resetFigureAnimation calling reset_figure">
+  [ 33] pusharglistnoret 1 ...................... <"* resetFigureAnimation calling reset_figure">
+  [ 35] extcall 111 ............................. put "* resetFigureAnimation calling reset_figure"
+  [ 37] getprop 595 ............................. <pRoomObject>
+  [ 40] pushcons 29 ............................. <"reset_figure">
+  [ 42] pusharglistnoret 2 ...................... <pRoomObject, "reset_figure">
+  [ 44] objcall 8 ............................... pRoomObject.gameObjectAction("reset_figure")
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] pusharglistnoret 1 ...................... <1>
+  [ 50] extcall 35 .............................. return 1
+  [ 52] ret
+end
+
+on createRoomObject me, tDataStruct
+  [  0] pushsymb 279 ............................ <#temp>
+  [  3] pushcons 30 ............................. <"snowwar.object_avatar.roomobject.wrapper.class">
+  [  5] pusharglist 1 ........................... <"snowwar.object_avatar.roomobject.wrapper.class">
+  [  7] extcall 280 ............................. <getClassVariable("snowwar.object_avatar.roomobject.wrapper.class")>
+  [ 10] pusharglist 2 ........................... <#temp, getClassVariable("snowwar.object_avatar.roomobject.wrapper.class")>
+  [ 12] extcall 278 ............................. <createObject(#temp, getClassVariable("snowwar.object_avatar.roomobject.wrapper.class"))>
+  [ 15] setprop 595 ............................. pRoomObject = createObject(#temp, getClassVariable("snowwar.object_avatar.roomobject.wrapper.class"))
+  [ 18] getprop 595 ............................. <pRoomObject>
+  [ 21] pushzero ................................ <0>
+  [ 22] eq ...................................... <pRoomObject = 0>
+  [ 23] jmpifz [ 41] ............................ if pRoomObject = 0 then
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pushcons 31 ............................. <"Cannot create roomobject wrapper!">
+  [ 30] pushsymb 559 ............................ <#createRoomObject>
+  [ 33] pusharglist 3 ........................... <me, "Cannot create roomobject wrapper!", #createRoomObject>
+  [ 35] extcall 64 .............................. <error(me, "Cannot create roomobject wrapper!", #createRoomObject)>
+  [ 37] pusharglistnoret 1 ...................... <error(me, "Cannot create roomobject wrapper!", #createRoomObject)>
+  [ 39] extcall 35 .............................. return error(me, "Cannot create roomobject wrapper!", #createRoomObject)
+  [ 41] getprop 595 ............................. <pRoomObject>
+  [ 44] getparam 1 .............................. <tDataStruct>
+  [ 46] pusharglist 2 ........................... <pRoomObject, tDataStruct>
+  [ 48] objcall 2 ............................... <pRoomObject.define(tDataStruct)>
+  [ 50] pusharglistnoret 1 ...................... <pRoomObject.define(tDataStruct)>
+  [ 52] extcall 35 .............................. return pRoomObject.define(tDataStruct)
+  [ 54] ret
+end
+
+on removeRoomObject me
+  [  0] getprop 595 ............................. <pRoomObject>
+  [  3] pusharglist 1 ........................... <pRoomObject>
+  [  5] extcall 33 .............................. <objectp(pRoomObject)>
+  [  7] not ..................................... <not objectp(pRoomObject)>
+  [  8] jmpifz [ 17] ............................ if not objectp(pRoomObject) then
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 35 .............................. return 1
+  [ 17] getprop 595 ............................. <pRoomObject>
+  [ 20] pusharglistnoret 1 ...................... <pRoomObject>
+  [ 22] objcall 1 ............................... pRoomObject.deconstruct()
+  [ 24] pusharglist 0 ........................... <>
+  [ 26] extcall 55 .............................. <VOID>
+  [ 28] setprop 595 ............................. pRoomObject = VOID
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] pusharglistnoret 1 ...................... <1>
+  [ 35] extcall 35 .............................. return 1
+  [ 37] ret
+end
+
+on getRoomObjectImage me
+  [  0] getprop 595 ............................. <pRoomObject>
+  [  3] pusharglist 1 ........................... <pRoomObject>
+  [  5] extcall 33 .............................. <objectp(pRoomObject)>
+  [  7] not ..................................... <not objectp(pRoomObject)>
+  [  8] jmpifz [ 16] ............................ if not objectp(pRoomObject) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 35 .............................. return 0
+  [ 16] getprop 595 ............................. <pRoomObject>
+  [ 19] pusharglist 1 ........................... <pRoomObject>
+  [ 21] objcall 23 .............................. <pRoomObject.getPicture()>
+  [ 23] pusharglistnoret 1 ...................... <pRoomObject.getPicture()>
+  [ 25] extcall 35 .............................. return pRoomObject.getPicture()
+  [ 27] ret
+end
+
+on getStateAllowsMoving me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [  5] pushsymb 48 ............................. <#activity_state>
+  [  7] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #activity_state>
+  [  9] objcall 139 ............................. <me.pGameObjectSyncValues[#activity_state]>
+  [ 11] setlocal 0 .............................. tstate = me.pGameObjectSyncValues[#activity_state]
+  [ 13] pushcons 3 .............................. <"ACTIVITY_STATE_NORMAL">
+  [ 15] pusharglist 1 ........................... <"ACTIVITY_STATE_NORMAL">
+  [ 17] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_NORMAL")>
+  [ 20] pushcons 19 ............................. <"ACTIVITY_STATE_CREATING">
+  [ 22] pusharglist 1 ........................... <"ACTIVITY_STATE_CREATING">
+  [ 24] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_CREATING")>
+  [ 27] pushcons 4 .............................. <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [ 29] pusharglist 1 ........................... <"ACTIVITY_STATE_INVINCIBLE_AFTER_STUN">
+  [ 31] extcall 394 ............................. <getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")>
+  [ 34] pusharglist 3 ........................... <[getIntVariable("ACTIVITY_STATE_NORMAL"), getIntVariable("ACTIVITY_STATE_CREATING"), getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")]>
+  [ 36] pushlist ................................ <[getIntVariable("ACTIVITY_STATE_NORMAL"), getIntVariable("ACTIVITY_STATE_CREATING"), getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")]>
+  [ 37] setlocal 1 .............................. tPossibleStates = [getIntVariable("ACTIVITY_STATE_NORMAL"), getIntVariable("ACTIVITY_STATE_CREATING"), getIntVariable("ACTIVITY_STATE_INVINCIBLE_AFTER_STUN")]
+  [ 39] getlocal 1 .............................. <tPossibleStates>
+  [ 41] getlocal 0 .............................. <tstate>
+  [ 43] pusharglist 2 ........................... <tPossibleStates, tstate>
+  [ 45] objcall 114 ............................. <tPossibleStates.findPos(tstate)>
+  [ 47] pushzero ................................ <0>
+  [ 48] gt ...................................... <tPossibleStates.findPos(tstate) > 0>
+  [ 49] pusharglistnoret 1 ...................... <tPossibleStates.findPos(tstate) > 0>
+  [ 51] extcall 35 .............................. return tPossibleStates.findPos(tstate) > 0
+  [ 53] ret
+end
+
+on stopWalkLoop me
+  [  0] getprop 586 ............................. <pWalkLoop>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 55 .............................. <VOID>
+  [  7] nteq .................................... <pWalkLoop <> VOID>
+  [  8] jmpifz [ 19] ............................ if pWalkLoop <> VOID then
+  [ 11] getprop 586 ............................. <pWalkLoop>
+  [ 14] pusharglistnoret 1 ...................... <pWalkLoop>
+  [ 16] extcall 660 ............................. stopSoundChannel(pWalkLoop)
+  [ 19] pusharglist 0 ........................... <>
+  [ 21] extcall 55 .............................. <VOID>
+  [ 23] setprop 586 ............................. pWalkLoop = VOID
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglistnoret 1 ...................... <1>
+  [ 30] extcall 35 .............................. return 1
+  [ 32] ret
+end
+
+on incrementScoreBy me, tPoints
+  [  0] getparam 1 .............................. <tPoints>
+  [  2] pushzero ................................ <0>
+  [  3] eq ...................................... <tPoints = 0>
+  [  4] jmpifz [ 13] ............................ if tPoints = 0 then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 35 .............................. return 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 18] pushsymb 268 ............................ <#score>
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 26] pushsymb 268 ............................ <#score>
+  [ 29] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #score>
+  [ 31] objcall 139 ............................. <me.pGameObjectSyncValues[#score]>
+  [ 33] getparam 1 .............................. <tPoints>
+  [ 35] add ..................................... <me.pGameObjectSyncValues[#score] + tPoints>
+  [ 36] pusharglistnoret 4 ...................... <me, #pGameObjectSyncValues, #score, me.pGameObjectSyncValues[#score] + tPoints>
+  [ 38] objcall 93 .............................. me.pGameObjectSyncValues[#score] = me.pGameObjectSyncValues[#score] + tPoints
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 228 ............................. <me.getGameSystem()>
+  [ 46] pushsymb 661 ............................ <#team_score_updated>
+  [ 49] pushsymb 43 ............................. <#team_id>
+  [ 51] getparam 0 .............................. <me>
+  [ 53] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 56] pushsymb 43 ............................. <#team_id>
+  [ 58] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #team_id>
+  [ 60] objcall 139 ............................. <me.pGameObjectSyncValues[#team_id]>
+  [ 62] pushsymb 662 ............................ <#score_add>
+  [ 65] getparam 1 .............................. <tPoints>
+  [ 67] pusharglist 4 ........................... <[#team_id: me.pGameObjectSyncValues[#team_id], #score_add: tPoints]>
+  [ 69] pushproplist ............................ <[#team_id: me.pGameObjectSyncValues[#team_id], #score_add: tPoints]>
+  [ 70] pusharglist 1 ........................... <[[#team_id: me.pGameObjectSyncValues[#team_id], #score_add: tPoints]]>
+  [ 72] pushlist ................................ <[[#team_id: me.pGameObjectSyncValues[#team_id], #score_add: tPoints]]>
+  [ 73] pusharglistnoret 3 ...................... <me.getGameSystem(), #team_score_updated, [[#team_id: me.pGameObjectSyncValues[#team_id], #score_add: tPoints]]>
+  [ 75] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#team_score_updated, [[#team_id: me.pGameObjectSyncValues[#team_id], #score_add: tPoints]])
+  [ 78] getprop 577 ............................. <pIsOwnPlayer>
+  [ 81] jmpifz [110] ............................ if pIsOwnPlayer then
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglist 1 ........................... <me>
+  [ 88] objcall 228 ............................. <me.getGameSystem()>
+  [ 90] pushsymb 663 ............................ <#personal_score_updated>
+  [ 93] getparam 0 .............................. <me>
+  [ 95] pushsymb 308 ............................ <#pGameObjectSyncValues>
+  [ 98] pushsymb 268 ............................ <#score>
+  [101] pusharglist 3 ........................... <me, #pGameObjectSyncValues, #score>
+  [103] objcall 139 ............................. <me.pGameObjectSyncValues[#score]>
+  [105] pusharglistnoret 3 ...................... <me.getGameSystem(), #personal_score_updated, me.pGameObjectSyncValues[#score]>
+  [107] objcall 447 ............................. me.getGameSystem().sendGameSystemEvent(#personal_score_updated, me.pGameObjectSyncValues[#score])
+  [110] pushint8 1 .............................. <1>
+  [112] pusharglistnoret 1 ...................... <1>
+  [114] extcall 35 .............................. return 1
+  [116] ret
+end

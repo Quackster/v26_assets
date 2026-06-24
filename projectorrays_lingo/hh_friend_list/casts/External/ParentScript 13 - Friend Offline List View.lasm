@@ -1,0 +1,600 @@
+property pListImg, pWriterIdPlain, pContentList, pItemHeight, pItemWidth, pEmptyListText, pContentListState
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pushint8 32 ............................. <32>
+  [  6] pusharglist 3 ........................... <1, 1, 32>
+  [  8] extcall 495 ............................. <image(1, 1, 32)>
+  [ 11] setprop 498 ............................. pListImg = image(1, 1, 32)
+  [ 14] pusharglist 0 ........................... <[:]>
+  [ 16] pushproplist ............................ <[:]>
+  [ 17] setprop 487 ............................. pContentList = [:]
+  [ 20] getprop 487 ............................. <pContentList>
+  [ 23] pusharglistnoret 1 ...................... <pContentList>
+  [ 25] objcall 470 ............................. pContentList.sort()
+  [ 28] pusharglist 0 ........................... <>
+  [ 30] extcall 69 .............................. <VOID>
+  [ 32] setprop 566 ............................. pContentListState = VOID
+  [ 35] pusharglist 0 ........................... <>
+  [ 37] extcall 46 .............................. <getUniqueID()>
+  [ 39] setprop 528 ............................. pWriterIdPlain = getUniqueID()
+  [ 42] pushcons 0 .............................. <"struct.font.plain">
+  [ 44] pusharglist 1 ........................... <"struct.font.plain">
+  [ 46] extcall 490 ............................. <getStructVariable("struct.font.plain")>
+  [ 49] setlocal 0 .............................. tPlain = getStructVariable("struct.font.plain")
+  [ 51] pushsymb 567 ............................ <#font>
+  [ 54] getlocal 0 .............................. <tPlain>
+  [ 56] pushsymb 567 ............................ <#font>
+  [ 59] pusharglist 2 ........................... <tPlain, #font>
+  [ 61] objcall 127 ............................. <tPlain.getaProp(#font)>
+  [ 63] pushsymb 568 ............................ <#fontStyle>
+  [ 66] getlocal 0 .............................. <tPlain>
+  [ 68] pushsymb 568 ............................ <#fontStyle>
+  [ 71] pusharglist 2 ........................... <tPlain, #fontStyle>
+  [ 73] objcall 127 ............................. <tPlain.getaProp(#fontStyle)>
+  [ 75] pushsymb 272 ............................ <#color>
+  [ 78] pushcons 1 .............................. <"#888888">
+  [ 80] pusharglist 1 ........................... <"#888888">
+  [ 82] extcall 268 ............................. <rgb("#888888")>
+  [ 85] pusharglist 6 ........................... <[#font: tPlain.getaProp(#font), #fontStyle: tPlain.getaProp(#fontStyle), #color: rgb("#888888")]>
+  [ 87] pushproplist ............................ <[#font: tPlain.getaProp(#font), #fontStyle: tPlain.getaProp(#fontStyle), #color: rgb("#888888")]>
+  [ 88] setlocal 1 .............................. tMetrics = [#font: tPlain.getaProp(#font), #fontStyle: tPlain.getaProp(#fontStyle), #color: rgb("#888888")]
+  [ 90] getprop 528 ............................. <pWriterIdPlain>
+  [ 93] getlocal 1 .............................. <tMetrics>
+  [ 95] pusharglistnoret 2 ...................... <pWriterIdPlain, tMetrics>
+  [ 97] extcall 488 ............................. createWriter(pWriterIdPlain, tMetrics)
+  [100] pushcons 2 .............................. <"fr.offline.item.height">
+  [102] pusharglist 1 ........................... <"fr.offline.item.height">
+  [104] extcall 67 .............................. <getVariable("fr.offline.item.height")>
+  [106] pusharglist 1 ........................... <getVariable("fr.offline.item.height")>
+  [108] extcall 116 ............................. <integer(getVariable("fr.offline.item.height"))>
+  [110] setprop 524 ............................. pItemHeight = integer(getVariable("fr.offline.item.height"))
+  [113] pushcons 3 .............................. <"fr.list.panel.width">
+  [115] pusharglist 1 ........................... <"fr.list.panel.width">
+  [117] extcall 67 .............................. <getVariable("fr.list.panel.width")>
+  [119] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [121] extcall 116 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [123] setprop 513 ............................. pItemWidth = integer(getVariable("fr.list.panel.width"))
+  [126] pushcons 4 .............................. <"friend_list_no_friends_online_category">
+  [128] pusharglist 1 ........................... <"friend_list_no_friends_online_category">
+  [130] extcall 139 ............................. <getText("friend_list_no_friends_online_category")>
+  [132] setprop 493 ............................. pEmptyListText = getText("friend_list_no_friends_online_category")
+  [135] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 69 .............................. <VOID>
+  [  4] setprop 498 ............................. pListImg = VOID
+  [  7] getprop 528 ............................. <pWriterIdPlain>
+  [ 10] pusharglistnoret 1 ...................... <pWriterIdPlain>
+  [ 12] extcall 529 ............................. removeWriter(pWriterIdPlain)
+  [ 15] ret
+end
+
+on setListData me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 77 .............................. <ilk(tdata)>
+  [  6] pushsymb 78 ............................. <#propList>
+  [  8] eq ...................................... <ilk(tdata) = #propList>
+  [  9] jmpifz [ 28] ............................ if ilk(tdata) = #propList then
+  [ 12] getparam 1 .............................. <tdata>
+  [ 14] pusharglist 1 ........................... <tdata>
+  [ 16] objcall 134 ............................. <tdata.duplicate()>
+  [ 18] setprop 487 ............................. pContentList = tdata.duplicate()
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglistnoret 1 ...................... <me>
+  [ 25] objcall 257 ............................. me.renderListImage()
+  [ 28] ret
+end
+
+on renderFriendItem me, tFriendData, tSelected
+  [  0] pushcons 2 .............................. <"fr.offline.item.height">
+  [  2] pusharglist 1 ........................... <"fr.offline.item.height">
+  [  4] extcall 67 .............................. <getVariable("fr.offline.item.height")>
+  [  6] pusharglist 1 ........................... <getVariable("fr.offline.item.height")>
+  [  8] extcall 116 ............................. <integer(getVariable("fr.offline.item.height"))>
+  [ 10] setprop 524 ............................. pItemHeight = integer(getVariable("fr.offline.item.height"))
+  [ 13] pushcons 3 .............................. <"fr.list.panel.width">
+  [ 15] pusharglist 1 ........................... <"fr.list.panel.width">
+  [ 17] extcall 67 .............................. <getVariable("fr.list.panel.width")>
+  [ 19] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [ 21] extcall 116 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [ 23] setprop 513 ............................. pItemWidth = integer(getVariable("fr.list.panel.width"))
+  [ 26] getprop 528 ............................. <pWriterIdPlain>
+  [ 29] pusharglist 1 ........................... <pWriterIdPlain>
+  [ 31] extcall 489 ............................. <getWriter(pWriterIdPlain)>
+  [ 34] setlocal 0 .............................. tNameWriter = getWriter(pWriterIdPlain)
+  [ 36] getprop 513 ............................. <pItemWidth>
+  [ 39] getprop 524 ............................. <pItemHeight>
+  [ 42] pushint8 32 ............................. <32>
+  [ 44] pusharglist 3 ........................... <pItemWidth, pItemHeight, 32>
+  [ 46] extcall 495 ............................. <image(pItemWidth, pItemHeight, 32)>
+  [ 49] setlocal 1 .............................. tItemImg = image(pItemWidth, pItemHeight, 32)
+  [ 51] getparam 1 .............................. <tFriendData>
+  [ 53] pushsymb 243 ............................ <#name>
+  [ 55] pusharglist 2 ........................... <tFriendData, #name>
+  [ 57] objcall 80 .............................. <tFriendData[#name]>
+  [ 59] setlocal 2 .............................. tName = tFriendData[#name]
+  [ 61] getparam 2 .............................. <tSelected>
+  [ 63] jmpifz [100] ............................ if tSelected then
+  [ 66] pushcons 5 .............................. <"fr.offline.bg.selected">
+  [ 68] pusharglist 1 ........................... <"fr.offline.bg.selected">
+  [ 70] extcall 67 .............................. <getVariable("fr.offline.bg.selected")>
+  [ 72] pusharglist 1 ........................... <getVariable("fr.offline.bg.selected")>
+  [ 74] extcall 140 ............................. <string(getVariable("fr.offline.bg.selected"))>
+  [ 76] pusharglist 1 ........................... <string(getVariable("fr.offline.bg.selected"))>
+  [ 78] extcall 268 ............................. <rgb(string(getVariable("fr.offline.bg.selected")))>
+  [ 81] setlocal 3 .............................. tSelectedBg = rgb(string(getVariable("fr.offline.bg.selected")))
+  [ 83] getlocal 1 .............................. <tItemImg>
+  [ 85] pushzero ................................ <0>
+  [ 86] pushzero ................................ <0>
+  [ 87] getprop 513 ............................. <pItemWidth>
+  [ 90] getprop 524 ............................. <pItemHeight>
+  [ 93] getlocal 3 .............................. <tSelectedBg>
+  [ 95] pusharglistnoret 6 ...................... <tItemImg, 0, 0, pItemWidth, pItemHeight, tSelectedBg>
+  [ 97] objcall 530 ............................. tItemImg.fill(0, 0, pItemWidth, pItemHeight, tSelectedBg)
+  [100] getlocal 0 .............................. <tNameWriter>
+  [102] getlocal 2 .............................. <tName>
+  [104] pusharglist 2 ........................... <tNameWriter, tName>
+  [106] objcall 494 ............................. <tNameWriter.render(tName)>
+  [109] setlocal 4 .............................. tNameImg = tNameWriter.render(tName)
+  [111] getlocal 4 .............................. <tNameImg>
+  [113] getobjprop 286 .......................... <tNameImg.rect>
+  [116] setlocal 5 .............................. tSourceRect = tNameImg.rect
+  [118] pushcons 6 .............................. <"fr.offline.name.offset.h">
+  [120] pusharglist 1 ........................... <"fr.offline.name.offset.h">
+  [122] extcall 67 .............................. <getVariable("fr.offline.name.offset.h")>
+  [124] pusharglist 1 ........................... <getVariable("fr.offline.name.offset.h")>
+  [126] extcall 116 ............................. <integer(getVariable("fr.offline.name.offset.h"))>
+  [128] setlocal 6 .............................. tNamePosH = integer(getVariable("fr.offline.name.offset.h"))
+  [130] getprop 524 ............................. <pItemHeight>
+  [133] getlocal 4 .............................. <tNameImg>
+  [135] getobjprop 217 .......................... <tNameImg.height>
+  [137] sub ..................................... <pItemHeight - tNameImg.height>
+  [138] pushint8 2 .............................. <2>
+  [140] div ..................................... <(pItemHeight - tNameImg.height) / 2>
+  [141] setlocal 7 .............................. tNamePosV = (pItemHeight - tNameImg.height) / 2
+  [143] getlocal 5 .............................. <tSourceRect>
+  [145] getlocal 6 .............................. <tNamePosH>
+  [147] getlocal 7 .............................. <tNamePosV>
+  [149] getlocal 6 .............................. <tNamePosH>
+  [151] getlocal 7 .............................. <tNamePosV>
+  [153] pusharglist 4 ........................... <tNamePosH, tNamePosV, tNamePosH, tNamePosV>
+  [155] extcall 286 ............................. <rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [158] add ..................................... <tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [159] setlocal 8 .............................. tdestrect = tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)
+  [161] getlocal 1 .............................. <tItemImg>
+  [163] getlocal 4 .............................. <tNameImg>
+  [165] getlocal 8 .............................. <tdestrect>
+  [167] getlocal 4 .............................. <tNameImg>
+  [169] getobjprop 286 .......................... <tNameImg.rect>
+  [172] pusharglistnoret 4 ...................... <tItemImg, tNameImg, tdestrect, tNameImg.rect>
+  [174] objcall 496 ............................. tItemImg.copyPixels(tNameImg, tdestrect, tNameImg.rect)
+  [177] getlocal 1 .............................. <tItemImg>
+  [179] pusharglist 1 ........................... <tItemImg>
+  [181] objcall 134 ............................. <tItemImg.duplicate()>
+  [183] pusharglistnoret 1 ...................... <tItemImg.duplicate()>
+  [185] extcall 44 .............................. return tItemImg.duplicate()
+  [187] ret
+end
+
+on renderListImage me
+  [  0] getprop 487 ............................. <pContentList>
+  [  3] getobjprop 100 .......................... <pContentList.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pContentList.count = 0>
+  [  7] jmpifz [ 35] ............................ if pContentList.count = 0 then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pushint8 32 ............................. <32>
+  [ 18] pusharglist 3 ........................... <1, 1, 32>
+  [ 20] extcall 495 ............................. <image(1, 1, 32)>
+  [ 23] setobjprop 498 .......................... me.pListImg = image(1, 1, 32)
+  [ 26] getparam 0 .............................. <me>
+  [ 28] getobjprop 498 .......................... <me.pListImg>
+  [ 31] pusharglistnoret 1 ...................... <me.pListImg>
+  [ 33] extcall 44 .............................. return me.pListImg
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 0 ........................... <[]>
+  [ 39] pushlist ................................ <[]>
+  [ 40] setobjprop 482 .......................... me.pFriendRenderQueue = []
+  [ 43] pushcons 2 .............................. <"fr.offline.item.height">
+  [ 45] pusharglist 1 ........................... <"fr.offline.item.height">
+  [ 47] extcall 67 .............................. <getVariable("fr.offline.item.height")>
+  [ 49] pusharglist 1 ........................... <getVariable("fr.offline.item.height")>
+  [ 51] extcall 116 ............................. <integer(getVariable("fr.offline.item.height"))>
+  [ 53] setprop 524 ............................. pItemHeight = integer(getVariable("fr.offline.item.height"))
+  [ 56] pushcons 3 .............................. <"fr.list.panel.width">
+  [ 58] pusharglist 1 ........................... <"fr.list.panel.width">
+  [ 60] extcall 67 .............................. <getVariable("fr.list.panel.width")>
+  [ 62] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [ 64] extcall 116 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [ 66] setprop 513 ............................. pItemWidth = integer(getVariable("fr.list.panel.width"))
+  [ 69] pushcons 6 .............................. <"fr.offline.name.offset.h">
+  [ 71] pusharglist 1 ........................... <"fr.offline.name.offset.h">
+  [ 73] extcall 67 .............................. <getVariable("fr.offline.name.offset.h")>
+  [ 75] pusharglist 1 ........................... <getVariable("fr.offline.name.offset.h")>
+  [ 77] extcall 116 ............................. <integer(getVariable("fr.offline.name.offset.h"))>
+  [ 79] setlocal 0 .............................. tNamePosH = integer(getVariable("fr.offline.name.offset.h"))
+  [ 81] pushcons 5 .............................. <"fr.offline.bg.selected">
+  [ 83] pusharglist 1 ........................... <"fr.offline.bg.selected">
+  [ 85] extcall 67 .............................. <getVariable("fr.offline.bg.selected")>
+  [ 87] pusharglist 1 ........................... <getVariable("fr.offline.bg.selected")>
+  [ 89] extcall 140 ............................. <string(getVariable("fr.offline.bg.selected"))>
+  [ 91] pusharglist 1 ........................... <string(getVariable("fr.offline.bg.selected"))>
+  [ 93] extcall 268 ............................. <rgb(string(getVariable("fr.offline.bg.selected")))>
+  [ 96] setlocal 1 .............................. tSelectedBg = rgb(string(getVariable("fr.offline.bg.selected")))
+  [ 98] getparam 0 .............................. <me>
+  [100] getprop 513 ............................. <pItemWidth>
+  [103] getprop 524 ............................. <pItemHeight>
+  [106] getprop 487 ............................. <pContentList>
+  [109] getobjprop 100 .......................... <pContentList.count>
+  [111] mul ..................................... <pItemHeight * pContentList.count>
+  [112] pushint8 32 ............................. <32>
+  [114] pusharglist 3 ........................... <pItemWidth, pItemHeight * pContentList.count, 32>
+  [116] extcall 495 ............................. <image(pItemWidth, pItemHeight * pContentList.count, 32)>
+  [119] setobjprop 498 .......................... me.pListImg = image(pItemWidth, pItemHeight * pContentList.count, 32)
+  [122] pushzero ................................ <0>
+  [123] setlocal 2 .............................. tCurrentPosV = 0
+  [125] getprop 528 ............................. <pWriterIdPlain>
+  [128] pusharglist 1 ........................... <pWriterIdPlain>
+  [130] extcall 489 ............................. <getWriter(pWriterIdPlain)>
+  [133] setlocal 3 .............................. tNameWriter = getWriter(pWriterIdPlain)
+  [135] getprop 487 ............................. <pContentList>
+  [138] peek 0
+  [140] pusharglist 1
+  [142] extcall 100
+  [144] pushint8 1
+  [146] peek 0
+  [148] peek 2
+  [150] lteq
+  [151] jmpifz [247] ............................ repeat with tFriend in pContentList
+  [154] peek 2
+  [156] peek 1
+  [158] pusharglist 2
+  [160] extcall 80
+  [162] setlocal 4
+  [164] getlocal 4 .............................. <tFriend>
+  [166] pushsymb 243 ............................ <#name>
+  [168] pusharglist 2 ........................... <tFriend, #name>
+  [170] objcall 80 .............................. <tFriend[#name]>
+  [172] setlocal 5 .............................. tName = tFriend[#name]
+  [174] getparam 0 .............................. <me>
+  [176] getlocal 5 .............................. <tName>
+  [178] pusharglist 2 ........................... <me, tName>
+  [180] objcall 516 ............................. <me.isFriendselected(tName)>
+  [183] jmpifz [210] ............................ if me.isFriendselected(tName) then
+  [186] getparam 0 .............................. <me>
+  [188] getchainedprop 498 ...................... <me.pListImg>
+  [191] pushzero ................................ <0>
+  [192] getlocal 2 .............................. <tCurrentPosV>
+  [194] getprop 513 ............................. <pItemWidth>
+  [197] getlocal 2 .............................. <tCurrentPosV>
+  [199] getprop 524 ............................. <pItemHeight>
+  [202] add ..................................... <tCurrentPosV + pItemHeight>
+  [203] getlocal 1 .............................. <tSelectedBg>
+  [205] pusharglistnoret 6 ...................... <me.pListImg, 0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, tSelectedBg>
+  [207] objcall 530 ............................. me.pListImg.fill(0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, tSelectedBg)
+  [210] getlocal 4 .............................. <tFriend>
+  [212] pushsymb 554 ............................ <#posV>
+  [215] getlocal 2 .............................. <tCurrentPosV>
+  [217] pusharglistnoret 3 ...................... <tFriend, #posV, tCurrentPosV>
+  [219] objcall 438 ............................. tFriend.setaProp(#posV, tCurrentPosV)
+  [222] getparam 0 .............................. <me>
+  [224] getchainedprop 482 ...................... <me.pFriendRenderQueue>
+  [227] getlocal 4 .............................. <tFriend>
+  [229] pusharglistnoret 2 ...................... <me.pFriendRenderQueue, tFriend>
+  [231] objcall 449 ............................. me.pFriendRenderQueue.append(tFriend)
+  [234] getlocal 2 .............................. <tCurrentPosV>
+  [236] getprop 524 ............................. <pItemHeight>
+  [239] add ..................................... <tCurrentPosV + pItemHeight>
+  [240] setlocal 2 .............................. tCurrentPosV = tCurrentPosV + pItemHeight
+  [242] pushint8 1
+  [244] add
+  [245] endrepeat [146]
+  [247] pop 3
+  [249] ret
+end
+
+on renderFromQueue me, tContentElement
+  [  0] getparam 1 .............................. <tContentElement>
+  [  2] pushzero ................................ <0>
+  [  3] eq ...................................... <tContentElement = 0>
+  [  4] jmpifz [ 21] ............................ if tContentElement = 0 then
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 0 ........................... <[]>
+  [ 11] pushlist ................................ <[]>
+  [ 12] setobjprop 482 .......................... me.pFriendRenderQueue = []
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 44 .............................. return 1
+  [ 21] pushcons 6 .............................. <"fr.offline.name.offset.h">
+  [ 23] pusharglist 1 ........................... <"fr.offline.name.offset.h">
+  [ 25] extcall 67 .............................. <getVariable("fr.offline.name.offset.h")>
+  [ 27] pusharglist 1 ........................... <getVariable("fr.offline.name.offset.h")>
+  [ 29] extcall 116 ............................. <integer(getVariable("fr.offline.name.offset.h"))>
+  [ 31] setlocal 0 .............................. tNamePosH = integer(getVariable("fr.offline.name.offset.h"))
+  [ 33] getprop 528 ............................. <pWriterIdPlain>
+  [ 36] pusharglist 1 ........................... <pWriterIdPlain>
+  [ 38] extcall 489 ............................. <getWriter(pWriterIdPlain)>
+  [ 41] setlocal 1 .............................. tNameWriter = getWriter(pWriterIdPlain)
+  [ 43] pushint8 1 .............................. <1>
+  [ 45] setlocal 2
+  [ 47] getlocal 2
+  [ 49] getparam 0 .............................. <me>
+  [ 51] getobjprop 483 .......................... <me.pTasksPerUpdate>
+  [ 54] lteq
+  [ 55] jmpifz [245] ............................ repeat with i = 1 to me.pTasksPerUpdate
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pushsymb 482 ............................ <#pFriendRenderQueue>
+  [ 63] pusharglist 2 ........................... <me, #pFriendRenderQueue>
+  [ 65] objcall 100 ............................. <me.pFriendRenderQueue.count>
+  [ 67] pushzero ................................ <0>
+  [ 68] gt ...................................... <me.pFriendRenderQueue.count > 0>
+  [ 69] jmpifz [236] ............................ if me.pFriendRenderQueue.count > 0 then
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pushsymb 482 ............................ <#pFriendRenderQueue>
+  [ 77] pushint8 1 .............................. <1>
+  [ 79] pusharglist 3 ........................... <me, #pFriendRenderQueue, 1>
+  [ 81] objcall 371 ............................. <me.pFriendRenderQueue[1]>
+  [ 84] setlocal 3 .............................. tFriend = me.pFriendRenderQueue[1]
+  [ 86] getparam 0 .............................. <me>
+  [ 88] getchainedprop 482 ...................... <me.pFriendRenderQueue>
+  [ 91] pushint8 1 .............................. <1>
+  [ 93] pusharglistnoret 2 ...................... <me.pFriendRenderQueue, 1>
+  [ 95] objcall 128 ............................. me.pFriendRenderQueue.deleteAt(1)
+  [ 97] getlocal 3 .............................. <tFriend>
+  [ 99] pushsymb 554 ............................ <#posV>
+  [102] pusharglist 2 ........................... <tFriend, #posV>
+  [104] objcall 80 .............................. <tFriend[#posV]>
+  [106] setlocal 4 .............................. tCurrentPosV = tFriend[#posV]
+  [108] getlocal 3 .............................. <tFriend>
+  [110] pushsymb 243 ............................ <#name>
+  [112] pusharglist 2 ........................... <tFriend, #name>
+  [114] objcall 80 .............................. <tFriend[#name]>
+  [116] setlocal 5 .............................. tName = tFriend[#name]
+  [118] getparam 0 .............................. <me>
+  [120] getlocal 5 .............................. <tName>
+  [122] pusharglist 2 ........................... <me, tName>
+  [124] objcall 516 ............................. <me.isFriendselected(tName)>
+  [127] jmpifz [167] ............................ if me.isFriendselected(tName) then
+  [130] getparam 0 .............................. <me>
+  [132] getchainedprop 498 ...................... <me.pListImg>
+  [135] pushzero ................................ <0>
+  [136] getlocal 4 .............................. <tCurrentPosV>
+  [138] getprop 513 ............................. <pItemWidth>
+  [141] getlocal 4 .............................. <tCurrentPosV>
+  [143] getprop 524 ............................. <pItemHeight>
+  [146] add ..................................... <tCurrentPosV + pItemHeight>
+  [147] pushcons 5 .............................. <"fr.offline.bg.selected">
+  [149] pusharglist 1 ........................... <"fr.offline.bg.selected">
+  [151] extcall 67 .............................. <getVariable("fr.offline.bg.selected")>
+  [153] pusharglist 1 ........................... <getVariable("fr.offline.bg.selected")>
+  [155] extcall 140 ............................. <string(getVariable("fr.offline.bg.selected"))>
+  [157] pusharglist 1 ........................... <string(getVariable("fr.offline.bg.selected"))>
+  [159] extcall 268 ............................. <rgb(string(getVariable("fr.offline.bg.selected")))>
+  [162] pusharglistnoret 6 ...................... <me.pListImg, 0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, rgb(string(getVariable("fr.offline.bg.selected")))>
+  [164] objcall 530 ............................. me.pListImg.fill(0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, rgb(string(getVariable("fr.offline.bg.selected"))))
+  [167] getlocal 1 .............................. <tNameWriter>
+  [169] getlocal 5 .............................. <tName>
+  [171] pusharglist 2 ........................... <tNameWriter, tName>
+  [173] objcall 494 ............................. <tNameWriter.render(tName)>
+  [176] setlocal 6 .............................. tNameImage = tNameWriter.render(tName)
+  [178] getlocal 6 .............................. <tNameImage>
+  [180] getobjprop 286 .......................... <tNameImage.rect>
+  [183] setlocal 7 .............................. tSourceRect = tNameImage.rect
+  [185] getlocal 4 .............................. <tCurrentPosV>
+  [187] getprop 524 ............................. <pItemHeight>
+  [190] getlocal 6 .............................. <tNameImage>
+  [192] getobjprop 217 .......................... <tNameImage.height>
+  [194] sub ..................................... <pItemHeight - tNameImage.height>
+  [195] pushint8 2 .............................. <2>
+  [197] div ..................................... <(pItemHeight - tNameImage.height) / 2>
+  [198] add ..................................... <tCurrentPosV + ((pItemHeight - tNameImage.height) / 2)>
+  [199] setlocal 8 .............................. tNamePosV = tCurrentPosV + ((pItemHeight - tNameImage.height) / 2)
+  [201] getlocal 7 .............................. <tSourceRect>
+  [203] getlocal 0 .............................. <tNamePosH>
+  [205] getlocal 8 .............................. <tNamePosV>
+  [207] getlocal 0 .............................. <tNamePosH>
+  [209] getlocal 8 .............................. <tNamePosV>
+  [211] pusharglist 4 ........................... <tNamePosH, tNamePosV, tNamePosH, tNamePosV>
+  [213] extcall 286 ............................. <rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [216] add ..................................... <tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [217] setlocal 9 .............................. tdestrect = tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)
+  [219] getprop 498 ............................. <pListImg>
+  [222] getlocal 6 .............................. <tNameImage>
+  [224] getlocal 9 .............................. <tdestrect>
+  [226] getlocal 6 .............................. <tNameImage>
+  [228] getobjprop 286 .......................... <tNameImage.rect>
+  [231] pusharglistnoret 4 ...................... <pListImg, tNameImage, tdestrect, tNameImage.rect>
+  [233] objcall 496 ............................. pListImg.copyPixels(tNameImage, tdestrect, tNameImage.rect)
+  [236] pushint8 1
+  [238] getlocal 2
+  [240] add
+  [241] setlocal 2
+  [243] endrepeat [ 47]
+  [245] getparam 1 .............................. <tContentElement>
+  [247] getprop 498 ............................. <pListImg>
+  [250] pusharglistnoret 2 ...................... <tContentElement, pListImg>
+  [252] objcall 261 ............................. tContentElement.feedImage(pListImg)
+  [255] ret
+end
+
+on renderBackgroundImage me
+  [  0] getprop 487 ............................. <pContentList>
+  [  3] pusharglist 1 ........................... <pContentList>
+  [  5] extcall 77 .............................. <ilk(pContentList)>
+  [  7] pushsymb 78 ............................. <#propList>
+  [  9] nteq .................................... <ilk(pContentList) <> #propList>
+  [ 10] jmpifz [ 28] ............................ if ilk(pContentList) <> #propList then
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pushint8 32 ............................. <32>
+  [ 19] pusharglist 3 ........................... <1, 1, 32>
+  [ 21] extcall 495 ............................. <image(1, 1, 32)>
+  [ 24] pusharglistnoret 1 ...................... <image(1, 1, 32)>
+  [ 26] extcall 44 .............................. return image(1, 1, 32)
+  [ 28] getprop 487 ............................. <pContentList>
+  [ 31] getobjprop 100 .......................... <pContentList.count>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <pContentList.count = 0>
+  [ 35] jmpifz [ 53] ............................ if pContentList.count = 0 then
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] pushint8 32 ............................. <32>
+  [ 44] pusharglist 3 ........................... <1, 1, 32>
+  [ 46] extcall 495 ............................. <image(1, 1, 32)>
+  [ 49] pusharglistnoret 1 ...................... <image(1, 1, 32)>
+  [ 51] extcall 44 .............................. return image(1, 1, 32)
+  [ 53] pushcons 7 .............................. <"fr.offline.bg.dark">
+  [ 55] pusharglist 1 ........................... <"fr.offline.bg.dark">
+  [ 57] extcall 67 .............................. <getVariable("fr.offline.bg.dark")>
+  [ 59] pusharglist 1 ........................... <getVariable("fr.offline.bg.dark")>
+  [ 61] extcall 140 ............................. <string(getVariable("fr.offline.bg.dark"))>
+  [ 63] pusharglist 1 ........................... <string(getVariable("fr.offline.bg.dark"))>
+  [ 65] extcall 268 ............................. <rgb(string(getVariable("fr.offline.bg.dark")))>
+  [ 68] setlocal 0 .............................. tDarkBg = rgb(string(getVariable("fr.offline.bg.dark")))
+  [ 70] pushcons 2 .............................. <"fr.offline.item.height">
+  [ 72] pusharglist 1 ........................... <"fr.offline.item.height">
+  [ 74] extcall 67 .............................. <getVariable("fr.offline.item.height")>
+  [ 76] pusharglist 1 ........................... <getVariable("fr.offline.item.height")>
+  [ 78] extcall 116 ............................. <integer(getVariable("fr.offline.item.height"))>
+  [ 80] setprop 524 ............................. pItemHeight = integer(getVariable("fr.offline.item.height"))
+  [ 83] pushcons 3 .............................. <"fr.list.panel.width">
+  [ 85] pusharglist 1 ........................... <"fr.list.panel.width">
+  [ 87] extcall 67 .............................. <getVariable("fr.list.panel.width")>
+  [ 89] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [ 91] extcall 116 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [ 93] setprop 513 ............................. pItemWidth = integer(getVariable("fr.list.panel.width"))
+  [ 96] getprop 513 ............................. <pItemWidth>
+  [ 99] getprop 487 ............................. <pContentList>
+  [102] getobjprop 100 .......................... <pContentList.count>
+  [104] getprop 524 ............................. <pItemHeight>
+  [107] mul ..................................... <pContentList.count * pItemHeight>
+  [108] pushint8 32 ............................. <32>
+  [110] pusharglist 3 ........................... <pItemWidth, pContentList.count * pItemHeight, 32>
+  [112] extcall 495 ............................. <image(pItemWidth, pContentList.count * pItemHeight, 32)>
+  [115] setlocal 1 .............................. tImage = image(pItemWidth, pContentList.count * pItemHeight, 32)
+  [117] pushzero ................................ <0>
+  [118] setlocal 2 .............................. tCurrentPosV = 0
+  [120] pushint8 1 .............................. <1>
+  [122] setlocal 3
+  [124] getlocal 3
+  [126] getprop 487 ............................. <pContentList>
+  [129] getobjprop 100 .......................... <pContentList.count>
+  [131] pushint8 2 .............................. <2>
+  [133] div ..................................... <pContentList.count / 2>
+  [134] pushint8 1 .............................. <1>
+  [136] add ..................................... <(pContentList.count / 2) + 1>
+  [137] lteq
+  [138] jmpifz [182] ............................ repeat with tIndex = 1 to (pContentList.count / 2) + 1
+  [141] getlocal 1 .............................. <tImage>
+  [143] pushzero ................................ <0>
+  [144] getlocal 2 .............................. <tCurrentPosV>
+  [146] getprop 513 ............................. <pItemWidth>
+  [149] getlocal 2 .............................. <tCurrentPosV>
+  [151] getprop 524 ............................. <pItemHeight>
+  [154] add ..................................... <tCurrentPosV + pItemHeight>
+  [155] getlocal 0 .............................. <tDarkBg>
+  [157] pusharglistnoret 6 ...................... <tImage, 0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, tDarkBg>
+  [159] objcall 530 ............................. tImage.fill(0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, tDarkBg)
+  [162] getlocal 2 .............................. <tCurrentPosV>
+  [164] getprop 524 ............................. <pItemHeight>
+  [167] pushint8 2 .............................. <2>
+  [169] mul ..................................... <pItemHeight * 2>
+  [170] add ..................................... <tCurrentPosV + (pItemHeight * 2)>
+  [171] setlocal 2 .............................. tCurrentPosV = tCurrentPosV + (pItemHeight * 2)
+  [173] pushint8 1
+  [175] getlocal 3
+  [177] add
+  [178] setlocal 3
+  [180] endrepeat [124]
+  [182] getlocal 1 .............................. <tImage>
+  [184] pusharglistnoret 1 ...................... <tImage>
+  [186] extcall 44 .............................. return tImage
+  [188] ret
+end
+
+on relayEvent me, tEvent, tLocX, tLocY
+  [  0] getparam 3 .............................. <tLocY>
+  [  2] getparam 0 .............................. <me>
+  [  4] getobjprop 524 .......................... <me.pItemHeight>
+  [  7] div ..................................... <tLocY / me.pItemHeight>
+  [  8] pushint8 1 .............................. <1>
+  [ 10] add ..................................... <(tLocY / me.pItemHeight) + 1>
+  [ 11] setlocal 0 .............................. tListIndex = (tLocY / me.pItemHeight) + 1
+  [ 13] pusharglist 0 ........................... <[:]>
+  [ 15] pushproplist ............................ <[:]>
+  [ 16] setlocal 1 .............................. tEventResult = [:]
+  [ 18] getlocal 1 .............................. <tEventResult>
+  [ 20] pushsymb 337 ............................ <#Event>
+  [ 23] getparam 1 .............................. <tEvent>
+  [ 25] pusharglistnoret 3 ...................... <tEventResult, #Event, tEvent>
+  [ 27] objcall 40 .............................. tEventResult[#Event] = tEvent
+  [ 29] getlocal 0 .............................. <tListIndex>
+  [ 31] getparam 0 .............................. <me>
+  [ 33] pushsymb 487 ............................ <#pContentList>
+  [ 36] pusharglist 2 ........................... <me, #pContentList>
+  [ 38] objcall 100 ............................. <me.pContentList.count>
+  [ 40] gt ...................................... <tListIndex > me.pContentList.count>
+  [ 41] jmpifz [ 52] ............................ if tListIndex > me.pContentList.count then / else
+  [ 44] pusharglistnoret 0 ...................... <>
+  [ 46] extcall 486 ............................. nothing()
+  [ 49] jmp [155]
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pushsymb 487 ............................ <#pContentList>
+  [ 57] getlocal 0 .............................. <tListIndex>
+  [ 59] pusharglist 3 ........................... <me, #pContentList, tListIndex>
+  [ 61] objcall 371 ............................. <me.pContentList[tListIndex]>
+  [ 64] setlocal 2 .............................. tFriend = me.pContentList[tListIndex]
+  [ 66] getlocal 1 .............................. <tEventResult>
+  [ 68] pushsymb 335 ............................ <#friend>
+  [ 71] getlocal 2 .............................. <tFriend>
+  [ 73] pusharglistnoret 3 ...................... <tEventResult, #friend, tFriend>
+  [ 75] objcall 40 .............................. tEventResult[#friend] = tFriend
+  [ 77] getlocal 1 .............................. <tEventResult>
+  [ 79] pushsymb 336 ............................ <#element>
+  [ 82] pushsymb 243 ............................ <#name>
+  [ 84] pusharglistnoret 3 ...................... <tEventResult, #element, #name>
+  [ 86] objcall 40 .............................. tEventResult[#element] = #name
+  [ 88] getlocal 1 .............................. <tEventResult>
+  [ 90] pushsymb 342 ............................ <#item_y>
+  [ 93] getlocal 0 .............................. <tListIndex>
+  [ 95] pushint8 1 .............................. <1>
+  [ 97] sub ..................................... <tListIndex - 1>
+  [ 98] getparam 0 .............................. <me>
+  [100] getobjprop 524 .......................... <me.pItemHeight>
+  [103] mul ..................................... <(tListIndex - 1) * me.pItemHeight>
+  [104] pusharglistnoret 3 ...................... <tEventResult, #item_y, (tListIndex - 1) * me.pItemHeight>
+  [106] objcall 40 .............................. tEventResult[#item_y] = (tListIndex - 1) * me.pItemHeight
+  [108] getlocal 1 .............................. <tEventResult>
+  [110] pushsymb 561 ............................ <#item_height>
+  [113] getparam 0 .............................. <me>
+  [115] getobjprop 524 .......................... <me.pItemHeight>
+  [118] pusharglistnoret 3 ...................... <tEventResult, #item_height, me.pItemHeight>
+  [120] objcall 40 .............................. tEventResult[#item_height] = me.pItemHeight
+  [122] getparam 1 .............................. <tEvent>
+  [124] pushsymb 211 ............................ <#mouseUp>
+  [126] eq ...................................... <tEvent = #mouseUp>
+  [127] jmpifz [145] ............................ if tEvent = #mouseUp then
+  [130] getparam 0 .............................. <me>
+  [132] getlocal 2 .............................. <tFriend>
+  [134] pushsymb 243 ............................ <#name>
+  [136] pusharglist 2 ........................... <tFriend, #name>
+  [138] objcall 80 .............................. <tFriend[#name]>
+  [140] pusharglistnoret 2 ...................... <me, tFriend[#name]>
+  [142] objcall 520 ............................. me.userSelectionEvent(tFriend[#name])
+  [145] getlocal 1 .............................. <tEventResult>
+  [147] pushsymb 167 ............................ <#update>
+  [149] pushint8 1 .............................. <1>
+  [151] pusharglistnoret 3 ...................... <tEventResult, #update, 1>
+  [153] objcall 40 .............................. tEventResult[#update] = 1
+  [155] getlocal 1 .............................. <tEventResult>
+  [157] pusharglistnoret 1 ...................... <tEventResult>
+  [159] extcall 44 .............................. return tEventResult
+  [161] ret
+end

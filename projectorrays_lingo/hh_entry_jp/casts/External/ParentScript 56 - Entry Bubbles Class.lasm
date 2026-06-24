@@ -1,0 +1,204 @@
+property pLastUpdate, pBubblesImg, pCanvMember, pMaskMember
+
+on construct me
+  [  0] pushint16 132 ........................... <132>
+  [  3] pushint16 336 ........................... <336>
+  [  6] pushint8 32 ............................. <32>
+  [  8] pusharglist 3 ........................... <132, 336, 32>
+  [ 10] extcall 205 ............................. <image(132, 336, 32)>
+  [ 12] setprop 264 ............................. pBubblesImg = image(132, 336, 32)
+  [ 15] pushcons 0 .............................. <"hoteltubemask">
+  [ 17] pusharglist 1 ........................... <"hoteltubemask">
+  [ 19] extcall 133 ............................. <getmemnum("hoteltubemask")>
+  [ 21] pusharglist 1 ........................... <getmemnum("hoteltubemask")>
+  [ 23] extcall 61 .............................. <member(getmemnum("hoteltubemask"))>
+  [ 25] setprop 265 ............................. pMaskMember = member(getmemnum("hoteltubemask"))
+  [ 28] pushcons 1 .............................. <"bubbles_canvas">
+  [ 30] pusharglist 1 ........................... <"bubbles_canvas">
+  [ 32] extcall 133 ............................. <getmemnum("bubbles_canvas")>
+  [ 34] pusharglist 1 ........................... <getmemnum("bubbles_canvas")>
+  [ 36] extcall 61 .............................. <member(getmemnum("bubbles_canvas"))>
+  [ 38] setprop 266 ............................. pCanvMember = member(getmemnum("bubbles_canvas"))
+  [ 41] getprop 266 ............................. <pCanvMember>
+  [ 44] pushint16 132 ........................... <132>
+  [ 47] pushint16 328 ........................... <328>
+  [ 50] pushint8 32 ............................. <32>
+  [ 52] pusharglist 3 ........................... <132, 328, 32>
+  [ 54] extcall 205 ............................. <image(132, 328, 32)>
+  [ 56] setobjprop 205 .......................... pCanvMember.image = image(132, 328, 32)
+  [ 58] pushint8 1 .............................. <1>
+  [ 60] setlocal 0
+  [ 62] getlocal 0
+  [ 64] pushint16 150 ........................... <150>
+  [ 67] lteq
+  [ 68] jmpifz [156] ............................ repeat with i = 1 to 150
+  [ 71] pushcons 2 .............................. <"bubble">
+  [ 73] pushint8 3 .............................. <3>
+  [ 75] pusharglist 1 ........................... <3>
+  [ 77] extcall 184 ............................. <random(3)>
+  [ 79] joinstr ................................. <"bubble" & random(3)>
+  [ 80] pusharglist 1 ........................... <"bubble" & random(3)>
+  [ 82] extcall 61 .............................. <member("bubble" & random(3))>
+  [ 84] getobjprop 205 .......................... <member("bubble" & random(3)).image>
+  [ 86] setlocal 1 .............................. tBubble = member("bubble" & random(3)).image
+  [ 88] pushint16 132 ........................... <132>
+  [ 91] pusharglist 1 ........................... <132>
+  [ 93] extcall 184 ............................. <random(132)>
+  [ 95] setlocal 2 .............................. tLocH = random(132)
+  [ 97] pushint16 336 ........................... <336>
+  [100] pusharglist 1 ........................... <336>
+  [102] extcall 184 ............................. <random(336)>
+  [104] setlocal 3 .............................. tLocV = random(336)
+  [106] getlocal 1 .............................. <tBubble>
+  [108] getobjprop 210 .......................... <tBubble.rect>
+  [110] getlocal 2 .............................. <tLocH>
+  [112] getlocal 3 .............................. <tLocV>
+  [114] getlocal 2 .............................. <tLocH>
+  [116] getlocal 3 .............................. <tLocV>
+  [118] pusharglist 4 ........................... <tLocH, tLocV, tLocH, tLocV>
+  [120] extcall 210 ............................. <rect(tLocH, tLocV, tLocH, tLocV)>
+  [122] add ..................................... <tBubble.rect + rect(tLocH, tLocV, tLocH, tLocV)>
+  [123] setlocal 4 .............................. tDrawLoc = tBubble.rect + rect(tLocH, tLocV, tLocH, tLocV)
+  [125] getprop 264 ............................. <pBubblesImg>
+  [128] getlocal 1 .............................. <tBubble>
+  [130] getlocal 4 .............................. <tDrawLoc>
+  [132] getlocal 1 .............................. <tBubble>
+  [134] getobjprop 210 .......................... <tBubble.rect>
+  [136] pushsymb 194 ............................ <#ink>
+  [138] pushint8 36 ............................. <36>
+  [140] pusharglist 2 ........................... <[#ink: 36]>
+  [142] pushproplist ............................ <[#ink: 36]>
+  [143] pusharglistnoret 5 ...................... <pBubblesImg, tBubble, tDrawLoc, tBubble.rect, [#ink: 36]>
+  [145] objcall 213 ............................. pBubblesImg.copyPixels(tBubble, tDrawLoc, tBubble.rect, [#ink: 36])
+  [147] pushint8 1
+  [149] getlocal 0
+  [151] add
+  [152] setlocal 0
+  [154] endrepeat [ 62]
+  [156] getparam 0 .............................. <me>
+  [158] pusharglistnoret 1 ...................... <me>
+  [160] objcall 255 ............................. me.updateMember()
+  [162] getmovieprop 62 ......................... <the milliSeconds>
+  [164] setprop 209 ............................. pLastUpdate = the milliSeconds
+  [166] pushint8 1 .............................. <1>
+  [168] pusharglistnoret 1 ...................... <1>
+  [170] extcall 26 .............................. return 1
+  [172] ret
+end
+
+on define me
+  [  0] ret
+end
+
+on update me
+  [  0] getmovieprop 62 ......................... <the milliSeconds>
+  [  2] getprop 209 ............................. <pLastUpdate>
+  [  4] sub ..................................... <the milliSeconds - pLastUpdate>
+  [  5] pushint8 66 ............................. <66>
+  [  7] gt ...................................... <(the milliSeconds - pLastUpdate) > 66>
+  [  8] jmpifz [186] ............................ if (the milliSeconds - pLastUpdate) > 66 then
+  [ 11] pushint8 4 .............................. <4>
+  [ 13] pusharglist 1 ........................... <4>
+  [ 15] extcall 184 ............................. <random(4)>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] gt ...................................... <random(4) > 1>
+  [ 20] jmpifz [105] ............................ if random(4) > 1 then
+  [ 23] pushcons 2 .............................. <"bubble">
+  [ 25] pushint8 3 .............................. <3>
+  [ 27] pusharglist 1 ........................... <3>
+  [ 29] extcall 184 ............................. <random(3)>
+  [ 31] joinstr ................................. <"bubble" & random(3)>
+  [ 32] pusharglist 1 ........................... <"bubble" & random(3)>
+  [ 34] extcall 61 .............................. <member("bubble" & random(3))>
+  [ 36] getobjprop 205 .......................... <member("bubble" & random(3)).image>
+  [ 38] setlocal 0 .............................. tBubble = member("bubble" & random(3)).image
+  [ 40] pushint16 132 ........................... <132>
+  [ 43] pusharglist 1 ........................... <132>
+  [ 45] extcall 184 ............................. <random(132)>
+  [ 47] setlocal 1 .............................. tLocH = random(132)
+  [ 49] getlocal 0 .............................. <tBubble>
+  [ 51] getobjprop 210 .......................... <tBubble.rect>
+  [ 53] getlocal 1 .............................. <tLocH>
+  [ 55] pushint16 330 ........................... <330>
+  [ 58] getlocal 1 .............................. <tLocH>
+  [ 60] pushint16 330 ........................... <330>
+  [ 63] pusharglist 4 ........................... <tLocH, 330, tLocH, 330>
+  [ 65] extcall 210 ............................. <rect(tLocH, 330, tLocH, 330)>
+  [ 67] add ..................................... <tBubble.rect + rect(tLocH, 330, tLocH, 330)>
+  [ 68] setlocal 2 .............................. tDrawLoc = tBubble.rect + rect(tLocH, 330, tLocH, 330)
+  [ 70] getprop 264 ............................. <pBubblesImg>
+  [ 73] getlocal 0 .............................. <tBubble>
+  [ 75] getlocal 2 .............................. <tDrawLoc>
+  [ 77] getlocal 0 .............................. <tBubble>
+  [ 79] getobjprop 210 .......................... <tBubble.rect>
+  [ 81] pushsymb 194 ............................ <#ink>
+  [ 83] pushint8 36 ............................. <36>
+  [ 85] pushsymb 262 ............................ <#blendLevel>
+  [ 88] pushint8 2 .............................. <2>
+  [ 90] pusharglist 1 ........................... <2>
+  [ 92] extcall 184 ............................. <random(2)>
+  [ 94] pushint16 128 ........................... <128>
+  [ 97] mul ..................................... <random(2) * 128>
+  [ 98] pusharglist 4 ........................... <[#ink: 36, #blendLevel: random(2) * 128]>
+  [100] pushproplist ............................ <[#ink: 36, #blendLevel: random(2) * 128]>
+  [101] pusharglistnoret 5 ...................... <pBubblesImg, tBubble, tDrawLoc, tBubble.rect, [#ink: 36, #blendLevel: random(2) * 128]>
+  [103] objcall 213 ............................. pBubblesImg.copyPixels(tBubble, tDrawLoc, tBubble.rect, [#ink: 36, #blendLevel: random(2) * 128])
+  [105] getprop 264 ............................. <pBubblesImg>
+  [108] getprop 264 ............................. <pBubblesImg>
+  [111] pushzero ................................ <0>
+  [112] pushzero ................................ <0>
+  [113] pushint16 132 ........................... <132>
+  [116] pushint16 334 ........................... <334>
+  [119] pusharglist 4 ........................... <0, 0, 132, 334>
+  [121] extcall 210 ............................. <rect(0, 0, 132, 334)>
+  [123] pushzero ................................ <0>
+  [124] pushint8 2 .............................. <2>
+  [126] pushint16 132 ........................... <132>
+  [129] pushint16 336 ........................... <336>
+  [132] pusharglist 4 ........................... <0, 2, 132, 336>
+  [134] extcall 210 ............................. <rect(0, 2, 132, 336)>
+  [136] pushsymb 194 ............................ <#ink>
+  [138] pushzero ................................ <0>
+  [139] pusharglist 2 ........................... <[#ink: 0]>
+  [141] pushproplist ............................ <[#ink: 0]>
+  [142] pusharglistnoret 5 ...................... <pBubblesImg, pBubblesImg, rect(0, 0, 132, 334), rect(0, 2, 132, 336), [#ink: 0]>
+  [144] objcall 213 ............................. pBubblesImg.copyPixels(pBubblesImg, rect(0, 0, 132, 334), rect(0, 2, 132, 336), [#ink: 0])
+  [146] getprop 264 ............................. <pBubblesImg>
+  [149] pushzero ................................ <0>
+  [150] pushint16 334 ........................... <334>
+  [153] pushint16 132 ........................... <132>
+  [156] pushint16 336 ........................... <336>
+  [159] pushint16 255 ........................... <255>
+  [162] pushint16 255 ........................... <255>
+  [165] pushint16 255 ........................... <255>
+  [168] pusharglist 3 ........................... <255, 255, 255>
+  [170] extcall 211 ............................. <rgb(255, 255, 255)>
+  [172] pusharglistnoret 6 ...................... <pBubblesImg, 0, 334, 132, 336, rgb(255, 255, 255)>
+  [174] objcall 212 ............................. pBubblesImg.fill(0, 334, 132, 336, rgb(255, 255, 255))
+  [176] getparam 0 .............................. <me>
+  [178] pusharglistnoret 1 ...................... <me>
+  [180] objcall 255 ............................. me.updateMember()
+  [182] getmovieprop 62 ......................... <the milliSeconds>
+  [184] setprop 209 ............................. pLastUpdate = the milliSeconds
+  [186] ret
+end
+
+on updateMember me
+  [  0] getprop 266 ............................. <pCanvMember>
+  [  3] getchainedprop 205 ...................... <pCanvMember.image>
+  [  5] getprop 264 ............................. <pBubblesImg>
+  [  8] getprop 264 ............................. <pBubblesImg>
+  [ 11] getobjprop 210 .......................... <pBubblesImg.rect>
+  [ 13] getprop 264 ............................. <pBubblesImg>
+  [ 16] getobjprop 210 .......................... <pBubblesImg.rect>
+  [ 18] pushsymb 194 ............................ <#ink>
+  [ 20] pushzero ................................ <0>
+  [ 21] pushsymb 263 ............................ <#maskImage>
+  [ 24] getprop 265 ............................. <pMaskMember>
+  [ 27] getobjprop 205 .......................... <pMaskMember.image>
+  [ 29] pusharglist 4 ........................... <[#ink: 0, #maskImage: pMaskMember.image]>
+  [ 31] pushproplist ............................ <[#ink: 0, #maskImage: pMaskMember.image]>
+  [ 32] pusharglistnoret 5 ...................... <pCanvMember.image, pBubblesImg, pBubblesImg.rect, pBubblesImg.rect, [#ink: 0, #maskImage: pMaskMember.image]>
+  [ 34] objcall 213 ............................. pCanvMember.image.copyPixels(pBubblesImg, pBubblesImg.rect, pBubblesImg.rect, [#ink: 0, #maskImage: pMaskMember.image])
+  [ 36] ret
+end

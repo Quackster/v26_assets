@@ -1,0 +1,754 @@
+property pBubbles, pInvitationWindowID, pInvitationStatusWindowID, pInvitationStatusTimeoutID, pSearchAnimFrame
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 132 ............................. pBubbles = [:]
+  [  5] pushzero ................................ <0>
+  [  6] setlocal 0 .............................. pUpdateOwnUserHelp = 0
+  [  8] pushsymb 577 ............................ <#NUH_invite_window_ID>
+  [ 11] setprop 576 ............................. pInvitationWindowID = #NUH_invite_window_ID
+  [ 14] pushsymb 579 ............................ <#NUH_invite_status_window_ID>
+  [ 17] setprop 578 ............................. pInvitationStatusWindowID = #NUH_invite_status_window_ID
+  [ 20] pushsymb 581 ............................ <#NUH_invite_status_timeout_ID>
+  [ 23] setprop 580 ............................. pInvitationStatusTimeoutID = #NUH_invite_status_timeout_ID
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] setprop 582 ............................. pSearchAnimFrame = 1
+  [ 31] pushsymb 583 ............................ <#gamesystem_constructed>
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pusharglist 1 ........................... <me>
+  [ 38] objcall 31 .............................. <me.getID()>
+  [ 40] pushsymb 572 ............................ <#hideInvitationStatusWindow>
+  [ 43] pusharglistnoret 3 ...................... <#gamesystem_constructed, me.getID(), #hideInvitationStatusWindow>
+  [ 45] extcall 29 .............................. registerMessage(#gamesystem_constructed, me.getID(), #hideInvitationStatusWindow)
+  [ 47] pushint8 1 .............................. <1>
+  [ 49] pusharglistnoret 1 ...................... <1>
+  [ 51] extcall 37 .............................. return 1
+  [ 53] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 74 .............................. me.removeAll()
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglistnoret 1 ...................... <me>
+  [ 10] objcall 572 ............................. me.hideInvitationStatusWindow()
+  [ 13] pushsymb 583 ............................ <#gamesystem_constructed>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 31 .............................. <me.getID()>
+  [ 22] pusharglistnoret 2 ...................... <#gamesystem_constructed, me.getID()>
+  [ 24] extcall 39 .............................. unregisterMessage(#gamesystem_constructed, me.getID())
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglistnoret 1 ...................... <1>
+  [ 30] extcall 37 .............................. return 1
+  [ 32] ret
+end
+
+on removeAll me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 132 ............................. <pBubbles>
+  [  8] getobjprop 60 ........................... <pBubbles.count>
+  [ 10] lteq
+  [ 11] jmpifz [ 39] ............................ repeat with tItemNo = 1 to pBubbles.count
+  [ 14] getprop 132 ............................. <pBubbles>
+  [ 16] getlocal 0 .............................. <tItemNo>
+  [ 18] pusharglist 2 ........................... <pBubbles, tItemNo>
+  [ 20] objcall 61 .............................. <pBubbles[tItemNo]>
+  [ 22] setlocal 1 .............................. tBubble = pBubbles[tItemNo]
+  [ 24] getlocal 1 .............................. <tBubble>
+  [ 26] pusharglistnoret 1 ...................... <tBubble>
+  [ 28] objcall 1 ............................... tBubble.deconstruct()
+  [ 30] pushint8 1
+  [ 32] getlocal 0
+  [ 34] add
+  [ 35] setlocal 0
+  [ 37] endrepeat [  4]
+  [ 39] pusharglist 0 ........................... <[:]>
+  [ 41] pushproplist ............................ <[:]>
+  [ 42] setprop 132 ............................. pBubbles = [:]
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglistnoret 1 ...................... <me>
+  [ 48] objcall 571 ............................. me.hideInvitationWindow()
+  [ 51] ret
+end
+
+on showOwnUserHelp me
+  [  0] pushcons 0 .............................. <"room">
+  [  2] pusharglist 1 ........................... <"room">
+  [  4] extcall 86 .............................. <getThread("room")>
+  [  6] pusharglist 1 ........................... <getThread("room")>
+  [  8] objcall 87 .............................. <getThread("room").getComponent()>
+  [ 10] setlocal 0 .............................. tRoomComponent = getThread("room").getComponent()
+  [ 12] getlocal 0 .............................. <tRoomComponent>
+  [ 14] pushsymb 93 ............................. <#session>
+  [ 16] pusharglist 1 ........................... <#session>
+  [ 18] extcall 92 .............................. <getObject(#session)>
+  [ 20] pushcons 1 .............................. <"user_name">
+  [ 22] pusharglist 2 ........................... <getObject(#session), "user_name">
+  [ 24] objcall 95 .............................. <getObject(#session).GET("user_name")>
+  [ 26] pusharglist 2 ........................... <tRoomComponent, getObject(#session).GET("user_name")>
+  [ 28] objcall 564 ............................. <tRoomComponent.getUsersRoomId(getObject(#session).GET("user_name"))>
+  [ 31] setlocal 1 .............................. tOwnRoomId = tRoomComponent.getUsersRoomId(getObject(#session).GET("user_name"))
+  [ 33] getlocal 0 .............................. <tRoomComponent>
+  [ 35] getlocal 1 .............................. <tOwnRoomId>
+  [ 37] pusharglist 2 ........................... <tRoomComponent, tOwnRoomId>
+  [ 39] objcall 565 ............................. <tRoomComponent.getUserObject(tOwnRoomId)>
+  [ 42] setlocal 2 .............................. tHumanObj = tRoomComponent.getUserObject(tOwnRoomId)
+  [ 44] getlocal 2 .............................. <tHumanObj>
+  [ 46] pushzero ................................ <0>
+  [ 47] eq ...................................... <tHumanObj = 0>
+  [ 48] jmpifz [ 56] ............................ if tHumanObj = 0 then
+  [ 51] pushzero ................................ <0>
+  [ 52] pusharglistnoret 1 ...................... <0>
+  [ 54] extcall 37 .............................. return 0
+  [ 56] pushcons 0 .............................. <"room">
+  [ 58] pusharglist 1 ........................... <"room">
+  [ 60] extcall 86 .............................. <getThread("room")>
+  [ 62] pusharglist 1 ........................... <getThread("room")>
+  [ 64] objcall 87 .............................. <getThread("room").getComponent()>
+  [ 66] setlocal 0 .............................. tRoomComponent = getThread("room").getComponent()
+  [ 68] getlocal 0 .............................. <tRoomComponent>
+  [ 70] pushzero ................................ <0>
+  [ 71] eq ...................................... <tRoomComponent = 0>
+  [ 72] jmpifz [ 80] ............................ if tRoomComponent = 0 then
+  [ 75] pushzero ................................ <0>
+  [ 76] pusharglistnoret 1 ...................... <0>
+  [ 78] extcall 37 .............................. return 0
+  [ 80] pushsymb 585 ............................ <#random>
+  [ 83] pushcons 2 .............................. <"update.bubble.class">
+  [ 85] pusharglist 1 ........................... <"update.bubble.class">
+  [ 87] extcall 44 .............................. <getVariableValue("update.bubble.class")>
+  [ 89] pusharglist 2 ........................... <#random, getVariableValue("update.bubble.class")>
+  [ 91] extcall 129 ............................. <createObject(#random, getVariableValue("update.bubble.class"))>
+  [ 93] setlocal 3 .............................. tBubble = createObject(#random, getVariableValue("update.bubble.class"))
+  [ 95] getlocal 3 .............................. <tBubble>
+  [ 97] pushzero ................................ <0>
+  [ 98] eq ...................................... <tBubble = 0>
+  [ 99] jmpifz [107] ............................ if tBubble = 0 then
+  [102] pushzero ................................ <0>
+  [103] pusharglistnoret 1 ...................... <0>
+  [105] extcall 37 .............................. return 0
+  [107] pushcons 3 .............................. <"own_user">
+  [109] setlocal 4 .............................. tHelpId = "own_user"
+  [111] pushint8 7 .............................. <7>
+  [113] setlocal 5 .............................. tPointer = 7
+  [115] pushcons 4 .............................. <"NUH_">
+  [117] getlocal 4 .............................. <tHelpId>
+  [119] joinstr ................................. <"NUH_" & tHelpId>
+  [120] pusharglist 1 ........................... <"NUH_" & tHelpId>
+  [122] extcall 279 ............................. <getText("NUH_" & tHelpId)>
+  [125] setlocal 6 .............................. tText = getText("NUH_" & tHelpId)
+  [127] getlocal 3 .............................. <tBubble>
+  [129] pushsymb 550 ............................ <#bubbleId>
+  [132] getlocal 4 .............................. <tHelpId>
+  [134] pusharglistnoret 3 ...................... <tBubble, #bubbleId, tHelpId>
+  [136] objcall 142 ............................. tBubble.setProperty(#bubbleId, tHelpId)
+  [138] getlocal 3 .............................. <tBubble>
+  [140] getlocal 6 .............................. <tText>
+  [142] pusharglistnoret 2 ...................... <tBubble, tText>
+  [144] objcall 397 ............................. tBubble.setText(tText)
+  [147] getlocal 3 .............................. <tBubble>
+  [149] getlocal 5 .............................. <tPointer>
+  [151] pusharglistnoret 2 ...................... <tBubble, tPointer>
+  [153] objcall 545 ............................. tBubble.selectPointerAndPosition(tPointer)
+  [156] getlocal 3 .............................. <tBubble>
+  [158] pusharglistnoret 1 ...................... <tBubble>
+  [160] objcall 119 ............................. tBubble.show()
+  [162] getprop 132 ............................. <pBubbles>
+  [164] getlocal 4 .............................. <tHelpId>
+  [166] pusharglist 2 ........................... <pBubbles, tHelpId>
+  [168] objcall 47 .............................. <pBubbles.getaProp(tHelpId)>
+  [170] pusharglist 1 ........................... <pBubbles.getaProp(tHelpId)>
+  [172] extcall 553 ............................. <objectp(pBubbles.getaProp(tHelpId))>
+  [175] jmpifz [194] ............................ if objectp(pBubbles.getaProp(tHelpId)) then
+  [178] getprop 132 ............................. <pBubbles>
+  [180] getlocal 4 .............................. <tHelpId>
+  [182] pusharglist 2 ........................... <pBubbles, tHelpId>
+  [184] objcall 61 .............................. <pBubbles[tHelpId]>
+  [186] setlocal 7 .............................. tPreviousBubble = pBubbles[tHelpId]
+  [188] getlocal 7 .............................. <tPreviousBubble>
+  [190] pusharglistnoret 1 ...................... <tPreviousBubble>
+  [192] objcall 1 ............................... tPreviousBubble.deconstruct()
+  [194] getprop 132 ............................. <pBubbles>
+  [196] getlocal 4 .............................. <tHelpId>
+  [198] getlocal 3 .............................. <tBubble>
+  [200] pusharglistnoret 3 ...................... <pBubbles, tHelpId, tBubble>
+  [202] objcall 54 .............................. pBubbles[tHelpId] = tBubble
+  [204] ret
+end
+
+on showGenericHelp me, tHelpId, tTargetLoc, tPointerIndex
+  [  0] pushsymb 588 ............................ <#room>
+  [  3] pusharglist 1 ........................... <#room>
+  [  5] extcall 86 .............................. <getThread(#room)>
+  [  7] pusharglist 1 ........................... <getThread(#room)>
+  [  9] objcall 87 .............................. <getThread(#room).getComponent()>
+  [ 11] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 13] objcall 589 ............................. <getThread(#room).getComponent().getRoomID()>
+  [ 16] setlocal 0 .............................. tRoomID = getThread(#room).getComponent().getRoomID()
+  [ 18] getlocal 0 .............................. <tRoomID>
+  [ 20] pushcons 5 .............................. <EMPTY>
+  [ 22] eq ...................................... <tRoomID = EMPTY>
+  [ 23] getlocal 0 .............................. <tRoomID>
+  [ 25] pushsymb 590 ............................ <#game>
+  [ 28] eq ...................................... <tRoomID = #game>
+  [ 29] or ...................................... <(tRoomID = EMPTY) or (tRoomID = #game)>
+  [ 30] getlocal 0 .............................. <tRoomID>
+  [ 32] pushcons 6 .............................. <"game">
+  [ 34] eq ...................................... <tRoomID = "game">
+  [ 35] or ...................................... <(tRoomID = EMPTY) or (tRoomID = #game) or (tRoomID = "game")>
+  [ 36] jmpifz [ 44] ............................ if (tRoomID = EMPTY) or (tRoomID = #game) or (tRoomID = "game") then
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 1 ...................... <0>
+  [ 42] extcall 37 .............................. return 0
+  [ 44] pushzero ................................ <0>
+  [ 45] setlocal 1 .............................. tLocX = 0
+  [ 47] pushzero ................................ <0>
+  [ 48] setlocal 2 .............................. tLocY = 0
+  [ 50] pushcons 5 .............................. <EMPTY>
+  [ 52] setlocal 3 .............................. tText = EMPTY
+  [ 54] getmovieprop 591 ........................ <the itemDelimiter>
+  [ 57] setlocal 4 .............................. tDelim = the itemDelimiter
+  [ 59] pushcons 7 .............................. <",">
+  [ 61] setmovieprop 591 ........................ the itemDelimiter = ","
+  [ 64] getparam 2 .............................. <tTargetLoc>
+  [ 66] pusharglist 1 ........................... <tTargetLoc>
+  [ 68] extcall 70 .............................. <voidp(tTargetLoc)>
+  [ 70] getparam 2 .............................. <tTargetLoc>
+  [ 72] pusharglist 1 ........................... <tTargetLoc>
+  [ 74] extcall 302 ............................. <listp(tTargetLoc)>
+  [ 77] not ..................................... <not listp(tTargetLoc)>
+  [ 78] or ...................................... <voidp(tTargetLoc) or not listp(tTargetLoc)>
+  [ 79] jmpifz [131] ............................ if voidp(tTargetLoc) or not listp(tTargetLoc) then / else
+  [ 82] pushcons 8 .............................. <"NUH.">
+  [ 84] getparam 1 .............................. <tHelpId>
+  [ 86] joinstr ................................. <"NUH." & tHelpId>
+  [ 87] pushcons 9 .............................. <".bubble.loc">
+  [ 89] joinstr ................................. <"NUH." & tHelpId & ".bubble.loc">
+  [ 90] pusharglist 1 ........................... <"NUH." & tHelpId & ".bubble.loc">
+  [ 92] extcall 78 .............................. <getVariable("NUH." & tHelpId & ".bubble.loc")>
+  [ 94] pushsymb 592 ............................ <#item>
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] pusharglist 3 ........................... <getVariable("NUH." & tHelpId & ".bubble.loc"), #item, 1>
+  [101] objcall 253 ............................. <getVariable("NUH." & tHelpId & ".bubble.loc").item[1]>
+  [103] setlocal 1 .............................. tLocX = getVariable("NUH." & tHelpId & ".bubble.loc").item[1]
+  [105] pushcons 8 .............................. <"NUH.">
+  [107] getparam 1 .............................. <tHelpId>
+  [109] joinstr ................................. <"NUH." & tHelpId>
+  [110] pushcons 9 .............................. <".bubble.loc">
+  [112] joinstr ................................. <"NUH." & tHelpId & ".bubble.loc">
+  [113] pusharglist 1 ........................... <"NUH." & tHelpId & ".bubble.loc">
+  [115] extcall 78 .............................. <getVariable("NUH." & tHelpId & ".bubble.loc")>
+  [117] pushsymb 592 ............................ <#item>
+  [120] pushint8 2 .............................. <2>
+  [122] pusharglist 3 ........................... <getVariable("NUH." & tHelpId & ".bubble.loc"), #item, 2>
+  [124] objcall 253 ............................. <getVariable("NUH." & tHelpId & ".bubble.loc").item[2]>
+  [126] setlocal 2 .............................. tLocY = getVariable("NUH." & tHelpId & ".bubble.loc").item[2]
+  [128] jmp [151]
+  [131] getparam 2 .............................. <tTargetLoc>
+  [133] pushint8 1 .............................. <1>
+  [135] pusharglist 2 ........................... <tTargetLoc, 1>
+  [137] objcall 61 .............................. <tTargetLoc[1]>
+  [139] setlocal 1 .............................. tLocX = tTargetLoc[1]
+  [141] getparam 2 .............................. <tTargetLoc>
+  [143] pushint8 2 .............................. <2>
+  [145] pusharglist 2 ........................... <tTargetLoc, 2>
+  [147] objcall 61 .............................. <tTargetLoc[2]>
+  [149] setlocal 2 .............................. tLocY = tTargetLoc[2]
+  [151] getlocal 4 .............................. <tDelim>
+  [153] setmovieprop 591 ........................ the itemDelimiter = tDelim
+  [156] getparam 3 .............................. <tPointerIndex>
+  [158] pusharglist 1 ........................... <tPointerIndex>
+  [160] extcall 70 .............................. <voidp(tPointerIndex)>
+  [162] jmpifz [182] ............................ if voidp(tPointerIndex) then / else
+  [165] pushcons 8 .............................. <"NUH.">
+  [167] getparam 1 .............................. <tHelpId>
+  [169] joinstr ................................. <"NUH." & tHelpId>
+  [170] pushcons 10 ............................. <".pointer">
+  [172] joinstr ................................. <"NUH." & tHelpId & ".pointer">
+  [173] pusharglist 1 ........................... <"NUH." & tHelpId & ".pointer">
+  [175] extcall 78 .............................. <getVariable("NUH." & tHelpId & ".pointer")>
+  [177] setlocal 5 .............................. tPointer = getVariable("NUH." & tHelpId & ".pointer")
+  [179] jmp [186]
+  [182] getparam 3 .............................. <tPointerIndex>
+  [184] setlocal 5 .............................. tPointer = tPointerIndex
+  [186] pushcons 4 .............................. <"NUH_">
+  [188] getparam 1 .............................. <tHelpId>
+  [190] joinstr ................................. <"NUH_" & tHelpId>
+  [191] pusharglist 1 ........................... <"NUH_" & tHelpId>
+  [193] extcall 279 ............................. <getText("NUH_" & tHelpId)>
+  [196] setlocal 3 .............................. tText = getText("NUH_" & tHelpId)
+  [198] pushsymb 585 ............................ <#random>
+  [201] pushcons 11 ............................. <"static.bubble.class">
+  [203] pusharglist 1 ........................... <"static.bubble.class">
+  [205] extcall 44 .............................. <getVariableValue("static.bubble.class")>
+  [207] pusharglist 2 ........................... <#random, getVariableValue("static.bubble.class")>
+  [209] extcall 129 ............................. <createObject(#random, getVariableValue("static.bubble.class"))>
+  [211] setlocal 6 .............................. tBubble = createObject(#random, getVariableValue("static.bubble.class"))
+  [213] getlocal 6 .............................. <tBubble>
+  [215] pushzero ................................ <0>
+  [216] eq ...................................... <tBubble = 0>
+  [217] jmpifz [225] ............................ if tBubble = 0 then
+  [220] pushzero ................................ <0>
+  [221] pusharglistnoret 1 ...................... <0>
+  [223] extcall 37 .............................. return 0
+  [225] getlocal 6 .............................. <tBubble>
+  [227] pushsymb 550 ............................ <#bubbleId>
+  [230] getparam 1 .............................. <tHelpId>
+  [232] pusharglistnoret 3 ...................... <tBubble, #bubbleId, tHelpId>
+  [234] objcall 142 ............................. tBubble.setProperty(#bubbleId, tHelpId)
+  [236] getlocal 6 .............................. <tBubble>
+  [238] getlocal 3 .............................. <tText>
+  [240] pusharglistnoret 2 ...................... <tBubble, tText>
+  [242] objcall 397 ............................. tBubble.setText(tText)
+  [245] getlocal 6 .............................. <tBubble>
+  [247] pushsymb 551 ............................ <#targetX>
+  [250] getlocal 1 .............................. <tLocX>
+  [252] pusharglistnoret 3 ...................... <tBubble, #targetX, tLocX>
+  [254] objcall 142 ............................. tBubble.setProperty(#targetX, tLocX)
+  [256] getlocal 6 .............................. <tBubble>
+  [258] pushsymb 552 ............................ <#targetY>
+  [261] getlocal 2 .............................. <tLocY>
+  [263] pusharglistnoret 3 ...................... <tBubble, #targetY, tLocY>
+  [265] objcall 142 ............................. tBubble.setProperty(#targetY, tLocY)
+  [267] getlocal 6 .............................. <tBubble>
+  [269] getlocal 5 .............................. <tPointer>
+  [271] pusharglistnoret 2 ...................... <tBubble, tPointer>
+  [273] objcall 545 ............................. tBubble.selectPointerAndPosition(tPointer)
+  [276] getlocal 6 .............................. <tBubble>
+  [278] pusharglistnoret 1 ...................... <tBubble>
+  [280] objcall 119 ............................. tBubble.show()
+  [282] getlocal 6 .............................. <tBubble>
+  [284] pusharglistnoret 1 ...................... <tBubble>
+  [286] objcall 546 ............................. tBubble.hideCloseButton()
+  [289] getprop 132 ............................. <pBubbles>
+  [291] getparam 1 .............................. <tHelpId>
+  [293] pusharglist 2 ........................... <pBubbles, tHelpId>
+  [295] objcall 47 .............................. <pBubbles.getaProp(tHelpId)>
+  [297] pusharglist 1 ........................... <pBubbles.getaProp(tHelpId)>
+  [299] extcall 553 ............................. <objectp(pBubbles.getaProp(tHelpId))>
+  [302] jmpifz [321] ............................ if objectp(pBubbles.getaProp(tHelpId)) then
+  [305] getprop 132 ............................. <pBubbles>
+  [307] getparam 1 .............................. <tHelpId>
+  [309] pusharglist 2 ........................... <pBubbles, tHelpId>
+  [311] objcall 61 .............................. <pBubbles[tHelpId]>
+  [313] setlocal 7 .............................. tPreviousBubble = pBubbles[tHelpId]
+  [315] getlocal 7 .............................. <tPreviousBubble>
+  [317] pusharglistnoret 1 ...................... <tPreviousBubble>
+  [319] objcall 1 ............................... tPreviousBubble.deconstruct()
+  [321] getprop 132 ............................. <pBubbles>
+  [323] getparam 1 .............................. <tHelpId>
+  [325] getlocal 6 .............................. <tBubble>
+  [327] pusharglistnoret 3 ...................... <pBubbles, tHelpId, tBubble>
+  [329] objcall 54 .............................. pBubbles[tHelpId] = tBubble
+  [331] ret
+end
+
+on removeHelpBubble me, tHelpItemName
+  [  0] getprop 132 ............................. <pBubbles>
+  [  2] getparam 1 .............................. <tHelpItemName>
+  [  4] pusharglist 2 ........................... <pBubbles, tHelpItemName>
+  [  6] objcall 47 .............................. <pBubbles.getaProp(tHelpItemName)>
+  [  8] setlocal 0 .............................. tBubble = pBubbles.getaProp(tHelpItemName)
+  [ 10] getlocal 0 .............................. <tBubble>
+  [ 12] pusharglist 1 ........................... <tBubble>
+  [ 14] extcall 553 ............................. <objectp(tBubble)>
+  [ 17] jmpifz [ 26] ............................ if objectp(tBubble) then
+  [ 20] getlocal 0 .............................. <tBubble>
+  [ 22] pusharglistnoret 1 ...................... <tBubble>
+  [ 24] objcall 1 ............................... tBubble.deconstruct()
+  [ 26] ret
+end
+
+on showInviteWindow me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 571 ............................. me.hideInvitationWindow()
+  [  7] getprop 576 ............................. <pInvitationWindowID>
+  [ 10] pushcons 12 ............................. <"nuh_invitation.window">
+  [ 12] pusharglistnoret 2 ...................... <pInvitationWindowID, "nuh_invitation.window">
+  [ 14] extcall 133 ............................. createWindow(pInvitationWindowID, "nuh_invitation.window")
+  [ 16] getprop 576 ............................. <pInvitationWindowID>
+  [ 19] pusharglist 1 ........................... <pInvitationWindowID>
+  [ 21] extcall 134 ............................. <getWindow(pInvitationWindowID)>
+  [ 23] setlocal 0 .............................. tWindow = getWindow(pInvitationWindowID)
+  [ 25] pushcons 13 ............................. <"NUH.invitation.loc">
+  [ 27] pusharglist 1 ........................... <"NUH.invitation.loc">
+  [ 29] extcall 78 .............................. <getVariable("NUH.invitation.loc")>
+  [ 31] pushsymb 592 ............................ <#item>
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] pusharglist 3 ........................... <getVariable("NUH.invitation.loc"), #item, 1>
+  [ 38] objcall 253 ............................. <getVariable("NUH.invitation.loc").item[1]>
+  [ 40] setlocal 1 .............................. tLocX = getVariable("NUH.invitation.loc").item[1]
+  [ 42] pushcons 13 ............................. <"NUH.invitation.loc">
+  [ 44] pusharglist 1 ........................... <"NUH.invitation.loc">
+  [ 46] extcall 78 .............................. <getVariable("NUH.invitation.loc")>
+  [ 48] pushsymb 592 ............................ <#item>
+  [ 51] pushint8 2 .............................. <2>
+  [ 53] pusharglist 3 ........................... <getVariable("NUH.invitation.loc"), #item, 2>
+  [ 55] objcall 253 ............................. <getVariable("NUH.invitation.loc").item[2]>
+  [ 57] setlocal 2 .............................. tLocY = getVariable("NUH.invitation.loc").item[2]
+  [ 59] pushcons 14 ............................. <"send_invitation_header">
+  [ 61] pusharglist 1 ........................... <"send_invitation_header">
+  [ 63] extcall 279 ............................. <getText("send_invitation_header")>
+  [ 66] setlocal 3 .............................. tHeader = getText("send_invitation_header")
+  [ 68] getlocal 0 .............................. <tWindow>
+  [ 70] pushcons 15 ............................. <"nuh_invitation_header">
+  [ 72] pusharglist 2 ........................... <tWindow, "nuh_invitation_header">
+  [ 74] objcall 408 ............................. <tWindow.getElement("nuh_invitation_header")>
+  [ 77] getlocal 3 .............................. <tHeader>
+  [ 79] pusharglistnoret 2 ...................... <tWindow.getElement("nuh_invitation_header"), tHeader>
+  [ 81] objcall 397 ............................. tWindow.getElement("nuh_invitation_header").setText(tHeader)
+  [ 84] pushcons 16 ............................. <"send_invitation_text">
+  [ 86] pusharglist 1 ........................... <"send_invitation_text">
+  [ 88] extcall 279 ............................. <getText("send_invitation_text")>
+  [ 91] setlocal 4 .............................. tText = getText("send_invitation_text")
+  [ 93] getlocal 0 .............................. <tWindow>
+  [ 95] pushcons 17 ............................. <"nuh_invitation_text">
+  [ 97] pusharglist 2 ........................... <tWindow, "nuh_invitation_text">
+  [ 99] objcall 408 ............................. <tWindow.getElement("nuh_invitation_text")>
+  [102] getlocal 4 .............................. <tText>
+  [104] pusharglistnoret 2 ...................... <tWindow.getElement("nuh_invitation_text"), tText>
+  [106] objcall 397 ............................. tWindow.getElement("nuh_invitation_text").setText(tText)
+  [109] getlocal 0 .............................. <tWindow>
+  [111] getlocal 1 .............................. <tLocX>
+  [113] getlocal 2 .............................. <tLocY>
+  [115] pusharglistnoret 3 ...................... <tWindow, tLocX, tLocY>
+  [117] objcall 137 ............................. tWindow.moveTo(tLocX, tLocY)
+  [119] getlocal 0 .............................. <tWindow>
+  [121] pushsymb 574 ............................ <#eventProcInvitation>
+  [124] getparam 0 .............................. <me>
+  [126] pusharglist 1 ........................... <me>
+  [128] objcall 31 .............................. <me.getID()>
+  [130] pushsymb 138 ............................ <#mouseUp>
+  [132] pusharglistnoret 4 ...................... <tWindow, #eventProcInvitation, me.getID(), #mouseUp>
+  [134] objcall 139 ............................. tWindow.registerProcedure(#eventProcInvitation, me.getID(), #mouseUp)
+  [136] ret
+end
+
+on hideInvitationWindow me
+  [  0] getprop 576 ............................. <pInvitationWindowID>
+  [  3] pusharglist 1 ........................... <pInvitationWindowID>
+  [  5] extcall 597 ............................. <windowExists(pInvitationWindowID)>
+  [  8] jmpifz [ 19] ............................ if windowExists(pInvitationWindowID) then
+  [ 11] getprop 576 ............................. <pInvitationWindowID>
+  [ 14] pusharglistnoret 1 ...................... <pInvitationWindowID>
+  [ 16] extcall 392 ............................. removeWindow(pInvitationWindowID)
+  [ 19] ret
+end
+
+on showInvitationStatusWindow me, tstate
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 572 ............................. me.hideInvitationStatusWindow()
+  [  7] getparam 1 .............................. <tstate>
+  [  9] peek 0 .................................. case tstate of
+  [ 11] pushsymb 109 ............................ <#Search>
+  [ 13] eq
+  [ 14] jmpifz [ 24] ............................ (case) #Search:
+  [ 17] pushcons 18 ............................. <"nuh_invitation_status.window">
+  [ 19] setlocal 0 .............................. tLayout = "nuh_invitation_status.window"
+  [ 21] jmp [ 76]
+  [ 24] peek 0
+  [ 26] pushsymb 102 ............................ <#room_left>
+  [ 28] eq
+  [ 29] jmpifz [ 39] ............................ (case) #room_left:
+  [ 32] pushcons 19 ............................. <"nuh_room_left.window">
+  [ 34] setlocal 0 .............................. tLayout = "nuh_room_left.window"
+  [ 36] jmp [ 76]
+  [ 39] peek 0
+  [ 41] pushsymb 111 ............................ <#success>
+  [ 43] eq
+  [ 44] jmpifz [ 54] ............................ (case) #success:
+  [ 47] pushcons 20 ............................. <"nuh_invitation_success.window">
+  [ 49] setlocal 0 .............................. tLayout = "nuh_invitation_success.window"
+  [ 51] jmp [ 76]
+  [ 54] peek 0
+  [ 56] pushsymb 110 ............................ <#failure>
+  [ 58] eq
+  [ 59] jmpifz [ 69] ............................ (case) #failure:
+  [ 62] pushcons 21 ............................. <"nuh_invitation_failure.window">
+  [ 64] setlocal 0 .............................. tLayout = "nuh_invitation_failure.window"
+  [ 66] jmp [ 76] ............................... (case) otherwise:
+  [ 69] pop 1
+  [ 71] pushzero ................................ <0>
+  [ 72] pusharglistnoret 1 ...................... <0>
+  [ 74] extcall 37 .............................. return 0
+  [ 76] pop 1 ................................... end case
+  [ 78] getprop 578 ............................. <pInvitationStatusWindowID>
+  [ 81] getlocal 0 .............................. <tLayout>
+  [ 83] pusharglistnoret 2 ...................... <pInvitationStatusWindowID, tLayout>
+  [ 85] extcall 133 ............................. createWindow(pInvitationStatusWindowID, tLayout)
+  [ 87] getprop 578 ............................. <pInvitationStatusWindowID>
+  [ 90] pusharglist 1 ........................... <pInvitationStatusWindowID>
+  [ 92] extcall 134 ............................. <getWindow(pInvitationStatusWindowID)>
+  [ 94] setlocal 1 .............................. tWindow = getWindow(pInvitationStatusWindowID)
+  [ 96] getlocal 1 .............................. <tWindow>
+  [ 98] pushint8 10 ............................. <10>
+  [100] pushint8 10 ............................. <10>
+  [102] pusharglistnoret 3 ...................... <tWindow, 10, 10>
+  [104] objcall 137 ............................. tWindow.moveTo(10, 10)
+  [106] getlocal 1 .............................. <tWindow>
+  [108] pushsymb 575 ............................ <#eventProcInvitationStatus>
+  [111] getparam 0 .............................. <me>
+  [113] pusharglist 1 ........................... <me>
+  [115] objcall 31 .............................. <me.getID()>
+  [117] pushsymb 138 ............................ <#mouseUp>
+  [119] pusharglistnoret 4 ...................... <tWindow, #eventProcInvitationStatus, me.getID(), #mouseUp>
+  [121] objcall 139 ............................. tWindow.registerProcedure(#eventProcInvitationStatus, me.getID(), #mouseUp)
+  [123] getprop 580 ............................. <pInvitationStatusTimeoutID>
+  [126] pusharglist 1 ........................... <pInvitationStatusTimeoutID>
+  [128] extcall 72 .............................. <timeoutExists(pInvitationStatusTimeoutID)>
+  [130] jmpifz [140] ............................ if timeoutExists(pInvitationStatusTimeoutID) then
+  [133] getprop 580 ............................. <pInvitationStatusTimeoutID>
+  [136] pusharglistnoret 1 ...................... <pInvitationStatusTimeoutID>
+  [138] extcall 73 .............................. removeTimeout(pInvitationStatusTimeoutID)
+  [140] getparam 1 .............................. <tstate>
+  [142] peek 0 .................................. case tstate of
+  [144] pushsymb 109 ............................ <#Search>
+  [146] eq
+  [147] jmpifz [177] ............................ (case) #Search:
+  [150] getprop 580 ............................. <pInvitationStatusTimeoutID>
+  [153] pushint16 250 ........................... <250>
+  [156] pushsymb 573 ............................ <#updateInvitationStatusWindow>
+  [159] getparam 0 .............................. <me>
+  [161] pusharglist 1 ........................... <me>
+  [163] objcall 31 .............................. <me.getID()>
+  [165] pusharglist 0 ........................... <>
+  [167] extcall 170 ............................. <VOID>
+  [169] pushzero ................................ <0>
+  [170] pusharglistnoret 6 ...................... <pInvitationStatusTimeoutID, 250, #updateInvitationStatusWindow, me.getID(), VOID, 0>
+  [172] extcall 63 .............................. createTimeout(pInvitationStatusTimeoutID, 250, #updateInvitationStatusWindow, me.getID(), VOID, 0)
+  [174] jmp [210]
+  [177] peek 0
+  [179] pushsymb 111 ............................ <#success>
+  [181] eq
+  [182] jmpifz [210] ............................ (case) #success:
+  [185] getprop 580 ............................. <pInvitationStatusTimeoutID>
+  [188] pushint16 3000 .......................... <3000>
+  [191] pushsymb 572 ............................ <#hideInvitationStatusWindow>
+  [194] getparam 0 .............................. <me>
+  [196] pusharglist 1 ........................... <me>
+  [198] objcall 31 .............................. <me.getID()>
+  [200] pusharglist 0 ........................... <>
+  [202] extcall 170 ............................. <VOID>
+  [204] pushint8 1 .............................. <1>
+  [206] pusharglistnoret 6 ...................... <pInvitationStatusTimeoutID, 3000, #hideInvitationStatusWindow, me.getID(), VOID, 1>
+  [208] extcall 63 .............................. createTimeout(pInvitationStatusTimeoutID, 3000, #hideInvitationStatusWindow, me.getID(), VOID, 1)
+  [210] pop 1 ................................... end case
+  [212] ret
+end
+
+on hideInvitationStatusWindow me
+  [  0] getprop 578 ............................. <pInvitationStatusWindowID>
+  [  3] pusharglist 1 ........................... <pInvitationStatusWindowID>
+  [  5] extcall 597 ............................. <windowExists(pInvitationStatusWindowID)>
+  [  8] jmpifz [ 19] ............................ if windowExists(pInvitationStatusWindowID) then
+  [ 11] getprop 578 ............................. <pInvitationStatusWindowID>
+  [ 14] pusharglistnoret 1 ...................... <pInvitationStatusWindowID>
+  [ 16] extcall 392 ............................. removeWindow(pInvitationStatusWindowID)
+  [ 19] getprop 580 ............................. <pInvitationStatusTimeoutID>
+  [ 22] pusharglist 1 ........................... <pInvitationStatusTimeoutID>
+  [ 24] extcall 72 .............................. <timeoutExists(pInvitationStatusTimeoutID)>
+  [ 26] jmpifz [ 36] ............................ if timeoutExists(pInvitationStatusTimeoutID) then
+  [ 29] getprop 580 ............................. <pInvitationStatusTimeoutID>
+  [ 32] pusharglistnoret 1 ...................... <pInvitationStatusTimeoutID>
+  [ 34] extcall 73 .............................. removeTimeout(pInvitationStatusTimeoutID)
+  [ 36] ret
+end
+
+on updateInvitationStatusWindow me
+  [  0] getprop 578 ............................. <pInvitationStatusWindowID>
+  [  3] pusharglist 1 ........................... <pInvitationStatusWindowID>
+  [  5] extcall 597 ............................. <windowExists(pInvitationStatusWindowID)>
+  [  8] not ..................................... <not windowExists(pInvitationStatusWindowID)>
+  [  9] jmpifz [ 17] ............................ if not windowExists(pInvitationStatusWindowID) then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 37 .............................. return 0
+  [ 17] getprop 578 ............................. <pInvitationStatusWindowID>
+  [ 20] pusharglist 1 ........................... <pInvitationStatusWindowID>
+  [ 22] extcall 134 ............................. <getWindow(pInvitationStatusWindowID)>
+  [ 24] setlocal 0 .............................. tWindow = getWindow(pInvitationStatusWindowID)
+  [ 26] getlocal 0 .............................. <tWindow>
+  [ 28] pushcons 22 ............................. <"nuh_search">
+  [ 30] pusharglist 2 ........................... <tWindow, "nuh_search">
+  [ 32] objcall 476 ............................. <tWindow.elementExists("nuh_search")>
+  [ 35] jmpifz [114] ............................ if tWindow.elementExists("nuh_search") then
+  [ 38] getlocal 0 .............................. <tWindow>
+  [ 40] pushcons 22 ............................. <"nuh_search">
+  [ 42] pusharglist 2 ........................... <tWindow, "nuh_search">
+  [ 44] objcall 408 ............................. <tWindow.getElement("nuh_search")>
+  [ 47] setlocal 1 .............................. tElem = tWindow.getElement("nuh_search")
+  [ 49] getprop 582 ............................. <pSearchAnimFrame>
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] add ..................................... <pSearchAnimFrame + 1>
+  [ 55] setprop 582 ............................. pSearchAnimFrame = pSearchAnimFrame + 1
+  [ 58] getprop 582 ............................. <pSearchAnimFrame>
+  [ 61] pushint8 3 .............................. <3>
+  [ 63] gt ...................................... <pSearchAnimFrame > 3>
+  [ 64] jmpifz [ 72] ............................ if pSearchAnimFrame > 3 then
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] setprop 582 ............................. pSearchAnimFrame = 1
+  [ 72] pushcons 23 ............................. <"nuh_search_">
+  [ 74] getprop 582 ............................. <pSearchAnimFrame>
+  [ 77] joinstr ................................. <"nuh_search_" & pSearchAnimFrame>
+  [ 78] setlocal 2 .............................. tMemName = "nuh_search_" & pSearchAnimFrame
+  [ 80] getlocal 2 .............................. <tMemName>
+  [ 82] pusharglist 1 ........................... <tMemName>
+  [ 84] extcall 599 ............................. <memberExists(tMemName)>
+  [ 87] jmpifz [114] ............................ if memberExists(tMemName) then
+  [ 90] getlocal 1 .............................. <tElem>
+  [ 92] pushsymb 411 ............................ <#image>
+  [ 95] getlocal 2 .............................. <tMemName>
+  [ 97] pusharglist 1 ........................... <tMemName>
+  [ 99] extcall 410 ............................. <getmemnum(tMemName)>
+  [102] pusharglist 1 ........................... <getmemnum(tMemName)>
+  [104] extcall 409 ............................. <member(getmemnum(tMemName))>
+  [107] getobjprop 411 .......................... <member(getmemnum(tMemName)).image>
+  [110] pusharglistnoret 3 ...................... <tElem, #image, member(getmemnum(tMemName)).image>
+  [112] objcall 142 ............................. tElem.setProperty(#image, member(getmemnum(tMemName)).image)
+  [114] getlocal 0 .............................. <tWindow>
+  [116] pushcons 24 ............................. <"nuh_invitation_status_counter">
+  [118] pusharglist 2 ........................... <tWindow, "nuh_invitation_status_counter">
+  [120] objcall 476 ............................. <tWindow.elementExists("nuh_invitation_status_counter")>
+  [123] jmpifz [170] ............................ if tWindow.elementExists("nuh_invitation_status_counter") then
+  [126] getparam 0 .............................. <me>
+  [128] pusharglist 1 ........................... <me>
+  [130] objcall 87 .............................. <me.getComponent()>
+  [132] pusharglist 1 ........................... <me.getComponent()>
+  [134] objcall 22 .............................. <me.getComponent().getGuideCount()>
+  [136] setlocal 3 .............................. tCount = me.getComponent().getGuideCount()
+  [138] pushcons 25 ............................. <"NUH_invitation_guides_found">
+  [140] pusharglist 1 ........................... <"NUH_invitation_guides_found">
+  [142] extcall 279 ............................. <getText("NUH_invitation_guides_found")>
+  [145] getlocal 3 .............................. <tCount>
+  [147] joinpadstr .............................. <getText("NUH_invitation_guides_found") && tCount>
+  [148] setlocal 4 .............................. tText = getText("NUH_invitation_guides_found") && tCount
+  [150] getlocal 0 .............................. <tWindow>
+  [152] pushcons 24 ............................. <"nuh_invitation_status_counter">
+  [154] pusharglist 2 ........................... <tWindow, "nuh_invitation_status_counter">
+  [156] objcall 408 ............................. <tWindow.getElement("nuh_invitation_status_counter")>
+  [159] setlocal 1 .............................. tElem = tWindow.getElement("nuh_invitation_status_counter")
+  [161] getlocal 1 .............................. <tElem>
+  [163] getlocal 4 .............................. <tText>
+  [165] pusharglistnoret 2 ...................... <tElem, tText>
+  [167] objcall 397 ............................. tElem.setText(tText)
+  [170] ret
+end
+
+on eventProcInvitation me, tEvent, tSprID
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] peek 0 .................................. case tSprID of
+  [  4] pushcons 26 ............................. <"nuh_invitation_yes">
+  [  6] eq
+  [  7] jmpifz [ 27] ............................ (case) "nuh_invitation_yes":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 87 .............................. <me.getComponent()>
+  [ 16] pushsymb 618 ............................ <#yes>
+  [ 19] pusharglistnoret 2 ...................... <me.getComponent(), #yes>
+  [ 21] objcall 617 ............................. me.getComponent().closeInvitation(#yes)
+  [ 24] jmp [ 74]
+  [ 27] peek 0
+  [ 29] pushcons 27 ............................. <"nuh_invitation_no">
+  [ 31] eq
+  [ 32] jmpifz [ 52] ............................ (case) "nuh_invitation_no":
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 87 .............................. <me.getComponent()>
+  [ 41] pushsymb 619 ............................ <#no>
+  [ 44] pusharglistnoret 2 ...................... <me.getComponent(), #no>
+  [ 46] objcall 617 ............................. me.getComponent().closeInvitation(#no)
+  [ 49] jmp [ 74]
+  [ 52] peek 0
+  [ 54] pushcons 28 ............................. <"nuh_invitation_never">
+  [ 56] eq
+  [ 57] jmpifz [ 74] ............................ (case) "nuh_invitation_never":
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pusharglist 1 ........................... <me>
+  [ 64] objcall 87 .............................. <me.getComponent()>
+  [ 66] pushsymb 620 ............................ <#never>
+  [ 69] pusharglistnoret 2 ...................... <me.getComponent(), #never>
+  [ 71] objcall 617 ............................. me.getComponent().closeInvitation(#never)
+  [ 74] pop 1 ................................... end case
+  [ 76] ret
+end
+
+on eventProcInvitationStatus me, tEvent, tSprID
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] pushcons 29 ............................. <"nuh_invitation_option">
+  [  4] containsstr ............................. <tSprID contains "nuh_invitation_option">
+  [  5] jmpifz [ 71] ............................ if tSprID contains "nuh_invitation_option" then
+  [  8] getparam 2 .............................. <tSprID>
+  [ 10] pushsymb 603 ............................ <#char>
+  [ 13] getparam 2 .............................. <tSprID>
+  [ 15] getobjprop 604 .......................... <tSprID.length>
+  [ 18] pusharglist 3 ........................... <tSprID, #char, tSprID.length>
+  [ 20] objcall 253 ............................. <tSprID.char[tSprID.length]>
+  [ 22] setlocal 0 .............................. tOption = tSprID.char[tSprID.length]
+  [ 24] pushcons 30 ............................. <"NUH.invitation.option.">
+  [ 26] getlocal 0 .............................. <tOption>
+  [ 28] joinstr ................................. <"NUH.invitation.option." & tOption>
+  [ 29] setlocal 1 .............................. tVarName = "NUH.invitation.option." & tOption
+  [ 31] getlocal 1 .............................. <tVarName>
+  [ 33] pusharglist 1 ........................... <tVarName>
+  [ 35] extcall 43 .............................. <variableExists(tVarName)>
+  [ 37] jmpifz [ 65] ............................ if variableExists(tVarName) then
+  [ 40] getlocal 1 .............................. <tVarName>
+  [ 42] pusharglist 1 ........................... <tVarName>
+  [ 44] extcall 78 .............................. <getVariable(tVarName)>
+  [ 46] pusharglist 1 ........................... <getVariable(tVarName)>
+  [ 48] extcall 80 .............................. <value(getVariable(tVarName))>
+  [ 50] setlocal 2 .............................. tMsg = value(getVariable(tVarName))
+  [ 52] getlocal 2 .............................. <tMsg>
+  [ 54] pusharglistnoret 1 ...................... <tMsg>
+  [ 56] extcall 105 ............................. executeMessage(tMsg)
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglistnoret 1 ...................... <me>
+  [ 62] objcall 572 ............................. me.hideInvitationStatusWindow()
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] pusharglistnoret 1 ...................... <1>
+  [ 69] extcall 37 .............................. return 1
+  [ 71] getparam 2 .............................. <tSprID>
+  [ 73] peek 0 .................................. case tSprID of
+  [ 75] pushcons 31 ............................. <"nuh_invitation_status_cancel">
+  [ 77] nteq
+  [ 78] jmpifz [ 89] ............................ (case) "nuh_invitation_status_cancel", ...
+  [ 81] peek 0
+  [ 83] pushcons 32 ............................. <"nuh_invitation_status_close">
+  [ 85] eq
+  [ 86] jmpifz [109] ............................ (case) ..., "nuh_invitation_status_close":
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglist 1 ........................... <me>
+  [ 93] objcall 87 .............................. <me.getComponent()>
+  [ 95] pusharglistnoret 1 ...................... <me.getComponent()>
+  [ 97] objcall 18 .............................. me.getComponent().cancelInvitations()
+  [ 99] getparam 0 .............................. <me>
+  [101] pusharglistnoret 1 ...................... <me>
+  [103] objcall 572 ............................. me.hideInvitationStatusWindow()
+  [106] jmp [145]
+  [109] peek 0
+  [111] pushcons 33 ............................. <"nuh_room_left_back">
+  [113] eq
+  [114] jmpifz [130] ............................ (case) "nuh_room_left_back":
+  [117] getparam 0 .............................. <me>
+  [119] pusharglist 1 ........................... <me>
+  [121] objcall 87 .............................. <me.getComponent()>
+  [123] pusharglistnoret 1 ...................... <me.getComponent()>
+  [125] objcall 16 .............................. me.getComponent().goToInvitationRoom()
+  [127] jmp [145]
+  [130] peek 0
+  [132] pushcons 34 ............................. <"close_button">
+  [134] eq
+  [135] jmpifz [145] ............................ (case) "close_button":
+  [138] getparam 0 .............................. <me>
+  [140] pusharglistnoret 1 ...................... <me>
+  [142] objcall 572 ............................. me.hideInvitationStatusWindow()
+  [145] pop 1 ................................... end case
+  [147] ret
+end

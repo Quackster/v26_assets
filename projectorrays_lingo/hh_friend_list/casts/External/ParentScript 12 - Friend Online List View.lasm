@@ -1,0 +1,982 @@
+property pListImg, pWriterIdPlain, pContentList, pItemHeight, pItemWidth, pEmptyListText
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pushint8 32 ............................. <32>
+  [  6] pusharglist 3 ........................... <1, 1, 32>
+  [  8] extcall 495 ............................. <image(1, 1, 32)>
+  [ 11] setprop 498 ............................. pListImg = image(1, 1, 32)
+  [ 14] pushcons 0 .............................. <"friends_requests">
+  [ 16] pusharglist 1 ........................... <"friends_requests">
+  [ 18] extcall 269 ............................. <member("friends_requests")>
+  [ 21] getobjprop 495 .......................... <member("friends_requests").image>
+  [ 24] setprop 498 ............................. pListImg = member("friends_requests").image
+  [ 27] pusharglist 0 ........................... <[:]>
+  [ 29] pushproplist ............................ <[:]>
+  [ 30] setprop 487 ............................. pContentList = [:]
+  [ 33] getprop 487 ............................. <pContentList>
+  [ 36] pusharglistnoret 1 ...................... <pContentList>
+  [ 38] objcall 470 ............................. pContentList.sort()
+  [ 41] pusharglist 0 ........................... <>
+  [ 43] extcall 46 .............................. <getUniqueID()>
+  [ 45] setprop 528 ............................. pWriterIdPlain = getUniqueID()
+  [ 48] getprop 528 ............................. <pWriterIdPlain>
+  [ 51] pushcons 1 .............................. <"struct.font.plain">
+  [ 53] pusharglist 1 ........................... <"struct.font.plain">
+  [ 55] extcall 490 ............................. <getStructVariable("struct.font.plain")>
+  [ 58] pusharglistnoret 2 ...................... <pWriterIdPlain, getStructVariable("struct.font.plain")>
+  [ 60] extcall 488 ............................. createWriter(pWriterIdPlain, getStructVariable("struct.font.plain"))
+  [ 63] pushcons 2 .............................. <"fr.online.item.height">
+  [ 65] pusharglist 1 ........................... <"fr.online.item.height">
+  [ 67] extcall 67 .............................. <getVariable("fr.online.item.height")>
+  [ 69] pusharglist 1 ........................... <getVariable("fr.online.item.height")>
+  [ 71] extcall 116 ............................. <integer(getVariable("fr.online.item.height"))>
+  [ 73] setprop 524 ............................. pItemHeight = integer(getVariable("fr.online.item.height"))
+  [ 76] pushcons 3 .............................. <"fr.list.panel.width">
+  [ 78] pusharglist 1 ........................... <"fr.list.panel.width">
+  [ 80] extcall 67 .............................. <getVariable("fr.list.panel.width")>
+  [ 82] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [ 84] extcall 116 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [ 86] setprop 513 ............................. pItemWidth = integer(getVariable("fr.list.panel.width"))
+  [ 89] pushcons 4 .............................. <"friend_list_no_friends_online_category">
+  [ 91] pusharglist 1 ........................... <"friend_list_no_friends_online_category">
+  [ 93] extcall 139 ............................. <getText("friend_list_no_friends_online_category")>
+  [ 95] setprop 493 ............................. pEmptyListText = getText("friend_list_no_friends_online_category")
+  [ 98] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 69 .............................. <VOID>
+  [  4] setprop 498 ............................. pListImg = VOID
+  [  7] getprop 528 ............................. <pWriterIdPlain>
+  [ 10] pusharglistnoret 1 ...................... <pWriterIdPlain>
+  [ 12] extcall 529 ............................. removeWriter(pWriterIdPlain)
+  [ 15] ret
+end
+
+on setListData me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 77 .............................. <ilk(tdata)>
+  [  6] pushsymb 78 ............................. <#propList>
+  [  8] eq ...................................... <ilk(tdata) = #propList>
+  [  9] jmpifz [ 28] ............................ if ilk(tdata) = #propList then
+  [ 12] getparam 1 .............................. <tdata>
+  [ 14] pusharglist 1 ........................... <tdata>
+  [ 16] objcall 134 ............................. <tdata.duplicate()>
+  [ 18] setprop 487 ............................. pContentList = tdata.duplicate()
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglistnoret 1 ...................... <me>
+  [ 25] objcall 257 ............................. me.renderListImage()
+  [ 28] ret
+end
+
+on renderFriendItem me, tFriendData, tSelected
+  [  0] getprop 528 ............................. <pWriterIdPlain>
+  [  3] pusharglist 1 ........................... <pWriterIdPlain>
+  [  5] extcall 489 ............................. <getWriter(pWriterIdPlain)>
+  [  8] setlocal 0 .............................. tNameWriter = getWriter(pWriterIdPlain)
+  [ 10] pushcons 5 .............................. <"Figure_System">
+  [ 12] pusharglist 1 ........................... <"Figure_System">
+  [ 14] extcall 309 ............................. <getObject("Figure_System")>
+  [ 17] setlocal 1 .............................. tFigureParser = getObject("Figure_System")
+  [ 19] pushcons 6 .............................. <"Figure_Preview">
+  [ 21] pusharglist 1 ........................... <"Figure_Preview">
+  [ 23] extcall 309 ............................. <getObject("Figure_Preview")>
+  [ 26] setlocal 2 .............................. tPreviewObj = getObject("Figure_Preview")
+  [ 28] getprop 513 ............................. <pItemWidth>
+  [ 31] getprop 524 ............................. <pItemHeight>
+  [ 34] pushint8 32 ............................. <32>
+  [ 36] pusharglist 3 ........................... <pItemWidth, pItemHeight, 32>
+  [ 38] extcall 495 ............................. <image(pItemWidth, pItemHeight, 32)>
+  [ 41] setlocal 3 .............................. tItemImg = image(pItemWidth, pItemHeight, 32)
+  [ 43] getparam 1 .............................. <tFriendData>
+  [ 45] pushsymb 243 ............................ <#name>
+  [ 47] pusharglist 2 ........................... <tFriendData, #name>
+  [ 49] objcall 80 .............................. <tFriendData[#name]>
+  [ 51] setlocal 4 .............................. tName = tFriendData[#name]
+  [ 53] getparam 2 .............................. <tSelected>
+  [ 55] jmpifz [ 92] ............................ if tSelected then
+  [ 58] pushcons 7 .............................. <"fr.offline.bg.selected">
+  [ 60] pusharglist 1 ........................... <"fr.offline.bg.selected">
+  [ 62] extcall 67 .............................. <getVariable("fr.offline.bg.selected")>
+  [ 64] pusharglist 1 ........................... <getVariable("fr.offline.bg.selected")>
+  [ 66] extcall 140 ............................. <string(getVariable("fr.offline.bg.selected"))>
+  [ 68] pusharglist 1 ........................... <string(getVariable("fr.offline.bg.selected"))>
+  [ 70] extcall 268 ............................. <rgb(string(getVariable("fr.offline.bg.selected")))>
+  [ 73] setlocal 5 .............................. tSelectedBg = rgb(string(getVariable("fr.offline.bg.selected")))
+  [ 75] getlocal 3 .............................. <tItemImg>
+  [ 77] pushzero ................................ <0>
+  [ 78] pushzero ................................ <0>
+  [ 79] getprop 513 ............................. <pItemWidth>
+  [ 82] getprop 524 ............................. <pItemHeight>
+  [ 85] getlocal 5 .............................. <tSelectedBg>
+  [ 87] pusharglistnoret 6 ...................... <tItemImg, 0, 0, pItemWidth, pItemHeight, tSelectedBg>
+  [ 89] objcall 530 ............................. tItemImg.fill(0, 0, pItemWidth, pItemHeight, tSelectedBg)
+  [ 92] pushcons 8 .............................. <"fr.online.face.offset.h">
+  [ 94] pusharglist 1 ........................... <"fr.online.face.offset.h">
+  [ 96] extcall 67 .............................. <getVariable("fr.online.face.offset.h")>
+  [ 98] pusharglist 1 ........................... <getVariable("fr.online.face.offset.h")>
+  [100] extcall 116 ............................. <integer(getVariable("fr.online.face.offset.h"))>
+  [102] setlocal 6 .............................. tFacePosH = integer(getVariable("fr.online.face.offset.h"))
+  [104] getlocal 1 .............................. <tFigureParser>
+  [106] getparam 1 .............................. <tFriendData>
+  [108] pushsymb 425 ............................ <#figure>
+  [111] pusharglist 2 ........................... <tFriendData, #figure>
+  [113] objcall 80 .............................. <tFriendData[#figure]>
+  [115] getparam 1 .............................. <tFriendData>
+  [117] pushsymb 422 ............................ <#sex>
+  [120] pusharglist 2 ........................... <tFriendData, #sex>
+  [122] objcall 80 .............................. <tFriendData[#sex]>
+  [124] pushcons 9 .............................. <"user">
+  [126] pusharglist 4 ........................... <tFigureParser, tFriendData[#figure], tFriendData[#sex], "user">
+  [128] objcall 531 ............................. <tFigureParser.parseFigure(tFriendData[#figure], tFriendData[#sex], "user")>
+  [131] setlocal 7 .............................. tParsedFigure = tFigureParser.parseFigure(tFriendData[#figure], tFriendData[#sex], "user")
+  [133] getlocal 2 .............................. <tPreviewObj>
+  [135] pushsymb 532 ............................ <#head>
+  [138] getlocal 7 .............................. <tParsedFigure>
+  [140] pushint8 2 .............................. <2>
+  [142] pushcons 10 ............................. <"sh">
+  [144] pusharglist 5 ........................... <tPreviewObj, #head, tParsedFigure, 2, "sh">
+  [146] objcall 533 ............................. <tPreviewObj.getHumanPartImg(#head, tParsedFigure, 2, "sh")>
+  [149] setlocal 8 .............................. tHeadImage = tPreviewObj.getHumanPartImg(#head, tParsedFigure, 2, "sh")
+  [151] getlocal 8 .............................. <tHeadImage>
+  [153] getobjprop 286 .......................... <tHeadImage.rect>
+  [156] setlocal 9 .............................. tSourceRect = tHeadImage.rect
+  [158] getprop 524 ............................. <pItemHeight>
+  [161] getlocal 8 .............................. <tHeadImage>
+  [163] getobjprop 217 .......................... <tHeadImage.height>
+  [165] sub ..................................... <pItemHeight - tHeadImage.height>
+  [166] pushint8 2 .............................. <2>
+  [168] div ..................................... <(pItemHeight - tHeadImage.height) / 2>
+  [169] setlocal 10 ............................. tFacePosV = (pItemHeight - tHeadImage.height) / 2
+  [171] getlocal 9 .............................. <tSourceRect>
+  [173] getlocal 6 .............................. <tFacePosH>
+  [175] getlocal 10 ............................. <tFacePosV>
+  [177] getlocal 6 .............................. <tFacePosH>
+  [179] getlocal 10 ............................. <tFacePosV>
+  [181] pusharglist 4 ........................... <tFacePosH, tFacePosV, tFacePosH, tFacePosV>
+  [183] extcall 286 ............................. <rect(tFacePosH, tFacePosV, tFacePosH, tFacePosV)>
+  [186] add ..................................... <tSourceRect + rect(tFacePosH, tFacePosV, tFacePosH, tFacePosV)>
+  [187] setlocal 11 ............................. tdestrect = tSourceRect + rect(tFacePosH, tFacePosV, tFacePosH, tFacePosV)
+  [189] getlocal 3 .............................. <tItemImg>
+  [191] getlocal 8 .............................. <tHeadImage>
+  [193] getlocal 11 ............................. <tdestrect>
+  [195] getlocal 9 .............................. <tSourceRect>
+  [197] pushsymb 499 ............................ <#ink>
+  [200] pushint8 36 ............................. <36>
+  [202] pusharglist 2 ........................... <[#ink: 36]>
+  [204] pushproplist ............................ <[#ink: 36]>
+  [205] pusharglistnoret 5 ...................... <tItemImg, tHeadImage, tdestrect, tSourceRect, [#ink: 36]>
+  [207] objcall 496 ............................. tItemImg.copyPixels(tHeadImage, tdestrect, tSourceRect, [#ink: 36])
+  [210] pushcons 11 ............................. <"fr.online.name.offset.h">
+  [212] pusharglist 1 ........................... <"fr.online.name.offset.h">
+  [214] extcall 67 .............................. <getVariable("fr.online.name.offset.h")>
+  [216] pusharglist 1 ........................... <getVariable("fr.online.name.offset.h")>
+  [218] extcall 116 ............................. <integer(getVariable("fr.online.name.offset.h"))>
+  [220] setlocal 12 ............................. tNamePosH = integer(getVariable("fr.online.name.offset.h"))
+  [222] getlocal 0 .............................. <tNameWriter>
+  [224] getparam 1 .............................. <tFriendData>
+  [226] pushsymb 243 ............................ <#name>
+  [228] pusharglist 2 ........................... <tFriendData, #name>
+  [230] objcall 80 .............................. <tFriendData[#name]>
+  [232] pusharglist 2 ........................... <tNameWriter, tFriendData[#name]>
+  [234] objcall 494 ............................. <tNameWriter.render(tFriendData[#name])>
+  [237] setlocal 13 ............................. tNameImage = tNameWriter.render(tFriendData[#name])
+  [239] getlocal 13 ............................. <tNameImage>
+  [241] getobjprop 286 .......................... <tNameImage.rect>
+  [244] setlocal 9 .............................. tSourceRect = tNameImage.rect
+  [246] getprop 524 ............................. <pItemHeight>
+  [249] getlocal 13 ............................. <tNameImage>
+  [251] getobjprop 217 .......................... <tNameImage.height>
+  [253] sub ..................................... <pItemHeight - tNameImage.height>
+  [254] pushint8 2 .............................. <2>
+  [256] div ..................................... <(pItemHeight - tNameImage.height) / 2>
+  [257] setlocal 14 ............................. tNamePosV = (pItemHeight - tNameImage.height) / 2
+  [259] getlocal 9 .............................. <tSourceRect>
+  [261] getlocal 12 ............................. <tNamePosH>
+  [263] getlocal 14 ............................. <tNamePosV>
+  [265] getlocal 12 ............................. <tNamePosH>
+  [267] getlocal 14 ............................. <tNamePosV>
+  [269] pusharglist 4 ........................... <tNamePosH, tNamePosV, tNamePosH, tNamePosV>
+  [271] extcall 286 ............................. <rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [274] add ..................................... <tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [275] setlocal 11 ............................. tdestrect = tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)
+  [277] getlocal 3 .............................. <tItemImg>
+  [279] getlocal 13 ............................. <tNameImage>
+  [281] getlocal 11 ............................. <tdestrect>
+  [283] getlocal 9 .............................. <tSourceRect>
+  [285] pushsymb 499 ............................ <#ink>
+  [288] pushint8 36 ............................. <36>
+  [290] pusharglist 2 ........................... <[#ink: 36]>
+  [292] pushproplist ............................ <[#ink: 36]>
+  [293] pusharglistnoret 5 ...................... <tItemImg, tNameImage, tdestrect, tSourceRect, [#ink: 36]>
+  [295] objcall 496 ............................. tItemImg.copyPixels(tNameImage, tdestrect, tSourceRect, [#ink: 36])
+  [298] pushcons 12 ............................. <"fr.online.im.icon">
+  [300] pusharglist 1 ........................... <"fr.online.im.icon">
+  [302] extcall 67 .............................. <getVariable("fr.online.im.icon")>
+  [304] pusharglist 1 ........................... <getVariable("fr.online.im.icon")>
+  [306] extcall 267 ............................. <getMember(getVariable("fr.online.im.icon"))>
+  [309] getobjprop 495 .......................... <getMember(getVariable("fr.online.im.icon")).image>
+  [312] setlocal 15 ............................. tImIconImg = getMember(getVariable("fr.online.im.icon")).image
+  [314] getlocal 15 ............................. <tImIconImg>
+  [316] getobjprop 286 .......................... <tImIconImg.rect>
+  [319] setlocal 16 ............................. tImIconRect = tImIconImg.rect
+  [321] pushcons 13 ............................. <"fr.online.im.offset.h">
+  [323] pusharglist 1 ........................... <"fr.online.im.offset.h">
+  [325] extcall 67 .............................. <getVariable("fr.online.im.offset.h")>
+  [327] pusharglist 1 ........................... <getVariable("fr.online.im.offset.h")>
+  [329] extcall 116 ............................. <integer(getVariable("fr.online.im.offset.h"))>
+  [331] setlocal 17 ............................. tImIconPosH = integer(getVariable("fr.online.im.offset.h"))
+  [333] getprop 524 ............................. <pItemHeight>
+  [336] getlocal 15 ............................. <tImIconImg>
+  [338] getobjprop 217 .......................... <tImIconImg.height>
+  [340] sub ..................................... <pItemHeight - tImIconImg.height>
+  [341] pushint8 2 .............................. <2>
+  [343] div ..................................... <(pItemHeight - tImIconImg.height) / 2>
+  [344] setlocal 18 ............................. tImIconPosV = (pItemHeight - tImIconImg.height) / 2
+  [346] getlocal 16 ............................. <tImIconRect>
+  [348] getlocal 17 ............................. <tImIconPosH>
+  [350] getlocal 18 ............................. <tImIconPosV>
+  [352] getlocal 17 ............................. <tImIconPosH>
+  [354] getlocal 18 ............................. <tImIconPosV>
+  [356] pusharglist 4 ........................... <tImIconPosH, tImIconPosV, tImIconPosH, tImIconPosV>
+  [358] extcall 286 ............................. <rect(tImIconPosH, tImIconPosV, tImIconPosH, tImIconPosV)>
+  [361] add ..................................... <tImIconRect + rect(tImIconPosH, tImIconPosV, tImIconPosH, tImIconPosV)>
+  [362] setlocal 11 ............................. tdestrect = tImIconRect + rect(tImIconPosH, tImIconPosV, tImIconPosH, tImIconPosV)
+  [364] getlocal 3 .............................. <tItemImg>
+  [366] getlocal 15 ............................. <tImIconImg>
+  [368] getlocal 11 ............................. <tdestrect>
+  [370] getlocal 16 ............................. <tImIconRect>
+  [372] pushsymb 499 ............................ <#ink>
+  [375] pushint8 36 ............................. <36>
+  [377] pusharglist 2 ........................... <[#ink: 36]>
+  [379] pushproplist ............................ <[#ink: 36]>
+  [380] pusharglistnoret 5 ...................... <tItemImg, tImIconImg, tdestrect, tImIconRect, [#ink: 36]>
+  [382] objcall 496 ............................. tItemImg.copyPixels(tImIconImg, tdestrect, tImIconRect, [#ink: 36])
+  [385] getparam 1 .............................. <tFriendData>
+  [387] pushsymb 424 ............................ <#canfollow>
+  [390] pusharglist 2 ........................... <tFriendData, #canfollow>
+  [392] objcall 80 .............................. <tFriendData[#canfollow]>
+  [394] jmpifz [484] ............................ if tFriendData[#canfollow] then
+  [397] pushcons 14 ............................. <"fr.online.follow.icon">
+  [399] pusharglist 1 ........................... <"fr.online.follow.icon">
+  [401] extcall 67 .............................. <getVariable("fr.online.follow.icon")>
+  [403] pusharglist 1 ........................... <getVariable("fr.online.follow.icon")>
+  [405] extcall 267 ............................. <getMember(getVariable("fr.online.follow.icon"))>
+  [408] getobjprop 495 .......................... <getMember(getVariable("fr.online.follow.icon")).image>
+  [411] setlocal 19 ............................. tFollowIconImg = getMember(getVariable("fr.online.follow.icon")).image
+  [413] getlocal 19 ............................. <tFollowIconImg>
+  [415] getobjprop 286 .......................... <tFollowIconImg.rect>
+  [418] setlocal 20 ............................. tFollowIconRect = tFollowIconImg.rect
+  [420] pushcons 15 ............................. <"fr.online.follow.offset.h">
+  [422] pusharglist 1 ........................... <"fr.online.follow.offset.h">
+  [424] extcall 67 .............................. <getVariable("fr.online.follow.offset.h")>
+  [426] pusharglist 1 ........................... <getVariable("fr.online.follow.offset.h")>
+  [428] extcall 116 ............................. <integer(getVariable("fr.online.follow.offset.h"))>
+  [430] setlocal 21 ............................. tFollowIconPosH = integer(getVariable("fr.online.follow.offset.h"))
+  [432] getprop 524 ............................. <pItemHeight>
+  [435] getlocal 19 ............................. <tFollowIconImg>
+  [437] getobjprop 217 .......................... <tFollowIconImg.height>
+  [439] sub ..................................... <pItemHeight - tFollowIconImg.height>
+  [440] pushint8 2 .............................. <2>
+  [442] div ..................................... <(pItemHeight - tFollowIconImg.height) / 2>
+  [443] setlocal 22 ............................. tFollowIconPosV = (pItemHeight - tFollowIconImg.height) / 2
+  [445] getlocal 20 ............................. <tFollowIconRect>
+  [447] getlocal 21 ............................. <tFollowIconPosH>
+  [449] getlocal 22 ............................. <tFollowIconPosV>
+  [451] getlocal 21 ............................. <tFollowIconPosH>
+  [453] getlocal 22 ............................. <tFollowIconPosV>
+  [455] pusharglist 4 ........................... <tFollowIconPosH, tFollowIconPosV, tFollowIconPosH, tFollowIconPosV>
+  [457] extcall 286 ............................. <rect(tFollowIconPosH, tFollowIconPosV, tFollowIconPosH, tFollowIconPosV)>
+  [460] add ..................................... <tFollowIconRect + rect(tFollowIconPosH, tFollowIconPosV, tFollowIconPosH, tFollowIconPosV)>
+  [461] setlocal 11 ............................. tdestrect = tFollowIconRect + rect(tFollowIconPosH, tFollowIconPosV, tFollowIconPosH, tFollowIconPosV)
+  [463] getlocal 3 .............................. <tItemImg>
+  [465] getlocal 19 ............................. <tFollowIconImg>
+  [467] getlocal 11 ............................. <tdestrect>
+  [469] getlocal 20 ............................. <tFollowIconRect>
+  [471] pushsymb 499 ............................ <#ink>
+  [474] pushint8 36 ............................. <36>
+  [476] pusharglist 2 ........................... <[#ink: 36]>
+  [478] pushproplist ............................ <[#ink: 36]>
+  [479] pusharglistnoret 5 ...................... <tItemImg, tFollowIconImg, tdestrect, tFollowIconRect, [#ink: 36]>
+  [481] objcall 496 ............................. tItemImg.copyPixels(tFollowIconImg, tdestrect, tFollowIconRect, [#ink: 36])
+  [484] getlocal 3 .............................. <tItemImg>
+  [486] pusharglist 1 ........................... <tItemImg>
+  [488] objcall 134 ............................. <tItemImg.duplicate()>
+  [490] pusharglistnoret 1 ...................... <tItemImg.duplicate()>
+  [492] extcall 44 .............................. return tItemImg.duplicate()
+  [494] ret
+end
+
+on renderListImage me
+  [  0] getprop 487 ............................. <pContentList>
+  [  3] getobjprop 100 .......................... <pContentList.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pContentList.count = 0>
+  [  7] jmpifz [ 26] ............................ if pContentList.count = 0 then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pushint8 32 ............................. <32>
+  [ 18] pusharglist 3 ........................... <1, 1, 32>
+  [ 20] extcall 495 ............................. <image(1, 1, 32)>
+  [ 23] setobjprop 498 .......................... me.pListImg = image(1, 1, 32)
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglist 0 ........................... <[]>
+  [ 30] pushlist ................................ <[]>
+  [ 31] setobjprop 482 .......................... me.pFriendRenderQueue = []
+  [ 34] pushcons 2 .............................. <"fr.online.item.height">
+  [ 36] pusharglist 1 ........................... <"fr.online.item.height">
+  [ 38] extcall 67 .............................. <getVariable("fr.online.item.height")>
+  [ 40] pusharglist 1 ........................... <getVariable("fr.online.item.height")>
+  [ 42] extcall 116 ............................. <integer(getVariable("fr.online.item.height"))>
+  [ 44] setlocal 0 .............................. tItemHeight = integer(getVariable("fr.online.item.height"))
+  [ 46] pushzero ................................ <0>
+  [ 47] setlocal 1 .............................. tCurrentPosV = 0
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] setlocal 2
+  [ 53] getlocal 2
+  [ 55] getprop 487 ............................. <pContentList>
+  [ 58] getobjprop 100 .......................... <pContentList.count>
+  [ 60] lteq
+  [ 61] jmpifz [115] ............................ repeat with tNo = 1 to pContentList.count
+  [ 64] getprop 487 ............................. <pContentList>
+  [ 67] getlocal 2 .............................. <tNo>
+  [ 69] pusharglist 2 ........................... <pContentList, tNo>
+  [ 71] objcall 80 .............................. <pContentList[tNo]>
+  [ 73] setlocal 3 .............................. tFriend = pContentList[tNo]
+  [ 75] getlocal 3 .............................. <tFriend>
+  [ 77] pushsymb 554 ............................ <#posV>
+  [ 80] getlocal 1 .............................. <tCurrentPosV>
+  [ 82] pusharglistnoret 3 ...................... <tFriend, #posV, tCurrentPosV>
+  [ 84] objcall 438 ............................. tFriend.setaProp(#posV, tCurrentPosV)
+  [ 87] getparam 0 .............................. <me>
+  [ 89] getchainedprop 482 ...................... <me.pFriendRenderQueue>
+  [ 92] getlocal 3 .............................. <tFriend>
+  [ 94] pusharglistnoret 2 ...................... <me.pFriendRenderQueue, tFriend>
+  [ 96] objcall 449 ............................. me.pFriendRenderQueue.append(tFriend)
+  [ 99] getlocal 1 .............................. <tCurrentPosV>
+  [101] getlocal 0 .............................. <tItemHeight>
+  [103] add ..................................... <tCurrentPosV + tItemHeight>
+  [104] setlocal 1 .............................. tCurrentPosV = tCurrentPosV + tItemHeight
+  [106] pushint8 1
+  [108] getlocal 2
+  [110] add
+  [111] setlocal 2
+  [113] endrepeat [ 53]
+  [115] getparam 0 .............................. <me>
+  [117] pusharglist 1 ........................... <me>
+  [119] objcall 497 ............................. <me.renderBackgroundImage()>
+  [122] setprop 498 ............................. pListImg = me.renderBackgroundImage()
+  [125] ret
+end
+
+on renderFromQueue me, tContentElement
+  [  0] getparam 1 .............................. <tContentElement>
+  [  2] pushzero ................................ <0>
+  [  3] eq ...................................... <tContentElement = 0>
+  [  4] jmpifz [ 21] ............................ if tContentElement = 0 then
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 0 ........................... <[]>
+  [ 11] pushlist ................................ <[]>
+  [ 12] setobjprop 482 .......................... me.pFriendRenderQueue = []
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 44 .............................. return 1
+  [ 21] pushcons 2 .............................. <"fr.online.item.height">
+  [ 23] pusharglist 1 ........................... <"fr.online.item.height">
+  [ 25] extcall 67 .............................. <getVariable("fr.online.item.height")>
+  [ 27] pusharglist 1 ........................... <getVariable("fr.online.item.height")>
+  [ 29] extcall 116 ............................. <integer(getVariable("fr.online.item.height"))>
+  [ 31] setlocal 0 .............................. tItemHeight = integer(getVariable("fr.online.item.height"))
+  [ 33] pushcons 3 .............................. <"fr.list.panel.width">
+  [ 35] pusharglist 1 ........................... <"fr.list.panel.width">
+  [ 37] extcall 67 .............................. <getVariable("fr.list.panel.width")>
+  [ 39] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [ 41] extcall 116 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [ 43] setlocal 1 .............................. tWidth = integer(getVariable("fr.list.panel.width"))
+  [ 45] pushcons 8 .............................. <"fr.online.face.offset.h">
+  [ 47] pusharglist 1 ........................... <"fr.online.face.offset.h">
+  [ 49] extcall 67 .............................. <getVariable("fr.online.face.offset.h")>
+  [ 51] pusharglist 1 ........................... <getVariable("fr.online.face.offset.h")>
+  [ 53] extcall 116 ............................. <integer(getVariable("fr.online.face.offset.h"))>
+  [ 55] setlocal 2 .............................. tFacePosH = integer(getVariable("fr.online.face.offset.h"))
+  [ 57] pushcons 11 ............................. <"fr.online.name.offset.h">
+  [ 59] pusharglist 1 ........................... <"fr.online.name.offset.h">
+  [ 61] extcall 67 .............................. <getVariable("fr.online.name.offset.h")>
+  [ 63] pusharglist 1 ........................... <getVariable("fr.online.name.offset.h")>
+  [ 65] extcall 116 ............................. <integer(getVariable("fr.online.name.offset.h"))>
+  [ 67] setlocal 3 .............................. tNamePosH = integer(getVariable("fr.online.name.offset.h"))
+  [ 69] getlocal 1 .............................. <tWidth>
+  [ 71] getlocal 0 .............................. <tItemHeight>
+  [ 73] getprop 487 ............................. <pContentList>
+  [ 76] getobjprop 100 .......................... <pContentList.count>
+  [ 78] mul ..................................... <tItemHeight * pContentList.count>
+  [ 79] pushint8 32 ............................. <32>
+  [ 81] pusharglist 3 ........................... <tWidth, tItemHeight * pContentList.count, 32>
+  [ 83] extcall 495 ............................. <image(tWidth, tItemHeight * pContentList.count, 32)>
+  [ 86] setlocal 4 .............................. tImage = image(tWidth, tItemHeight * pContentList.count, 32)
+  [ 88] pushzero ................................ <0>
+  [ 89] setlocal 5 .............................. tCurrentPosV = 0
+  [ 91] getprop 528 ............................. <pWriterIdPlain>
+  [ 94] pusharglist 1 ........................... <pWriterIdPlain>
+  [ 96] extcall 489 ............................. <getWriter(pWriterIdPlain)>
+  [ 99] setlocal 6 .............................. tNameWriter = getWriter(pWriterIdPlain)
+  [101] pushcons 5 .............................. <"Figure_System">
+  [103] pusharglist 1 ........................... <"Figure_System">
+  [105] extcall 309 ............................. <getObject("Figure_System")>
+  [108] setlocal 7 .............................. tFigureParser = getObject("Figure_System")
+  [110] pushsymb 532 ............................ <#head>
+  [113] setlocal 8 .............................. tPartList = #head
+  [115] pushcons 6 .............................. <"Figure_Preview">
+  [117] pusharglist 1 ........................... <"Figure_Preview">
+  [119] extcall 309 ............................. <getObject("Figure_Preview")>
+  [122] setlocal 9 .............................. tPreviewObj = getObject("Figure_Preview")
+  [124] pushcons 16 ............................. <"friends_im_icon">
+  [126] pusharglist 1 ........................... <"friends_im_icon">
+  [128] extcall 267 ............................. <getMember("friends_im_icon")>
+  [131] getobjprop 495 .......................... <getMember("friends_im_icon").image>
+  [134] setlocal 10 ............................. tImIconImg = getMember("friends_im_icon").image
+  [136] getlocal 10 ............................. <tImIconImg>
+  [138] getobjprop 286 .......................... <tImIconImg.rect>
+  [141] setlocal 11 ............................. tImIconRect = tImIconImg.rect
+  [143] pushcons 13 ............................. <"fr.online.im.offset.h">
+  [145] pusharglist 1 ........................... <"fr.online.im.offset.h">
+  [147] extcall 67 .............................. <getVariable("fr.online.im.offset.h")>
+  [149] pusharglist 1 ........................... <getVariable("fr.online.im.offset.h")>
+  [151] extcall 116 ............................. <integer(getVariable("fr.online.im.offset.h"))>
+  [153] setlocal 12 ............................. tImIconPosH = integer(getVariable("fr.online.im.offset.h"))
+  [155] getlocal 0 .............................. <tItemHeight>
+  [157] getlocal 10 ............................. <tImIconImg>
+  [159] getobjprop 217 .......................... <tImIconImg.height>
+  [161] sub ..................................... <tItemHeight - tImIconImg.height>
+  [162] pushint8 2 .............................. <2>
+  [164] div ..................................... <(tItemHeight - tImIconImg.height) / 2>
+  [165] setlocal 13 ............................. tImIconPosV = (tItemHeight - tImIconImg.height) / 2
+  [167] pushcons 17 ............................. <"friends_follow_icon">
+  [169] pusharglist 1 ........................... <"friends_follow_icon">
+  [171] extcall 267 ............................. <getMember("friends_follow_icon")>
+  [174] getobjprop 495 .......................... <getMember("friends_follow_icon").image>
+  [177] setlocal 14 ............................. tFollowIconImg = getMember("friends_follow_icon").image
+  [179] getlocal 14 ............................. <tFollowIconImg>
+  [181] getobjprop 286 .......................... <tFollowIconImg.rect>
+  [184] setlocal 15 ............................. tFollowIconRect = tFollowIconImg.rect
+  [186] pushcons 15 ............................. <"fr.online.follow.offset.h">
+  [188] pusharglist 1 ........................... <"fr.online.follow.offset.h">
+  [190] extcall 67 .............................. <getVariable("fr.online.follow.offset.h")>
+  [192] pusharglist 1 ........................... <getVariable("fr.online.follow.offset.h")>
+  [194] extcall 116 ............................. <integer(getVariable("fr.online.follow.offset.h"))>
+  [196] setlocal 16 ............................. tFollowIconPosH = integer(getVariable("fr.online.follow.offset.h"))
+  [198] getlocal 0 .............................. <tItemHeight>
+  [200] getlocal 14 ............................. <tFollowIconImg>
+  [202] getobjprop 217 .......................... <tFollowIconImg.height>
+  [204] sub ..................................... <tItemHeight - tFollowIconImg.height>
+  [205] pushint8 2 .............................. <2>
+  [207] div ..................................... <(tItemHeight - tFollowIconImg.height) / 2>
+  [208] setlocal 17 ............................. tFollowIconPosV = (tItemHeight - tFollowIconImg.height) / 2
+  [210] pushint8 1 .............................. <1>
+  [212] setlocal 18
+  [214] getlocal 18
+  [216] getparam 0 .............................. <me>
+  [218] getobjprop 483 .......................... <me.pTasksPerUpdate>
+  [221] lteq
+  [222] jmpifz [631] ............................ repeat with i = 1 to me.pTasksPerUpdate
+  [225] getparam 0 .............................. <me>
+  [227] pushsymb 482 ............................ <#pFriendRenderQueue>
+  [230] pusharglist 2 ........................... <me, #pFriendRenderQueue>
+  [232] objcall 100 ............................. <me.pFriendRenderQueue.count>
+  [234] pushzero ................................ <0>
+  [235] gt ...................................... <me.pFriendRenderQueue.count > 0>
+  [236] jmpifz [621] ............................ if me.pFriendRenderQueue.count > 0 then
+  [239] getparam 0 .............................. <me>
+  [241] pushsymb 482 ............................ <#pFriendRenderQueue>
+  [244] pushint8 1 .............................. <1>
+  [246] pusharglist 3 ........................... <me, #pFriendRenderQueue, 1>
+  [248] objcall 371 ............................. <me.pFriendRenderQueue[1]>
+  [251] setlocal 19 ............................. tFriend = me.pFriendRenderQueue[1]
+  [253] getparam 0 .............................. <me>
+  [255] getchainedprop 482 ...................... <me.pFriendRenderQueue>
+  [258] pushint8 1 .............................. <1>
+  [260] pusharglistnoret 2 ...................... <me.pFriendRenderQueue, 1>
+  [262] objcall 128 ............................. me.pFriendRenderQueue.deleteAt(1)
+  [264] getlocal 19 ............................. <tFriend>
+  [266] pushsymb 554 ............................ <#posV>
+  [269] pusharglist 2 ........................... <tFriend, #posV>
+  [271] objcall 80 .............................. <tFriend[#posV]>
+  [273] setlocal 5 .............................. tCurrentPosV = tFriend[#posV]
+  [275] getparam 0 .............................. <me>
+  [277] getlocal 19 ............................. <tFriend>
+  [279] pushsymb 243 ............................ <#name>
+  [281] pusharglist 2 ........................... <tFriend, #name>
+  [283] objcall 80 .............................. <tFriend[#name]>
+  [285] pusharglist 2 ........................... <me, tFriend[#name]>
+  [287] objcall 516 ............................. <me.isFriendselected(tFriend[#name])>
+  [290] jmpifz [330] ............................ if me.isFriendselected(tFriend[#name]) then
+  [293] pushcons 18 ............................. <"fr.online.bg.selected">
+  [295] pusharglist 1 ........................... <"fr.online.bg.selected">
+  [297] extcall 67 .............................. <getVariable("fr.online.bg.selected")>
+  [299] pusharglist 1 ........................... <getVariable("fr.online.bg.selected")>
+  [301] extcall 140 ............................. <string(getVariable("fr.online.bg.selected"))>
+  [303] pusharglist 1 ........................... <string(getVariable("fr.online.bg.selected"))>
+  [305] extcall 268 ............................. <rgb(string(getVariable("fr.online.bg.selected")))>
+  [308] setlocal 20 ............................. tSelectedBg = rgb(string(getVariable("fr.online.bg.selected")))
+  [310] getprop 498 ............................. <pListImg>
+  [313] pushzero ................................ <0>
+  [314] getlocal 5 .............................. <tCurrentPosV>
+  [316] getlocal 1 .............................. <tWidth>
+  [318] getlocal 5 .............................. <tCurrentPosV>
+  [320] getlocal 0 .............................. <tItemHeight>
+  [322] add ..................................... <tCurrentPosV + tItemHeight>
+  [323] getlocal 20 ............................. <tSelectedBg>
+  [325] pusharglistnoret 6 ...................... <pListImg, 0, tCurrentPosV, tWidth, tCurrentPosV + tItemHeight, tSelectedBg>
+  [327] objcall 530 ............................. pListImg.fill(0, tCurrentPosV, tWidth, tCurrentPosV + tItemHeight, tSelectedBg)
+  [330] getlocal 7 .............................. <tFigureParser>
+  [332] getlocal 19 ............................. <tFriend>
+  [334] pushsymb 425 ............................ <#figure>
+  [337] pusharglist 2 ........................... <tFriend, #figure>
+  [339] objcall 80 .............................. <tFriend[#figure]>
+  [341] getlocal 19 ............................. <tFriend>
+  [343] pushsymb 422 ............................ <#sex>
+  [346] pusharglist 2 ........................... <tFriend, #sex>
+  [348] objcall 80 .............................. <tFriend[#sex]>
+  [350] pushcons 9 .............................. <"user">
+  [352] pusharglist 4 ........................... <tFigureParser, tFriend[#figure], tFriend[#sex], "user">
+  [354] objcall 531 ............................. <tFigureParser.parseFigure(tFriend[#figure], tFriend[#sex], "user")>
+  [357] setlocal 21 ............................. tParsedFigure = tFigureParser.parseFigure(tFriend[#figure], tFriend[#sex], "user")
+  [359] getlocal 9 .............................. <tPreviewObj>
+  [361] getlocal 8 .............................. <tPartList>
+  [363] getlocal 21 ............................. <tParsedFigure>
+  [365] pushint8 2 .............................. <2>
+  [367] pushcons 10 ............................. <"sh">
+  [369] pusharglist 5 ........................... <tPreviewObj, tPartList, tParsedFigure, 2, "sh">
+  [371] objcall 533 ............................. <tPreviewObj.getHumanPartImg(tPartList, tParsedFigure, 2, "sh")>
+  [374] setlocal 22 ............................. tHeadImage = tPreviewObj.getHumanPartImg(tPartList, tParsedFigure, 2, "sh")
+  [376] getlocal 22 ............................. <tHeadImage>
+  [378] getobjprop 286 .......................... <tHeadImage.rect>
+  [381] setlocal 23 ............................. tSourceRect = tHeadImage.rect
+  [383] getlocal 5 .............................. <tCurrentPosV>
+  [385] getlocal 0 .............................. <tItemHeight>
+  [387] getlocal 22 ............................. <tHeadImage>
+  [389] getobjprop 217 .......................... <tHeadImage.height>
+  [391] sub ..................................... <tItemHeight - tHeadImage.height>
+  [392] pushint8 2 .............................. <2>
+  [394] div ..................................... <(tItemHeight - tHeadImage.height) / 2>
+  [395] add ..................................... <tCurrentPosV + ((tItemHeight - tHeadImage.height) / 2)>
+  [396] setlocal 24 ............................. tFacePosV = tCurrentPosV + ((tItemHeight - tHeadImage.height) / 2)
+  [398] getlocal 23 ............................. <tSourceRect>
+  [400] getlocal 2 .............................. <tFacePosH>
+  [402] getlocal 24 ............................. <tFacePosV>
+  [404] getlocal 2 .............................. <tFacePosH>
+  [406] getlocal 24 ............................. <tFacePosV>
+  [408] pusharglist 4 ........................... <tFacePosH, tFacePosV, tFacePosH, tFacePosV>
+  [410] extcall 286 ............................. <rect(tFacePosH, tFacePosV, tFacePosH, tFacePosV)>
+  [413] add ..................................... <tSourceRect + rect(tFacePosH, tFacePosV, tFacePosH, tFacePosV)>
+  [414] setlocal 25 ............................. tdestrect = tSourceRect + rect(tFacePosH, tFacePosV, tFacePosH, tFacePosV)
+  [416] getprop 498 ............................. <pListImg>
+  [419] getlocal 22 ............................. <tHeadImage>
+  [421] getlocal 25 ............................. <tdestrect>
+  [423] getlocal 23 ............................. <tSourceRect>
+  [425] pushsymb 499 ............................ <#ink>
+  [428] pushint8 36 ............................. <36>
+  [430] pusharglist 2 ........................... <[#ink: 36]>
+  [432] pushproplist ............................ <[#ink: 36]>
+  [433] pusharglistnoret 5 ...................... <pListImg, tHeadImage, tdestrect, tSourceRect, [#ink: 36]>
+  [435] objcall 496 ............................. pListImg.copyPixels(tHeadImage, tdestrect, tSourceRect, [#ink: 36])
+  [438] getlocal 6 .............................. <tNameWriter>
+  [440] getlocal 19 ............................. <tFriend>
+  [442] pushsymb 243 ............................ <#name>
+  [444] pusharglist 2 ........................... <tFriend, #name>
+  [446] objcall 80 .............................. <tFriend[#name]>
+  [448] pusharglist 2 ........................... <tNameWriter, tFriend[#name]>
+  [450] objcall 494 ............................. <tNameWriter.render(tFriend[#name])>
+  [453] setlocal 26 ............................. tNameImage = tNameWriter.render(tFriend[#name])
+  [455] getlocal 26 ............................. <tNameImage>
+  [457] getobjprop 286 .......................... <tNameImage.rect>
+  [460] setlocal 23 ............................. tSourceRect = tNameImage.rect
+  [462] getlocal 5 .............................. <tCurrentPosV>
+  [464] getlocal 0 .............................. <tItemHeight>
+  [466] getlocal 26 ............................. <tNameImage>
+  [468] getobjprop 217 .......................... <tNameImage.height>
+  [470] sub ..................................... <tItemHeight - tNameImage.height>
+  [471] pushint8 2 .............................. <2>
+  [473] div ..................................... <(tItemHeight - tNameImage.height) / 2>
+  [474] add ..................................... <tCurrentPosV + ((tItemHeight - tNameImage.height) / 2)>
+  [475] setlocal 27 ............................. tNamePosV = tCurrentPosV + ((tItemHeight - tNameImage.height) / 2)
+  [477] getlocal 23 ............................. <tSourceRect>
+  [479] getlocal 3 .............................. <tNamePosH>
+  [481] getlocal 27 ............................. <tNamePosV>
+  [483] getlocal 3 .............................. <tNamePosH>
+  [485] getlocal 27 ............................. <tNamePosV>
+  [487] pusharglist 4 ........................... <tNamePosH, tNamePosV, tNamePosH, tNamePosV>
+  [489] extcall 286 ............................. <rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [492] add ..................................... <tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [493] setlocal 25 ............................. tdestrect = tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)
+  [495] getprop 498 ............................. <pListImg>
+  [498] getlocal 26 ............................. <tNameImage>
+  [500] getlocal 25 ............................. <tdestrect>
+  [502] getlocal 23 ............................. <tSourceRect>
+  [504] pushsymb 499 ............................ <#ink>
+  [507] pushint8 36 ............................. <36>
+  [509] pusharglist 2 ........................... <[#ink: 36]>
+  [511] pushproplist ............................ <[#ink: 36]>
+  [512] pusharglistnoret 5 ...................... <pListImg, tNameImage, tdestrect, tSourceRect, [#ink: 36]>
+  [514] objcall 496 ............................. pListImg.copyPixels(tNameImage, tdestrect, tSourceRect, [#ink: 36])
+  [517] getlocal 11 ............................. <tImIconRect>
+  [519] getlocal 12 ............................. <tImIconPosH>
+  [521] getlocal 5 .............................. <tCurrentPosV>
+  [523] getlocal 13 ............................. <tImIconPosV>
+  [525] add ..................................... <tCurrentPosV + tImIconPosV>
+  [526] getlocal 12 ............................. <tImIconPosH>
+  [528] getlocal 5 .............................. <tCurrentPosV>
+  [530] getlocal 13 ............................. <tImIconPosV>
+  [532] add ..................................... <tCurrentPosV + tImIconPosV>
+  [533] pusharglist 4 ........................... <tImIconPosH, tCurrentPosV + tImIconPosV, tImIconPosH, tCurrentPosV + tImIconPosV>
+  [535] extcall 286 ............................. <rect(tImIconPosH, tCurrentPosV + tImIconPosV, tImIconPosH, tCurrentPosV + tImIconPosV)>
+  [538] add ..................................... <tImIconRect + rect(tImIconPosH, tCurrentPosV + tImIconPosV, tImIconPosH, tCurrentPosV + tImIconPosV)>
+  [539] setlocal 25 ............................. tdestrect = tImIconRect + rect(tImIconPosH, tCurrentPosV + tImIconPosV, tImIconPosH, tCurrentPosV + tImIconPosV)
+  [541] getprop 498 ............................. <pListImg>
+  [544] getlocal 10 ............................. <tImIconImg>
+  [546] getlocal 25 ............................. <tdestrect>
+  [548] getlocal 11 ............................. <tImIconRect>
+  [550] pushsymb 499 ............................ <#ink>
+  [553] pushint8 36 ............................. <36>
+  [555] pusharglist 2 ........................... <[#ink: 36]>
+  [557] pushproplist ............................ <[#ink: 36]>
+  [558] pusharglistnoret 5 ...................... <pListImg, tImIconImg, tdestrect, tImIconRect, [#ink: 36]>
+  [560] objcall 496 ............................. pListImg.copyPixels(tImIconImg, tdestrect, tImIconRect, [#ink: 36])
+  [563] getlocal 19 ............................. <tFriend>
+  [565] pushsymb 424 ............................ <#canfollow>
+  [568] pusharglist 2 ........................... <tFriend, #canfollow>
+  [570] objcall 80 .............................. <tFriend[#canfollow]>
+  [572] jmpifz [621] ............................ if tFriend[#canfollow] then
+  [575] getlocal 15 ............................. <tFollowIconRect>
+  [577] getlocal 16 ............................. <tFollowIconPosH>
+  [579] getlocal 5 .............................. <tCurrentPosV>
+  [581] getlocal 17 ............................. <tFollowIconPosV>
+  [583] add ..................................... <tCurrentPosV + tFollowIconPosV>
+  [584] getlocal 16 ............................. <tFollowIconPosH>
+  [586] getlocal 5 .............................. <tCurrentPosV>
+  [588] getlocal 17 ............................. <tFollowIconPosV>
+  [590] add ..................................... <tCurrentPosV + tFollowIconPosV>
+  [591] pusharglist 4 ........................... <tFollowIconPosH, tCurrentPosV + tFollowIconPosV, tFollowIconPosH, tCurrentPosV + tFollowIconPosV>
+  [593] extcall 286 ............................. <rect(tFollowIconPosH, tCurrentPosV + tFollowIconPosV, tFollowIconPosH, tCurrentPosV + tFollowIconPosV)>
+  [596] add ..................................... <tFollowIconRect + rect(tFollowIconPosH, tCurrentPosV + tFollowIconPosV, tFollowIconPosH, tCurrentPosV + tFollowIconPosV)>
+  [597] setlocal 25 ............................. tdestrect = tFollowIconRect + rect(tFollowIconPosH, tCurrentPosV + tFollowIconPosV, tFollowIconPosH, tCurrentPosV + tFollowIconPosV)
+  [599] getprop 498 ............................. <pListImg>
+  [602] getlocal 14 ............................. <tFollowIconImg>
+  [604] getlocal 25 ............................. <tdestrect>
+  [606] getlocal 15 ............................. <tFollowIconRect>
+  [608] pushsymb 499 ............................ <#ink>
+  [611] pushint8 36 ............................. <36>
+  [613] pusharglist 2 ........................... <[#ink: 36]>
+  [615] pushproplist ............................ <[#ink: 36]>
+  [616] pusharglistnoret 5 ...................... <pListImg, tFollowIconImg, tdestrect, tFollowIconRect, [#ink: 36]>
+  [618] objcall 496 ............................. pListImg.copyPixels(tFollowIconImg, tdestrect, tFollowIconRect, [#ink: 36])
+  [621] pushint8 1
+  [623] getlocal 18
+  [625] add
+  [626] setlocal 18
+  [628] endrepeat [214]
+  [631] getparam 1 .............................. <tContentElement>
+  [633] getprop 498 ............................. <pListImg>
+  [636] pusharglistnoret 2 ...................... <tContentElement, pListImg>
+  [638] objcall 261 ............................. tContentElement.feedImage(pListImg)
+  [641] ret
+end
+
+on renderBackgroundImage me
+  [  0] getprop 487 ............................. <pContentList>
+  [  3] pusharglist 1 ........................... <pContentList>
+  [  5] extcall 77 .............................. <ilk(pContentList)>
+  [  7] pushsymb 78 ............................. <#propList>
+  [  9] nteq .................................... <ilk(pContentList) <> #propList>
+  [ 10] jmpifz [ 28] ............................ if ilk(pContentList) <> #propList then
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pushint8 32 ............................. <32>
+  [ 19] pusharglist 3 ........................... <1, 1, 32>
+  [ 21] extcall 495 ............................. <image(1, 1, 32)>
+  [ 24] pusharglistnoret 1 ...................... <image(1, 1, 32)>
+  [ 26] extcall 44 .............................. return image(1, 1, 32)
+  [ 28] getprop 487 ............................. <pContentList>
+  [ 31] getobjprop 100 .......................... <pContentList.count>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <pContentList.count = 0>
+  [ 35] jmpifz [ 53] ............................ if pContentList.count = 0 then
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] pushint8 32 ............................. <32>
+  [ 44] pusharglist 3 ........................... <1, 1, 32>
+  [ 46] extcall 495 ............................. <image(1, 1, 32)>
+  [ 49] pusharglistnoret 1 ...................... <image(1, 1, 32)>
+  [ 51] extcall 44 .............................. return image(1, 1, 32)
+  [ 53] pushcons 19 ............................. <"fr.online.bg.dark">
+  [ 55] pusharglist 1 ........................... <"fr.online.bg.dark">
+  [ 57] extcall 67 .............................. <getVariable("fr.online.bg.dark")>
+  [ 59] pusharglist 1 ........................... <getVariable("fr.online.bg.dark")>
+  [ 61] extcall 140 ............................. <string(getVariable("fr.online.bg.dark"))>
+  [ 63] pusharglist 1 ........................... <string(getVariable("fr.online.bg.dark"))>
+  [ 65] extcall 268 ............................. <rgb(string(getVariable("fr.online.bg.dark")))>
+  [ 68] setlocal 0 .............................. tDarkBg = rgb(string(getVariable("fr.online.bg.dark")))
+  [ 70] pushcons 2 .............................. <"fr.online.item.height">
+  [ 72] pusharglist 1 ........................... <"fr.online.item.height">
+  [ 74] extcall 67 .............................. <getVariable("fr.online.item.height")>
+  [ 76] pusharglist 1 ........................... <getVariable("fr.online.item.height")>
+  [ 78] extcall 116 ............................. <integer(getVariable("fr.online.item.height"))>
+  [ 80] setprop 524 ............................. pItemHeight = integer(getVariable("fr.online.item.height"))
+  [ 83] pushcons 3 .............................. <"fr.list.panel.width">
+  [ 85] pusharglist 1 ........................... <"fr.list.panel.width">
+  [ 87] extcall 67 .............................. <getVariable("fr.list.panel.width")>
+  [ 89] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [ 91] extcall 116 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [ 93] setprop 513 ............................. pItemWidth = integer(getVariable("fr.list.panel.width"))
+  [ 96] getprop 513 ............................. <pItemWidth>
+  [ 99] getprop 487 ............................. <pContentList>
+  [102] getobjprop 100 .......................... <pContentList.count>
+  [104] getprop 524 ............................. <pItemHeight>
+  [107] mul ..................................... <pContentList.count * pItemHeight>
+  [108] pushint8 32 ............................. <32>
+  [110] pusharglist 3 ........................... <pItemWidth, pContentList.count * pItemHeight, 32>
+  [112] extcall 495 ............................. <image(pItemWidth, pContentList.count * pItemHeight, 32)>
+  [115] setlocal 1 .............................. tImage = image(pItemWidth, pContentList.count * pItemHeight, 32)
+  [117] pushzero ................................ <0>
+  [118] setlocal 2 .............................. tCurrentPosV = 0
+  [120] pushint8 1 .............................. <1>
+  [122] setlocal 3
+  [124] getlocal 3
+  [126] getprop 487 ............................. <pContentList>
+  [129] getobjprop 100 .......................... <pContentList.count>
+  [131] pushint8 2 .............................. <2>
+  [133] div ..................................... <pContentList.count / 2>
+  [134] pushint8 1 .............................. <1>
+  [136] add ..................................... <(pContentList.count / 2) + 1>
+  [137] lteq
+  [138] jmpifz [182] ............................ repeat with tIndex = 1 to (pContentList.count / 2) + 1
+  [141] getlocal 1 .............................. <tImage>
+  [143] pushzero ................................ <0>
+  [144] getlocal 2 .............................. <tCurrentPosV>
+  [146] getprop 513 ............................. <pItemWidth>
+  [149] getlocal 2 .............................. <tCurrentPosV>
+  [151] getprop 524 ............................. <pItemHeight>
+  [154] add ..................................... <tCurrentPosV + pItemHeight>
+  [155] getlocal 0 .............................. <tDarkBg>
+  [157] pusharglistnoret 6 ...................... <tImage, 0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, tDarkBg>
+  [159] objcall 530 ............................. tImage.fill(0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, tDarkBg)
+  [162] getlocal 2 .............................. <tCurrentPosV>
+  [164] getprop 524 ............................. <pItemHeight>
+  [167] pushint8 2 .............................. <2>
+  [169] mul ..................................... <pItemHeight * 2>
+  [170] add ..................................... <tCurrentPosV + (pItemHeight * 2)>
+  [171] setlocal 2 .............................. tCurrentPosV = tCurrentPosV + (pItemHeight * 2)
+  [173] pushint8 1
+  [175] getlocal 3
+  [177] add
+  [178] setlocal 3
+  [180] endrepeat [124]
+  [182] getlocal 1 .............................. <tImage>
+  [184] pusharglistnoret 1 ...................... <tImage>
+  [186] extcall 44 .............................. return tImage
+  [188] ret
+end
+
+on relayEvent me, tEvent, tLocX, tLocY
+  [  0] pushcons 2 .............................. <"fr.online.item.height">
+  [  2] pusharglist 1 ........................... <"fr.online.item.height">
+  [  4] extcall 67 .............................. <getVariable("fr.online.item.height")>
+  [  6] pusharglist 1 ........................... <getVariable("fr.online.item.height")>
+  [  8] extcall 116 ............................. <integer(getVariable("fr.online.item.height"))>
+  [ 10] setlocal 0 .............................. tItemHeight = integer(getVariable("fr.online.item.height"))
+  [ 12] getparam 3 .............................. <tLocY>
+  [ 14] getlocal 0 .............................. <tItemHeight>
+  [ 16] div ..................................... <tLocY / tItemHeight>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] add ..................................... <(tLocY / tItemHeight) + 1>
+  [ 20] setlocal 1 .............................. tListIndex = (tLocY / tItemHeight) + 1
+  [ 22] pusharglist 0 ........................... <[:]>
+  [ 24] pushproplist ............................ <[:]>
+  [ 25] setlocal 2 .............................. tEventResult = [:]
+  [ 27] getlocal 2 .............................. <tEventResult>
+  [ 29] pushsymb 337 ............................ <#Event>
+  [ 32] getparam 1 .............................. <tEvent>
+  [ 34] pusharglistnoret 3 ...................... <tEventResult, #Event, tEvent>
+  [ 36] objcall 40 .............................. tEventResult[#Event] = tEvent
+  [ 38] getlocal 2 .............................. <tEventResult>
+  [ 40] pushsymb 338 ............................ <#cursor>
+  [ 43] pushcons 20 ............................. <"cursor.arrow">
+  [ 45] pusharglistnoret 3 ...................... <tEventResult, #cursor, "cursor.arrow">
+  [ 47] objcall 40 .............................. tEventResult[#cursor] = "cursor.arrow"
+  [ 49] getlocal 1 .............................. <tListIndex>
+  [ 51] getprop 487 ............................. <pContentList>
+  [ 54] getobjprop 100 .......................... <pContentList.count>
+  [ 56] gt ...................................... <tListIndex > pContentList.count>
+  [ 57] jmpifz [ 66] ............................ if tListIndex > pContentList.count then
+  [ 60] getlocal 2 .............................. <tEventResult>
+  [ 62] pusharglistnoret 1 ...................... <tEventResult>
+  [ 64] extcall 44 .............................. return tEventResult
+  [ 66] getprop 487 ............................. <pContentList>
+  [ 69] getlocal 1 .............................. <tListIndex>
+  [ 71] pusharglist 2 ........................... <pContentList, tListIndex>
+  [ 73] objcall 80 .............................. <pContentList[tListIndex]>
+  [ 75] setlocal 3 .............................. tFriend = pContentList[tListIndex]
+  [ 77] getlocal 2 .............................. <tEventResult>
+  [ 79] pushsymb 335 ............................ <#friend>
+  [ 82] getlocal 3 .............................. <tFriend>
+  [ 84] pusharglistnoret 3 ...................... <tEventResult, #friend, tFriend>
+  [ 86] objcall 40 .............................. tEventResult[#friend] = tFriend
+  [ 88] getparam 1 .............................. <tEvent>
+  [ 90] pushsymb 213 ............................ <#mouseWithin>
+  [ 92] eq ...................................... <tEvent = #mouseWithin>
+  [ 93] jmpifz [227] ............................ if tEvent = #mouseWithin then
+  [ 96] getparam 2 .............................. <tLocX>
+  [ 98] pushcons 13 ............................. <"fr.online.im.offset.h">
+  [100] pusharglist 1 ........................... <"fr.online.im.offset.h">
+  [102] extcall 67 .............................. <getVariable("fr.online.im.offset.h")>
+  [104] pusharglist 1 ........................... <getVariable("fr.online.im.offset.h")>
+  [106] extcall 116 ............................. <integer(getVariable("fr.online.im.offset.h"))>
+  [108] gt ...................................... <tLocX > integer(getVariable("fr.online.im.offset.h"))>
+  [109] jmpifz [138] ............................ if tLocX > integer(getVariable("fr.online.im.offset.h")) then / else
+  [112] getlocal 2 .............................. <tEventResult>
+  [114] pushsymb 336 ............................ <#element>
+  [117] pushsymb 344 ............................ <#im>
+  [120] pusharglistnoret 3 ...................... <tEventResult, #element, #im>
+  [122] objcall 40 .............................. tEventResult[#element] = #im
+  [124] getlocal 2 .............................. <tEventResult>
+  [126] pushsymb 338 ............................ <#cursor>
+  [129] pushcons 21 ............................. <"cursor.finger">
+  [131] pusharglistnoret 3 ...................... <tEventResult, #cursor, "cursor.finger">
+  [133] objcall 40 .............................. tEventResult[#cursor] = "cursor.finger"
+  [135] jmp [187]
+  [138] getparam 2 .............................. <tLocX>
+  [140] pushcons 15 ............................. <"fr.online.follow.offset.h">
+  [142] pusharglist 1 ........................... <"fr.online.follow.offset.h">
+  [144] extcall 67 .............................. <getVariable("fr.online.follow.offset.h")>
+  [146] pusharglist 1 ........................... <getVariable("fr.online.follow.offset.h")>
+  [148] extcall 116 ............................. <integer(getVariable("fr.online.follow.offset.h"))>
+  [150] gt ...................................... <tLocX > integer(getVariable("fr.online.follow.offset.h"))>
+  [151] getlocal 3 .............................. <tFriend>
+  [153] pushsymb 424 ............................ <#canfollow>
+  [156] pusharglist 2 ........................... <tFriend, #canfollow>
+  [158] objcall 80 .............................. <tFriend[#canfollow]>
+  [160] and ..................................... <(tLocX > integer(getVariable("fr.online.follow.offset.h"))) and tFriend[#canfollow]>
+  [161] jmpifz [187] ............................ if (tLocX > integer(getVariable("fr.online.follow.offset.h"))) and tFriend[#canfollow] then
+  [164] getlocal 2 .............................. <tEventResult>
+  [166] pushsymb 336 ............................ <#element>
+  [169] pushsymb 345 ............................ <#follow>
+  [172] pusharglistnoret 3 ...................... <tEventResult, #element, #follow>
+  [174] objcall 40 .............................. tEventResult[#element] = #follow
+  [176] getlocal 2 .............................. <tEventResult>
+  [178] pushsymb 338 ............................ <#cursor>
+  [181] pushcons 21 ............................. <"cursor.finger">
+  [183] pusharglistnoret 3 ...................... <tEventResult, #cursor, "cursor.finger">
+  [185] objcall 40 .............................. tEventResult[#cursor] = "cursor.finger"
+  [187] getlocal 2 .............................. <tEventResult>
+  [189] pushsymb 342 ............................ <#item_y>
+  [192] getlocal 1 .............................. <tListIndex>
+  [194] pushint8 1 .............................. <1>
+  [196] sub ..................................... <tListIndex - 1>
+  [197] getparam 0 .............................. <me>
+  [199] getobjprop 524 .......................... <me.pItemHeight>
+  [202] mul ..................................... <(tListIndex - 1) * me.pItemHeight>
+  [203] pusharglistnoret 3 ...................... <tEventResult, #item_y, (tListIndex - 1) * me.pItemHeight>
+  [205] objcall 40 .............................. tEventResult[#item_y] = (tListIndex - 1) * me.pItemHeight
+  [207] getlocal 2 .............................. <tEventResult>
+  [209] pushsymb 561 ............................ <#item_height>
+  [212] getparam 0 .............................. <me>
+  [214] getobjprop 524 .......................... <me.pItemHeight>
+  [217] pusharglistnoret 3 ...................... <tEventResult, #item_height, me.pItemHeight>
+  [219] objcall 40 .............................. tEventResult[#item_height] = me.pItemHeight
+  [221] getlocal 2 .............................. <tEventResult>
+  [223] pusharglistnoret 1 ...................... <tEventResult>
+  [225] extcall 44 .............................. return tEventResult
+  [227] getparam 1 .............................. <tEvent>
+  [229] pushsymb 211 ............................ <#mouseUp>
+  [231] nteq .................................... <tEvent <> #mouseUp>
+  [232] jmpifz [241] ............................ if tEvent <> #mouseUp then
+  [235] pushint8 1 .............................. <1>
+  [237] pusharglistnoret 1 ...................... <1>
+  [239] extcall 44 .............................. return 1
+  [241] pushcons 3 .............................. <"fr.list.panel.width">
+  [243] pusharglist 1 ........................... <"fr.list.panel.width">
+  [245] extcall 67 .............................. <getVariable("fr.list.panel.width")>
+  [247] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [249] extcall 116 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [251] setlocal 4 .............................. tListWidth = integer(getVariable("fr.list.panel.width"))
+  [253] getparam 2 .............................. <tLocX>
+  [255] pushcons 13 ............................. <"fr.online.im.offset.h">
+  [257] pusharglist 1 ........................... <"fr.online.im.offset.h">
+  [259] extcall 67 .............................. <getVariable("fr.online.im.offset.h")>
+  [261] pusharglist 1 ........................... <getVariable("fr.online.im.offset.h")>
+  [263] extcall 116 ............................. <integer(getVariable("fr.online.im.offset.h"))>
+  [265] gt ...................................... <tLocX > integer(getVariable("fr.online.im.offset.h"))>
+  [266] jmpifz [284] ............................ if tLocX > integer(getVariable("fr.online.im.offset.h")) then / else
+  [269] getlocal 2 .............................. <tEventResult>
+  [271] pushsymb 336 ............................ <#element>
+  [274] pushsymb 344 ............................ <#im>
+  [277] pusharglistnoret 3 ...................... <tEventResult, #element, #im>
+  [279] objcall 40 .............................. tEventResult[#element] = #im
+  [281] jmp [409]
+  [284] getparam 2 .............................. <tLocX>
+  [286] pushcons 15 ............................. <"fr.online.follow.offset.h">
+  [288] pusharglist 1 ........................... <"fr.online.follow.offset.h">
+  [290] extcall 67 .............................. <getVariable("fr.online.follow.offset.h")>
+  [292] pusharglist 1 ........................... <getVariable("fr.online.follow.offset.h")>
+  [294] extcall 116 ............................. <integer(getVariable("fr.online.follow.offset.h"))>
+  [296] gt ...................................... <tLocX > integer(getVariable("fr.online.follow.offset.h"))>
+  [297] getlocal 3 .............................. <tFriend>
+  [299] pushsymb 424 ............................ <#canfollow>
+  [302] pusharglist 2 ........................... <tFriend, #canfollow>
+  [304] objcall 80 .............................. <tFriend[#canfollow]>
+  [306] and ..................................... <(tLocX > integer(getVariable("fr.online.follow.offset.h"))) and tFriend[#canfollow]>
+  [307] jmpifz [325] ............................ if (tLocX > integer(getVariable("fr.online.follow.offset.h"))) and tFriend[#canfollow] then / else
+  [310] getlocal 2 .............................. <tEventResult>
+  [312] pushsymb 336 ............................ <#element>
+  [315] pushsymb 345 ............................ <#follow>
+  [318] pusharglistnoret 3 ...................... <tEventResult, #element, #follow>
+  [320] objcall 40 .............................. tEventResult[#element] = #follow
+  [322] jmp [409]
+  [325] pusharglist 0 ........................... <>
+  [327] thebuiltin 562 .......................... <the doubleClick>
+  [330] jmpifz [373] ............................ if the doubleClick then / else
+  [333] getlocal 2 .............................. <tEventResult>
+  [335] pushsymb 336 ............................ <#element>
+  [338] pushsymb 344 ............................ <#im>
+  [341] pusharglistnoret 3 ...................... <tEventResult, #element, #im>
+  [343] objcall 40 .............................. tEventResult[#element] = #im
+  [345] getparam 0 .............................. <me>
+  [347] getlocal 3 .............................. <tFriend>
+  [349] pushsymb 243 ............................ <#name>
+  [351] pusharglist 2 ........................... <tFriend, #name>
+  [353] objcall 80 .............................. <tFriend[#name]>
+  [355] pusharglistnoret 2 ...................... <me, tFriend[#name]>
+  [357] objcall 520 ............................. me.userSelectionEvent(tFriend[#name])
+  [360] getlocal 2 .............................. <tEventResult>
+  [362] pushsymb 167 ............................ <#update>
+  [364] pushint8 1 .............................. <1>
+  [366] pusharglistnoret 3 ...................... <tEventResult, #update, 1>
+  [368] objcall 40 .............................. tEventResult[#update] = 1
+  [370] jmp [409]
+  [373] getlocal 2 .............................. <tEventResult>
+  [375] pushsymb 336 ............................ <#element>
+  [378] pushsymb 243 ............................ <#name>
+  [380] pusharglistnoret 3 ...................... <tEventResult, #element, #name>
+  [382] objcall 40 .............................. tEventResult[#element] = #name
+  [384] getparam 0 .............................. <me>
+  [386] getlocal 3 .............................. <tFriend>
+  [388] pushsymb 243 ............................ <#name>
+  [390] pusharglist 2 ........................... <tFriend, #name>
+  [392] objcall 80 .............................. <tFriend[#name]>
+  [394] pusharglistnoret 2 ...................... <me, tFriend[#name]>
+  [396] objcall 520 ............................. me.userSelectionEvent(tFriend[#name])
+  [399] getlocal 2 .............................. <tEventResult>
+  [401] pushsymb 167 ............................ <#update>
+  [403] pushint8 1 .............................. <1>
+  [405] pusharglistnoret 3 ...................... <tEventResult, #update, 1>
+  [407] objcall 40 .............................. tEventResult[#update] = 1
+  [409] getlocal 2 .............................. <tEventResult>
+  [411] pusharglistnoret 1 ...................... <tEventResult>
+  [413] extcall 44 .............................. return tEventResult
+  [415] ret
+end

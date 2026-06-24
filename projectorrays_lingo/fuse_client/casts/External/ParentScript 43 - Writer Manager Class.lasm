@@ -1,0 +1,164 @@
+property pWriterClass, pPlainStruct, pItemList
+
+on construct me
+  [  0] pushcons 0 .............................. <"writer.instance.class">
+  [  2] pusharglist 1 ........................... <"writer.instance.class">
+  [  4] extcall 242 ............................. <getClassVariable("writer.instance.class")>
+  [  6] setprop 1230 ............................ pWriterClass = getClassVariable("writer.instance.class")
+  [  9] pushcons 1 .............................. <"struct.font.plain">
+  [ 11] pusharglist 1 ........................... <"struct.font.plain">
+  [ 13] extcall 463 ............................. <getStructVariable("struct.font.plain")>
+  [ 16] setprop 1231 ............................ pPlainStruct = getStructVariable("struct.font.plain")
+  [ 19] pusharglist 0 ........................... <[:]>
+  [ 21] pushproplist ............................ <[:]>
+  [ 22] setprop 735 ............................. pItemList = [:]
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] pusharglistnoret 1 ...................... <1>
+  [ 29] extcall 11 .............................. return 1
+  [ 31] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 200 ............................ <#deconstruct>
+  [  2] getprop 735 ............................. <pItemList>
+  [  5] pusharglistnoret 2 ...................... <#deconstruct, pItemList>
+  [  7] extcall 151 ............................. call(#deconstruct, pItemList)
+  [  9] pusharglist 0 ........................... <[:]>
+  [ 11] pushproplist ............................ <[:]>
+  [ 12] setprop 735 ............................. pItemList = [:]
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 11 .............................. return 1
+  [ 21] ret
+end
+
+on create me, tID, tMetrics
+  [  0] getprop 735 ............................. <pItemList>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pItemList, tID>
+  [  7] objcall 29 .............................. <pItemList[tID]>
+  [  9] pusharglist 1 ........................... <pItemList[tID]>
+  [ 11] extcall 14 .............................. <voidp(pItemList[tID])>
+  [ 13] not ..................................... <not voidp(pItemList[tID])>
+  [ 14] jmpifz [ 37] ............................ if not voidp(pItemList[tID]) then
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pushcons 2 .............................. <"Writer already exists:">
+  [ 21] getparam 1 .............................. <tID>
+  [ 23] joinpadstr .............................. <"Writer already exists:" && tID>
+  [ 24] pushsymb 164 ............................ <#create>
+  [ 26] pushsymb 764 ............................ <#minor>
+  [ 29] pusharglist 4 ........................... <me, "Writer already exists:" && tID, #create, #minor>
+  [ 31] extcall 122 ............................. <error(me, "Writer already exists:" && tID, #create, #minor)>
+  [ 33] pusharglistnoret 1 ...................... <error(me, "Writer already exists:" && tID, #create, #minor)>
+  [ 35] extcall 11 .............................. return error(me, "Writer already exists:" && tID, #create, #minor)
+  [ 37] pusharglist 0 ........................... <>
+  [ 39] extcall 176 ............................. <getObjectManager()>
+  [ 41] pushsymb 66 ............................. <#temp>
+  [ 43] getprop 1230 ............................ <pWriterClass>
+  [ 46] pusharglist 3 ........................... <getObjectManager(), #temp, pWriterClass>
+  [ 48] objcall 164 ............................. <getObjectManager().create(#temp, pWriterClass)>
+  [ 50] setlocal 0 .............................. tObj = getObjectManager().create(#temp, pWriterClass)
+  [ 52] getlocal 0 .............................. <tObj>
+  [ 54] not ..................................... <not tObj>
+  [ 55] jmpifz [ 63] ............................ if not tObj then
+  [ 58] pushzero ................................ <0>
+  [ 59] pusharglistnoret 1 ...................... <0>
+  [ 61] extcall 11 .............................. return 0
+  [ 63] getparam 2 .............................. <tMetrics>
+  [ 65] getobjprop 586 .......................... <tMetrics.ilk>
+  [ 68] peek 0 .................................. case tMetrics.ilk of
+  [ 70] pushsymb 1232 ........................... <#struct>
+  [ 73] eq
+  [ 74] jmpifz [ 89] ............................ (case) #struct:
+  [ 77] getlocal 0 .............................. <tObj>
+  [ 79] getparam 2 .............................. <tMetrics>
+  [ 81] pusharglistnoret 2 ...................... <tObj, tMetrics>
+  [ 83] objcall 1233 ............................ tObj.setFont(tMetrics)
+  [ 86] jmp [108] ............................... (case) otherwise:
+  [ 89] getlocal 0 .............................. <tObj>
+  [ 91] getprop 1231 ............................ <pPlainStruct>
+  [ 94] pusharglistnoret 2 ...................... <tObj, pPlainStruct>
+  [ 96] objcall 1233 ............................ tObj.setFont(pPlainStruct)
+  [ 99] getlocal 0 .............................. <tObj>
+  [101] getparam 2 .............................. <tMetrics>
+  [103] pusharglistnoret 2 ...................... <tObj, tMetrics>
+  [105] objcall 532 ............................. tObj.define(tMetrics)
+  [108] pop 1 ................................... end case
+  [110] getprop 735 ............................. <pItemList>
+  [113] getparam 1 .............................. <tID>
+  [115] getlocal 0 .............................. <tObj>
+  [117] pusharglistnoret 3 ...................... <pItemList, tID, tObj>
+  [119] objcall 23 .............................. pItemList[tID] = tObj
+  [121] getlocal 0 .............................. <tObj>
+  [123] getparam 1 .............................. <tID>
+  [125] pusharglistnoret 2 ...................... <tObj, tID>
+  [127] objcall 93 .............................. tObj.setID(tID)
+  [129] pushint8 1 .............................. <1>
+  [131] pusharglistnoret 1 ...................... <1>
+  [133] extcall 11 .............................. return 1
+  [135] ret
+end
+
+on Remove me, tID
+  [  0] getprop 735 ............................. <pItemList>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pItemList, tID>
+  [  7] objcall 29 .............................. <pItemList[tID]>
+  [  9] setlocal 0 .............................. tObj = pItemList[tID]
+  [ 11] getlocal 0 .............................. <tObj>
+  [ 13] pusharglist 1 ........................... <tObj>
+  [ 15] extcall 14 .............................. <voidp(tObj)>
+  [ 17] jmpifz [ 40] ............................ if voidp(tObj) then
+  [ 20] getparam 0 .............................. <me>
+  [ 22] pushcons 3 .............................. <"Writer not found:">
+  [ 24] getparam 1 .............................. <tID>
+  [ 26] joinpadstr .............................. <"Writer not found:" && tID>
+  [ 27] pushsymb 205 ............................ <#Remove>
+  [ 29] pushsymb 764 ............................ <#minor>
+  [ 32] pusharglist 4 ........................... <me, "Writer not found:" && tID, #Remove, #minor>
+  [ 34] extcall 122 ............................. <error(me, "Writer not found:" && tID, #Remove, #minor)>
+  [ 36] pusharglistnoret 1 ...................... <error(me, "Writer not found:" && tID, #Remove, #minor)>
+  [ 38] extcall 11 .............................. return error(me, "Writer not found:" && tID, #Remove, #minor)
+  [ 40] getlocal 0 .............................. <tObj>
+  [ 42] pusharglistnoret 1 ...................... <tObj>
+  [ 44] objcall 200 ............................. tObj.deconstruct()
+  [ 46] getprop 735 ............................. <pItemList>
+  [ 49] getparam 1 .............................. <tID>
+  [ 51] pusharglist 2 ........................... <pItemList, tID>
+  [ 53] objcall 753 ............................. <pItemList.deleteProp(tID)>
+  [ 56] pusharglistnoret 1 ...................... <pItemList.deleteProp(tID)>
+  [ 58] extcall 11 .............................. return pItemList.deleteProp(tID)
+  [ 60] ret
+end
+
+on GET me, tID
+  [  0] getprop 735 ............................. <pItemList>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pItemList, tID>
+  [  7] objcall 29 .............................. <pItemList[tID]>
+  [  9] setlocal 0 .............................. tObj = pItemList[tID]
+  [ 11] getlocal 0 .............................. <tObj>
+  [ 13] pusharglist 1 ........................... <tObj>
+  [ 15] extcall 14 .............................. <voidp(tObj)>
+  [ 17] jmpifz [ 25] ............................ if voidp(tObj) then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 11 .............................. return 0
+  [ 25] getlocal 0 .............................. <tObj>
+  [ 27] pusharglistnoret 1 ...................... <tObj>
+  [ 29] extcall 11 .............................. return tObj
+  [ 31] ret
+end
+
+on exists me, tID
+  [  0] getprop 735 ............................. <pItemList>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pItemList, tID>
+  [  7] objcall 29 .............................. <pItemList[tID]>
+  [  9] pusharglist 1 ........................... <pItemList[tID]>
+  [ 11] extcall 14 .............................. <voidp(pItemList[tID])>
+  [ 13] not ..................................... <not voidp(pItemList[tID])>
+  [ 14] pusharglistnoret 1 ...................... <not voidp(pItemList[tID])>
+  [ 16] extcall 11 .............................. return not voidp(pItemList[tID])
+  [ 18] ret
+end

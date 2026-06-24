@@ -1,0 +1,1058 @@
+property pActiveItemList, pFreeChatItemList, pMarginFromScreenTop, pBalloonsVisible, pAutoScrollOn, pAutoScrollAmountPx, pAutoScrolledNow, pScrollDelayTime, pScrollDelayStartTime, pMessageBuffer, pUserCache, pChatItemCount, pMaximumChatBufferSize, pSpeedUpChatBufferLim, pForceScrollAmount, pScrollSpdMultiplier
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 1072 ............................ pActiveItemList = []
+  [  6] pusharglist 0 ........................... <[]>
+  [  8] pushlist ................................ <[]>
+  [  9] setprop 1073 ............................ pFreeChatItemList = []
+  [ 12] pushint8 108 ............................ <108>
+  [ 14] setprop 1074 ............................ pMarginFromScreenTop = 108
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] setprop 1075 ............................ pBalloonsVisible = 1
+  [ 22] pushint8 18 ............................. <18>
+  [ 24] setprop 1076 ............................ pAutoScrollAmountPx = 18
+  [ 27] pushzero ................................ <0>
+  [ 28] setprop 1077 ............................ pAutoScrollOn = 0
+  [ 31] pushcons 0 .............................. <"chat.scroll.delay">
+  [ 33] pushint16 5000 .......................... <5000>
+  [ 36] pusharglist 2 ........................... <"chat.scroll.delay", 5000>
+  [ 38] extcall 1079 ............................ <getVariableValue("chat.scroll.delay", 5000)>
+  [ 41] setprop 1078 ............................ pScrollDelayTime = getVariableValue("chat.scroll.delay", 5000)
+  [ 44] pushzero ................................ <0>
+  [ 45] setprop 1080 ............................ pAutoScrolledNow = 0
+  [ 48] pushzero ................................ <0>
+  [ 49] setprop 1081 ............................ pChatItemCount = 0
+  [ 52] pushint8 7 .............................. <7>
+  [ 54] setprop 1082 ............................ pMaximumChatBufferSize = 7
+  [ 57] pushcons 1 .............................. <"chat.buffersize.maximum">
+  [ 59] pusharglist 1 ........................... <"chat.buffersize.maximum">
+  [ 61] extcall 480 ............................. <variableExists("chat.buffersize.maximum")>
+  [ 64] jmpifz [ 74] ............................ if variableExists("chat.buffersize.maximum") then
+  [ 67] pushcons 1 .............................. <"chat.buffersize.maximum">
+  [ 69] pusharglistnoret 1 ...................... <"chat.buffersize.maximum">
+  [ 71] extcall 1079 ............................ getVariableValue("chat.buffersize.maximum")
+  [ 74] pushint8 2 .............................. <2>
+  [ 76] setprop 1083 ............................ pSpeedUpChatBufferLim = 2
+  [ 79] pushcons 2 .............................. <"chat.buffersize.speedup">
+  [ 81] pusharglist 1 ........................... <"chat.buffersize.speedup">
+  [ 83] extcall 480 ............................. <variableExists("chat.buffersize.speedup")>
+  [ 86] jmpifz [ 96] ............................ if variableExists("chat.buffersize.speedup") then
+  [ 89] pushcons 2 .............................. <"chat.buffersize.speedup">
+  [ 91] pusharglistnoret 1 ...................... <"chat.buffersize.speedup">
+  [ 93] extcall 1079 ............................ getVariableValue("chat.buffersize.speedup")
+  [ 96] pushfloat32 1.0 ......................... <1.0>
+  [101] setprop 1084 ............................ pScrollSpdMultiplier = 1.0
+  [104] pusharglist 0 ........................... <[]>
+  [106] pushlist ................................ <[]>
+  [107] setprop 1085 ............................ pMessageBuffer = []
+  [110] pusharglist 0 ........................... <[]>
+  [112] pushlist ................................ <[]>
+  [113] setprop 1086 ............................ pUserCache = []
+  [116] pushsymb 511 ............................ <#enterRoom>
+  [119] getparam 0 .............................. <me>
+  [121] pusharglist 1 ........................... <me>
+  [123] objcall 39 .............................. <me.getID()>
+  [125] pushsymb 1062 ........................... <#startUpdate>
+  [128] pusharglistnoret 3 ...................... <#enterRoom, me.getID(), #startUpdate>
+  [130] extcall 37 .............................. registerMessage(#enterRoom, me.getID(), #startUpdate)
+  [132] pushsymb 74 ............................. <#leaveRoom>
+  [134] getparam 0 .............................. <me>
+  [136] pusharglist 1 ........................... <me>
+  [138] objcall 39 .............................. <me.getID()>
+  [140] pushsymb 1053 ........................... <#clearAll>
+  [143] pusharglistnoret 3 ...................... <#leaveRoom, me.getID(), #clearAll>
+  [145] extcall 37 .............................. registerMessage(#leaveRoom, me.getID(), #clearAll)
+  [147] pushsymb 76 ............................. <#changeRoom>
+  [149] getparam 0 .............................. <me>
+  [151] pusharglist 1 ........................... <me>
+  [153] objcall 39 .............................. <me.getID()>
+  [155] pushsymb 1053 ........................... <#clearAll>
+  [158] pusharglistnoret 3 ...................... <#changeRoom, me.getID(), #clearAll>
+  [160] extcall 37 .............................. registerMessage(#changeRoom, me.getID(), #clearAll)
+  [162] pushsymb 1087 ........................... <#startChatDisplay>
+  [165] getparam 0 .............................. <me>
+  [167] pusharglist 1 ........................... <me>
+  [169] objcall 39 .............................. <me.getID()>
+  [171] pushsymb 1062 ........................... <#startUpdate>
+  [174] pusharglistnoret 3 ...................... <#startChatDisplay, me.getID(), #startUpdate>
+  [176] extcall 37 .............................. registerMessage(#startChatDisplay, me.getID(), #startUpdate)
+  [178] pushsymb 1088 ........................... <#showChatMessage>
+  [181] getparam 0 .............................. <me>
+  [183] pusharglist 1 ........................... <me>
+  [185] objcall 39 .............................. <me.getID()>
+  [187] pushsymb 1054 ........................... <#insertChatMessage>
+  [190] pusharglistnoret 3 ...................... <#showChatMessage, me.getID(), #insertChatMessage>
+  [192] extcall 37 .............................. registerMessage(#showChatMessage, me.getID(), #insertChatMessage)
+  [194] pushsymb 1089 ........................... <#showObjectMessage>
+  [197] getparam 0 .............................. <me>
+  [199] pusharglist 1 ........................... <me>
+  [201] objcall 39 .............................. <me.getID()>
+  [203] pushsymb 1063 ........................... <#insertObjectMessage>
+  [206] pusharglistnoret 3 ...................... <#showObjectMessage, me.getID(), #insertObjectMessage>
+  [208] extcall 37 .............................. registerMessage(#showObjectMessage, me.getID(), #insertObjectMessage)
+  [210] pushsymb 1090 ........................... <#showCustomMessage>
+  [213] getparam 0 .............................. <me>
+  [215] pusharglist 1 ........................... <me>
+  [217] objcall 39 .............................. <me.getID()>
+  [219] pushsymb 1064 ........................... <#insertCustomMessage>
+  [222] pusharglistnoret 3 ...................... <#showCustomMessage, me.getID(), #insertCustomMessage>
+  [224] extcall 37 .............................. registerMessage(#showCustomMessage, me.getID(), #insertCustomMessage)
+  [226] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 1053 ............................ me.clearAll()
+  [  7] pushsymb 511 ............................ <#enterRoom>
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 39 .............................. <me.getID()>
+  [ 16] pusharglistnoret 2 ...................... <#enterRoom, me.getID()>
+  [ 18] extcall 50 .............................. unregisterMessage(#enterRoom, me.getID())
+  [ 20] pushsymb 74 ............................. <#leaveRoom>
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pusharglist 1 ........................... <me>
+  [ 26] objcall 39 .............................. <me.getID()>
+  [ 28] pusharglistnoret 2 ...................... <#leaveRoom, me.getID()>
+  [ 30] extcall 50 .............................. unregisterMessage(#leaveRoom, me.getID())
+  [ 32] pushsymb 76 ............................. <#changeRoom>
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pusharglist 1 ........................... <me>
+  [ 38] objcall 39 .............................. <me.getID()>
+  [ 40] pusharglistnoret 2 ...................... <#changeRoom, me.getID()>
+  [ 42] extcall 50 .............................. unregisterMessage(#changeRoom, me.getID())
+  [ 44] pushsymb 1087 ........................... <#startChatDisplay>
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglist 1 ........................... <me>
+  [ 51] objcall 39 .............................. <me.getID()>
+  [ 53] pusharglistnoret 2 ...................... <#startChatDisplay, me.getID()>
+  [ 55] extcall 50 .............................. unregisterMessage(#startChatDisplay, me.getID())
+  [ 57] pushsymb 1088 ........................... <#showChatMessage>
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pusharglist 1 ........................... <me>
+  [ 64] objcall 39 .............................. <me.getID()>
+  [ 66] pusharglistnoret 2 ...................... <#showChatMessage, me.getID()>
+  [ 68] extcall 50 .............................. unregisterMessage(#showChatMessage, me.getID())
+  [ 70] pushsymb 1089 ........................... <#showObjectMessage>
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pusharglist 1 ........................... <me>
+  [ 77] objcall 39 .............................. <me.getID()>
+  [ 79] pusharglistnoret 2 ...................... <#showObjectMessage, me.getID()>
+  [ 81] extcall 50 .............................. unregisterMessage(#showObjectMessage, me.getID())
+  [ 83] pushsymb 1090 ........................... <#showCustomMessage>
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pusharglist 1 ........................... <me>
+  [ 90] objcall 39 .............................. <me.getID()>
+  [ 92] pusharglistnoret 2 ...................... <#showCustomMessage, me.getID()>
+  [ 94] extcall 50 .............................. unregisterMessage(#showCustomMessage, me.getID())
+  [ 96] ret
+end
+
+on startUpdate me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 39 .............................. <me.getID()>
+  [  6] pusharglistnoret 1 ...................... <me.getID()>
+  [  8] extcall 330 ............................. receiveUpdate(me.getID())
+  [ 11] ret
+end
+
+on clearAll me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 1085 ............................ pMessageBuffer = []
+  [  6] getprop 1072 ............................ <pActiveItemList>
+  [  9] peek 0
+  [ 11] pusharglist 1
+  [ 13] extcall 47
+  [ 15] pushint8 1
+  [ 17] peek 0
+  [ 19] peek 2
+  [ 21] lteq
+  [ 22] jmpifz [ 46] ............................ repeat with tItem in pActiveItemList
+  [ 25] peek 2
+  [ 27] peek 1
+  [ 29] pusharglist 2
+  [ 31] extcall 49
+  [ 33] setlocal 0
+  [ 35] getlocal 0 .............................. <tItem>
+  [ 37] pusharglistnoret 1 ...................... <tItem>
+  [ 39] objcall 1 ............................... tItem.deconstruct()
+  [ 41] pushint8 1
+  [ 43] add
+  [ 44] endrepeat [ 17]
+  [ 46] pop 3
+  [ 48] pusharglist 0 ........................... <[]>
+  [ 50] pushlist ................................ <[]>
+  [ 51] setprop 1072 ............................ pActiveItemList = []
+  [ 54] getprop 1073 ............................ <pFreeChatItemList>
+  [ 57] peek 0
+  [ 59] pusharglist 1
+  [ 61] extcall 47
+  [ 63] pushint8 1
+  [ 65] peek 0
+  [ 67] peek 2
+  [ 69] lteq
+  [ 70] jmpifz [ 94] ............................ repeat with tItem in pFreeChatItemList
+  [ 73] peek 2
+  [ 75] peek 1
+  [ 77] pusharglist 2
+  [ 79] extcall 49
+  [ 81] setlocal 0
+  [ 83] getlocal 0 .............................. <tItem>
+  [ 85] pusharglistnoret 1 ...................... <tItem>
+  [ 87] objcall 1 ............................... tItem.deconstruct()
+  [ 89] pushint8 1
+  [ 91] add
+  [ 92] endrepeat [ 65]
+  [ 94] pop 3
+  [ 96] pusharglist 0 ........................... <[]>
+  [ 98] pushlist ................................ <[]>
+  [ 99] setprop 1073 ............................ pFreeChatItemList = []
+  [102] getparam 0 .............................. <me>
+  [104] pusharglistnoret 1 ...................... <me>
+  [106] objcall 1068 ............................ me.clearUserCache()
+  [109] pushzero ................................ <0>
+  [110] setprop 1081 ............................ pChatItemCount = 0
+  [113] ret
+end
+
+on showBalloons me, tVisible
+  [  0] getparam 1 .............................. <tVisible>
+  [  2] pusharglist 1 ........................... <tVisible>
+  [  4] extcall 134 ............................. <voidp(tVisible)>
+  [  6] jmpifz [ 13] ............................ if voidp(tVisible) then
+  [  9] pushint8 1 .............................. <1>
+  [ 11] setparam 1 .............................. tVisible = 1
+  [ 13] getparam 1 .............................. <tVisible>
+  [ 15] setlocal 0 .............................. pShowBalloons = tVisible
+  [ 17] pushsymb 1091 ........................... <#showBalloon>
+  [ 20] getprop 1072 ............................ <pActiveItemList>
+  [ 23] getparam 1 .............................. <tVisible>
+  [ 25] pusharglistnoret 3 ...................... <#showBalloon, pActiveItemList, tVisible>
+  [ 27] extcall 758 ............................. call(#showBalloon, pActiveItemList, tVisible)
+  [ 30] pushsymb 1091 ........................... <#showBalloon>
+  [ 33] getprop 1073 ............................ <pFreeChatItemList>
+  [ 36] getparam 1 .............................. <tVisible>
+  [ 38] pusharglistnoret 3 ...................... <#showBalloon, pFreeChatItemList, tVisible>
+  [ 40] extcall 758 ............................. call(#showBalloon, pFreeChatItemList, tVisible)
+  [ 43] ret
+end
+
+on insertObjectMessage me, tMsgProps
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tMsgProps>
+  [  4] pushsymb 1093 ........................... <#command>
+  [  7] pusharglist 2 ........................... <tMsgProps, #command>
+  [  9] objcall 49 .............................. <tMsgProps[#command]>
+  [ 11] getparam 1 .............................. <tMsgProps>
+  [ 13] pushsymb 388 ............................ <#id>
+  [ 16] pusharglist 2 ........................... <tMsgProps, #id>
+  [ 18] objcall 49 .............................. <tMsgProps[#id]>
+  [ 20] getparam 1 .............................. <tMsgProps>
+  [ 22] pushsymb 1094 ........................... <#message>
+  [ 25] pusharglist 2 ........................... <tMsgProps, #message>
+  [ 27] objcall 49 .............................. <tMsgProps[#message]>
+  [ 29] pusharglistnoret 4 ...................... <me, tMsgProps[#command], tMsgProps[#id], tMsgProps[#message]>
+  [ 31] objcall 1054 ............................ me.insertChatMessage(tMsgProps[#command], tMsgProps[#id], tMsgProps[#message])
+  [ 34] ret
+end
+
+on insertCustomMessage me, tMsgProps
+  [  0] getparam 1 .............................. <tMsgProps>
+  [  2] pushsymb 1096 ........................... <#mode>
+  [  5] pusharglist 2 ........................... <tMsgProps, #mode>
+  [  7] objcall 126 ............................. <tMsgProps.findPos(#mode)>
+  [  9] pushzero ................................ <0>
+  [ 10] eq ...................................... <tMsgProps.findPos(#mode) = 0>
+  [ 11] jmpifz [ 26] ............................ if tMsgProps.findPos(#mode) = 0 then
+  [ 14] getparam 1 .............................. <tMsgProps>
+  [ 16] pushsymb 1096 ........................... <#mode>
+  [ 19] pushcons 3 .............................. <"CUSTOM">
+  [ 21] pusharglistnoret 3 ...................... <tMsgProps, #mode, "CUSTOM">
+  [ 23] objcall 394 ............................. tMsgProps.setaProp(#mode, "CUSTOM")
+  [ 26] getprop 1085 ............................ <pMessageBuffer>
+  [ 29] getparam 1 .............................. <tMsgProps>
+  [ 31] pusharglistnoret 2 ...................... <pMessageBuffer, tMsgProps>
+  [ 33] objcall 87 .............................. pMessageBuffer.add(tMsgProps)
+  [ 35] ret
+end
+
+on insertChatMessage me, tChatMode, tID, tChatMessage
+  [  0] getparam 1 .............................. <tChatMode>
+  [  2] peek 0 .................................. case tChatMode of
+  [  4] pushcons 4 .............................. <"CHAT">
+  [  6] nteq
+  [  7] jmpifz [ 34] ............................ (case) "CHAT", ...
+  [ 10] peek 0
+  [ 12] pushcons 5 .............................. <"SHOUT">
+  [ 14] nteq
+  [ 15] jmpifz [ 34] ............................ (case) ..., "SHOUT", ...
+  [ 18] peek 0
+  [ 20] pushcons 6 .............................. <"WHISPER">
+  [ 22] nteq
+  [ 23] jmpifz [ 34] ............................ (case) ..., "WHISPER", ...
+  [ 26] peek 0
+  [ 28] pushcons 7 .............................. <"OBJECT">
+  [ 30] eq
+  [ 31] jmpifz [ 62] ............................ (case) ..., "OBJECT":
+  [ 34] getprop 1085 ............................ <pMessageBuffer>
+  [ 37] pushsymb 1096 ........................... <#mode>
+  [ 40] getparam 1 .............................. <tChatMode>
+  [ 42] pushsymb 388 ............................ <#id>
+  [ 45] getparam 2 .............................. <tID>
+  [ 47] pushsymb 1094 ........................... <#message>
+  [ 50] getparam 3 .............................. <tChatMessage>
+  [ 52] pusharglist 6 ........................... <[#mode: tChatMode, #id: tID, #message: tChatMessage]>
+  [ 54] pushproplist ............................ <[#mode: tChatMode, #id: tID, #message: tChatMessage]>
+  [ 55] pusharglistnoret 2 ...................... <pMessageBuffer, [#mode: tChatMode, #id: tID, #message: tChatMessage]>
+  [ 57] objcall 87 .............................. pMessageBuffer.add([#mode: tChatMode, #id: tID, #message: tChatMessage])
+  [ 59] jmp [ 79]
+  [ 62] peek 0
+  [ 64] pushcons 8 .............................. <"UNHEARD">
+  [ 66] eq
+  [ 67] jmpifz [ 79] ............................ (case) "UNHEARD":
+  [ 70] getparam 0 .............................. <me>
+  [ 72] getparam 2 .............................. <tID>
+  [ 74] pusharglistnoret 2 ...................... <me, tID>
+  [ 76] objcall 1069 ............................ me.showChatItemUnheard(tID)
+  [ 79] pop 1 ................................... end case
+  [ 81] ret
+end
+
+on showNextChatMessage me
+  [  0] getprop 1085 ............................ <pMessageBuffer>
+  [  3] getobjprop 47 ........................... <pMessageBuffer.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pMessageBuffer.count = 0>
+  [  7] jmpifz [ 15] ............................ if pMessageBuffer.count = 0 then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 41 .............................. return 0
+  [ 15] getprop 1085 ............................ <pMessageBuffer>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglist 2 ........................... <pMessageBuffer, 1>
+  [ 22] objcall 49 .............................. <pMessageBuffer[1]>
+  [ 24] setlocal 0 .............................. tMessage = pMessageBuffer[1]
+  [ 26] getprop 1085 ............................ <pMessageBuffer>
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] pusharglistnoret 2 ...................... <pMessageBuffer, 1>
+  [ 33] objcall 158 ............................. pMessageBuffer.deleteAt(1)
+  [ 35] getlocal 0 .............................. <tMessage>
+  [ 37] pushsymb 309 ............................ <#loc>
+  [ 40] pusharglist 2 ........................... <tMessage, #loc>
+  [ 42] objcall 126 ............................. <tMessage.findPos(#loc)>
+  [ 44] pushzero ................................ <0>
+  [ 45] gt ...................................... <tMessage.findPos(#loc) > 0>
+  [ 46] jmpifz [ 63] ............................ if tMessage.findPos(#loc) > 0 then / else
+  [ 49] getlocal 0 .............................. <tMessage>
+  [ 51] pushsymb 309 ............................ <#loc>
+  [ 54] pusharglist 2 ........................... <tMessage, #loc>
+  [ 56] objcall 149 ............................. <tMessage.getaProp(#loc)>
+  [ 58] setlocal 1 .............................. tloc = tMessage.getaProp(#loc)
+  [ 60] jmp [182]
+  [ 63] getlocal 0 .............................. <tMessage>
+  [ 65] pushsymb 388 ............................ <#id>
+  [ 68] pusharglist 2 ........................... <tMessage, #id>
+  [ 70] objcall 126 ............................. <tMessage.findPos(#id)>
+  [ 72] pushzero ................................ <0>
+  [ 73] gt ...................................... <tMessage.findPos(#id) > 0>
+  [ 74] jmpifz [182] ............................ if tMessage.findPos(#id) > 0 then
+  [ 77] getlocal 0 .............................. <tMessage>
+  [ 79] pushsymb 1096 ........................... <#mode>
+  [ 82] pusharglist 2 ........................... <tMessage, #mode>
+  [ 84] objcall 49 .............................. <tMessage[#mode]>
+  [ 86] pushcons 7 .............................. <"OBJECT">
+  [ 88] eq ...................................... <tMessage[#mode] = "OBJECT">
+  [ 89] jmpifz [138] ............................ if tMessage[#mode] = "OBJECT" then / else
+  [ 92] pushsymb 53 ............................. <#room>
+  [ 94] pusharglist 1 ........................... <#room>
+  [ 96] extcall 52 .............................. <getThread(#room)>
+  [ 98] pusharglist 1 ........................... <getThread(#room)>
+  [100] objcall 59 .............................. <getThread(#room).getComponent()>
+  [102] getlocal 0 .............................. <tMessage>
+  [104] pushsymb 388 ............................ <#id>
+  [107] pusharglist 2 ........................... <tMessage, #id>
+  [109] objcall 49 .............................. <tMessage[#id]>
+  [111] pusharglist 2 ........................... <getThread(#room).getComponent(), tMessage[#id]>
+  [113] objcall 705 ............................. <getThread(#room).getComponent().getActiveObject(tMessage[#id])>
+  [116] setlocal 2 .............................. tObj = getThread(#room).getComponent().getActiveObject(tMessage[#id])
+  [118] getlocal 2 .............................. <tObj>
+  [120] not ..................................... <not tObj>
+  [121] pushzero ................................ <0>
+  [122] eq ...................................... <not tObj = 0>
+  [123] jmpifz [135] ............................ if not tObj = 0 then
+  [126] getlocal 2 .............................. <tObj>
+  [128] pusharglist 1 ........................... <tObj>
+  [130] objcall 1097 ............................ <tObj.getScreenLocation()>
+  [133] setlocal 1 .............................. tloc = tObj.getScreenLocation()
+  [135] jmp [182]
+  [138] pushsymb 53 ............................. <#room>
+  [140] pusharglist 1 ........................... <#room>
+  [142] extcall 52 .............................. <getThread(#room)>
+  [144] pusharglist 1 ........................... <getThread(#room)>
+  [146] objcall 59 .............................. <getThread(#room).getComponent()>
+  [148] getlocal 0 .............................. <tMessage>
+  [150] pushsymb 388 ............................ <#id>
+  [153] pusharglist 2 ........................... <tMessage, #id>
+  [155] objcall 49 .............................. <tMessage[#id]>
+  [157] pusharglist 2 ........................... <getThread(#room).getComponent(), tMessage[#id]>
+  [159] objcall 60 .............................. <getThread(#room).getComponent().getUserObject(tMessage[#id])>
+  [161] setlocal 2 .............................. tObj = getThread(#room).getComponent().getUserObject(tMessage[#id])
+  [163] getlocal 2 .............................. <tObj>
+  [165] not ..................................... <not tObj>
+  [166] pushzero ................................ <0>
+  [167] eq ...................................... <not tObj = 0>
+  [168] jmpifz [182] ............................ if not tObj = 0 then
+  [171] getlocal 2 .............................. <tObj>
+  [173] pushcons 9 .............................. <"hd">
+  [175] pusharglist 2 ........................... <tObj, "hd">
+  [177] objcall 333 ............................. <tObj.getPartLocation("hd")>
+  [180] setlocal 1 .............................. tloc = tObj.getPartLocation("hd")
+  [182] getlocal 1 .............................. <tloc>
+  [184] pusharglist 1 ........................... <tloc>
+  [186] extcall 134 ............................. <voidp(tloc)>
+  [188] jmpifz [196] ............................ if voidp(tloc) then
+  [191] pushzero ................................ <0>
+  [192] pusharglistnoret 1 ...................... <0>
+  [194] extcall 41 .............................. return 0
+  [196] getlocal 1 .............................. <tloc>
+  [198] pushint8 1 .............................. <1>
+  [200] pusharglist 2 ........................... <tloc, 1>
+  [202] objcall 49 .............................. <tloc[1]>
+  [204] getprop 1074 ............................ <pMarginFromScreenTop>
+  [207] pusharglist 2 ........................... <tloc[1], pMarginFromScreenTop>
+  [209] extcall 124 ............................. <point(tloc[1], pMarginFromScreenTop)>
+  [211] setlocal 1 .............................. tloc = point(tloc[1], pMarginFromScreenTop)
+  [213] getlocal 0 .............................. <tMessage>
+  [215] pushsymb 1096 ........................... <#mode>
+  [218] pusharglist 2 ........................... <tMessage, #mode>
+  [220] objcall 149 ............................. <tMessage.getaProp(#mode)>
+  [222] setlocal 3 .............................. tMode = tMessage.getaProp(#mode)
+  [224] getlocal 3 .............................. <tMode>
+  [226] peek 0 .................................. case tMode of
+  [228] pushcons 3 .............................. <"CUSTOM">
+  [230] eq
+  [231] jmpifz [248] ............................ (case) "CUSTOM":
+  [234] getparam 0 .............................. <me>
+  [236] getlocal 0 .............................. <tMessage>
+  [238] pusharglist 2 ........................... <me, tMessage>
+  [240] objcall 1067 ............................ <me.getCustomItem(tMessage)>
+  [243] setlocal 4 .............................. tChatItem = me.getCustomItem(tMessage)
+  [245] jmp [284] ............................... (case) otherwise:
+  [248] getparam 0 .............................. <me>
+  [250] getlocal 0 .............................. <tMessage>
+  [252] pushsymb 1096 ........................... <#mode>
+  [255] pusharglist 2 ........................... <tMessage, #mode>
+  [257] objcall 49 .............................. <tMessage[#mode]>
+  [259] getlocal 0 .............................. <tMessage>
+  [261] pushsymb 388 ............................ <#id>
+  [264] pusharglist 2 ........................... <tMessage, #id>
+  [266] objcall 49 .............................. <tMessage[#id]>
+  [268] getlocal 0 .............................. <tMessage>
+  [270] pushsymb 1094 ........................... <#message>
+  [273] pusharglist 2 ........................... <tMessage, #message>
+  [275] objcall 49 .............................. <tMessage[#message]>
+  [277] pusharglist 4 ........................... <me, tMessage[#mode], tMessage[#id], tMessage[#message]>
+  [279] objcall 1066 ............................ <me.getChatItem(tMessage[#mode], tMessage[#id], tMessage[#message])>
+  [282] setlocal 4 .............................. tChatItem = me.getChatItem(tMessage[#mode], tMessage[#id], tMessage[#message])
+  [284] pop 1 ................................... end case
+  [286] getlocal 4 .............................. <tChatItem>
+  [288] pushzero ................................ <0>
+  [289] eq ...................................... <tChatItem = 0>
+  [290] jmpifz [298] ............................ if tChatItem = 0 then
+  [293] pushzero ................................ <0>
+  [294] pusharglistnoret 1 ...................... <0>
+  [296] extcall 41 .............................. return 0
+  [298] getlocal 4 .............................. <tChatItem>
+  [300] getlocal 1 .............................. <tloc>
+  [302] pusharglistnoret 2 ...................... <tChatItem, tloc>
+  [304] objcall 1098 ............................ tChatItem.setLocation(tloc)
+  [307] ret
+end
+
+on getChatItem me, tChatMode, tObjID, tChatMessage
+  [  0] getprop 1073 ............................ <pFreeChatItemList>
+  [  3] getobjprop 47 ........................... <pFreeChatItemList.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pFreeChatItemList.count = 0>
+  [  7] jmpifz [ 38] ............................ if pFreeChatItemList.count = 0 then / else
+  [ 10] pushsymb 694 ............................ <#random>
+  [ 13] pushcons 10 ............................. <"Chat Bubble Normal">
+  [ 15] pusharglist 2 ........................... <#random, "Chat Bubble Normal">
+  [ 17] extcall 35 .............................. <createObject(#random, "Chat Bubble Normal")>
+  [ 19] setlocal 0 .............................. tChatItem = createObject(#random, "Chat Bubble Normal")
+  [ 21] getprop 1081 ............................ <pChatItemCount>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] add ..................................... <pChatItemCount + 1>
+  [ 27] setprop 1081 ............................ pChatItemCount = pChatItemCount + 1
+  [ 30] getprop 1081 ............................ <pChatItemCount>
+  [ 33] setlocal 1 .............................. tItemID = pChatItemCount
+  [ 35] jmp [ 67]
+  [ 38] getprop 1073 ............................ <pFreeChatItemList>
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] pusharglist 2 ........................... <pFreeChatItemList, 1>
+  [ 45] objcall 49 .............................. <pFreeChatItemList[1]>
+  [ 47] setlocal 0 .............................. tChatItem = pFreeChatItemList[1]
+  [ 49] getprop 1073 ............................ <pFreeChatItemList>
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] pusharglistnoret 2 ...................... <pFreeChatItemList, 1>
+  [ 56] objcall 158 ............................. pFreeChatItemList.deleteAt(1)
+  [ 58] getlocal 0 .............................. <tChatItem>
+  [ 60] pusharglist 1 ........................... <tChatItem>
+  [ 62] objcall 1101 ............................ <tChatItem.getItemId()>
+  [ 65] setlocal 1 .............................. tItemID = tChatItem.getItemId()
+  [ 67] pusharglist 0 ........................... <>
+  [ 69] extcall 243 ............................. <VOID>
+  [ 71] setlocal 2 .............................. tUserID = VOID
+  [ 73] getparam 1 .............................. <tChatMode>
+  [ 75] pushcons 7 .............................. <"OBJECT">
+  [ 77] eq ...................................... <tChatMode = "OBJECT">
+  [ 78] jmpifz [162] ............................ if tChatMode = "OBJECT" then / else
+  [ 81] pushsymb 53 ............................. <#room>
+  [ 83] pusharglist 1 ........................... <#room>
+  [ 85] extcall 52 .............................. <getThread(#room)>
+  [ 87] pusharglist 1 ........................... <getThread(#room)>
+  [ 89] objcall 59 .............................. <getThread(#room).getComponent()>
+  [ 91] getparam 2 .............................. <tObjID>
+  [ 93] pusharglist 2 ........................... <getThread(#room).getComponent(), tObjID>
+  [ 95] objcall 705 ............................. <getThread(#room).getComponent().getActiveObject(tObjID)>
+  [ 98] setlocal 3 .............................. tObj = getThread(#room).getComponent().getActiveObject(tObjID)
+  [100] getlocal 3 .............................. <tObj>
+  [102] not ..................................... <not tObj>
+  [103] jmpifz [111] ............................ if not tObj then
+  [106] pushzero ................................ <0>
+  [107] pusharglistnoret 1 ...................... <0>
+  [109] extcall 41 .............................. return 0
+  [111] pushint16 232 ........................... <232>
+  [114] pushint16 177 ........................... <177>
+  [117] pushint8 55 ............................. <55>
+  [119] pusharglist 3 ........................... <232, 177, 55>
+  [121] extcall 213 ............................. <rgb(232, 177, 55)>
+  [123] setlocal 4 .............................. tBalloonColor = rgb(232, 177, 55)
+  [125] getlocal 3 .............................. <tObj>
+  [127] pusharglist 1 ........................... <tObj>
+  [129] objcall 708 ............................. <tObj.getInfo()>
+  [132] setlocal 5 .............................. tObjInfo = tObj.getInfo()
+  [134] getlocal 5 .............................. <tObjInfo>
+  [136] pushsymb 233 ............................ <#name>
+  [138] pusharglist 2 ........................... <tObjInfo, #name>
+  [140] objcall 49 .............................. <tObjInfo[#name]>
+  [142] setlocal 6 .............................. tUserName = tObjInfo[#name]
+  [144] pusharglist 0 ........................... <>
+  [146] extcall 243 ............................. <VOID>
+  [148] setlocal 7 .............................. tUserImg = VOID
+  [150] getlocal 3 .............................. <tObj>
+  [152] pusharglist 1 ........................... <tObj>
+  [154] objcall 1097 ............................ <tObj.getScreenLocation()>
+  [157] setlocal 8 .............................. tSourceLoc = tObj.getScreenLocation()
+  [159] jmp [385]
+  [162] pushsymb 53 ............................. <#room>
+  [164] pusharglist 1 ........................... <#room>
+  [166] extcall 52 .............................. <getThread(#room)>
+  [168] pusharglist 1 ........................... <getThread(#room)>
+  [170] objcall 59 .............................. <getThread(#room).getComponent()>
+  [172] getparam 2 .............................. <tObjID>
+  [174] pusharglist 2 ........................... <getThread(#room).getComponent(), tObjID>
+  [176] objcall 60 .............................. <getThread(#room).getComponent().getUserObject(tObjID)>
+  [178] setlocal 9 .............................. tUserObj = getThread(#room).getComponent().getUserObject(tObjID)
+  [180] getlocal 9 .............................. <tUserObj>
+  [182] not ..................................... <not tUserObj>
+  [183] jmpifz [191] ............................ if not tUserObj then
+  [186] pushzero ................................ <0>
+  [187] pusharglistnoret 1 ...................... <0>
+  [189] extcall 41 .............................. return 0
+  [191] getlocal 9 .............................. <tUserObj>
+  [193] pusharglist 1 ........................... <tUserObj>
+  [195] objcall 807 ............................. <tUserObj.getClass()>
+  [198] pushcons 11 ............................. <"pet">
+  [200] eq ...................................... <tUserObj.getClass() = "pet">
+  [201] jmpifz [266] ............................ if tUserObj.getClass() = "pet" then / else
+  [204] getlocal 9 .............................. <tUserObj>
+  [206] pushcons 9 .............................. <"hd">
+  [208] pusharglist 2 ........................... <tUserObj, "hd">
+  [210] objcall 1102 ............................ <tUserObj.getPartColor("hd")>
+  [213] setlocal 4 .............................. tBalloonColor = tUserObj.getPartColor("hd")
+  [215] getlocal 4 .............................. <tBalloonColor>
+  [217] pusharglist 1 ........................... <tBalloonColor>
+  [219] extcall 63 .............................. <ilk(tBalloonColor)>
+  [221] pushsymb 391 ............................ <#color>
+  [224] nteq .................................... <ilk(tBalloonColor) <> #color>
+  [225] jmpifz [242] ............................ if ilk(tBalloonColor) <> #color then
+  [228] pushint16 232 ........................... <232>
+  [231] pushint16 177 ........................... <177>
+  [234] pushint8 55 ............................. <55>
+  [236] pusharglist 3 ........................... <232, 177, 55>
+  [238] extcall 213 ............................. <rgb(232, 177, 55)>
+  [240] setlocal 4 .............................. tBalloonColor = rgb(232, 177, 55)
+  [242] getlocal 9 .............................. <tUserObj>
+  [244] pusharglist 1 ........................... <tUserObj>
+  [246] objcall 708 ............................. <tUserObj.getInfo()>
+  [249] pushsymb 233 ............................ <#name>
+  [251] pusharglist 2 ........................... <tUserObj.getInfo(), #name>
+  [253] objcall 149 ............................. <tUserObj.getInfo().getaProp(#name)>
+  [255] setlocal 6 .............................. tUserName = tUserObj.getInfo().getaProp(#name)
+  [257] pusharglist 0 ........................... <>
+  [259] extcall 243 ............................. <VOID>
+  [261] setlocal 7 .............................. tUserImg = VOID
+  [263] jmp [376]
+  [266] getlocal 9 .............................. <tUserObj>
+  [268] pushcons 12 ............................. <"ch">
+  [270] pusharglist 2 ........................... <tUserObj, "ch">
+  [272] objcall 1102 ............................ <tUserObj.getPartColor("ch")>
+  [275] setlocal 4 .............................. tBalloonColor = tUserObj.getPartColor("ch")
+  [277] getlocal 4 .............................. <tBalloonColor>
+  [279] pusharglist 1 ........................... <tBalloonColor>
+  [281] extcall 63 .............................. <ilk(tBalloonColor)>
+  [283] pushsymb 391 ............................ <#color>
+  [286] nteq .................................... <ilk(tBalloonColor) <> #color>
+  [287] jmpifz [304] ............................ if ilk(tBalloonColor) <> #color then
+  [290] pushint16 232 ........................... <232>
+  [293] pushint16 177 ........................... <177>
+  [296] pushint8 55 ............................. <55>
+  [298] pusharglist 3 ........................... <232, 177, 55>
+  [300] extcall 213 ............................. <rgb(232, 177, 55)>
+  [302] setlocal 4 .............................. tBalloonColor = rgb(232, 177, 55)
+  [304] getlocal 9 .............................. <tUserObj>
+  [306] pusharglist 1 ........................... <tUserObj>
+  [308] objcall 708 ............................. <tUserObj.getInfo()>
+  [311] pushsymb 233 ............................ <#name>
+  [313] pusharglist 2 ........................... <tUserObj.getInfo(), #name>
+  [315] objcall 149 ............................. <tUserObj.getInfo().getaProp(#name)>
+  [317] setlocal 6 .............................. tUserName = tUserObj.getInfo().getaProp(#name)
+  [319] pushcons 13 ............................. <"Figure_Preview">
+  [321] pusharglist 1 ........................... <"Figure_Preview">
+  [323] extcall 156 ............................. <objectExists("Figure_Preview")>
+  [325] jmpifz [372] ............................ if objectExists("Figure_Preview") then
+  [328] getlocal 9 .............................. <tUserObj>
+  [330] pushsymb 1103 ........................... <#pPartListSubSet>
+  [333] pushsymb 1104 ........................... <#head>
+  [336] pusharglist 3 ........................... <tUserObj, #pPartListSubSet, #head>
+  [338] objcall 123 ............................. <tUserObj.pPartListSubSet[#head]>
+  [340] setlocal 10 ............................. tPartList = tUserObj.pPartListSubSet[#head]
+  [342] getlocal 9 .............................. <tUserObj>
+  [344] pusharglist 1 ........................... <tUserObj>
+  [346] objcall 1105 ............................ <tUserObj.getRawFigure()>
+  [349] setlocal 11 ............................. tFigure = tUserObj.getRawFigure()
+  [351] pushcons 13 ............................. <"Figure_Preview">
+  [353] pusharglist 1 ........................... <"Figure_Preview">
+  [355] extcall 56 .............................. <getObject("Figure_Preview")>
+  [357] getlocal 10 ............................. <tPartList>
+  [359] getlocal 11 ............................. <tFigure>
+  [361] pushint8 2 .............................. <2>
+  [363] pushcons 14 ............................. <"sh">
+  [365] pusharglist 5 ........................... <getObject("Figure_Preview"), tPartList, tFigure, 2, "sh">
+  [367] objcall 1106 ............................ <getObject("Figure_Preview").getHumanPartImg(tPartList, tFigure, 2, "sh")>
+  [370] setlocal 7 .............................. tUserImg = getObject("Figure_Preview").getHumanPartImg(tPartList, tFigure, 2, "sh")
+  [372] getparam 2 .............................. <tObjID>
+  [374] setlocal 2 .............................. tUserID = tObjID
+  [376] getlocal 9 .............................. <tUserObj>
+  [378] pusharglist 1 ........................... <tUserObj>
+  [380] objcall 1107 ............................ <tUserObj.getScrLocation()>
+  [383] setlocal 8 .............................. tSourceLoc = tUserObj.getScrLocation()
+  [385] getlocal 0 .............................. <tChatItem>
+  [387] getparam 1 .............................. <tChatMode>
+  [389] getlocal 4 .............................. <tBalloonColor>
+  [391] getlocal 6 .............................. <tUserName>
+  [393] getparam 3 .............................. <tChatMessage>
+  [395] getlocal 1 .............................. <tItemID>
+  [397] getlocal 7 .............................. <tUserImg>
+  [399] getlocal 2 .............................. <tUserID>
+  [401] getlocal 8 .............................. <tSourceLoc>
+  [403] pusharglistnoret 9 ...................... <tChatItem, tChatMode, tBalloonColor, tUserName, tChatMessage, tItemID, tUserImg, tUserID, tSourceLoc>
+  [405] objcall 1108 ............................ tChatItem.defineBalloon(tChatMode, tBalloonColor, tUserName, tChatMessage, tItemID, tUserImg, tUserID, tSourceLoc)
+  [408] getprop 1072 ............................ <pActiveItemList>
+  [411] getlocal 0 .............................. <tChatItem>
+  [413] pusharglistnoret 2 ...................... <pActiveItemList, tChatItem>
+  [415] objcall 87 .............................. pActiveItemList.add(tChatItem)
+  [417] getlocal 0 .............................. <tChatItem>
+  [419] pusharglistnoret 1 ...................... <tChatItem>
+  [421] extcall 41 .............................. return tChatItem
+  [423] ret
+end
+
+on getCustomItem me, tMessage
+  [  0] getparam 1 .............................. <tMessage>
+  [  2] pushsymb 230 ............................ <#class>
+  [  4] pusharglist 2 ........................... <tMessage, #class>
+  [  6] objcall 126 ............................. <tMessage.findPos(#class)>
+  [  8] pushzero ................................ <0>
+  [  9] gt ...................................... <tMessage.findPos(#class) > 0>
+  [ 10] jmpifz [ 31] ............................ if tMessage.findPos(#class) > 0 then / else
+  [ 13] pushcons 15 ............................. <"Chat Bubble Info Basic">
+  [ 15] getparam 1 .............................. <tMessage>
+  [ 17] pushsymb 230 ............................ <#class>
+  [ 19] pusharglist 2 ........................... <tMessage, #class>
+  [ 21] objcall 149 ............................. <tMessage.getaProp(#class)>
+  [ 23] pusharglist 2 ........................... <["Chat Bubble Info Basic", tMessage.getaProp(#class)]>
+  [ 25] pushlist ................................ <["Chat Bubble Info Basic", tMessage.getaProp(#class)]>
+  [ 26] setlocal 0 .............................. tClass = ["Chat Bubble Info Basic", tMessage.getaProp(#class)]
+  [ 28] jmp [ 35]
+  [ 31] pushcons 15 ............................. <"Chat Bubble Info Basic">
+  [ 33] setlocal 0 .............................. tClass = "Chat Bubble Info Basic"
+  [ 35] pushsymb 694 ............................ <#random>
+  [ 38] getlocal 0 .............................. <tClass>
+  [ 40] pusharglist 2 ........................... <#random, tClass>
+  [ 42] extcall 35 .............................. <createObject(#random, tClass)>
+  [ 44] setlocal 1 .............................. tChatItem = createObject(#random, tClass)
+  [ 46] getlocal 1 .............................. <tChatItem>
+  [ 48] pushzero ................................ <0>
+  [ 49] eq ...................................... <tChatItem = 0>
+  [ 50] jmpifz [ 58] ............................ if tChatItem = 0 then
+  [ 53] pushzero ................................ <0>
+  [ 54] pusharglistnoret 1 ...................... <0>
+  [ 56] extcall 41 .............................. return 0
+  [ 58] getprop 1081 ............................ <pChatItemCount>
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] add ..................................... <pChatItemCount + 1>
+  [ 64] setprop 1081 ............................ pChatItemCount = pChatItemCount + 1
+  [ 67] getprop 1081 ............................ <pChatItemCount>
+  [ 70] setlocal 2 .............................. tItemID = pChatItemCount
+  [ 72] getparam 1 .............................. <tMessage>
+  [ 74] pushsymb 1096 ........................... <#mode>
+  [ 77] pusharglist 2 ........................... <tMessage, #mode>
+  [ 79] objcall 49 .............................. <tMessage[#mode]>
+  [ 81] setlocal 3 .............................. tMode = tMessage[#mode]
+  [ 83] getparam 1 .............................. <tMessage>
+  [ 85] pushsymb 309 ............................ <#loc>
+  [ 88] pusharglist 2 ........................... <tMessage, #loc>
+  [ 90] objcall 149 ............................. <tMessage.getaProp(#loc)>
+  [ 92] setlocal 4 .............................. tSourceLoc = tMessage.getaProp(#loc)
+  [ 94] getparam 1 .............................. <tMessage>
+  [ 96] pushsymb 391 ............................ <#color>
+  [ 99] pusharglist 2 ........................... <tMessage, #color>
+  [101] objcall 149 ............................. <tMessage.getaProp(#color)>
+  [103] setlocal 5 .............................. tBalloonColor = tMessage.getaProp(#color)
+  [105] getparam 1 .............................. <tMessage>
+  [107] pushsymb 1094 ........................... <#message>
+  [110] pusharglist 2 ........................... <tMessage, #message>
+  [112] objcall 149 ............................. <tMessage.getaProp(#message)>
+  [114] setlocal 6 .............................. tText = tMessage.getaProp(#message)
+  [116] getlocal 1 .............................. <tChatItem>
+  [118] getlocal 3 .............................. <tMode>
+  [120] getlocal 5 .............................. <tBalloonColor>
+  [122] getlocal 6 .............................. <tText>
+  [124] getlocal 2 .............................. <tItemID>
+  [126] getlocal 4 .............................. <tSourceLoc>
+  [128] pusharglistnoret 6 ...................... <tChatItem, tMode, tBalloonColor, tText, tItemID, tSourceLoc>
+  [130] objcall 1108 ............................ tChatItem.defineBalloon(tMode, tBalloonColor, tText, tItemID, tSourceLoc)
+  [133] getprop 1072 ............................ <pActiveItemList>
+  [136] getlocal 1 .............................. <tChatItem>
+  [138] pusharglistnoret 2 ...................... <pActiveItemList, tChatItem>
+  [140] objcall 87 .............................. pActiveItemList.add(tChatItem)
+  [142] getlocal 1 .............................. <tChatItem>
+  [144] pusharglistnoret 1 ...................... <tChatItem>
+  [146] extcall 41 .............................. return tChatItem
+  [148] ret
+end
+
+on clearUserCache me
+  [  0] getprop 1086 ............................ <pUserCache>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 47
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 57] ............................ repeat with tUserName in pUserCache
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 49
+  [ 27] setlocal 0
+  [ 29] pushcons 16 ............................. <"chat_item_user_">
+  [ 31] getlocal 0 .............................. <tUserName>
+  [ 33] joinstr ................................. <"chat_item_user_" & tUserName>
+  [ 34] setlocal 1 .............................. tUserMemName = "chat_item_user_" & tUserName
+  [ 36] getlocal 1 .............................. <tUserMemName>
+  [ 38] pusharglist 1 ........................... <tUserMemName>
+  [ 40] extcall 150 ............................. <memberExists(tUserMemName)>
+  [ 42] jmpifz [ 52] ............................ if memberExists(tUserMemName) then
+  [ 45] getlocal 1 .............................. <tUserMemName>
+  [ 47] pusharglistnoret 1 ...................... <tUserMemName>
+  [ 49] extcall 639 ............................. removeMember(tUserMemName)
+  [ 52] pushint8 1
+  [ 54] add
+  [ 55] endrepeat [ 11]
+  [ 57] pop 3
+  [ 59] ret
+end
+
+on showChatItemUnheard me, tRoomUserId
+  [  0] pushsymb 694 ............................ <#random>
+  [  3] pushcons 17 ............................. <"Chat Bubble Unheard">
+  [  5] pusharglist 2 ........................... <#random, "Chat Bubble Unheard">
+  [  7] extcall 35 .............................. <createObject(#random, "Chat Bubble Unheard")>
+  [  9] setlocal 0 .............................. tChatItem = createObject(#random, "Chat Bubble Unheard")
+  [ 11] getlocal 0 .............................. <tChatItem>
+  [ 13] getparam 1 .............................. <tRoomUserId>
+  [ 15] pusharglistnoret 2 ...................... <tChatItem, tRoomUserId>
+  [ 17] objcall 392 ............................. tChatItem.define(tRoomUserId)
+  [ 20] ret
+end
+
+on moveAllItemsUpBy me, tAmount
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 1072 ............................ <pActiveItemList>
+  [  9] getobjprop 47 ........................... <pActiveItemList.count>
+  [ 11] lteq
+  [ 12] jmpifz [117] ............................ repeat with tItemNo = 1 to pActiveItemList.count
+  [ 15] getprop 1072 ............................ <pActiveItemList>
+  [ 18] getlocal 0 .............................. <tItemNo>
+  [ 20] pusharglist 2 ........................... <pActiveItemList, tItemNo>
+  [ 22] objcall 49 .............................. <pActiveItemList[tItemNo]>
+  [ 24] setlocal 1 .............................. tItem = pActiveItemList[tItemNo]
+  [ 26] getlocal 1 .............................. <tItem>
+  [ 28] getparam 1 .............................. <tAmount>
+  [ 30] pusharglist 2 ........................... <tItem, tAmount>
+  [ 32] objcall 1116 ............................ <tItem.moveVerticallyBy(tAmount)>
+  [ 35] setlocal 2 .............................. tLocV = tItem.moveVerticallyBy(tAmount)
+  [ 37] getlocal 2 .............................. <tLocV>
+  [ 39] pushint8 50 ............................. <50>
+  [ 41] inv ..................................... <-50>
+  [ 42] lt ...................................... <tLocV < -50>
+  [ 43] jmpifz [108] ............................ if tLocV < -50 then
+  [ 46] getprop 1072 ............................ <pActiveItemList>
+  [ 49] getlocal 0 .............................. <tItemNo>
+  [ 51] pusharglistnoret 2 ...................... <pActiveItemList, tItemNo>
+  [ 53] objcall 158 ............................. pActiveItemList.deleteAt(tItemNo)
+  [ 55] getlocal 1 .............................. <tItem>
+  [ 57] pushsymb 1117 ........................... <#getType>
+  [ 60] pusharglist 2 ........................... <tItem, #getType>
+  [ 62] objcall 1043 ............................ <tItem.handler(#getType)>
+  [ 65] jmpifz [102] ............................ if tItem.handler(#getType) then
+  [ 68] getlocal 1 .............................. <tItem>
+  [ 70] pusharglist 1 ........................... <tItem>
+  [ 72] objcall 1117 ............................ <tItem.getType()>
+  [ 75] pushcons 18 ............................. <"NORMAL">
+  [ 77] eq ...................................... <tItem.getType() = "NORMAL">
+  [ 78] jmpifz [ 93] ............................ if tItem.getType() = "NORMAL" then / else
+  [ 81] getprop 1073 ............................ <pFreeChatItemList>
+  [ 84] getlocal 1 .............................. <tItem>
+  [ 86] pusharglistnoret 2 ...................... <pFreeChatItemList, tItem>
+  [ 88] objcall 87 .............................. pFreeChatItemList.add(tItem)
+  [ 90] jmp [ 99]
+  [ 93] getlocal 1 .............................. <tItem>
+  [ 95] pusharglistnoret 1 ...................... <tItem>
+  [ 97] objcall 1 ............................... tItem.deconstruct()
+  [ 99] jmp [108] ............................... next repeat
+  [102] getlocal 1 .............................. <tItem>
+  [104] pusharglistnoret 1 ...................... <tItem>
+  [106] objcall 1 ............................... tItem.deconstruct()
+  [108] pushint8 1
+  [110] getlocal 0
+  [112] add
+  [113] setlocal 0
+  [115] endrepeat [  4]
+  [117] ret
+end
+
+on getLowestBalloonLocV me
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tLowestPoint = 0
+  [  3] getprop 1072 ............................ <pActiveItemList>
+  [  6] peek 0
+  [  8] pusharglist 1
+  [ 10] extcall 47
+  [ 12] pushint8 1
+  [ 14] peek 0
+  [ 16] peek 2
+  [ 18] lteq
+  [ 19] jmpifz [ 58] ............................ repeat with tItem in pActiveItemList
+  [ 22] peek 2
+  [ 24] peek 1
+  [ 26] pusharglist 2
+  [ 28] extcall 49
+  [ 30] setlocal 1
+  [ 32] getlocal 1 .............................. <tItem>
+  [ 34] pusharglist 1 ........................... <tItem>
+  [ 36] objcall 1120 ............................ <tItem.getLowPoint()>
+  [ 39] setlocal 2 .............................. tItemLoc = tItem.getLowPoint()
+  [ 41] getlocal 2 .............................. <tItemLoc>
+  [ 43] getlocal 0 .............................. <tLowestPoint>
+  [ 45] gt ...................................... <tItemLoc > tLowestPoint>
+  [ 46] jmpifz [ 53] ............................ if tItemLoc > tLowestPoint then
+  [ 49] getlocal 2 .............................. <tItemLoc>
+  [ 51] setlocal 0 .............................. tLowestPoint = tItemLoc
+  [ 53] pushint8 1
+  [ 55] add
+  [ 56] endrepeat [ 14]
+  [ 58] pop 3
+  [ 60] getlocal 0 .............................. <tLowestPoint>
+  [ 62] pusharglistnoret 1 ...................... <tLowestPoint>
+  [ 64] extcall 41 .............................. return tLowestPoint
+  [ 66] ret
+end
+
+on update me
+  [  0] getprop 1072 ............................ <pActiveItemList>
+  [  3] getobjprop 47 ........................... <pActiveItemList.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pActiveItemList.count = 0>
+  [  7] getprop 1085 ............................ <pMessageBuffer>
+  [ 10] getobjprop 47 ........................... <pMessageBuffer.count>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <pMessageBuffer.count = 0>
+  [ 14] and ..................................... <(pActiveItemList.count = 0) and (pMessageBuffer.count = 0)>
+  [ 15] jmpifz [ 23] ............................ if (pActiveItemList.count = 0) and (pMessageBuffer.count = 0) then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 41 .............................. return 0
+  [ 23] getprop 1085 ............................ <pMessageBuffer>
+  [ 26] getobjprop 47 ........................... <pMessageBuffer.count>
+  [ 28] getprop 1083 ............................ <pSpeedUpChatBufferLim>
+  [ 31] gt ...................................... <pMessageBuffer.count > pSpeedUpChatBufferLim>
+  [ 32] jmpifz [ 67] ............................ if pMessageBuffer.count > pSpeedUpChatBufferLim then / else
+  [ 35] pushfloat32 1.0 ......................... <1.0>
+  [ 40] getprop 1085 ............................ <pMessageBuffer>
+  [ 43] getobjprop 47 ........................... <pMessageBuffer.count>
+  [ 45] getprop 1083 ............................ <pSpeedUpChatBufferLim>
+  [ 48] sub ..................................... <pMessageBuffer.count - pSpeedUpChatBufferLim>
+  [ 49] pusharglist 1 ........................... <pMessageBuffer.count - pSpeedUpChatBufferLim>
+  [ 51] extcall 338 ............................. <float(pMessageBuffer.count - pSpeedUpChatBufferLim)>
+  [ 54] pushfloat32 0.5 ......................... <0.5>
+  [ 59] mul ..................................... <float(pMessageBuffer.count - pSpeedUpChatBufferLim) * 0.5>
+  [ 60] add ..................................... <1.0 + (float(pMessageBuffer.count - pSpeedUpChatBufferLim) * 0.5)>
+  [ 61] setprop 1084 ............................ pScrollSpdMultiplier = 1.0 + (float(pMessageBuffer.count - pSpeedUpChatBufferLim) * 0.5)
+  [ 64] jmp [ 75]
+  [ 67] pushfloat32 1.0 ......................... <1.0>
+  [ 72] setprop 1084 ............................ pScrollSpdMultiplier = 1.0
+  [ 75] getprop 1077 ............................ <pAutoScrollOn>
+  [ 78] jmpifz [167] ............................ if pAutoScrollOn then / else
+  [ 81] pushfloat32 3.0 ......................... <3.0>
+  [ 86] getprop 1084 ............................ <pScrollSpdMultiplier>
+  [ 89] mul ..................................... <3.0 * pScrollSpdMultiplier>
+  [ 90] pusharglist 1 ........................... <3.0 * pScrollSpdMultiplier>
+  [ 92] extcall 115 ............................. <integer(3.0 * pScrollSpdMultiplier)>
+  [ 94] setlocal 0 .............................. tOffV = integer(3.0 * pScrollSpdMultiplier)
+  [ 96] getlocal 0 .............................. <tOffV>
+  [ 98] getprop 1080 ............................ <pAutoScrolledNow>
+  [101] add ..................................... <tOffV + pAutoScrolledNow>
+  [102] getprop 1076 ............................ <pAutoScrollAmountPx>
+  [105] gt ...................................... <(tOffV + pAutoScrolledNow) > pAutoScrollAmountPx>
+  [106] jmpifz [118] ............................ if (tOffV + pAutoScrolledNow) > pAutoScrollAmountPx then
+  [109] getprop 1076 ............................ <pAutoScrollAmountPx>
+  [112] getprop 1080 ............................ <pAutoScrolledNow>
+  [115] sub ..................................... <pAutoScrollAmountPx - pAutoScrolledNow>
+  [116] setlocal 0 .............................. tOffV = pAutoScrollAmountPx - pAutoScrolledNow
+  [118] getprop 1080 ............................ <pAutoScrolledNow>
+  [121] getlocal 0 .............................. <tOffV>
+  [123] add ..................................... <pAutoScrolledNow + tOffV>
+  [124] setprop 1080 ............................ pAutoScrolledNow = pAutoScrolledNow + tOffV
+  [127] getparam 0 .............................. <me>
+  [129] pushint8 1 .............................. <1>
+  [131] inv ..................................... <-1>
+  [132] getlocal 0 .............................. <tOffV>
+  [134] mul ..................................... <-1 * tOffV>
+  [135] pusharglistnoret 2 ...................... <me, -1 * tOffV>
+  [137] objcall 1070 ............................ me.moveAllItemsUpBy(-1 * tOffV)
+  [140] getprop 1080 ............................ <pAutoScrolledNow>
+  [143] getprop 1076 ............................ <pAutoScrollAmountPx>
+  [146] gteq .................................... <pAutoScrolledNow >= pAutoScrollAmountPx>
+  [147] jmpifz [164] ............................ if pAutoScrolledNow >= pAutoScrollAmountPx then
+  [150] pushzero ................................ <0>
+  [151] setprop 1080 ............................ pAutoScrolledNow = 0
+  [154] pushzero ................................ <0>
+  [155] setprop 1077 ............................ pAutoScrollOn = 0
+  [158] getmovieprop 389 ........................ <the milliSeconds>
+  [161] setprop 1123 ............................ pScrollDelayStartTime = the milliSeconds
+  [164] jmp [363]
+  [167] getprop 1085 ............................ <pMessageBuffer>
+  [170] getobjprop 47 ........................... <pMessageBuffer.count>
+  [172] pushzero ................................ <0>
+  [173] gt ...................................... <pMessageBuffer.count > 0>
+  [174] jmpifz [336] ............................ if pMessageBuffer.count > 0 then / else
+  [177] getprop 1072 ............................ <pActiveItemList>
+  [180] getobjprop 47 ........................... <pActiveItemList.count>
+  [182] pushzero ................................ <0>
+  [183] gt ...................................... <pActiveItemList.count > 0>
+  [184] jmpifz [218] ............................ if pActiveItemList.count > 0 then / else
+  [187] getparam 0 .............................. <me>
+  [189] pusharglist 1 ........................... <me>
+  [191] objcall 1071 ............................ <me.getLowestBalloonLocV()>
+  [194] getprop 1074 ............................ <pMarginFromScreenTop>
+  [197] getprop 1076 ............................ <pAutoScrollAmountPx>
+  [200] sub ..................................... <pMarginFromScreenTop - pAutoScrollAmountPx>
+  [201] lteq .................................... <me.getLowestBalloonLocV() <= (pMarginFromScreenTop - pAutoScrollAmountPx)>
+  [202] jmpifz [212] ............................ if me.getLowestBalloonLocV() <= (pMarginFromScreenTop - pAutoScrollAmountPx) then / else
+  [205] pushint8 1 .............................. <1>
+  [207] setlocal 1 .............................. tSpaceAvailable = 1
+  [209] jmp [215]
+  [212] pushzero ................................ <0>
+  [213] setlocal 1 .............................. tSpaceAvailable = 0
+  [215] jmp [222]
+  [218] pushint8 1 .............................. <1>
+  [220] setlocal 1 .............................. tSpaceAvailable = 1
+  [222] getlocal 1 .............................. <tSpaceAvailable>
+  [224] not ..................................... <not tSpaceAvailable>
+  [225] getprop 1085 ............................ <pMessageBuffer>
+  [228] getobjprop 47 ........................... <pMessageBuffer.count>
+  [230] getprop 1082 ............................ <pMaximumChatBufferSize>
+  [233] gt ...................................... <pMessageBuffer.count > pMaximumChatBufferSize>
+  [234] and ..................................... <not tSpaceAvailable and (pMessageBuffer.count > pMaximumChatBufferSize)>
+  [235] jmpifz [303] ............................ if not tSpaceAvailable and (pMessageBuffer.count > pMaximumChatBufferSize) then
+  [238] getprop 1085 ............................ <pMessageBuffer>
+  [241] getobjprop 47 ........................... <pMessageBuffer.count>
+  [243] setlocal 2 .............................. tCount = pMessageBuffer.count
+  [245] pushint8 1 .............................. <1>
+  [247] setlocal 3
+  [249] getlocal 3
+  [251] getlocal 2 .............................. <tCount>
+  [253] getprop 1082 ............................ <pMaximumChatBufferSize>
+  [256] sub ..................................... <tCount - pMaximumChatBufferSize>
+  [257] lteq
+  [258] jmpifz [299] ............................ repeat with k = 1 to tCount - pMaximumChatBufferSize
+  [261] getparam 0 .............................. <me>
+  [263] pushint8 1 .............................. <1>
+  [265] inv ..................................... <-1>
+  [266] getprop 1076 ............................ <pAutoScrollAmountPx>
+  [269] mul ..................................... <-1 * pAutoScrollAmountPx>
+  [270] pusharglistnoret 2 ...................... <me, -1 * pAutoScrollAmountPx>
+  [272] objcall 1070 ............................ me.moveAllItemsUpBy(-1 * pAutoScrollAmountPx)
+  [275] getlocal 3 .............................. <k>
+  [277] pushint8 1 .............................. <1>
+  [279] nteq .................................... <k <> 1>
+  [280] jmpifz [290] ............................ if k <> 1 then
+  [283] getparam 0 .............................. <me>
+  [285] pusharglistnoret 1 ...................... <me>
+  [287] objcall 1065 ............................ me.showNextChatMessage()
+  [290] pushint8 1
+  [292] getlocal 3
+  [294] add
+  [295] setlocal 3
+  [297] endrepeat [249]
+  [299] pushint8 1 .............................. <1>
+  [301] setlocal 1 .............................. tSpaceAvailable = 1
+  [303] getlocal 1 .............................. <tSpaceAvailable>
+  [305] jmpifz [328] ............................ if tSpaceAvailable then / else
+  [308] pushzero ................................ <0>
+  [309] setprop 1077 ............................ pAutoScrollOn = 0
+  [312] getmovieprop 389 ........................ <the milliSeconds>
+  [315] setprop 1123 ............................ pScrollDelayStartTime = the milliSeconds
+  [318] getparam 0 .............................. <me>
+  [320] pusharglistnoret 1 ...................... <me>
+  [322] objcall 1065 ............................ me.showNextChatMessage()
+  [325] jmp [333]
+  [328] pushint8 1 .............................. <1>
+  [330] setprop 1077 ............................ pAutoScrollOn = 1
+  [333] jmp [363]
+  [336] getmovieprop 389 ........................ <the milliSeconds>
+  [339] setlocal 4 .............................. tMillis = the milliSeconds
+  [341] getlocal 4 .............................. <tMillis>
+  [343] getprop 1123 ............................ <pScrollDelayStartTime>
+  [346] sub ..................................... <tMillis - pScrollDelayStartTime>
+  [347] setlocal 5 .............................. tTimeDiff = tMillis - pScrollDelayStartTime
+  [349] getlocal 5 .............................. <tTimeDiff>
+  [351] getprop 1078 ............................ <pScrollDelayTime>
+  [354] gteq .................................... <tTimeDiff >= pScrollDelayTime>
+  [355] jmpifz [363] ............................ if tTimeDiff >= pScrollDelayTime then
+  [358] pushint8 1 .............................. <1>
+  [360] setprop 1077 ............................ pAutoScrollOn = 1
+  [363] ret
+end

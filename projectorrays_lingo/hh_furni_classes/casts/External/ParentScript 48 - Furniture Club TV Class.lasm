@@ -1,0 +1,449 @@
+property pChanges, pActive, pLineSprite1, pLineSprite2, pLinesOrigLocV, pCoverSprite, pGlowSprite, pNoiseSprite, pActiveEffect, pEffectCounter, pRandomEffectList, pMovedByUser
+
+on prepare me, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 14 ............................. <#pSprList>
+  [  4] pusharglist 2 ........................... <me, #pSprList>
+  [  6] objcall 60 .............................. <me.pSprList.count>
+  [  8] pushint8 9 .............................. <9>
+  [ 10] lt ...................................... <me.pSprList.count < 9>
+  [ 11] jmpifz [ 19] ............................ if me.pSprList.count < 9 then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 9 ............................... return 0
+  [ 19] pushsymb 656 ............................ <#noise1>
+  [ 22] pushsymb 657 ............................ <#lines1>
+  [ 25] pushsymb 657 ............................ <#lines1>
+  [ 28] pusharglist 3 ........................... <[#noise1, #lines1, #lines1]>
+  [ 30] pushlist ................................ <[#noise1, #lines1, #lines1]>
+  [ 31] setprop 655 ............................. pRandomEffectList = [#noise1, #lines1, #lines1]
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pushsymb 14 ............................. <#pSprList>
+  [ 38] pushint8 7 .............................. <7>
+  [ 40] pusharglist 3 ........................... <me, #pSprList, 7>
+  [ 42] objcall 15 .............................. <me.pSprList[7]>
+  [ 44] getobjprop 63 ........................... <me.pSprList[7].spriteNum>
+  [ 46] pusharglistnoret 1 ...................... <me.pSprList[7].spriteNum>
+  [ 48] extcall 330 ............................. removeEventBroker(me.pSprList[7].spriteNum)
+  [ 51] getparam 0 .............................. <me>
+  [ 53] pushsymb 14 ............................. <#pSprList>
+  [ 55] pushint8 2 .............................. <2>
+  [ 57] pusharglist 3 ........................... <me, #pSprList, 2>
+  [ 59] objcall 100 ............................. <me.pSprList[2]>
+  [ 61] setprop 658 ............................. pLineSprite1 = me.pSprList[2]
+  [ 64] getparam 0 .............................. <me>
+  [ 66] pushsymb 14 ............................. <#pSprList>
+  [ 68] pushint8 3 .............................. <3>
+  [ 70] pusharglist 3 ........................... <me, #pSprList, 3>
+  [ 72] objcall 100 ............................. <me.pSprList[3]>
+  [ 74] setprop 659 ............................. pLineSprite2 = me.pSprList[3]
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pushsymb 14 ............................. <#pSprList>
+  [ 81] pushint8 7 .............................. <7>
+  [ 83] pusharglist 3 ........................... <me, #pSprList, 7>
+  [ 85] objcall 100 ............................. <me.pSprList[7]>
+  [ 87] setprop 660 ............................. pGlowSprite = me.pSprList[7]
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pushsymb 14 ............................. <#pSprList>
+  [ 94] pushint8 8 .............................. <8>
+  [ 96] pusharglist 3 ........................... <me, #pSprList, 8>
+  [ 98] objcall 100 ............................. <me.pSprList[8]>
+  [100] setprop 661 ............................. pCoverSprite = me.pSprList[8]
+  [103] getparam 0 .............................. <me>
+  [105] pushsymb 14 ............................. <#pSprList>
+  [107] pushint8 9 .............................. <9>
+  [109] pusharglist 3 ........................... <me, #pSprList, 9>
+  [111] objcall 100 ............................. <me.pSprList[9]>
+  [113] setprop 662 ............................. pNoiseSprite = me.pSprList[9]
+  [116] pushzero ................................ <0>
+  [117] setprop 663 ............................. pMovedByUser = 0
+  [120] getparam 0 .............................. <me>
+  [122] pusharglistnoret 1 ...................... <me>
+  [124] objcall 651 ............................. me.hideAllEffects()
+  [127] getparam 1 .............................. <tdata>
+  [129] pushsymb 315 ............................ <#stuffdata>
+  [132] pusharglist 2 ........................... <tdata, #stuffdata>
+  [134] objcall 61 .............................. <tdata[#stuffdata]>
+  [136] pushcons 0 .............................. <"ON">
+  [138] eq ...................................... <tdata[#stuffdata] = "ON">
+  [139] jmpifz [150] ............................ if tdata[#stuffdata] = "ON" then / else
+  [142] pushint8 1 .............................. <1>
+  [144] setprop 447 ............................. pActive = 1
+  [147] jmp [154]
+  [150] pushzero ................................ <0>
+  [151] setprop 447 ............................. pActive = 0
+  [154] pushint8 1 .............................. <1>
+  [156] setprop 498 ............................. pChanges = 1
+  [159] pushint8 1 .............................. <1>
+  [161] pusharglistnoret 1 ...................... <1>
+  [163] extcall 9 ............................... return 1
+  [165] ret
+end
+
+on prepareForMove me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 88 .............................. <VOID>
+  [  4] setprop 664 ............................. pLinesOrigLocV = VOID
+  [  7] pushint8 1 .............................. <1>
+  [  9] setprop 663 ............................. pMovedByUser = 1
+  [ 12] ret
+end
+
+on movingFinished me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 663 ............................. pMovedByUser = 0
+  [  4] ret
+end
+
+on hideAllEffects me
+  [  0] getprop 658 ............................. <pLineSprite1>
+  [  3] pushzero ................................ <0>
+  [  4] setobjprop 138 .......................... pLineSprite1.visible = 0
+  [  6] getprop 659 ............................. <pLineSprite2>
+  [  9] pushzero ................................ <0>
+  [ 10] setobjprop 138 .......................... pLineSprite2.visible = 0
+  [ 12] getprop 664 ............................. <pLinesOrigLocV>
+  [ 15] pusharglist 1 ........................... <pLinesOrigLocV>
+  [ 17] extcall 97 .............................. <voidp(pLinesOrigLocV)>
+  [ 19] not ..................................... <not voidp(pLinesOrigLocV)>
+  [ 20] jmpifz [ 51] ............................ if not voidp(pLinesOrigLocV) then
+  [ 23] getprop 658 ............................. <pLineSprite1>
+  [ 26] getprop 664 ............................. <pLinesOrigLocV>
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] pusharglist 2 ........................... <pLinesOrigLocV, 1>
+  [ 33] objcall 61 .............................. <pLinesOrigLocV[1]>
+  [ 35] setobjprop 189 .......................... pLineSprite1.locV = pLinesOrigLocV[1]
+  [ 37] getprop 659 ............................. <pLineSprite2>
+  [ 40] getprop 664 ............................. <pLinesOrigLocV>
+  [ 43] pushint8 2 .............................. <2>
+  [ 45] pusharglist 2 ........................... <pLinesOrigLocV, 2>
+  [ 47] objcall 61 .............................. <pLinesOrigLocV[2]>
+  [ 49] setobjprop 189 .......................... pLineSprite2.locV = pLinesOrigLocV[2]
+  [ 51] getprop 662 ............................. <pNoiseSprite>
+  [ 54] pushzero ................................ <0>
+  [ 55] setobjprop 138 .......................... pNoiseSprite.visible = 0
+  [ 57] pushsymb 666 ............................ <#none>
+  [ 60] setprop 665 ............................. pActiveEffect = #none
+  [ 63] pushzero ................................ <0>
+  [ 64] setprop 667 ............................. pEffectCounter = 0
+  [ 67] ret
+end
+
+on updateStuffdata me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pushcons 1 .............................. <"OFF">
+  [  4] eq ...................................... <tValue = "OFF">
+  [  5] jmpifz [ 15] ............................ if tValue = "OFF" then / else
+  [  8] pushzero ................................ <0>
+  [  9] setprop 447 ............................. pActive = 0
+  [ 12] jmp [ 20]
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] setprop 447 ............................. pActive = 1
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] setprop 498 ............................. pChanges = 1
+  [ 25] ret
+end
+
+on update me
+  [  0] getprop 663 ............................. <pMovedByUser>
+  [  3] jmpifz [ 12] ............................ if pMovedByUser then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 9 ............................... return 1
+  [ 12] pushint8 40 ............................. <40>
+  [ 14] pusharglist 1 ........................... <40>
+  [ 16] extcall 322 ............................. <random(40)>
+  [ 19] pushint8 5 .............................. <5>
+  [ 21] eq ...................................... <random(40) = 5>
+  [ 22] getprop 665 ............................. <pActiveEffect>
+  [ 25] pushsymb 666 ............................ <#none>
+  [ 28] eq ...................................... <pActiveEffect = #none>
+  [ 29] and ..................................... <(random(40) = 5) and (pActiveEffect = #none)>
+  [ 30] jmpifz [ 40] ............................ if (random(40) = 5) and (pActiveEffect = #none) then
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pusharglistnoret 1 ...................... <me>
+  [ 37] objcall 652 ............................. me.startRandomEffect()
+  [ 40] getprop 665 ............................. <pActiveEffect>
+  [ 43] pushsymb 666 ............................ <#none>
+  [ 46] nteq .................................... <pActiveEffect <> #none>
+  [ 47] jmpifz [ 57] ............................ if pActiveEffect <> #none then
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglistnoret 1 ...................... <me>
+  [ 54] objcall 653 ............................. me.runEffect()
+  [ 57] getprop 498 ............................. <pChanges>
+  [ 60] not ..................................... <not pChanges>
+  [ 61] jmpifz [ 68] ............................ if not pChanges then
+  [ 64] pusharglistnoret 0 ...................... <>
+  [ 66] extcall 9 ............................... return 
+  [ 68] getprop 664 ............................. <pLinesOrigLocV>
+  [ 71] pusharglist 0 ........................... <>
+  [ 73] extcall 88 .............................. <VOID>
+  [ 75] eq ...................................... <pLinesOrigLocV = VOID>
+  [ 76] jmpifz [ 95] ............................ if pLinesOrigLocV = VOID then
+  [ 79] getprop 658 ............................. <pLineSprite1>
+  [ 82] getobjprop 189 .......................... <pLineSprite1.locV>
+  [ 84] getprop 659 ............................. <pLineSprite2>
+  [ 87] getobjprop 189 .......................... <pLineSprite2.locV>
+  [ 89] pusharglist 2 ........................... <[pLineSprite1.locV, pLineSprite2.locV]>
+  [ 91] pushlist ................................ <[pLineSprite1.locV, pLineSprite2.locV]>
+  [ 92] setprop 664 ............................. pLinesOrigLocV = [pLineSprite1.locV, pLineSprite2.locV]
+  [ 95] getprop 447 ............................. <pActive>
+  [ 98] jmpifz [117] ............................ if pActive then / else
+  [101] getprop 660 ............................. <pGlowSprite>
+  [104] pushint8 1 .............................. <1>
+  [106] setobjprop 138 .......................... pGlowSprite.visible = 1
+  [108] getprop 661 ............................. <pCoverSprite>
+  [111] pushzero ................................ <0>
+  [112] setobjprop 138 .......................... pCoverSprite.visible = 0
+  [114] jmp [137]
+  [117] getprop 660 ............................. <pGlowSprite>
+  [120] pushzero ................................ <0>
+  [121] setobjprop 138 .......................... pGlowSprite.visible = 0
+  [123] getprop 661 ............................. <pCoverSprite>
+  [126] pushint8 1 .............................. <1>
+  [128] setobjprop 138 .......................... pCoverSprite.visible = 1
+  [130] getparam 0 .............................. <me>
+  [132] pusharglistnoret 1 ...................... <me>
+  [134] objcall 651 ............................. me.hideAllEffects()
+  [137] ret
+end
+
+on startRandomEffect me
+  [  0] getprop 655 ............................. <pRandomEffectList>
+  [  3] getprop 655 ............................. <pRandomEffectList>
+  [  6] getobjprop 60 ........................... <pRandomEffectList.count>
+  [  8] pusharglist 1 ........................... <pRandomEffectList.count>
+  [ 10] extcall 322 ............................. <random(pRandomEffectList.count)>
+  [ 13] pusharglist 2 ........................... <pRandomEffectList, random(pRandomEffectList.count)>
+  [ 15] objcall 61 .............................. <pRandomEffectList[random(pRandomEffectList.count)]>
+  [ 17] setprop 665 ............................. pActiveEffect = pRandomEffectList[random(pRandomEffectList.count)]
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 1 ...................... <1>
+  [ 24] extcall 9 ............................... return 1
+  [ 26] ret
+end
+
+on runEffect me
+  [  0] getprop 667 ............................. <pEffectCounter>
+  [  3] pushint8 1 .............................. <1>
+  [  5] add ..................................... <pEffectCounter + 1>
+  [  6] setprop 667 ............................. pEffectCounter = pEffectCounter + 1
+  [  9] getprop 665 ............................. <pActiveEffect>
+  [ 12] peek 0 .................................. case pActiveEffect of
+  [ 14] pushsymb 656 ............................ <#noise1>
+  [ 17] eq
+  [ 18] jmpifz [ 69] ............................ (case) #noise1:
+  [ 21] pushint8 6 .............................. <6>
+  [ 23] pusharglist 1 ........................... <6>
+  [ 25] extcall 322 ............................. <random(6)>
+  [ 28] pushint8 5 .............................. <5>
+  [ 30] eq ...................................... <random(6) = 5>
+  [ 31] jmpifz [ 43] ............................ if random(6) = 5 then / else
+  [ 34] getprop 662 ............................. <pNoiseSprite>
+  [ 37] pushzero ................................ <0>
+  [ 38] setobjprop 138 .......................... pNoiseSprite.visible = 0
+  [ 40] jmp [ 50]
+  [ 43] getprop 662 ............................. <pNoiseSprite>
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] setobjprop 138 .......................... pNoiseSprite.visible = 1
+  [ 50] getprop 667 ............................. <pEffectCounter>
+  [ 53] pushint8 5 .............................. <5>
+  [ 55] gt ...................................... <pEffectCounter > 5>
+  [ 56] jmpifz [ 66] ............................ if pEffectCounter > 5 then
+  [ 59] getparam 0 .............................. <me>
+  [ 61] pusharglistnoret 1 ...................... <me>
+  [ 63] objcall 651 ............................. me.hideAllEffects()
+  [ 66] jmp [234]
+  [ 69] peek 0
+  [ 71] pushsymb 657 ............................ <#lines1>
+  [ 74] eq
+  [ 75] jmpifz [157] ............................ (case) #lines1:
+  [ 78] getprop 667 ............................. <pEffectCounter>
+  [ 81] pushint8 2 .............................. <2>
+  [ 83] mod ..................................... <pEffectCounter mod 2>
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] eq ...................................... <(pEffectCounter mod 2) = 1>
+  [ 87] jmpifz [ 98] ............................ if (pEffectCounter mod 2) = 1 then
+  [ 90] pop 1
+  [ 92] pushint8 1 .............................. <1>
+  [ 94] pusharglistnoret 1 ...................... <1>
+  [ 96] extcall 9 ............................... return 1
+  [ 98] getprop 658 ............................. <pLineSprite1>
+  [101] pushint8 1 .............................. <1>
+  [103] setobjprop 138 .......................... pLineSprite1.visible = 1
+  [105] getprop 659 ............................. <pLineSprite2>
+  [108] pushint8 1 .............................. <1>
+  [110] setobjprop 138 .......................... pLineSprite2.visible = 1
+  [112] getprop 658 ............................. <pLineSprite1>
+  [115] getprop 658 ............................. <pLineSprite1>
+  [118] getobjprop 189 .......................... <pLineSprite1.locV>
+  [120] pushint8 1 .............................. <1>
+  [122] add ..................................... <pLineSprite1.locV + 1>
+  [123] setobjprop 189 .......................... pLineSprite1.locV = pLineSprite1.locV + 1
+  [125] getprop 659 ............................. <pLineSprite2>
+  [128] getprop 659 ............................. <pLineSprite2>
+  [131] getobjprop 189 .......................... <pLineSprite2.locV>
+  [133] pushint8 1 .............................. <1>
+  [135] add ..................................... <pLineSprite2.locV + 1>
+  [136] setobjprop 189 .......................... pLineSprite2.locV = pLineSprite2.locV + 1
+  [138] getprop 667 ............................. <pEffectCounter>
+  [141] pushint8 90 ............................. <90>
+  [143] gt ...................................... <pEffectCounter > 90>
+  [144] jmpifz [154] ............................ if pEffectCounter > 90 then
+  [147] getparam 0 .............................. <me>
+  [149] pusharglistnoret 1 ...................... <me>
+  [151] objcall 651 ............................. me.hideAllEffects()
+  [154] jmp [234]
+  [157] peek 0
+  [159] pushsymb 668 ............................ <#lines2>
+  [162] eq
+  [163] jmpifz [234] ............................ (case) #lines2:
+  [166] getprop 658 ............................. <pLineSprite1>
+  [169] pushint8 1 .............................. <1>
+  [171] setobjprop 138 .......................... pLineSprite1.visible = 1
+  [173] getprop 659 ............................. <pLineSprite2>
+  [176] pushint8 1 .............................. <1>
+  [178] setobjprop 138 .......................... pLineSprite2.visible = 1
+  [180] getprop 667 ............................. <pEffectCounter>
+  [183] pushint8 45 ............................. <45>
+  [185] lt ...................................... <pEffectCounter < 45>
+  [186] jmpifz [205] ............................ if pEffectCounter < 45 then / else
+  [189] getprop 658 ............................. <pLineSprite1>
+  [192] getprop 658 ............................. <pLineSprite1>
+  [195] getobjprop 189 .......................... <pLineSprite1.locV>
+  [197] pushint8 1 .............................. <1>
+  [199] add ..................................... <pLineSprite1.locV + 1>
+  [200] setobjprop 189 .......................... pLineSprite1.locV = pLineSprite1.locV + 1
+  [202] jmp [218]
+  [205] getprop 658 ............................. <pLineSprite1>
+  [208] getprop 658 ............................. <pLineSprite1>
+  [211] getobjprop 189 .......................... <pLineSprite1.locV>
+  [213] pushint8 1 .............................. <1>
+  [215] sub ..................................... <pLineSprite1.locV - 1>
+  [216] setobjprop 189 .......................... pLineSprite1.locV = pLineSprite1.locV - 1
+  [218] getprop 667 ............................. <pEffectCounter>
+  [221] pushint8 90 ............................. <90>
+  [223] gt ...................................... <pEffectCounter > 90>
+  [224] jmpifz [234] ............................ if pEffectCounter > 90 then
+  [227] getparam 0 .............................. <me>
+  [229] pusharglistnoret 1 ...................... <me>
+  [231] objcall 651 ............................. me.hideAllEffects()
+  [234] pop 1 ................................... end case
+  [236] pushint8 1 .............................. <1>
+  [238] pusharglistnoret 1 ...................... <1>
+  [240] extcall 9 ............................... return 1
+  [242] ret
+end
+
+on setOn me
+  [  0] pushsymb 4 .............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 5 ............................... <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 6 ............................... <getThread(#room).getComponent()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 12] objcall 106 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 14] pushcons 2 .............................. <"SETSTUFFDATA">
+  [ 16] pushsymb 146 ............................ <#string>
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglist 1 ........................... <me>
+  [ 22] objcall 7 ............................... <me.getID()>
+  [ 24] pusharglist 1 ........................... <me.getID()>
+  [ 26] extcall 146 ............................. <string(me.getID())>
+  [ 28] pushsymb 146 ............................ <#string>
+  [ 30] pushcons 0 .............................. <"ON">
+  [ 32] pusharglist 4 ........................... <[#string: string(me.getID()), #string: "ON"]>
+  [ 34] pushproplist ............................ <[#string: string(me.getID()), #string: "ON"]>
+  [ 35] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "SETSTUFFDATA", [#string: string(me.getID()), #string: "ON"]>
+  [ 37] objcall 107 ............................. getThread(#room).getComponent().getRoomConnection().send("SETSTUFFDATA", [#string: string(me.getID()), #string: "ON"])
+  [ 39] ret
+end
+
+on setOff me
+  [  0] pushsymb 4 .............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 5 ............................... <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 6 ............................... <getThread(#room).getComponent()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 12] objcall 106 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 14] pushcons 2 .............................. <"SETSTUFFDATA">
+  [ 16] pushsymb 146 ............................ <#string>
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglist 1 ........................... <me>
+  [ 22] objcall 7 ............................... <me.getID()>
+  [ 24] pusharglist 1 ........................... <me.getID()>
+  [ 26] extcall 146 ............................. <string(me.getID())>
+  [ 28] pushsymb 146 ............................ <#string>
+  [ 30] pushcons 1 .............................. <"OFF">
+  [ 32] pusharglist 4 ........................... <[#string: string(me.getID()), #string: "OFF"]>
+  [ 34] pushproplist ............................ <[#string: string(me.getID()), #string: "OFF"]>
+  [ 35] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "SETSTUFFDATA", [#string: string(me.getID()), #string: "OFF"]>
+  [ 37] objcall 107 ............................. getThread(#room).getComponent().getRoomConnection().send("SETSTUFFDATA", [#string: string(me.getID()), #string: "OFF"])
+  [ 39] ret
+end
+
+on select me, tSprID
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 669 .......................... <the clickOn>
+  [  5] setlocal 0 .............................. tSprNum = the clickOn
+  [  7] pushint8 3 .............................. <3>
+  [  9] pushint8 4 .............................. <4>
+  [ 11] pushint8 5 .............................. <5>
+  [ 13] pusharglist 3 ........................... <[3, 4, 5]>
+  [ 15] pushlist ................................ <[3, 4, 5]>
+  [ 16] setlocal 1 .............................. tBottompartList = [3, 4, 5]
+  [ 18] pusharglist 0 ........................... <>
+  [ 20] thebuiltin 318 .......................... <the doubleClick>
+  [ 23] jmpifz [ 85] ............................ if the doubleClick then
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] setlocal 2
+  [ 30] getlocal 2
+  [ 32] getlocal 1 .............................. <tBottompartList>
+  [ 34] getobjprop 60 ........................... <tBottompartList.count>
+  [ 36] lteq
+  [ 37] jmpifz [ 78] ............................ repeat with i = 1 to tBottompartList.count
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pushsymb 14 ............................. <#pSprList>
+  [ 44] getlocal 1 .............................. <tBottompartList>
+  [ 46] getlocal 2 .............................. <i>
+  [ 48] pusharglist 2 ........................... <tBottompartList, i>
+  [ 50] objcall 61 .............................. <tBottompartList[i]>
+  [ 52] pusharglist 3 ........................... <me, #pSprList, tBottompartList[i]>
+  [ 54] objcall 15 .............................. <me.pSprList[tBottompartList[i]]>
+  [ 56] getobjprop 63 ........................... <me.pSprList[tBottompartList[i]].spriteNum>
+  [ 58] getlocal 0 .............................. <tSprNum>
+  [ 60] eq ...................................... <me.pSprList[tBottompartList[i]].spriteNum = tSprNum>
+  [ 61] jmpifz [ 69] ............................ if me.pSprList[tBottompartList[i]].spriteNum = tSprNum then
+  [ 64] pushzero ................................ <0>
+  [ 65] pusharglistnoret 1 ...................... <0>
+  [ 67] extcall 9 ............................... return 0
+  [ 69] pushint8 1
+  [ 71] getlocal 2
+  [ 73] add
+  [ 74] setlocal 2
+  [ 76] endrepeat [ 30]
+  [ 78] getparam 0 .............................. <me>
+  [ 80] pusharglistnoret 1 ...................... <me>
+  [ 82] objcall 654 ............................. me.setOnOff()
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] pusharglistnoret 1 ...................... <1>
+  [ 89] extcall 9 ............................... return 1
+  [ 91] ret
+end
+
+on setOnOff me
+  [  0] getprop 447 ............................. <pActive>
+  [  3] jmpifz [ 16] ............................ if pActive then / else
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglistnoret 1 ...................... <me>
+  [ 10] objcall 473 ............................. me.setOff()
+  [ 13] jmp [ 23]
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglistnoret 1 ...................... <me>
+  [ 20] objcall 472 ............................. me.setOn()
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] pusharglistnoret 1 ...................... <1>
+  [ 27] extcall 9 ............................... return 1
+  [ 29] ret
+end

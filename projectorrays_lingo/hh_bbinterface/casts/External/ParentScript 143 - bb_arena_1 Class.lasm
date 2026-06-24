@@ -1,0 +1,311 @@
+property pFrameworkId, pRoomGeometry, pLastGameClickCoordinate, pConnection
+
+on construct me
+  [  0] pushcons 0 .............................. <"bb.gamesystem.id">
+  [  2] pusharglist 1 ........................... <"bb.gamesystem.id">
+  [  4] extcall 185 ............................. <getVariable("bb.gamesystem.id")>
+  [  6] setprop 204 ............................. pFrameworkId = getVariable("bb.gamesystem.id")
+  [  8] pushsymb 184 ............................ <#gamesystem_getfacade>
+  [ 10] pushcons 0 .............................. <"bb.gamesystem.id">
+  [ 12] pusharglist 1 ........................... <"bb.gamesystem.id">
+  [ 14] extcall 185 ............................. <getVariable("bb.gamesystem.id")>
+  [ 16] pusharglistnoret 2 ...................... <#gamesystem_getfacade, getVariable("bb.gamesystem.id")>
+  [ 18] extcall 129 ............................. executeMessage(#gamesystem_getfacade, getVariable("bb.gamesystem.id"))
+  [ 20] pushsymb 206 ............................ <#spectatorMode_off>
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pusharglist 1 ........................... <me>
+  [ 26] objcall 48 .............................. <me.getID()>
+  [ 28] pushsymb 203 ............................ <#handleSpectatorModeOff>
+  [ 30] pusharglistnoret 3 ...................... <#spectatorMode_off, me.getID(), #handleSpectatorModeOff>
+  [ 32] extcall 205 ............................. registerMessage(#spectatorMode_off, me.getID(), #handleSpectatorModeOff)
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 2 ...................... <me, 1>
+  [ 40] objcall 200 ............................. me.registerEventProc(1)
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglistnoret 1 ...................... <1>
+  [ 46] extcall 44 .............................. return 1
+  [ 48] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 56 .............................. <VOID>
+  [  4] setprop 763 ............................. pConnection = VOID
+  [  7] getparam 0 .............................. <me>
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 2 ...................... <me, 0>
+  [ 12] objcall 200 ............................. me.registerEventProc(0)
+  [ 14] pushsymb 186 ............................ <#gamesystem_removefacade>
+  [ 16] pushcons 0 .............................. <"bb.gamesystem.id">
+  [ 18] pusharglist 1 ........................... <"bb.gamesystem.id">
+  [ 20] extcall 185 ............................. <getVariable("bb.gamesystem.id")>
+  [ 22] pusharglistnoret 2 ...................... <#gamesystem_removefacade, getVariable("bb.gamesystem.id")>
+  [ 24] extcall 129 ............................. executeMessage(#gamesystem_removefacade, getVariable("bb.gamesystem.id"))
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglistnoret 1 ...................... <1>
+  [ 30] extcall 44 .............................. return 1
+  [ 32] ret
+end
+
+on prepare me
+  [  0] pushsymb 42 ............................. <#room_interface>
+  [  2] pusharglist 1 ........................... <#room_interface>
+  [  4] extcall 41 .............................. <getObject(#room_interface)>
+  [  6] pushzero ................................ <0>
+  [  7] nteq .................................... <getObject(#room_interface) <> 0>
+  [  8] jmpifz [ 21] ............................ if getObject(#room_interface) <> 0 then
+  [ 11] pushsymb 42 ............................. <#room_interface>
+  [ 13] pusharglist 1 ........................... <#room_interface>
+  [ 15] extcall 41 .............................. <getObject(#room_interface)>
+  [ 17] pusharglistnoret 1 ...................... <getObject(#room_interface)>
+  [ 19] objcall 207 ............................. getObject(#room_interface).hideInfoStand()
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] pusharglistnoret 1 ...................... <1>
+  [ 25] extcall 44 .............................. return 1
+  [ 27] ret
+end
+
+on registerEventProc me, tBoolean
+  [  0] pushsymb 209 ............................ <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 208 ............................. <getThread(#room)>
+  [  6] setlocal 0 .............................. tRoomThread = getThread(#room)
+  [  8] getlocal 0 .............................. <tRoomThread>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tRoomThread = 0>
+  [ 12] jmpifz [ 20] ............................ if tRoomThread = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 44 .............................. return 0
+  [ 20] getlocal 0 .............................. <tRoomThread>
+  [ 22] pusharglist 1 ........................... <tRoomThread>
+  [ 24] objcall 210 ............................. <tRoomThread.getInterface()>
+  [ 26] setlocal 1 .............................. tRoomInt = tRoomThread.getInterface()
+  [ 28] getlocal 1 .............................. <tRoomInt>
+  [ 30] pushzero ................................ <0>
+  [ 31] eq ...................................... <tRoomInt = 0>
+  [ 32] jmpifz [ 40] ............................ if tRoomInt = 0 then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 44 .............................. return 0
+  [ 40] getlocal 1 .............................. <tRoomInt>
+  [ 42] pusharglist 1 ........................... <tRoomInt>
+  [ 44] objcall 212 ............................. <tRoomInt.getGeometry()>
+  [ 46] setprop 211 ............................. pRoomGeometry = tRoomInt.getGeometry()
+  [ 48] getprop 211 ............................. <pRoomGeometry>
+  [ 50] pushzero ................................ <0>
+  [ 51] eq ...................................... <pRoomGeometry = 0>
+  [ 52] jmpifz [ 60] ............................ if pRoomGeometry = 0 then
+  [ 55] pushzero ................................ <0>
+  [ 56] pusharglistnoret 1 ...................... <0>
+  [ 58] extcall 44 .............................. return 0
+  [ 60] getlocal 1 .............................. <tRoomInt>
+  [ 62] pusharglist 1 ........................... <tRoomInt>
+  [ 64] objcall 43 .............................. <tRoomInt.getRoomVisualizer()>
+  [ 66] setlocal 2 .............................. tVisObj = tRoomInt.getRoomVisualizer()
+  [ 68] getlocal 2 .............................. <tVisObj>
+  [ 70] pushzero ................................ <0>
+  [ 71] eq ...................................... <tVisObj = 0>
+  [ 72] jmpifz [ 80] ............................ if tVisObj = 0 then
+  [ 75] pushzero ................................ <0>
+  [ 76] pusharglistnoret 1 ...................... <0>
+  [ 78] extcall 44 .............................. return 0
+  [ 80] getlocal 2 .............................. <tVisObj>
+  [ 82] pushsymb 213 ............................ <#spriteList>
+  [ 84] pusharglist 2 ........................... <tVisObj, #spriteList>
+  [ 86] objcall 214 ............................. <tVisObj.getProperty(#spriteList)>
+  [ 88] setlocal 3 .............................. tSprList = tVisObj.getProperty(#spriteList)
+  [ 90] getparam 1 .............................. <tBoolean>
+  [ 92] jmpifz [134] ............................ if tBoolean then / else
+  [ 95] pushsymb 50 ............................. <#registerProcedure>
+  [ 97] getlocal 3 .............................. <tSprList>
+  [ 99] pushsymb 201 ............................ <#eventProcRoom>
+  [101] getparam 0 .............................. <me>
+  [103] pusharglist 1 ........................... <me>
+  [105] objcall 48 .............................. <me.getID()>
+  [107] pushsymb 215 ............................ <#mouseDown>
+  [109] pusharglistnoret 5 ...................... <#registerProcedure, tSprList, #eventProcRoom, me.getID(), #mouseDown>
+  [111] extcall 58 .............................. call(#registerProcedure, tSprList, #eventProcRoom, me.getID(), #mouseDown)
+  [113] pushsymb 50 ............................. <#registerProcedure>
+  [115] getlocal 3 .............................. <tSprList>
+  [117] pushsymb 201 ............................ <#eventProcRoom>
+  [119] getparam 0 .............................. <me>
+  [121] pusharglist 1 ........................... <me>
+  [123] objcall 48 .............................. <me.getID()>
+  [125] pushsymb 49 ............................. <#mouseUp>
+  [127] pusharglistnoret 5 ...................... <#registerProcedure, tSprList, #eventProcRoom, me.getID(), #mouseUp>
+  [129] extcall 58 .............................. call(#registerProcedure, tSprList, #eventProcRoom, me.getID(), #mouseUp)
+  [131] jmp [163]
+  [134] getlocal 3 .............................. <tSprList>
+  [136] pusharglist 1 ........................... <tSprList>
+  [138] extcall 87 .............................. <listp(tSprList)>
+  [140] jmpifz [163] ............................ if listp(tSprList) then
+  [143] pushsymb 59 ............................. <#removeProcedure>
+  [145] getlocal 3 .............................. <tSprList>
+  [147] pushsymb 215 ............................ <#mouseDown>
+  [149] pusharglistnoret 3 ...................... <#removeProcedure, tSprList, #mouseDown>
+  [151] extcall 58 .............................. call(#removeProcedure, tSprList, #mouseDown)
+  [153] pushsymb 59 ............................. <#removeProcedure>
+  [155] getlocal 3 .............................. <tSprList>
+  [157] pushsymb 49 ............................. <#mouseUp>
+  [159] pusharglistnoret 3 ...................... <#removeProcedure, tSprList, #mouseUp>
+  [161] extcall 58 .............................. call(#removeProcedure, tSprList, #mouseUp)
+  [163] ret
+end
+
+on eventProcRoom me, tEvent, tSprID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 215 ............................ <#mouseDown>
+  [  4] eq ...................................... <tEvent = #mouseDown>
+  [  5] jmpifz [ 53] ............................ if tEvent = #mouseDown then
+  [  8] getparam 2 .............................. <tSprID>
+  [ 10] pushcons 1 .............................. <"floor">
+  [ 12] eq ...................................... <tSprID = "floor">
+  [ 13] jmpifz [ 53] ............................ if tSprID = "floor" then
+  [ 16] getprop 211 ............................. <pRoomGeometry>
+  [ 18] pusharglist 0 ........................... <>
+  [ 20] thebuiltin 220 .......................... <the mouseH>
+  [ 22] pusharglist 0 ........................... <>
+  [ 24] thebuiltin 221 .......................... <the mouseV>
+  [ 26] pusharglist 3 ........................... <pRoomGeometry, the mouseH, the mouseV>
+  [ 28] objcall 222 ............................. <pRoomGeometry.getWorldCoordinate(the mouseH, the mouseV)>
+  [ 30] setlocal 0 .............................. tloc = pRoomGeometry.getWorldCoordinate(the mouseH, the mouseV)
+  [ 32] getlocal 0 .............................. <tloc>
+  [ 34] pusharglist 1 ........................... <tloc>
+  [ 36] extcall 87 .............................. <listp(tloc)>
+  [ 38] jmpifz [ 53] ............................ if listp(tloc) then
+  [ 41] getparam 0 .............................. <me>
+  [ 43] getlocal 0 .............................. <tloc>
+  [ 45] pusharglist 2 ........................... <me, tloc>
+  [ 47] objcall 202 ............................. <me.sendMoveGoal(tloc)>
+  [ 49] pusharglistnoret 1 ...................... <me.sendMoveGoal(tloc)>
+  [ 51] extcall 44 .............................. return me.sendMoveGoal(tloc)
+  [ 53] ret
+end
+
+on sendMoveGoal me, tloc
+  [  0] getprop 204 ............................. <pFrameworkId>
+  [  2] pusharglist 1 ........................... <pFrameworkId>
+  [  4] extcall 41 .............................. <getObject(pFrameworkId)>
+  [  6] setlocal 0 .............................. tFramework = getObject(pFrameworkId)
+  [  8] getlocal 0 .............................. <tFramework>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tFramework = 0>
+  [ 12] jmpifz [ 20] ............................ if tFramework = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 44 .............................. return 0
+  [ 20] getlocal 0 .............................. <tFramework>
+  [ 22] pusharglist 1 ........................... <tFramework>
+  [ 24] objcall 759 ............................. <tFramework.getGamestatus()>
+  [ 27] setlocal 1 .............................. tStatus = tFramework.getGamestatus()
+  [ 29] getprop 762 ............................. <pLastGameClickCoordinate>
+  [ 32] getparam 1 .............................. <tloc>
+  [ 34] getlocal 1 .............................. <tStatus>
+  [ 36] pusharglist 2 ........................... <[tloc, tStatus]>
+  [ 38] pushlist ................................ <[tloc, tStatus]>
+  [ 39] eq ...................................... <pLastGameClickCoordinate = [tloc, tStatus]>
+  [ 40] jmpifz [ 49] ............................ if pLastGameClickCoordinate = [tloc, tStatus] then
+  [ 43] pushint8 1 .............................. <1>
+  [ 45] pusharglistnoret 1 ...................... <1>
+  [ 47] extcall 44 .............................. return 1
+  [ 49] getparam 1 .............................. <tloc>
+  [ 51] getlocal 1 .............................. <tStatus>
+  [ 53] pusharglist 2 ........................... <[tloc, tStatus]>
+  [ 55] pushlist ................................ <[tloc, tStatus]>
+  [ 56] setprop 762 ............................. pLastGameClickCoordinate = [tloc, tStatus]
+  [ 59] getparam 0 .............................. <me>
+  [ 61] pusharglist 1 ........................... <me>
+  [ 63] objcall 789 ............................. <me.getRoomConnection()>
+  [ 66] setlocal 2 .............................. tConnection = me.getRoomConnection()
+  [ 68] getlocal 2 .............................. <tConnection>
+  [ 70] pusharglist 1 ........................... <tConnection>
+  [ 72] extcall 55 .............................. <objectp(tConnection)>
+  [ 74] not ..................................... <not objectp(tConnection)>
+  [ 75] jmpifz [ 92] ............................ if not objectp(tConnection) then
+  [ 78] getparam 0 .............................. <me>
+  [ 80] pushcons 2 .............................. <"Info connection has disappeared!">
+  [ 82] pushsymb 202 ............................ <#sendMoveGoal>
+  [ 84] pusharglist 3 ........................... <me, "Info connection has disappeared!", #sendMoveGoal>
+  [ 86] extcall 65 .............................. <error(me, "Info connection has disappeared!", #sendMoveGoal)>
+  [ 88] pusharglistnoret 1 ...................... <error(me, "Info connection has disappeared!", #sendMoveGoal)>
+  [ 90] extcall 44 .............................. return error(me, "Info connection has disappeared!", #sendMoveGoal)
+  [ 92] getlocal 1 .............................. <tStatus>
+  [ 94] pushsymb 767 ............................ <#game_started>
+  [ 97] eq ...................................... <tStatus = #game_started>
+  [ 98] jmpifz [140] ............................ if tStatus = #game_started then / else
+  [101] getlocal 2 .............................. <tConnection>
+  [103] pushcons 3 .............................. <"GAMEEVENT">
+  [105] pushsymb 89 ............................. <#integer>
+  [107] getparam 1 .............................. <tloc>
+  [109] pushint8 1 .............................. <1>
+  [111] pusharglist 2 ........................... <tloc, 1>
+  [113] objcall 25 .............................. <tloc[1]>
+  [115] pushsymb 89 ............................. <#integer>
+  [117] getparam 1 .............................. <tloc>
+  [119] pushint8 2 .............................. <2>
+  [121] pusharglist 2 ........................... <tloc, 2>
+  [123] objcall 25 .............................. <tloc[2]>
+  [125] pusharglist 4 ........................... <[#integer: tloc[1], #integer: tloc[2]]>
+  [127] pushproplist ............................ <[#integer: tloc[1], #integer: tloc[2]]>
+  [128] pusharglist 3 ........................... <tConnection, "GAMEEVENT", [#integer: tloc[1], #integer: tloc[2]]>
+  [130] objcall 764 ............................. <tConnection.send("GAMEEVENT", [#integer: tloc[1], #integer: tloc[2]])>
+  [133] pusharglistnoret 1 ...................... <tConnection.send("GAMEEVENT", [#integer: tloc[1], #integer: tloc[2]])>
+  [135] extcall 44 .............................. return tConnection.send("GAMEEVENT", [#integer: tloc[1], #integer: tloc[2]])
+  [137] jmp [178]
+  [140] getlocal 2 .............................. <tConnection>
+  [142] pushcons 4 .............................. <"MOVE">
+  [144] pushsymb 768 ............................ <#short>
+  [147] getparam 1 .............................. <tloc>
+  [149] pushint8 1 .............................. <1>
+  [151] pusharglist 2 ........................... <tloc, 1>
+  [153] objcall 25 .............................. <tloc[1]>
+  [155] pushsymb 768 ............................ <#short>
+  [158] getparam 1 .............................. <tloc>
+  [160] pushint8 2 .............................. <2>
+  [162] pusharglist 2 ........................... <tloc, 2>
+  [164] objcall 25 .............................. <tloc[2]>
+  [166] pusharglist 4 ........................... <[#short: tloc[1], #short: tloc[2]]>
+  [168] pushproplist ............................ <[#short: tloc[1], #short: tloc[2]]>
+  [169] pusharglist 3 ........................... <tConnection, "MOVE", [#short: tloc[1], #short: tloc[2]]>
+  [171] objcall 764 ............................. <tConnection.send("MOVE", [#short: tloc[1], #short: tloc[2]])>
+  [174] pusharglistnoret 1 ...................... <tConnection.send("MOVE", [#short: tloc[1], #short: tloc[2]])>
+  [176] extcall 44 .............................. return tConnection.send("MOVE", [#short: tloc[1], #short: tloc[2]])
+  [178] ret
+end
+
+on handleSpectatorModeOff me
+  [  0] getprop 204 ............................. <pFrameworkId>
+  [  2] pusharglist 1 ........................... <pFrameworkId>
+  [  4] extcall 41 .............................. <getObject(pFrameworkId)>
+  [  6] pushzero ................................ <0>
+  [  7] eq ...................................... <getObject(pFrameworkId) = 0>
+  [  8] jmpifz [ 16] ............................ if getObject(pFrameworkId) = 0 then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 44 .............................. return 0
+  [ 16] getprop 204 ............................. <pFrameworkId>
+  [ 18] pusharglist 1 ........................... <pFrameworkId>
+  [ 20] extcall 41 .............................. <getObject(pFrameworkId)>
+  [ 22] pusharglistnoret 1 ...................... <getObject(pFrameworkId)>
+  [ 24] objcall 224 ............................. getObject(pFrameworkId).enterLounge()
+  [ 26] ret
+end
+
+on getRoomConnection me
+  [  0] getprop 763 ............................. <pConnection>
+  [  3] pushzero ................................ <0>
+  [  4] eq ...................................... <pConnection = 0>
+  [  5] jmpifz [ 22] ............................ if pConnection = 0 then
+  [  8] pushcons 5 .............................. <"connection.info.id">
+  [ 10] pusharglist 1 ........................... <"connection.info.id">
+  [ 12] extcall 185 ............................. <getVariable("connection.info.id")>
+  [ 14] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 16] extcall 765 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 19] setprop 763 ............................. pConnection = getConnection(getVariable("connection.info.id"))
+  [ 22] getprop 763 ............................. <pConnection>
+  [ 25] pusharglistnoret 1 ...................... <pConnection>
+  [ 27] extcall 44 .............................. return pConnection
+  [ 29] ret
+end

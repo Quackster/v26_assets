@@ -1,0 +1,1317 @@
+property pFriendDataContainer, pFriendRequestContainer, pUpdateIntervalId, pReadyFlag, pNewMail, pHabboSearchResults, pHabboSearchLastString, pSentFriendRequests
+
+on construct me
+  [  0] pushcons 0 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. tStamp = EMPTY
+  [  4] pushint8 1 .............................. <1>
+  [  6] setlocal 1
+  [  8] getlocal 1
+  [ 10] pushint8 100 ............................ <100>
+  [ 12] lteq
+  [ 13] jmpifz [ 47] ............................ repeat with tNo = 1 to 100
+  [ 16] pushint8 48 ............................. <48>
+  [ 18] pusharglist 1 ........................... <48>
+  [ 20] extcall 34 .............................. <random(48)>
+  [ 22] pushint8 74 ............................. <74>
+  [ 24] add ..................................... <random(48) + 74>
+  [ 25] pusharglist 1 ........................... <random(48) + 74>
+  [ 27] extcall 33 .............................. <numToChar(random(48) + 74)>
+  [ 29] setlocal 2 .............................. tChar = numToChar(random(48) + 74)
+  [ 31] getlocal 0 .............................. <tStamp>
+  [ 33] getlocal 2 .............................. <tChar>
+  [ 35] joinstr ................................. <tStamp & tChar>
+  [ 36] setlocal 0 .............................. tStamp = tStamp & tChar
+  [ 38] pushint8 1
+  [ 40] getlocal 1
+  [ 42] add
+  [ 43] setlocal 1
+  [ 45] endrepeat [  8]
+  [ 47] pusharglist 0 ........................... <>
+  [ 49] extcall 35 .............................. <getSpecialServices()>
+  [ 51] getlocal 0 .............................. <tStamp>
+  [ 53] pusharglist 2 ........................... <getSpecialServices(), tStamp>
+  [ 55] objcall 36 .............................. <getSpecialServices().getReceipt(tStamp)>
+  [ 57] setlocal 3 .............................. tFuseReceipt = getSpecialServices().getReceipt(tStamp)
+  [ 59] pusharglist 0 ........................... <[]>
+  [ 61] pushlist ................................ <[]>
+  [ 62] setlocal 4 .............................. tReceipt = []
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] setlocal 5
+  [ 68] getlocal 5
+  [ 70] getlocal 0 .............................. <tStamp>
+  [ 72] getobjprop 37 ........................... <tStamp.length>
+  [ 74] lteq
+  [ 75] jmpifz [130] ............................ repeat with tCharNo = 1 to tStamp.length
+  [ 78] getlocal 0 .............................. <tStamp>
+  [ 80] getlocal 5 .............................. <tCharNo>
+  [ 82] getlocal 5 .............................. <tCharNo>
+  [ 84] pusharglist 3 ........................... <tStamp, tCharNo, tCharNo>
+  [ 86] extcall 38 .............................. <chars(tStamp, tCharNo, tCharNo)>
+  [ 88] setlocal 2 .............................. tChar = chars(tStamp, tCharNo, tCharNo)
+  [ 90] getlocal 2 .............................. <tChar>
+  [ 92] pusharglist 1 ........................... <tChar>
+  [ 94] extcall 39 .............................. <charToNum(tChar)>
+  [ 96] setlocal 2 .............................. tChar = charToNum(tChar)
+  [ 98] getlocal 2 .............................. <tChar>
+  [100] getlocal 5 .............................. <tCharNo>
+  [102] mul ..................................... <tChar * tCharNo>
+  [103] pushint32 309203 ........................ <309203>
+  [108] add ..................................... <(tChar * tCharNo) + 309203>
+  [109] setlocal 2 .............................. tChar = (tChar * tCharNo) + 309203
+  [111] getlocal 4 .............................. <tReceipt>
+  [113] getlocal 5 .............................. <tCharNo>
+  [115] getlocal 2 .............................. <tChar>
+  [117] pusharglistnoret 3 ...................... <tReceipt, tCharNo, tChar>
+  [119] objcall 40 .............................. tReceipt[tCharNo] = tChar
+  [121] pushint8 1
+  [123] getlocal 5
+  [125] add
+  [126] setlocal 5
+  [128] endrepeat [ 68]
+  [130] getlocal 4 .............................. <tReceipt>
+  [132] getlocal 3 .............................. <tFuseReceipt>
+  [134] nteq .................................... <tReceipt <> tFuseReceipt>
+  [135] jmpifz [155] ............................ if tReceipt <> tFuseReceipt then
+  [138] getparam 0 .............................. <me>
+  [140] pushcons 1 .............................. <"Invalid build structure">
+  [142] pushsymb 42 ............................. <#checkDataLoaded>
+  [144] pushsymb 43 ............................. <#critical>
+  [146] pusharglistnoret 4 ...................... <me, "Invalid build structure", #checkDataLoaded, #critical>
+  [148] extcall 41 .............................. error(me, "Invalid build structure", #checkDataLoaded, #critical)
+  [150] pushzero ................................ <0>
+  [151] pusharglistnoret 1 ...................... <0>
+  [153] extcall 44 .............................. return 0
+  [155] pusharglist 0 ........................... <>
+  [157] extcall 46 .............................. <getUniqueID()>
+  [159] setprop 45 .............................. pUpdateIntervalId = getUniqueID()
+  [161] pusharglist 0 ........................... <>
+  [163] extcall 46 .............................. <getUniqueID()>
+  [165] pushcons 2 .............................. <"Friend List Container">
+  [167] pusharglist 2 ........................... <getUniqueID(), "Friend List Container">
+  [169] extcall 48 .............................. <createObject(getUniqueID(), "Friend List Container")>
+  [171] setprop 47 .............................. pFriendDataContainer = createObject(getUniqueID(), "Friend List Container")
+  [173] pusharglist 0 ........................... <>
+  [175] extcall 46 .............................. <getUniqueID()>
+  [177] pushcons 3 .............................. <"Friend Request List Container">
+  [179] pusharglist 2 ........................... <getUniqueID(), "Friend Request List Container">
+  [181] extcall 48 .............................. <createObject(getUniqueID(), "Friend Request List Container")>
+  [183] setprop 49 .............................. pFriendRequestContainer = createObject(getUniqueID(), "Friend Request List Container")
+  [185] pushzero ................................ <0>
+  [186] setprop 50 .............................. pReadyFlag = 0
+  [188] pushzero ................................ <0>
+  [189] setprop 51 .............................. pNewMail = 0
+  [191] pushsymb 53 ............................. <#friends>
+  [193] pusharglist 0 ........................... <[:]>
+  [195] pushproplist ............................ <[:]>
+  [196] pushsymb 54 ............................. <#habbos>
+  [198] pusharglist 0 ........................... <[:]>
+  [200] pushproplist ............................ <[:]>
+  [201] pusharglist 4 ........................... <[#friends: [:], #habbos: [:]]>
+  [203] pushproplist ............................ <[#friends: [:], #habbos: [:]]>
+  [204] setprop 52 .............................. pHabboSearchResults = [#friends: [:], #habbos: [:]]
+  [206] pushcons 0 .............................. <EMPTY>
+  [208] setprop 145 ............................. pHabboSearchLastString = EMPTY
+  [210] pusharglist 0 ........................... <[]>
+  [212] pushlist ................................ <[]>
+  [213] setprop 652 ............................. pSentFriendRequests = []
+  [216] pushsymb 27 ............................. <#externalFriendRequest>
+  [218] getparam 0 .............................. <me>
+  [220] pusharglist 1 ........................... <me>
+  [222] objcall 56 .............................. <me.getID()>
+  [224] pushsymb 27 ............................. <#externalFriendRequest>
+  [226] pusharglistnoret 3 ...................... <#externalFriendRequest, me.getID(), #externalFriendRequest>
+  [228] extcall 55 .............................. registerMessage(#externalFriendRequest, me.getID(), #externalFriendRequest)
+  [230] pushint8 1 .............................. <1>
+  [232] pusharglistnoret 1 ...................... <1>
+  [234] extcall 44 .............................. return 1
+  [236] ret
+end
+
+on deconstruct me
+  [  0] getprop 45 .............................. <pUpdateIntervalId>
+  [  2] pusharglist 1 ........................... <pUpdateIntervalId>
+  [  4] extcall 64 .............................. <timeoutExists(pUpdateIntervalId)>
+  [  6] jmpifz [ 15] ............................ if timeoutExists(pUpdateIntervalId) then
+  [  9] getprop 45 .............................. <pUpdateIntervalId>
+  [ 11] pusharglistnoret 1 ...................... <pUpdateIntervalId>
+  [ 13] extcall 65 .............................. removeTimeout(pUpdateIntervalId)
+  [ 15] pushsymb 27 ............................. <#externalFriendRequest>
+  [ 17] pusharglistnoret 1 ...................... <#externalFriendRequest>
+  [ 19] extcall 66 .............................. unregisterMessage(#externalFriendRequest)
+  [ 21] getprop 47 .............................. <pFriendDataContainer>
+  [ 23] pusharglistnoret 1 ...................... <pFriendDataContainer>
+  [ 25] objcall 1 ............................... pFriendDataContainer.deconstruct()
+  [ 27] getprop 49 .............................. <pFriendRequestContainer>
+  [ 29] pusharglistnoret 1 ...................... <pFriendRequestContainer>
+  [ 31] objcall 1 ............................... pFriendRequestContainer.deconstruct()
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglistnoret 1 ...................... <1>
+  [ 37] extcall 44 .............................. return 1
+  [ 39] ret
+end
+
+on setFriendListInited me
+  [  0] pushcons 4 .............................. <"fr.update.interval">
+  [  2] pusharglist 1 ........................... <"fr.update.interval">
+  [  4] extcall 67 .............................. <getVariable("fr.update.interval")>
+  [  6] setlocal 0 .............................. tInterval = getVariable("fr.update.interval")
+  [  8] getprop 45 .............................. <pUpdateIntervalId>
+  [ 10] getlocal 0 .............................. <tInterval>
+  [ 12] pushsymb 26 ............................. <#requestFriendListUpdate>
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 56 .............................. <me.getID()>
+  [ 20] pusharglist 0 ........................... <>
+  [ 22] extcall 69 .............................. <VOID>
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 6 ...................... <pUpdateIntervalId, tInterval, #requestFriendListUpdate, me.getID(), VOID, 0>
+  [ 27] extcall 68 .............................. createTimeout(pUpdateIntervalId, tInterval, #requestFriendListUpdate, me.getID(), VOID, 0)
+  [ 29] pushsymb 71 ............................. <#friendListReady>
+  [ 31] pusharglistnoret 1 ...................... <#friendListReady>
+  [ 33] extcall 70 .............................. executeMessage(#friendListReady)
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setprop 50 .............................. pReadyFlag = 1
+  [ 39] ret
+end
+
+on isFriendListInited me
+  [  0] getprop 50 .............................. <pReadyFlag>
+  [  2] pusharglistnoret 1 ...................... <pReadyFlag>
+  [  4] extcall 44 .............................. return pReadyFlag
+  [  6] ret
+end
+
+on populateCategoryData me, tdata
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] getparam 1 .............................. <tdata>
+  [  4] pusharglistnoret 2 ...................... <pFriendDataContainer, tdata>
+  [  6] objcall 4 ............................... pFriendDataContainer.populateCategoryData(tdata)
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglist 1 ........................... <me>
+  [ 12] objcall 73 .............................. <me.getInterface()>
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] extcall 69 .............................. <VOID>
+  [ 18] pusharglistnoret 2 ...................... <me.getInterface(), VOID>
+  [ 20] objcall 74 .............................. me.getInterface().changeCategory(VOID)
+  [ 22] ret
+end
+
+on populateFriendData me, tdata
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] getparam 1 .............................. <tdata>
+  [  4] pusharglistnoret 2 ...................... <pFriendDataContainer, tdata>
+  [  6] objcall 5 ............................... pFriendDataContainer.populateFriendData(tdata)
+  [  8] ret
+end
+
+on addFriend me, tFriendData
+  [  0] getparam 1 .............................. <tFriendData>
+  [  2] pusharglist 1 ........................... <tFriendData>
+  [  4] extcall 595 ............................. <listp(tFriendData)>
+  [  7] jmpifz [ 25] ............................ if listp(tFriendData) then
+  [ 10] getprop 652 ............................. <pSentFriendRequests>
+  [ 13] getparam 1 .............................. <tFriendData>
+  [ 15] pushsymb 243 ............................ <#name>
+  [ 17] pusharglist 2 ........................... <tFriendData, #name>
+  [ 19] objcall 127 ............................. <tFriendData.getaProp(#name)>
+  [ 21] pusharglistnoret 2 ...................... <pSentFriendRequests, tFriendData.getaProp(#name)>
+  [ 23] objcall 235 ............................. pSentFriendRequests.deleteOne(tFriendData.getaProp(#name))
+  [ 25] getprop 47 .............................. <pFriendDataContainer>
+  [ 27] getparam 1 .............................. <tFriendData>
+  [ 29] pusharglistnoret 2 ...................... <pFriendDataContainer, tFriendData>
+  [ 31] objcall 6 ............................... pFriendDataContainer.addFriend(tFriendData)
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pusharglist 1 ........................... <me>
+  [ 37] objcall 73 .............................. <me.getInterface()>
+  [ 39] getparam 1 .............................. <tFriendData>
+  [ 41] pusharglistnoret 2 ...................... <me.getInterface(), tFriendData>
+  [ 43] objcall 6 ............................... me.getInterface().addFriend(tFriendData)
+  [ 45] ret
+end
+
+on updateFriend me, tFriendData, tHoldRender
+  [  0] getparam 1 .............................. <tFriendData>
+  [  2] pusharglist 1 ........................... <tFriendData>
+  [  4] extcall 77 .............................. <ilk(tFriendData)>
+  [  6] pushsymb 78 ............................. <#propList>
+  [  8] nteq .................................... <ilk(tFriendData) <> #propList>
+  [  9] jmpifz [ 17] ............................ if ilk(tFriendData) <> #propList then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 44 .............................. return 0
+  [ 17] getprop 47 .............................. <pFriendDataContainer>
+  [ 19] getparam 1 .............................. <tFriendData>
+  [ 21] pushsymb 79 ............................. <#id>
+  [ 23] pusharglist 2 ........................... <tFriendData, #id>
+  [ 25] objcall 80 .............................. <tFriendData[#id]>
+  [ 27] pusharglist 2 ........................... <pFriendDataContainer, tFriendData[#id]>
+  [ 29] objcall 20 .............................. <pFriendDataContainer.getFriendByID(tFriendData[#id])>
+  [ 31] setlocal 0 .............................. tOldFriendData = pFriendDataContainer.getFriendByID(tFriendData[#id])
+  [ 33] getlocal 0 .............................. <tOldFriendData>
+  [ 35] pusharglist 1 ........................... <tOldFriendData>
+  [ 37] extcall 77 .............................. <ilk(tOldFriendData)>
+  [ 39] pushsymb 78 ............................. <#propList>
+  [ 41] nteq .................................... <ilk(tOldFriendData) <> #propList>
+  [ 42] jmpifz [ 50] ............................ if ilk(tOldFriendData) <> #propList then
+  [ 45] pusharglist 0 ........................... <[:]>
+  [ 47] pushproplist ............................ <[:]>
+  [ 48] setlocal 0 .............................. tOldFriendData = [:]
+  [ 50] getprop 652 ............................. <pSentFriendRequests>
+  [ 53] getparam 1 .............................. <tFriendData>
+  [ 55] pushsymb 243 ............................ <#name>
+  [ 57] pusharglist 2 ........................... <tFriendData, #name>
+  [ 59] objcall 127 ............................. <tFriendData.getaProp(#name)>
+  [ 61] pusharglistnoret 2 ...................... <pSentFriendRequests, tFriendData.getaProp(#name)>
+  [ 63] objcall 235 ............................. pSentFriendRequests.deleteOne(tFriendData.getaProp(#name))
+  [ 65] getlocal 0 .............................. <tOldFriendData>
+  [ 67] pushsymb 81 ............................. <#categoryId>
+  [ 69] pusharglist 2 ........................... <tOldFriendData, #categoryId>
+  [ 71] objcall 80 .............................. <tOldFriendData[#categoryId]>
+  [ 73] getparam 1 .............................. <tFriendData>
+  [ 75] pushsymb 81 ............................. <#categoryId>
+  [ 77] pusharglist 2 ........................... <tFriendData, #categoryId>
+  [ 79] objcall 80 .............................. <tFriendData[#categoryId]>
+  [ 81] nteq .................................... <tOldFriendData[#categoryId] <> tFriendData[#categoryId]>
+  [ 82] jmpifz [164] ............................ if tOldFriendData[#categoryId] <> tFriendData[#categoryId] then / else
+  [ 85] getparam 0 .............................. <me>
+  [ 87] pusharglist 1 ........................... <me>
+  [ 89] objcall 73 .............................. <me.getInterface()>
+  [ 91] getlocal 0 .............................. <tOldFriendData>
+  [ 93] pushsymb 79 ............................. <#id>
+  [ 95] pusharglist 2 ........................... <tOldFriendData, #id>
+  [ 97] objcall 80 .............................. <tOldFriendData[#id]>
+  [ 99] getlocal 0 .............................. <tOldFriendData>
+  [101] pushsymb 81 ............................. <#categoryId>
+  [103] pusharglist 2 ........................... <tOldFriendData, #categoryId>
+  [105] objcall 80 .............................. <tOldFriendData[#categoryId]>
+  [107] pusharglistnoret 3 ...................... <me.getInterface(), tOldFriendData[#id], tOldFriendData[#categoryId]>
+  [109] objcall 8 ............................... me.getInterface().removeFriend(tOldFriendData[#id], tOldFriendData[#categoryId])
+  [111] getprop 47 .............................. <pFriendDataContainer>
+  [113] getparam 1 .............................. <tFriendData>
+  [115] pusharglistnoret 2 ...................... <pFriendDataContainer, tFriendData>
+  [117] objcall 7 ............................... pFriendDataContainer.updateFriend(tFriendData)
+  [119] getprop 47 .............................. <pFriendDataContainer>
+  [121] getparam 1 .............................. <tFriendData>
+  [123] pushsymb 79 ............................. <#id>
+  [125] pusharglist 2 ........................... <tFriendData, #id>
+  [127] objcall 80 .............................. <tFriendData[#id]>
+  [129] pusharglist 2 ........................... <pFriendDataContainer, tFriendData[#id]>
+  [131] objcall 20 .............................. <pFriendDataContainer.getFriendByID(tFriendData[#id])>
+  [133] setparam 1 .............................. tFriendData = pFriendDataContainer.getFriendByID(tFriendData[#id])
+  [135] getparam 1 .............................. <tFriendData>
+  [137] pushzero ................................ <0>
+  [138] eq ...................................... <tFriendData = 0>
+  [139] jmpifz [147] ............................ if tFriendData = 0 then
+  [142] pushzero ................................ <0>
+  [143] pusharglistnoret 1 ...................... <0>
+  [145] extcall 44 .............................. return 0
+  [147] getparam 0 .............................. <me>
+  [149] pusharglist 1 ........................... <me>
+  [151] objcall 73 .............................. <me.getInterface()>
+  [153] getparam 1 .............................. <tFriendData>
+  [155] getparam 2 .............................. <tHoldRender>
+  [157] pusharglistnoret 3 ...................... <me.getInterface(), tFriendData, tHoldRender>
+  [159] objcall 6 ............................... me.getInterface().addFriend(tFriendData, tHoldRender)
+  [161] jmp [214]
+  [164] getprop 47 .............................. <pFriendDataContainer>
+  [166] getparam 1 .............................. <tFriendData>
+  [168] pusharglistnoret 2 ...................... <pFriendDataContainer, tFriendData>
+  [170] objcall 7 ............................... pFriendDataContainer.updateFriend(tFriendData)
+  [172] getprop 47 .............................. <pFriendDataContainer>
+  [174] getparam 1 .............................. <tFriendData>
+  [176] pushsymb 79 ............................. <#id>
+  [178] pusharglist 2 ........................... <tFriendData, #id>
+  [180] objcall 80 .............................. <tFriendData[#id]>
+  [182] pusharglist 2 ........................... <pFriendDataContainer, tFriendData[#id]>
+  [184] objcall 20 .............................. <pFriendDataContainer.getFriendByID(tFriendData[#id])>
+  [186] setparam 1 .............................. tFriendData = pFriendDataContainer.getFriendByID(tFriendData[#id])
+  [188] getparam 1 .............................. <tFriendData>
+  [190] pushzero ................................ <0>
+  [191] eq ...................................... <tFriendData = 0>
+  [192] jmpifz [200] ............................ if tFriendData = 0 then
+  [195] pushzero ................................ <0>
+  [196] pusharglistnoret 1 ...................... <0>
+  [198] extcall 44 .............................. return 0
+  [200] getparam 0 .............................. <me>
+  [202] pusharglist 1 ........................... <me>
+  [204] objcall 73 .............................. <me.getInterface()>
+  [206] getparam 1 .............................. <tFriendData>
+  [208] getparam 2 .............................. <tHoldRender>
+  [210] pusharglistnoret 3 ...................... <me.getInterface(), tFriendData, tHoldRender>
+  [212] objcall 7 ............................... me.getInterface().updateFriend(tFriendData, tHoldRender)
+  [214] pushsymb 82 ............................. <#friendDataUpdated>
+  [216] getparam 1 .............................. <tFriendData>
+  [218] pushsymb 79 ............................. <#id>
+  [220] pusharglist 2 ........................... <tFriendData, #id>
+  [222] objcall 80 .............................. <tFriendData[#id]>
+  [224] pusharglistnoret 2 ...................... <#friendDataUpdated, tFriendData[#id]>
+  [226] extcall 70 .............................. executeMessage(#friendDataUpdated, tFriendData[#id])
+  [228] ret
+end
+
+on removeFriend me, tFriendID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tFriendID>
+  [  4] pusharglist 2 ........................... <me, tFriendID>
+  [  6] objcall 20 .............................. <me.getFriendByID(tFriendID)>
+  [  8] setlocal 0 .............................. tFriendData = me.getFriendByID(tFriendID)
+  [ 10] getlocal 0 .............................. <tFriendData>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tFriendData = 0>
+  [ 14] jmpifz [ 22] ............................ if tFriendData = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 44 .............................. return 0
+  [ 22] getlocal 0 .............................. <tFriendData>
+  [ 24] pushsymb 81 ............................. <#categoryId>
+  [ 26] pusharglist 2 ........................... <tFriendData, #categoryId>
+  [ 28] objcall 80 .............................. <tFriendData[#categoryId]>
+  [ 30] setlocal 1 .............................. tCategoryId = tFriendData[#categoryId]
+  [ 32] getprop 47 .............................. <pFriendDataContainer>
+  [ 34] getparam 1 .............................. <tFriendID>
+  [ 36] pusharglistnoret 2 ...................... <pFriendDataContainer, tFriendID>
+  [ 38] objcall 8 ............................... pFriendDataContainer.removeFriend(tFriendID)
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 73 .............................. <me.getInterface()>
+  [ 46] getparam 1 .............................. <tFriendID>
+  [ 48] getlocal 1 .............................. <tCategoryId>
+  [ 50] pusharglistnoret 3 ...................... <me.getInterface(), tFriendID, tCategoryId>
+  [ 52] objcall 8 ............................... me.getInterface().removeFriend(tFriendID, tCategoryId)
+  [ 54] ret
+end
+
+on addFriendRequest me, tRequestData
+  [  0] getprop 49 .............................. <pFriendRequestContainer>
+  [  2] getparam 1 .............................. <tRequestData>
+  [  4] pusharglistnoret 2 ...................... <pFriendRequestContainer, tRequestData>
+  [  6] objcall 87 .............................. pFriendRequestContainer.addRequest(tRequestData)
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglist 1 ........................... <me>
+  [ 12] objcall 73 .............................. <me.getInterface()>
+  [ 14] getparam 1 .............................. <tRequestData>
+  [ 16] pusharglistnoret 2 ...................... <me.getInterface(), tRequestData>
+  [ 18] objcall 9 ............................... me.getInterface().addFriendRequest(tRequestData)
+  [ 20] ret
+end
+
+on setUnreadMailCount me, tCount
+  [  0] getparam 1 .............................. <tCount>
+  [  2] pushzero ................................ <0>
+  [  3] gt ...................................... <tCount > 0>
+  [  4] jmpifz [ 36] ............................ if tCount > 0 then / else
+  [  7] pushint8 1 .............................. <1>
+  [  9] setprop 51 .............................. pNewMail = 1
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglist 1 ........................... <me>
+  [ 15] objcall 73 .............................. <me.getInterface()>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] pusharglistnoret 2 ...................... <me.getInterface(), 1>
+  [ 21] objcall 89 .............................. me.getInterface().activateMailIcon(1)
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglist 1 ........................... <me>
+  [ 27] objcall 73 .............................. <me.getInterface()>
+  [ 29] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 31] objcall 90 .............................. me.getInterface().startInboxBlink()
+  [ 33] jmp [ 60]
+  [ 36] pushzero ................................ <0>
+  [ 37] setprop 51 .............................. pNewMail = 0
+  [ 39] getparam 0 .............................. <me>
+  [ 41] pusharglist 1 ........................... <me>
+  [ 43] objcall 73 .............................. <me.getInterface()>
+  [ 45] pushzero ................................ <0>
+  [ 46] pusharglistnoret 2 ...................... <me.getInterface(), 0>
+  [ 48] objcall 89 .............................. me.getInterface().activateMailIcon(0)
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglist 1 ........................... <me>
+  [ 54] objcall 73 .............................. <me.getInterface()>
+  [ 56] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 58] objcall 91 .............................. me.getInterface().endInboxBlink()
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pusharglistnoret 1 ...................... <me>
+  [ 64] objcall 13 .............................. me.updateFriendListIconStatus()
+  [ 66] ret
+end
+
+on newMailFrom me, tUserID
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 51 .............................. pNewMail = 1
+  [  4] getparam 0 .............................. <me>
+  [  6] pusharglistnoret 1 ...................... <me>
+  [  8] objcall 13 .............................. me.updateFriendListIconStatus()
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 73 .............................. <me.getInterface()>
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] pusharglistnoret 2 ...................... <me.getInterface(), 1>
+  [ 20] objcall 89 .............................. me.getInterface().activateMailIcon(1)
+  [ 22] pushcons 5 .............................. <"fr.new.mail.sound">
+  [ 24] pusharglist 1 ........................... <"fr.new.mail.sound">
+  [ 26] extcall 67 .............................. <getVariable("fr.new.mail.sound")>
+  [ 28] setlocal 0 .............................. tSoundMemName = getVariable("fr.new.mail.sound")
+  [ 30] getlocal 0 .............................. <tSoundMemName>
+  [ 32] pushsymb 94 ............................. <#cut>
+  [ 34] pushsymb 95 ............................. <#loopCount>
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pushsymb 96 ............................. <#infiniteloop>
+  [ 40] pushzero ................................ <0>
+  [ 41] pushsymb 97 ............................. <#volume>
+  [ 43] pushint16 255 ........................... <255>
+  [ 46] pusharglist 6 ........................... <[#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [ 48] pushproplist ............................ <[#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [ 49] pusharglistnoret 3 ...................... <tSoundMemName, #cut, [#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [ 51] extcall 93 .............................. playSound(tSoundMemName, #cut, [#loopCount: 1, #infiniteloop: 0, #volume: 255])
+  [ 53] getparam 0 .............................. <me>
+  [ 55] pusharglist 1 ........................... <me>
+  [ 57] objcall 73 .............................. <me.getInterface()>
+  [ 59] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 61] objcall 90 .............................. me.getInterface().startInboxBlink()
+  [ 63] ret
+end
+
+on notifyFriendRequests me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 18 .............................. <me.getPendingFriendRequests()>
+  [  6] setlocal 0 .............................. tPendingList = me.getPendingFriendRequests()
+  [  8] getlocal 0 .............................. <tPendingList>
+  [ 10] getobjprop 100 .......................... <tPendingList.count>
+  [ 12] setlocal 1 .............................. tPendingCount = tPendingList.count
+  [ 14] pushsymb 101 ............................ <#updateFriendRequestCount>
+  [ 16] getlocal 1 .............................. <tPendingCount>
+  [ 18] pusharglistnoret 2 ...................... <#updateFriendRequestCount, tPendingCount>
+  [ 20] extcall 70 .............................. executeMessage(#updateFriendRequestCount, tPendingCount)
+  [ 22] getlocal 1 .............................. <tPendingCount>
+  [ 24] pushzero ................................ <0>
+  [ 25] gt ...................................... <tPendingCount > 0>
+  [ 26] jmpifz [ 45] ............................ if tPendingCount > 0 then / else
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pusharglist 1 ........................... <me>
+  [ 33] objcall 73 .............................. <me.getInterface()>
+  [ 35] pushint8 2 .............................. <2>
+  [ 37] inv ..................................... <-2>
+  [ 38] pusharglistnoret 2 ...................... <me.getInterface(), -2>
+  [ 40] objcall 102 ............................. me.getInterface().setCategoryHighlight(-2)
+  [ 42] jmp [ 58]
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 73 .............................. <me.getInterface()>
+  [ 51] pushint8 2 .............................. <2>
+  [ 53] inv ..................................... <-2>
+  [ 54] pusharglistnoret 2 ...................... <me.getInterface(), -2>
+  [ 56] objcall 103 ............................. me.getInterface().removeCategoryHighlight(-2)
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglistnoret 1 ...................... <me>
+  [ 62] objcall 13 .............................. me.updateFriendListIconStatus()
+  [ 64] ret
+end
+
+on updateFriendListIconStatus me
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tActive = 0
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 18 .............................. <me.getPendingFriendRequests()>
+  [  9] setlocal 1 .............................. tFrList = me.getPendingFriendRequests()
+  [ 11] getlocal 1 .............................. <tFrList>
+  [ 13] pusharglist 1 ........................... <tFrList>
+  [ 15] extcall 77 .............................. <ilk(tFrList)>
+  [ 17] pushsymb 78 ............................. <#propList>
+  [ 19] eq ...................................... <ilk(tFrList) = #propList>
+  [ 20] jmpifz [ 40] ............................ if ilk(tFrList) = #propList then
+  [ 23] getlocal 1 .............................. <tFrList>
+  [ 25] getobjprop 100 .......................... <tFrList.count>
+  [ 27] setlocal 2 .............................. tFrCount = tFrList.count
+  [ 29] getlocal 2 .............................. <tFrCount>
+  [ 31] pushzero ................................ <0>
+  [ 32] gt ...................................... <tFrCount > 0>
+  [ 33] jmpifz [ 40] ............................ if tFrCount > 0 then
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] setlocal 0 .............................. tActive = 1
+  [ 40] getprop 51 .............................. <pNewMail>
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] eq ...................................... <pNewMail = 1>
+  [ 45] jmpifz [ 52] ............................ if pNewMail = 1 then
+  [ 48] pushint8 1 .............................. <1>
+  [ 50] setlocal 0 .............................. tActive = 1
+  [ 52] pushsymb 106 ............................ <#updateFriendListIcon>
+  [ 54] getlocal 0 .............................. <tActive>
+  [ 56] pusharglistnoret 2 ...................... <#updateFriendListIcon, tActive>
+  [ 58] extcall 70 .............................. executeMessage(#updateFriendListIcon, tActive)
+  [ 60] ret
+end
+
+on setFriendLimits me, tUserLimit, tNormalLimit, tExtendedLimit
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] getparam 1 .............................. <tUserLimit>
+  [  4] pusharglistnoret 2 ...................... <pFriendDataContainer, tUserLimit>
+  [  6] objcall 110 ............................. pFriendDataContainer.setListLimit(tUserLimit)
+  [  8] ret
+end
+
+on isFriendListFull me
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] pusharglist 1 ........................... <pFriendDataContainer>
+  [  4] objcall 114 ............................. <pFriendDataContainer.isListFull()>
+  [  6] pusharglistnoret 1 ...................... <pFriendDataContainer.isListFull()>
+  [  8] extcall 44 .............................. return pFriendDataContainer.isListFull()
+  [ 10] ret
+end
+
+on updateFriendRequest me, tRequestData, tstate
+  [  0] getparam 1 .............................. <tRequestData>
+  [  2] pusharglist 1 ........................... <tRequestData>
+  [  4] extcall 77 .............................. <ilk(tRequestData)>
+  [  6] pushsymb 78 ............................. <#propList>
+  [  8] eq ...................................... <ilk(tRequestData) = #propList>
+  [  9] not ..................................... <not (ilk(tRequestData) = #propList)>
+  [ 10] jmpifz [ 18] ............................ if not (ilk(tRequestData) = #propList) then
+  [ 13] pushzero ................................ <0>
+  [ 14] pusharglistnoret 1 ...................... <0>
+  [ 16] extcall 44 .............................. return 0
+  [ 18] getparam 2 .............................. <tstate>
+  [ 20] peek 0 .................................. case tstate of
+  [ 22] pushsymb 115 ............................ <#rejected>
+  [ 24] eq
+  [ 25] jmpifz [ 79] ............................ (case) #rejected:
+  [ 28] pushsymb 116 ............................ <#integer>
+  [ 30] pushzero ................................ <0>
+  [ 31] pushsymb 116 ............................ <#integer>
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pushsymb 116 ............................ <#integer>
+  [ 37] getparam 1 .............................. <tRequestData>
+  [ 39] pushsymb 79 ............................. <#id>
+  [ 41] pusharglist 2 ........................... <tRequestData, #id>
+  [ 43] objcall 80 .............................. <tRequestData[#id]>
+  [ 45] pusharglist 1 ........................... <tRequestData[#id]>
+  [ 47] extcall 116 ............................. <integer(tRequestData[#id])>
+  [ 49] pusharglist 6 ........................... <[#integer: 0, #integer: 1, #integer: integer(tRequestData[#id])]>
+  [ 51] pushproplist ............................ <[#integer: 0, #integer: 1, #integer: integer(tRequestData[#id])]>
+  [ 52] setlocal 0 .............................. tMsg = [#integer: 0, #integer: 1, #integer: integer(tRequestData[#id])]
+  [ 54] pushcons 6 .............................. <"connection.info.id">
+  [ 56] pusharglist 1 ........................... <"connection.info.id">
+  [ 58] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 60] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 62] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 64] setlocal 1 .............................. tConn = getConnection(getVariable("connection.info.id"))
+  [ 66] getlocal 1 .............................. <tConn>
+  [ 68] pushcons 7 .............................. <"FRIENDLIST_DECLINEFRIEND">
+  [ 70] getlocal 0 .............................. <tMsg>
+  [ 72] pusharglistnoret 3 ...................... <tConn, "FRIENDLIST_DECLINEFRIEND", tMsg>
+  [ 74] objcall 118 ............................. tConn.send("FRIENDLIST_DECLINEFRIEND", tMsg)
+  [ 76] jmp [132]
+  [ 79] peek 0
+  [ 81] pushsymb 119 ............................ <#accepted>
+  [ 83] eq
+  [ 84] jmpifz [132] ............................ (case) #accepted:
+  [ 87] pushsymb 116 ............................ <#integer>
+  [ 89] pushint8 1 .............................. <1>
+  [ 91] pushsymb 116 ............................ <#integer>
+  [ 93] getparam 1 .............................. <tRequestData>
+  [ 95] pushsymb 79 ............................. <#id>
+  [ 97] pusharglist 2 ........................... <tRequestData, #id>
+  [ 99] objcall 80 .............................. <tRequestData[#id]>
+  [101] pusharglist 1 ........................... <tRequestData[#id]>
+  [103] extcall 116 ............................. <integer(tRequestData[#id])>
+  [105] pusharglist 4 ........................... <[#integer: 1, #integer: integer(tRequestData[#id])]>
+  [107] pushproplist ............................ <[#integer: 1, #integer: integer(tRequestData[#id])]>
+  [108] setlocal 0 .............................. tMsg = [#integer: 1, #integer: integer(tRequestData[#id])]
+  [110] pushcons 6 .............................. <"connection.info.id">
+  [112] pusharglist 1 ........................... <"connection.info.id">
+  [114] extcall 67 .............................. <getVariable("connection.info.id")>
+  [116] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [118] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [120] setlocal 1 .............................. tConn = getConnection(getVariable("connection.info.id"))
+  [122] getlocal 1 .............................. <tConn>
+  [124] pushcons 8 .............................. <"FRIENDLIST_ACCEPTFRIEND">
+  [126] getlocal 0 .............................. <tMsg>
+  [128] pusharglistnoret 3 ...................... <tConn, "FRIENDLIST_ACCEPTFRIEND", tMsg>
+  [130] objcall 118 ............................. tConn.send("FRIENDLIST_ACCEPTFRIEND", tMsg)
+  [132] pop 1 ................................... end case
+  [134] getparam 1 .............................. <tRequestData>
+  [136] pushsymb 120 ............................ <#state>
+  [138] getparam 2 .............................. <tstate>
+  [140] pusharglistnoret 3 ...................... <tRequestData, #state, tstate>
+  [142] objcall 40 .............................. tRequestData[#state] = tstate
+  [144] getprop 49 .............................. <pFriendRequestContainer>
+  [146] getparam 1 .............................. <tRequestData>
+  [148] pusharglistnoret 2 ...................... <pFriendRequestContainer, tRequestData>
+  [150] objcall 121 ............................. pFriendRequestContainer.updateRequest(tRequestData)
+  [152] getparam 0 .............................. <me>
+  [154] pusharglistnoret 1 ...................... <me>
+  [156] objcall 12 .............................. me.notifyFriendRequests()
+  [158] ret
+end
+
+on handleAllRequests me, tstate
+  [  0] pushcons 6 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 67 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 125 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [ 11] jmpifz [ 19] ............................ if not connectionExists(getVariable("connection.info.id")) then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 44 .............................. return 0
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglist 1 ........................... <me>
+  [ 23] objcall 18 .............................. <me.getPendingFriendRequests()>
+  [ 25] setlocal 0 .............................. tRequests = me.getPendingFriendRequests()
+  [ 27] getlocal 0 .............................. <tRequests>
+  [ 29] getobjprop 100 .......................... <tRequests.count>
+  [ 31] pushzero ................................ <0>
+  [ 32] eq ...................................... <tRequests.count = 0>
+  [ 33] jmpifz [ 42] ............................ if tRequests.count = 0 then
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 1 ...................... <1>
+  [ 40] extcall 44 .............................. return 1
+  [ 42] pusharglist 0 ........................... <[:]>
+  [ 44] pushproplist ............................ <[:]>
+  [ 45] setlocal 1 .............................. tMsgList = [:]
+  [ 47] getlocal 1 .............................. <tMsgList>
+  [ 49] pushsymb 116 ............................ <#integer>
+  [ 51] pushzero ................................ <0>
+  [ 52] pusharglistnoret 3 ...................... <tMsgList, #integer, 0>
+  [ 54] objcall 126 ............................. tMsgList.addProp(#integer, 0)
+  [ 56] getlocal 1 .............................. <tMsgList>
+  [ 58] pushsymb 116 ............................ <#integer>
+  [ 60] getlocal 0 .............................. <tRequests>
+  [ 62] getobjprop 100 .......................... <tRequests.count>
+  [ 64] pusharglistnoret 3 ...................... <tMsgList, #integer, tRequests.count>
+  [ 66] objcall 126 ............................. tMsgList.addProp(#integer, tRequests.count)
+  [ 68] getlocal 0 .............................. <tRequests>
+  [ 70] peek 0
+  [ 72] pusharglist 1
+  [ 74] extcall 100
+  [ 76] pushint8 1
+  [ 78] peek 0
+  [ 80] peek 2
+  [ 82] lteq
+  [ 83] jmpifz [143] ............................ repeat with tRequest in tRequests
+  [ 86] peek 2
+  [ 88] peek 1
+  [ 90] pusharglist 2
+  [ 92] extcall 80
+  [ 94] setlocal 2
+  [ 96] getlocal 2 .............................. <tRequest>
+  [ 98] pushsymb 79 ............................. <#id>
+  [100] pusharglist 2 ........................... <tRequest, #id>
+  [102] objcall 127 ............................. <tRequest.getaProp(#id)>
+  [104] setlocal 3 .............................. tID = tRequest.getaProp(#id)
+  [106] getlocal 1 .............................. <tMsgList>
+  [108] pushsymb 116 ............................ <#integer>
+  [110] getlocal 3 .............................. <tID>
+  [112] pusharglist 1 ........................... <tID>
+  [114] extcall 116 ............................. <integer(tID)>
+  [116] pusharglistnoret 3 ...................... <tMsgList, #integer, integer(tID)>
+  [118] objcall 126 ............................. tMsgList.addProp(#integer, integer(tID))
+  [120] getlocal 2 .............................. <tRequest>
+  [122] pushsymb 120 ............................ <#state>
+  [124] getparam 1 .............................. <tstate>
+  [126] pusharglistnoret 3 ...................... <tRequest, #state, tstate>
+  [128] objcall 40 .............................. tRequest[#state] = tstate
+  [130] getprop 49 .............................. <pFriendRequestContainer>
+  [132] getlocal 2 .............................. <tRequest>
+  [134] pusharglistnoret 2 ...................... <pFriendRequestContainer, tRequest>
+  [136] objcall 121 ............................. pFriendRequestContainer.updateRequest(tRequest)
+  [138] pushint8 1
+  [140] add
+  [141] endrepeat [ 78]
+  [143] pop 3
+  [145] getparam 1 .............................. <tstate>
+  [147] pushsymb 119 ............................ <#accepted>
+  [149] eq ...................................... <tstate = #accepted>
+  [150] jmpifz [182] ............................ if tstate = #accepted then / else
+  [153] getlocal 1 .............................. <tMsgList>
+  [155] pushint8 1 .............................. <1>
+  [157] pusharglistnoret 2 ...................... <tMsgList, 1>
+  [159] objcall 128 ............................. tMsgList.deleteAt(1)
+  [161] pushcons 6 .............................. <"connection.info.id">
+  [163] pusharglist 1 ........................... <"connection.info.id">
+  [165] extcall 67 .............................. <getVariable("connection.info.id")>
+  [167] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [169] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [171] pushcons 8 .............................. <"FRIENDLIST_ACCEPTFRIEND">
+  [173] getlocal 1 .............................. <tMsgList>
+  [175] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "FRIENDLIST_ACCEPTFRIEND", tMsgList>
+  [177] objcall 118 ............................. getConnection(getVariable("connection.info.id")).send("FRIENDLIST_ACCEPTFRIEND", tMsgList)
+  [179] jmp [200]
+  [182] pushcons 6 .............................. <"connection.info.id">
+  [184] pusharglist 1 ........................... <"connection.info.id">
+  [186] extcall 67 .............................. <getVariable("connection.info.id")>
+  [188] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [190] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [192] pushcons 7 .............................. <"FRIENDLIST_DECLINEFRIEND">
+  [194] getlocal 1 .............................. <tMsgList>
+  [196] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "FRIENDLIST_DECLINEFRIEND", tMsgList>
+  [198] objcall 118 ............................. getConnection(getVariable("connection.info.id")).send("FRIENDLIST_DECLINEFRIEND", tMsgList)
+  [200] getparam 0 .............................. <me>
+  [202] pusharglistnoret 1 ...................... <me>
+  [204] objcall 12 .............................. me.notifyFriendRequests()
+  [206] pushint8 1 .............................. <1>
+  [208] pusharglistnoret 1 ...................... <1>
+  [210] extcall 44 .............................. return 1
+  [212] ret
+end
+
+on getPendingFriendRequests me
+  [  0] getprop 49 .............................. <pFriendRequestContainer>
+  [  2] pusharglist 1 ........................... <pFriendRequestContainer>
+  [  4] objcall 133 ............................. <pFriendRequestContainer.getPendingRequests()>
+  [  6] pusharglist 1 ........................... <pFriendRequestContainer.getPendingRequests()>
+  [  8] objcall 134 ............................. <pFriendRequestContainer.getPendingRequests().duplicate()>
+  [ 10] pusharglistnoret 1 ...................... <pFriendRequestContainer.getPendingRequests().duplicate()>
+  [ 12] extcall 44 .............................. return pFriendRequestContainer.getPendingRequests().duplicate()
+  [ 14] ret
+end
+
+on sendRemoveFriend me, tFriendID
+  [  0] pushcons 6 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 67 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 125 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 44] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 13] pushcons 6 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 9 .............................. <"FRIENDLIST_REMOVEFRIEND">
+  [ 25] pushsymb 116 ............................ <#integer>
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pushsymb 116 ............................ <#integer>
+  [ 31] getparam 1 .............................. <tFriendID>
+  [ 33] pusharglist 1 ........................... <tFriendID>
+  [ 35] extcall 116 ............................. <integer(tFriendID)>
+  [ 37] pusharglist 4 ........................... <[#integer: 1, #integer: integer(tFriendID)]>
+  [ 39] pushproplist ............................ <[#integer: 1, #integer: integer(tFriendID)]>
+  [ 40] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "FRIENDLIST_REMOVEFRIEND", [#integer: 1, #integer: integer(tFriendID)]>
+  [ 42] objcall 118 ............................. getConnection(getVariable("connection.info.id")).send("FRIENDLIST_REMOVEFRIEND", [#integer: 1, #integer: integer(tFriendID)])
+  [ 44] ret
+end
+
+on getFriendByID me, tFriendID
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] getparam 1 .............................. <tFriendID>
+  [  4] pusharglist 2 ........................... <pFriendDataContainer, tFriendID>
+  [  6] objcall 20 .............................. <pFriendDataContainer.getFriendByID(tFriendID)>
+  [  8] setlocal 0 .............................. tList = pFriendDataContainer.getFriendByID(tFriendID)
+  [ 10] getlocal 0 .............................. <tList>
+  [ 12] pusharglist 1 ........................... <tList>
+  [ 14] extcall 77 .............................. <ilk(tList)>
+  [ 16] pushsymb 78 ............................. <#propList>
+  [ 18] eq ...................................... <ilk(tList) = #propList>
+  [ 19] jmpifz [ 35] ............................ if ilk(tList) = #propList then / else
+  [ 22] getlocal 0 .............................. <tList>
+  [ 24] pusharglist 1 ........................... <tList>
+  [ 26] objcall 134 ............................. <tList.duplicate()>
+  [ 28] pusharglistnoret 1 ...................... <tList.duplicate()>
+  [ 30] extcall 44 .............................. return tList.duplicate()
+  [ 32] jmp [ 40]
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 44 .............................. return 0
+  [ 40] ret
+end
+
+on getFriendByName me, tName
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] getparam 1 .............................. <tName>
+  [  4] pusharglist 2 ........................... <pFriendDataContainer, tName>
+  [  6] objcall 21 .............................. <pFriendDataContainer.getFriendByName(tName)>
+  [  8] setlocal 0 .............................. tList = pFriendDataContainer.getFriendByName(tName)
+  [ 10] getlocal 0 .............................. <tList>
+  [ 12] pusharglist 1 ........................... <tList>
+  [ 14] extcall 77 .............................. <ilk(tList)>
+  [ 16] pushsymb 78 ............................. <#propList>
+  [ 18] eq ...................................... <ilk(tList) = #propList>
+  [ 19] jmpifz [ 35] ............................ if ilk(tList) = #propList then / else
+  [ 22] getlocal 0 .............................. <tList>
+  [ 24] pusharglist 1 ........................... <tList>
+  [ 26] objcall 134 ............................. <tList.duplicate()>
+  [ 28] pusharglistnoret 1 ...................... <tList.duplicate()>
+  [ 30] extcall 44 .............................. return tList.duplicate()
+  [ 32] jmp [ 40]
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 44 .............................. return 0
+  [ 40] ret
+end
+
+on getFriendsInCategory me, tCategoryId
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] getparam 1 .............................. <tCategoryId>
+  [  4] pusharglist 2 ........................... <pFriendDataContainer, tCategoryId>
+  [  6] objcall 22 .............................. <pFriendDataContainer.getFriendsInCategory(tCategoryId)>
+  [  8] setlocal 0 .............................. tFriends = pFriendDataContainer.getFriendsInCategory(tCategoryId)
+  [ 10] getlocal 0 .............................. <tFriends>
+  [ 12] pusharglist 1 ........................... <tFriends>
+  [ 14] extcall 77 .............................. <ilk(tFriends)>
+  [ 16] pushsymb 78 ............................. <#propList>
+  [ 18] eq ...................................... <ilk(tFriends) = #propList>
+  [ 19] jmpifz [ 35] ............................ if ilk(tFriends) = #propList then / else
+  [ 22] getlocal 0 .............................. <tFriends>
+  [ 24] pusharglist 1 ........................... <tFriends>
+  [ 26] objcall 134 ............................. <tFriends.duplicate()>
+  [ 28] pusharglistnoret 1 ...................... <tFriends.duplicate()>
+  [ 30] extcall 44 .............................. return tFriends.duplicate()
+  [ 32] jmp [ 40]
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 44 .............................. return 0
+  [ 40] ret
+end
+
+on getCategoryList me
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] pusharglist 1 ........................... <pFriendDataContainer>
+  [  4] objcall 23 .............................. <pFriendDataContainer.getCategoryList()>
+  [  6] setlocal 0 .............................. tList = pFriendDataContainer.getCategoryList()
+  [  8] getlocal 0 .............................. <tList>
+  [ 10] pusharglist 1 ........................... <tList>
+  [ 12] extcall 77 .............................. <ilk(tList)>
+  [ 14] pushsymb 78 ............................. <#propList>
+  [ 16] eq ...................................... <ilk(tList) = #propList>
+  [ 17] jmpifz [ 33] ............................ if ilk(tList) = #propList then / else
+  [ 20] getlocal 0 .............................. <tList>
+  [ 22] pusharglist 1 ........................... <tList>
+  [ 24] objcall 134 ............................. <tList.duplicate()>
+  [ 26] pusharglistnoret 1 ...................... <tList.duplicate()>
+  [ 28] extcall 44 .............................. return tList.duplicate()
+  [ 30] jmp [ 38]
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 1 ...................... <0>
+  [ 36] extcall 44 .............................. return 0
+  [ 38] ret
+end
+
+on getCategoryName me, tID
+  [  0] getprop 47 .............................. <pFriendDataContainer>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglist 2 ........................... <pFriendDataContainer, tID>
+  [  6] objcall 24 .............................. <pFriendDataContainer.getCategoryName(tID)>
+  [  8] pusharglistnoret 1 ...................... <pFriendDataContainer.getCategoryName(tID)>
+  [ 10] extcall 44 .............................. return pFriendDataContainer.getCategoryName(tID)
+  [ 12] ret
+end
+
+on getItemCountForcategory me, tCategoryId
+  [  0] getparam 1 .............................. <tCategoryId>
+  [  2] pushint8 1 .............................. <1>
+  [  4] inv ..................................... <-1>
+  [  5] gteq .................................... <tCategoryId >= -1>
+  [  6] jmpifz [ 22] ............................ if tCategoryId >= -1 then / else
+  [  9] getprop 47 .............................. <pFriendDataContainer>
+  [ 11] getparam 1 .............................. <tCategoryId>
+  [ 13] pusharglist 2 ........................... <pFriendDataContainer, tCategoryId>
+  [ 15] objcall 22 .............................. <pFriendDataContainer.getFriendsInCategory(tCategoryId)>
+  [ 17] setlocal 0 .............................. tList = pFriendDataContainer.getFriendsInCategory(tCategoryId)
+  [ 19] jmp [ 76]
+  [ 22] getparam 1 .............................. <tCategoryId>
+  [ 24] pushint8 2 .............................. <2>
+  [ 26] inv ..................................... <-2>
+  [ 27] eq ...................................... <tCategoryId = -2>
+  [ 28] jmpifz [ 42] ............................ if tCategoryId = -2 then / else
+  [ 31] getprop 49 .............................. <pFriendRequestContainer>
+  [ 33] pusharglist 1 ........................... <pFriendRequestContainer>
+  [ 35] objcall 133 ............................. <pFriendRequestContainer.getPendingRequests()>
+  [ 37] setlocal 0 .............................. tList = pFriendRequestContainer.getPendingRequests()
+  [ 39] jmp [ 76]
+  [ 42] getparam 1 .............................. <tCategoryId>
+  [ 44] pushint8 3 .............................. <3>
+  [ 46] inv ..................................... <-3>
+  [ 47] eq ...................................... <tCategoryId = -3>
+  [ 48] jmpifz [ 76] ............................ if tCategoryId = -3 then
+  [ 51] getprop 52 .............................. <pHabboSearchResults>
+  [ 53] pushsymb 53 ............................. <#friends>
+  [ 55] pusharglist 2 ........................... <pHabboSearchResults, #friends>
+  [ 57] objcall 80 .............................. <pHabboSearchResults[#friends]>
+  [ 59] getobjprop 100 .......................... <pHabboSearchResults[#friends].count>
+  [ 61] getprop 52 .............................. <pHabboSearchResults>
+  [ 63] pushsymb 54 ............................. <#habbos>
+  [ 65] pusharglist 2 ........................... <pHabboSearchResults, #habbos>
+  [ 67] objcall 80 .............................. <pHabboSearchResults[#habbos]>
+  [ 69] getobjprop 100 .......................... <pHabboSearchResults[#habbos].count>
+  [ 71] add ..................................... <pHabboSearchResults[#friends].count + pHabboSearchResults[#habbos].count>
+  [ 72] pusharglistnoret 1 ...................... <pHabboSearchResults[#friends].count + pHabboSearchResults[#habbos].count>
+  [ 74] extcall 44 .............................. return pHabboSearchResults[#friends].count + pHabboSearchResults[#habbos].count
+  [ 76] getlocal 0 .............................. <tList>
+  [ 78] pusharglist 1 ........................... <tList>
+  [ 80] extcall 77 .............................. <ilk(tList)>
+  [ 82] pushsymb 78 ............................. <#propList>
+  [ 84] eq ...................................... <ilk(tList) = #propList>
+  [ 85] jmpifz [ 97] ............................ if ilk(tList) = #propList then / else
+  [ 88] getlocal 0 .............................. <tList>
+  [ 90] getobjprop 100 .......................... <tList.count>
+  [ 92] setlocal 1 .............................. tCount = tList.count
+  [ 94] jmp [100]
+  [ 97] pushzero ................................ <0>
+  [ 98] setlocal 1 .............................. tCount = 0
+  [100] getlocal 1 .............................. <tCount>
+  [102] pusharglistnoret 1 ...................... <tCount>
+  [104] extcall 44 .............................. return tCount
+  [106] ret
+end
+
+on requestFriendListUpdate me
+  [  0] pushcons 6 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 67 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 125 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 29] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 13] pushcons 6 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 10 ............................. <"FRIENDLIST_UPDATE">
+  [ 25] pusharglistnoret 2 ...................... <getConnection(getVariable("connection.info.id")), "FRIENDLIST_UPDATE">
+  [ 27] objcall 118 ............................. getConnection(getVariable("connection.info.id")).send("FRIENDLIST_UPDATE")
+  [ 29] ret
+end
+
+on externalFriendRequest me, tTargetUserName
+  [  0] pusharglist 0 ........................... <>
+  [  2] localcall 15 ............................ <isFriendListFull()>
+  [  4] jmpifz [ 20] ............................ if isFriendListFull() then
+  [  7] pushsymb 138 ............................ <#alert>
+  [  9] pushcons 11 ............................. <"console_fr_limit_exceeded_error">
+  [ 11] pusharglistnoret 2 ...................... <#alert, "console_fr_limit_exceeded_error">
+  [ 13] extcall 70 .............................. executeMessage(#alert, "console_fr_limit_exceeded_error")
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 44 .............................. return 0
+  [ 20] getparam 1 .............................. <tTargetUserName>
+  [ 22] pusharglist 0 ........................... <>
+  [ 24] extcall 69 .............................. <VOID>
+  [ 26] eq ...................................... <tTargetUserName = VOID>
+  [ 27] getparam 1 .............................. <tTargetUserName>
+  [ 29] pushcons 0 .............................. <EMPTY>
+  [ 31] eq ...................................... <tTargetUserName = EMPTY>
+  [ 32] or ...................................... <(tTargetUserName = VOID) or (tTargetUserName = EMPTY)>
+  [ 33] jmpifz [ 42] ............................ if (tTargetUserName = VOID) or (tTargetUserName = EMPTY) then
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 1 ...................... <1>
+  [ 40] extcall 44 .............................. return 1
+  [ 42] getparam 1 .............................. <tTargetUserName>
+  [ 44] pushcons 12 ............................. <"console_request_1">
+  [ 46] pusharglist 1 ........................... <"console_request_1">
+  [ 48] extcall 139 ............................. <getText("console_request_1")>
+  [ 50] joinpadstr .............................. <tTargetUserName && getText("console_request_1")>
+  [ 51] setlocal 0 .............................. tText = tTargetUserName && getText("console_request_1")
+  [ 53] getlocal 0 .............................. <tText>
+  [ 55] pushcons 13 ............................. <RETURN>
+  [ 57] joinstr ................................. <tText & RETURN>
+  [ 58] setlocal 0 .............................. tText = tText & RETURN
+  [ 60] getlocal 0 .............................. <tText>
+  [ 62] pushcons 14 ............................. <"console_request_2">
+  [ 64] pusharglist 1 ........................... <"console_request_2">
+  [ 66] extcall 139 ............................. <getText("console_request_2")>
+  [ 68] joinstr ................................. <tText & getText("console_request_2")>
+  [ 69] setlocal 0 .............................. tText = tText & getText("console_request_2")
+  [ 71] pushsymb 138 ............................ <#alert>
+  [ 73] getlocal 0 .............................. <tText>
+  [ 75] pusharglistnoret 2 ...................... <#alert, tText>
+  [ 77] extcall 70 .............................. executeMessage(#alert, tText)
+  [ 79] getprop 652 ............................. <pSentFriendRequests>
+  [ 82] getparam 1 .............................. <tTargetUserName>
+  [ 84] pusharglist 2 ........................... <pSentFriendRequests, tTargetUserName>
+  [ 86] objcall 400 ............................. <pSentFriendRequests.findPos(tTargetUserName)>
+  [ 89] not ..................................... <not pSentFriendRequests.findPos(tTargetUserName)>
+  [ 90] jmpifz [103] ............................ if not pSentFriendRequests.findPos(tTargetUserName) then
+  [ 93] getprop 652 ............................. <pSentFriendRequests>
+  [ 96] getparam 1 .............................. <tTargetUserName>
+  [ 98] pusharglistnoret 2 ...................... <pSentFriendRequests, tTargetUserName>
+  [100] objcall 449 ............................. pSentFriendRequests.append(tTargetUserName)
+  [103] pushcons 6 .............................. <"connection.info.id">
+  [105] pusharglist 1 ........................... <"connection.info.id">
+  [107] extcall 67 .............................. <getVariable("connection.info.id")>
+  [109] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [111] extcall 125 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [113] jmpifz [139] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [116] pushcons 6 .............................. <"connection.info.id">
+  [118] pusharglist 1 ........................... <"connection.info.id">
+  [120] extcall 67 .............................. <getVariable("connection.info.id")>
+  [122] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [124] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [126] pushcons 15 ............................. <"FRIENDLIST_FRIENDREQUEST">
+  [128] pushsymb 140 ............................ <#string>
+  [130] getparam 1 .............................. <tTargetUserName>
+  [132] pusharglist 2 ........................... <[#string: tTargetUserName]>
+  [134] pushproplist ............................ <[#string: tTargetUserName]>
+  [135] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "FRIENDLIST_FRIENDREQUEST", [#string: tTargetUserName]>
+  [137] objcall 118 ............................. getConnection(getVariable("connection.info.id")).send("FRIENDLIST_FRIENDREQUEST", [#string: tTargetUserName])
+  [139] ret
+end
+
+on sendAskForFriendRequests me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. pFriendRequestList = []
+  [  5] pushcons 6 .............................. <"connection.info.id">
+  [  7] pusharglist 1 ........................... <"connection.info.id">
+  [  9] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 11] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 13] extcall 125 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 15] jmpifz [ 34] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 18] pushcons 6 .............................. <"connection.info.id">
+  [ 20] pusharglist 1 ........................... <"connection.info.id">
+  [ 22] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 24] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 26] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 28] pushcons 16 ............................. <"FRIENDLIST_GETFRIENDREQUESTS">
+  [ 30] pusharglistnoret 2 ...................... <getConnection(getVariable("connection.info.id")), "FRIENDLIST_GETFRIENDREQUESTS">
+  [ 32] objcall 118 ............................. getConnection(getVariable("connection.info.id")).send("FRIENDLIST_GETFRIENDREQUESTS")
+  [ 34] ret
+end
+
+on sendHabboSearch me, tSearchString
+  [  0] getparam 1 .............................. <tSearchString>
+  [  2] pusharglist 1 ........................... <tSearchString>
+  [  4] extcall 144 ............................. <stringp(tSearchString)>
+  [  6] not ..................................... <not stringp(tSearchString)>
+  [  7] jmpifz [ 24] ............................ if not stringp(tSearchString) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 17 ............................. <"Search string must be stringp()">
+  [ 14] pushsymb 29 ............................. <#sendHabboSearch>
+  [ 16] pusharglist 3 ........................... <me, "Search string must be stringp()", #sendHabboSearch>
+  [ 18] extcall 41 .............................. <error(me, "Search string must be stringp()", #sendHabboSearch)>
+  [ 20] pusharglistnoret 1 ...................... <error(me, "Search string must be stringp()", #sendHabboSearch)>
+  [ 22] extcall 44 .............................. return error(me, "Search string must be stringp()", #sendHabboSearch)
+  [ 24] getparam 1 .............................. <tSearchString>
+  [ 26] pushcons 0 .............................. <EMPTY>
+  [ 28] eq ...................................... <tSearchString = EMPTY>
+  [ 29] jmpifz [ 37] ............................ if tSearchString = EMPTY then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 44 .............................. return 0
+  [ 37] getparam 1 .............................. <tSearchString>
+  [ 39] getprop 145 ............................. <pHabboSearchLastString>
+  [ 41] eq ...................................... <tSearchString = pHabboSearchLastString>
+  [ 42] jmpifz [ 50] ............................ if tSearchString = pHabboSearchLastString then
+  [ 45] pushzero ................................ <0>
+  [ 46] pusharglistnoret 1 ...................... <0>
+  [ 48] extcall 44 .............................. return 0
+  [ 50] getparam 1 .............................. <tSearchString>
+  [ 52] setprop 145 ............................. pHabboSearchLastString = tSearchString
+  [ 54] pushcons 6 .............................. <"connection.info.id">
+  [ 56] pusharglist 1 ........................... <"connection.info.id">
+  [ 58] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 60] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 62] extcall 125 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 64] jmpifz [ 90] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 67] pushcons 6 .............................. <"connection.info.id">
+  [ 69] pusharglist 1 ........................... <"connection.info.id">
+  [ 71] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 73] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 75] extcall 117 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 77] pushcons 18 ............................. <"MESSENGER_HABBOSEARCH">
+  [ 79] pushsymb 140 ............................ <#string>
+  [ 81] getparam 1 .............................. <tSearchString>
+  [ 83] pusharglist 2 ........................... <[#string: tSearchString]>
+  [ 85] pushproplist ............................ <[#string: tSearchString]>
+  [ 86] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "MESSENGER_HABBOSEARCH", [#string: tSearchString]>
+  [ 88] objcall 118 ............................. getConnection(getVariable("connection.info.id")).send("MESSENGER_HABBOSEARCH", [#string: tSearchString])
+  [ 90] ret
+end
+
+on setFriendRequestResult me, tdata
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tErrorList = [:]
+  [  5] pushint8 10 ............................. <10>
+  [  7] setlocal 1 .............................. tNamesPerAlert = 10
+  [  9] pushcons 13 ............................. <RETURN>
+  [ 11] setlocal 2 .............................. tNames = RETURN
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] setlocal 3
+  [ 17] getlocal 3
+  [ 19] getlocal 0 .............................. <tErrorList>
+  [ 21] getobjprop 100 .......................... <tErrorList.count>
+  [ 23] lteq
+  [ 24] jmpifz [215] ............................ repeat with tNameNum = 1 to tErrorList.count
+  [ 27] getlocal 0 .............................. <tErrorList>
+  [ 29] getlocal 3 .............................. <tNameNum>
+  [ 31] pusharglist 2 ........................... <tErrorList, tNameNum>
+  [ 33] objcall 147 ............................. <tErrorList.getPropAt(tNameNum)>
+  [ 35] setlocal 4 .............................. tName = tErrorList.getPropAt(tNameNum)
+  [ 37] getprop 652 ............................. <pSentFriendRequests>
+  [ 40] getlocal 4 .............................. <tName>
+  [ 42] pusharglistnoret 2 ...................... <pSentFriendRequests, tName>
+  [ 44] objcall 235 ............................. pSentFriendRequests.deleteOne(tName)
+  [ 46] getlocal 2 .............................. <tNames>
+  [ 48] pushcons 13 ............................. <RETURN>
+  [ 50] joinstr ................................. <tNames & RETURN>
+  [ 51] getlocal 4 .............................. <tName>
+  [ 53] joinstr ................................. <tNames & RETURN & tName>
+  [ 54] setlocal 2 .............................. tNames = tNames & RETURN & tName
+  [ 56] getlocal 0 .............................. <tErrorList>
+  [ 58] getlocal 3 .............................. <tNameNum>
+  [ 60] pusharglist 2 ........................... <tErrorList, tNameNum>
+  [ 62] objcall 80 .............................. <tErrorList[tNameNum]>
+  [ 64] peek 0 .................................. case tErrorList[tNameNum] of
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] eq
+  [ 69] jmpifz [ 83] ............................ (case) 1:
+  [ 72] pushcons 11 ............................. <"console_fr_limit_exceeded_error">
+  [ 74] pusharglist 1 ........................... <"console_fr_limit_exceeded_error">
+  [ 76] extcall 139 ............................. <getText("console_fr_limit_exceeded_error")>
+  [ 78] setlocal 5 .............................. tReason = getText("console_fr_limit_exceeded_error")
+  [ 80] jmp [156]
+  [ 83] peek 0
+  [ 85] pushint8 2 .............................. <2>
+  [ 87] eq
+  [ 88] jmpifz [102] ............................ (case) 2:
+  [ 91] pushcons 19 ............................. <"console_target_friend_list_full">
+  [ 93] pusharglist 1 ........................... <"console_target_friend_list_full">
+  [ 95] extcall 139 ............................. <getText("console_target_friend_list_full")>
+  [ 97] setlocal 5 .............................. tReason = getText("console_target_friend_list_full")
+  [ 99] jmp [156]
+  [102] peek 0
+  [104] pushint8 3 .............................. <3>
+  [106] eq
+  [107] jmpifz [121] ............................ (case) 3:
+  [110] pushcons 20 ............................. <"console_target_does_not_accept">
+  [112] pusharglist 1 ........................... <"console_target_does_not_accept">
+  [114] extcall 139 ............................. <getText("console_target_does_not_accept")>
+  [116] setlocal 5 .............................. tReason = getText("console_target_does_not_accept")
+  [118] jmp [156]
+  [121] peek 0
+  [123] pushint8 4 .............................. <4>
+  [125] eq
+  [126] jmpifz [140] ............................ (case) 4:
+  [129] pushcons 21 ............................. <"console_friend_request_not_found">
+  [131] pusharglist 1 ........................... <"console_friend_request_not_found">
+  [133] extcall 139 ............................. <getText("console_friend_request_not_found")>
+  [135] setlocal 5 .............................. tReason = getText("console_friend_request_not_found")
+  [137] jmp [156]
+  [140] peek 0
+  [142] pushint8 42 ............................. <42>
+  [144] eq
+  [145] jmpifz [156] ............................ (case) 42:
+  [148] pushcons 22 ............................. <"console_concurrency_error">
+  [150] pusharglist 1 ........................... <"console_concurrency_error">
+  [152] extcall 139 ............................. <getText("console_concurrency_error")>
+  [154] setlocal 5 .............................. tReason = getText("console_concurrency_error")
+  [156] pop 1 ................................... end case
+  [158] getlocal 2 .............................. <tNames>
+  [160] pushcons 23 ............................. <" - ">
+  [162] joinstr ................................. <tNames & " - ">
+  [163] getlocal 5 .............................. <tReason>
+  [165] joinstr ................................. <tNames & " - " & tReason>
+  [166] setlocal 2 .............................. tNames = tNames & " - " & tReason
+  [168] getlocal 3 .............................. <tNameNum>
+  [170] getlocal 1 .............................. <tNamesPerAlert>
+  [172] mod ..................................... <tNameNum mod tNamesPerAlert>
+  [173] pushzero ................................ <0>
+  [174] eq ...................................... <(tNameNum mod tNamesPerAlert) = 0>
+  [175] jmpifz [206] ............................ if (tNameNum mod tNamesPerAlert) = 0 then
+  [178] pushcons 24 ............................. <"console_friend_request_error">
+  [180] pusharglist 1 ........................... <"console_friend_request_error">
+  [182] extcall 139 ............................. <getText("console_friend_request_error")>
+  [184] getlocal 2 .............................. <tNames>
+  [186] joinstr ................................. <getText("console_friend_request_error") & tNames>
+  [187] setlocal 6 .............................. tMessage = getText("console_friend_request_error") & tNames
+  [189] pushsymb 138 ............................ <#alert>
+  [191] pushsymb 148 ............................ <#Msg>
+  [193] getlocal 6 .............................. <tMessage>
+  [195] pusharglist 2 ........................... <[#Msg: tMessage]>
+  [197] pushproplist ............................ <[#Msg: tMessage]>
+  [198] pusharglistnoret 2 ...................... <#alert, [#Msg: tMessage]>
+  [200] extcall 70 .............................. executeMessage(#alert, [#Msg: tMessage])
+  [202] pushcons 13 ............................. <RETURN>
+  [204] setlocal 2 .............................. tNames = RETURN
+  [206] pushint8 1
+  [208] getlocal 3
+  [210] add
+  [211] setlocal 3
+  [213] endrepeat [ 17]
+  [215] getlocal 2 .............................. <tNames>
+  [217] pushsymb 149 ............................ <#line>
+  [219] pusharglist 2 ........................... <tNames, #line>
+  [221] objcall 100 ............................. <tNames.line.count>
+  [223] pushint8 2 .............................. <2>
+  [225] gt ...................................... <tNames.line.count > 2>
+  [226] jmpifz [253] ............................ if tNames.line.count > 2 then
+  [229] pushcons 24 ............................. <"console_friend_request_error">
+  [231] pusharglist 1 ........................... <"console_friend_request_error">
+  [233] extcall 139 ............................. <getText("console_friend_request_error")>
+  [235] getlocal 2 .............................. <tNames>
+  [237] joinstr ................................. <getText("console_friend_request_error") & tNames>
+  [238] setlocal 6 .............................. tMessage = getText("console_friend_request_error") & tNames
+  [240] pushsymb 138 ............................ <#alert>
+  [242] pushsymb 148 ............................ <#Msg>
+  [244] getlocal 6 .............................. <tMessage>
+  [246] pusharglist 2 ........................... <[#Msg: tMessage]>
+  [248] pushproplist ............................ <[#Msg: tMessage]>
+  [249] pusharglistnoret 2 ...................... <#alert, [#Msg: tMessage]>
+  [251] extcall 70 .............................. executeMessage(#alert, [#Msg: tMessage])
+  [253] ret
+end
+
+on setHabboSearchResults me, tResultsFriends, tResultsHabbos
+  [  0] getprop 52 .............................. <pHabboSearchResults>
+  [  2] pushsymb 53 ............................. <#friends>
+  [  4] getparam 1 .............................. <tResultsFriends>
+  [  6] pusharglistnoret 3 ...................... <pHabboSearchResults, #friends, tResultsFriends>
+  [  8] objcall 40 .............................. pHabboSearchResults[#friends] = tResultsFriends
+  [ 10] getparam 2 .............................. <tResultsHabbos>
+  [ 12] peek 0
+  [ 14] pusharglist 1
+  [ 16] extcall 100
+  [ 18] pushint8 1
+  [ 20] peek 0
+  [ 22] peek 2
+  [ 24] lteq
+  [ 25] jmpifz [ 74] ............................ repeat with tItem in tResultsHabbos
+  [ 28] peek 2
+  [ 30] peek 1
+  [ 32] pusharglist 2
+  [ 34] extcall 80
+  [ 36] setlocal 0
+  [ 38] getprop 652 ............................. <pSentFriendRequests>
+  [ 41] getlocal 0 .............................. <tItem>
+  [ 43] pushsymb 243 ............................ <#name>
+  [ 45] pusharglist 2 ........................... <tItem, #name>
+  [ 47] objcall 127 ............................. <tItem.getaProp(#name)>
+  [ 49] pusharglist 2 ........................... <pSentFriendRequests, tItem.getaProp(#name)>
+  [ 51] objcall 400 ............................. <pSentFriendRequests.findPos(tItem.getaProp(#name))>
+  [ 54] jmpifz [ 69] ............................ if pSentFriendRequests.findPos(tItem.getaProp(#name)) then
+  [ 57] getlocal 0 .............................. <tItem>
+  [ 59] pushsymb 653 ............................ <#fr_pending>
+  [ 62] pushint8 1 .............................. <1>
+  [ 64] pusharglistnoret 3 ...................... <tItem, #fr_pending, 1>
+  [ 66] objcall 438 ............................. tItem.setaProp(#fr_pending, 1)
+  [ 69] pushint8 1
+  [ 71] add
+  [ 72] endrepeat [ 20]
+  [ 74] pop 3
+  [ 76] getprop 52 .............................. <pHabboSearchResults>
+  [ 78] pushsymb 54 ............................. <#habbos>
+  [ 80] getparam 2 .............................. <tResultsHabbos>
+  [ 82] pusharglistnoret 3 ...................... <pHabboSearchResults, #habbos, tResultsHabbos>
+  [ 84] objcall 40 .............................. pHabboSearchResults[#habbos] = tResultsHabbos
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pusharglist 1 ........................... <me>
+  [ 90] objcall 73 .............................. <me.getInterface()>
+  [ 92] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 94] objcall 164 ............................. me.getInterface().updateCategoryCounts()
+  [ 96] ret
+end
+
+on getHabboSearchResults me
+  [  0] getprop 52 .............................. <pHabboSearchResults>
+  [  2] pusharglistnoret 1 ...................... <pHabboSearchResults>
+  [  4] extcall 44 .............................. return pHabboSearchResults
+  [  6] ret
+end
+
+on getHabboSearchLastString me
+  [  0] getprop 145 ............................. <pHabboSearchLastString>
+  [  2] pusharglistnoret 1 ...................... <pHabboSearchLastString>
+  [  4] extcall 44 .............................. return pHabboSearchLastString
+  [  6] ret
+end

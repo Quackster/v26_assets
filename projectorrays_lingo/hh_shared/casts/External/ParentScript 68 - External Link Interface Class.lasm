@@ -1,0 +1,311 @@
+property pWindowID, pTimeOutID, pActivateID
+
+on construct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 12 .............................. <getUniqueID()>
+  [  4] setprop 11 .............................. pWindowID = getUniqueID()
+  [  6] pusharglist 0 ........................... <>
+  [  8] extcall 12 .............................. <getUniqueID()>
+  [ 10] setprop 13 .............................. pTimeOutID = getUniqueID()
+  [ 12] pusharglist 0 ........................... <>
+  [ 14] extcall 12 .............................. <getUniqueID()>
+  [ 16] setprop 14 .............................. pActivateID = getUniqueID()
+  [ 18] pushsymb 16 ............................. <#externalLinkClick>
+  [ 20] getparam 0 .............................. <me>
+  [ 22] pusharglist 1 ........................... <me>
+  [ 24] objcall 17 .............................. <me.getID()>
+  [ 26] pushsymb 9 .............................. <#notifyExternalLinkClick>
+  [ 28] pusharglistnoret 3 ...................... <#externalLinkClick, me.getID(), #notifyExternalLinkClick>
+  [ 30] extcall 15 .............................. registerMessage(#externalLinkClick, me.getID(), #notifyExternalLinkClick)
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] pusharglistnoret 1 ...................... <1>
+  [ 36] extcall 18 .............................. return 1
+  [ 38] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 2 ............................... me.removeTooltipWindow()
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglistnoret 1 ...................... <me>
+  [ 10] objcall 3 ............................... me.removeWindowTimeout()
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglistnoret 1 ...................... <me>
+  [ 16] objcall 6 ............................... me.removeActivateTimeout()
+  [ 18] pushsymb 16 ............................. <#externalLinkClick>
+  [ 20] pusharglistnoret 1 ...................... <#externalLinkClick>
+  [ 22] extcall 20 .............................. unregisterMessage(#externalLinkClick)
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglistnoret 1 ...................... <1>
+  [ 28] extcall 18 .............................. return 1
+  [ 30] ret
+end
+
+on removeTooltipWindow me
+  [  0] getprop 11 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 21 .............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pWindowID) then
+  [  9] getprop 11 .............................. <pWindowID>
+  [ 11] pusharglistnoret 1 ...................... <pWindowID>
+  [ 13] extcall 22 .............................. removeWindow(pWindowID)
+  [ 15] ret
+end
+
+on removeWindowTimeout me
+  [  0] getprop 13 .............................. <pTimeOutID>
+  [  2] pusharglist 1 ........................... <pTimeOutID>
+  [  4] extcall 23 .............................. <timeoutExists(pTimeOutID)>
+  [  6] jmpifz [ 15] ............................ if timeoutExists(pTimeOutID) then
+  [  9] getprop 13 .............................. <pTimeOutID>
+  [ 11] pusharglistnoret 1 ...................... <pTimeOutID>
+  [ 13] extcall 24 .............................. removeTimeout(pTimeOutID)
+  [ 15] ret
+end
+
+on createWindowTimeout me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 3 ............................... me.removeWindowTimeout()
+  [  6] pushcons 0 .............................. <"external_link_win_timeout">
+  [  8] pushint16 2000 .......................... <2000>
+  [ 11] pusharglist 2 ........................... <"external_link_win_timeout", 2000>
+  [ 13] extcall 26 .............................. <getVariable("external_link_win_timeout", 2000)>
+  [ 15] pusharglist 1 ........................... <getVariable("external_link_win_timeout", 2000)>
+  [ 17] extcall 25 .............................. <integer(getVariable("external_link_win_timeout", 2000))>
+  [ 19] setlocal 0 .............................. tTimeoutTime = integer(getVariable("external_link_win_timeout", 2000))
+  [ 21] getprop 13 .............................. <pTimeOutID>
+  [ 23] getlocal 0 .............................. <tTimeoutTime>
+  [ 25] pushsymb 2 .............................. <#removeTooltipWindow>
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglist 1 ........................... <me>
+  [ 31] objcall 17 .............................. <me.getID()>
+  [ 33] pusharglist 0 ........................... <>
+  [ 35] extcall 28 .............................. <VOID>
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 6 ...................... <pTimeOutID, tTimeoutTime, #removeTooltipWindow, me.getID(), VOID, 1>
+  [ 41] extcall 27 .............................. createTimeout(pTimeOutID, tTimeoutTime, #removeTooltipWindow, me.getID(), VOID, 1)
+  [ 43] ret
+end
+
+on createActivateTimeout me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 6 ............................... me.removeActivateTimeout()
+  [  6] pushcons 1 .............................. <"external_link_win_activate_timeout">
+  [  8] pushint16 500 ........................... <500>
+  [ 11] pusharglist 2 ........................... <"external_link_win_activate_timeout", 500>
+  [ 13] extcall 26 .............................. <getVariable("external_link_win_activate_timeout", 500)>
+  [ 15] pusharglist 1 ........................... <getVariable("external_link_win_activate_timeout", 500)>
+  [ 17] extcall 25 .............................. <integer(getVariable("external_link_win_activate_timeout", 500))>
+  [ 19] setlocal 0 .............................. tTimeoutTime = integer(getVariable("external_link_win_activate_timeout", 500))
+  [ 21] getprop 14 .............................. <pActivateID>
+  [ 23] getlocal 0 .............................. <tTimeoutTime>
+  [ 25] pushsymb 7 .............................. <#activateToolTip>
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglist 1 ........................... <me>
+  [ 31] objcall 17 .............................. <me.getID()>
+  [ 33] pusharglist 0 ........................... <>
+  [ 35] extcall 28 .............................. <VOID>
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 6 ...................... <pActivateID, tTimeoutTime, #activateToolTip, me.getID(), VOID, 1>
+  [ 41] extcall 27 .............................. createTimeout(pActivateID, tTimeoutTime, #activateToolTip, me.getID(), VOID, 1)
+  [ 43] ret
+end
+
+on removeActivateTimeout me
+  [  0] getprop 14 .............................. <pActivateID>
+  [  2] pusharglist 1 ........................... <pActivateID>
+  [  4] extcall 23 .............................. <timeoutExists(pActivateID)>
+  [  6] jmpifz [ 15] ............................ if timeoutExists(pActivateID) then
+  [  9] getprop 14 .............................. <pActivateID>
+  [ 11] pusharglistnoret 1 ...................... <pActivateID>
+  [ 13] extcall 24 .............................. removeTimeout(pActivateID)
+  [ 15] ret
+end
+
+on activateToolTip me
+  [  0] getprop 11 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 30 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tWndObj = 0>
+  [ 12] jmpifz [ 20] ............................ if tWndObj = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 18 .............................. return 0
+  [ 20] getprop 11 .............................. <pWindowID>
+  [ 22] pusharglistnoret 1 ...................... <pWindowID>
+  [ 24] extcall 961 ............................. activateWindowObj(pWindowID)
+  [ 27] ret
+end
+
+on createTooltipWindow me
+  [  0] getprop 11 .............................. <pWindowID>
+  [  2] pushcons 2 .............................. <"tooltip_external_link.window">
+  [  4] pusharglistnoret 2 ...................... <pWindowID, "tooltip_external_link.window">
+  [  6] extcall 33 .............................. createWindow(pWindowID, "tooltip_external_link.window")
+  [  8] getprop 11 .............................. <pWindowID>
+  [ 10] pusharglist 1 ........................... <pWindowID>
+  [ 12] extcall 30 .............................. <getWindow(pWindowID)>
+  [ 14] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 16] getlocal 0 .............................. <tWndObj>
+  [ 18] pushzero ................................ <0>
+  [ 19] eq ...................................... <tWndObj = 0>
+  [ 20] jmpifz [ 28] ............................ if tWndObj = 0 then
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 18 .............................. return 0
+  [ 28] getlocal 0 .............................. <tWndObj>
+  [ 30] pushsymb 10 ............................. <#eventProc>
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 17 .............................. <me.getID()>
+  [ 38] pushsymb 52 ............................. <#mouseUp>
+  [ 40] pusharglistnoret 4 ...................... <tWndObj, #eventProc, me.getID(), #mouseUp>
+  [ 42] objcall 53 .............................. tWndObj.registerProcedure(#eventProc, me.getID(), #mouseUp)
+  [ 44] ret
+end
+
+on notifyExternalLinkClick me, tClickLocation
+  [  0] getparam 1 .............................. <tClickLocation>
+  [  2] pusharglist 1 ........................... <tClickLocation>
+  [  4] extcall 34 .............................. <voidp(tClickLocation)>
+  [  6] jmpifz [ 14] ............................ if voidp(tClickLocation) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 18 .............................. return 0
+  [ 14] getparam 1 .............................. <tClickLocation>
+  [ 16] pusharglist 1 ........................... <tClickLocation>
+  [ 18] extcall 35 .............................. <ilk(tClickLocation)>
+  [ 20] pushsymb 36 ............................. <#point>
+  [ 22] nteq .................................... <ilk(tClickLocation) <> #point>
+  [ 23] jmpifz [ 31] ............................ if ilk(tClickLocation) <> #point then
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 18 .............................. return 0
+  [ 31] getprop 11 .............................. <pWindowID>
+  [ 33] pusharglist 1 ........................... <pWindowID>
+  [ 35] extcall 21 .............................. <windowExists(pWindowID)>
+  [ 37] not ..................................... <not windowExists(pWindowID)>
+  [ 38] jmpifz [ 47] ............................ if not windowExists(pWindowID) then
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglistnoret 1 ...................... <me>
+  [ 45] objcall 8 ............................... me.createTooltipWindow()
+  [ 47] getprop 11 .............................. <pWindowID>
+  [ 49] pusharglist 1 ........................... <pWindowID>
+  [ 51] extcall 30 .............................. <getWindow(pWindowID)>
+  [ 53] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 55] getlocal 0 .............................. <tWndObj>
+  [ 57] pushzero ................................ <0>
+  [ 58] eq ...................................... <tWndObj = 0>
+  [ 59] jmpifz [ 67] ............................ if tWndObj = 0 then
+  [ 62] pushzero ................................ <0>
+  [ 63] pusharglistnoret 1 ...................... <0>
+  [ 65] extcall 18 .............................. return 0
+  [ 67] getlocal 0 .............................. <tWndObj>
+  [ 69] pushsymb 37 ............................. <#width>
+  [ 71] pusharglist 2 ........................... <tWndObj, #width>
+  [ 73] objcall 38 .............................. <tWndObj.getProperty(#width)>
+  [ 75] setlocal 1 .............................. tWndWidth = tWndObj.getProperty(#width)
+  [ 77] getlocal 0 .............................. <tWndObj>
+  [ 79] pushsymb 39 ............................. <#height>
+  [ 81] pusharglist 2 ........................... <tWndObj, #height>
+  [ 83] objcall 38 .............................. <tWndObj.getProperty(#height)>
+  [ 85] setlocal 2 .............................. tWndHeight = tWndObj.getProperty(#height)
+  [ 87] pushcons 3 .............................. <"external_link_win_offset_h">
+  [ 89] pusharglist 1 ........................... <"external_link_win_offset_h">
+  [ 91] extcall 26 .............................. <getVariable("external_link_win_offset_h")>
+  [ 93] setlocal 3 .............................. tMarginH = getVariable("external_link_win_offset_h")
+  [ 95] pushcons 4 .............................. <"external_link_win_offset_v">
+  [ 97] pusharglist 1 ........................... <"external_link_win_offset_v">
+  [ 99] extcall 26 .............................. <getVariable("external_link_win_offset_v")>
+  [101] setlocal 4 .............................. tMarginV = getVariable("external_link_win_offset_v")
+  [103] pusharglist 0 ........................... <>
+  [105] thebuiltin 40 ........................... <the stageRight>
+  [107] pusharglist 0 ........................... <>
+  [109] thebuiltin 41 ........................... <the stageLeft>
+  [111] sub ..................................... <the stageRight - the stageLeft>
+  [112] setlocal 5 .............................. tScreenWidth = the stageRight - the stageLeft
+  [114] getparam 1 .............................. <tClickLocation>
+  [116] pushint8 1 .............................. <1>
+  [118] pusharglist 2 ........................... <tClickLocation, 1>
+  [120] objcall 42 .............................. <tClickLocation[1]>
+  [122] getlocal 3 .............................. <tMarginH>
+  [124] add ..................................... <tClickLocation[1] + tMarginH>
+  [125] setlocal 6 .............................. tOpenLocH = tClickLocation[1] + tMarginH
+  [127] getlocal 6 .............................. <tOpenLocH>
+  [129] getlocal 1 .............................. <tWndWidth>
+  [131] add ..................................... <tOpenLocH + tWndWidth>
+  [132] getlocal 5 .............................. <tScreenWidth>
+  [134] gt ...................................... <(tOpenLocH + tWndWidth) > tScreenWidth>
+  [135] jmpifz [154] ............................ if (tOpenLocH + tWndWidth) > tScreenWidth then
+  [138] getparam 1 .............................. <tClickLocation>
+  [140] pushint8 1 .............................. <1>
+  [142] pusharglist 2 ........................... <tClickLocation, 1>
+  [144] objcall 42 .............................. <tClickLocation[1]>
+  [146] getlocal 3 .............................. <tMarginH>
+  [148] sub ..................................... <tClickLocation[1] - tMarginH>
+  [149] getlocal 1 .............................. <tWndWidth>
+  [151] sub ..................................... <tClickLocation[1] - tMarginH - tWndWidth>
+  [152] setlocal 6 .............................. tOpenLocH = tClickLocation[1] - tMarginH - tWndWidth
+  [154] getparam 1 .............................. <tClickLocation>
+  [156] pushint8 2 .............................. <2>
+  [158] pusharglist 2 ........................... <tClickLocation, 2>
+  [160] objcall 42 .............................. <tClickLocation[2]>
+  [162] getlocal 4 .............................. <tMarginV>
+  [164] sub ..................................... <tClickLocation[2] - tMarginV>
+  [165] getlocal 2 .............................. <tWndHeight>
+  [167] sub ..................................... <tClickLocation[2] - tMarginV - tWndHeight>
+  [168] setlocal 7 .............................. tOpenLocV = tClickLocation[2] - tMarginV - tWndHeight
+  [170] getlocal 7 .............................. <tOpenLocV>
+  [172] getlocal 4 .............................. <tMarginV>
+  [174] sub ..................................... <tOpenLocV - tMarginV>
+  [175] pushzero ................................ <0>
+  [176] lt ...................................... <(tOpenLocV - tMarginV) < 0>
+  [177] jmpifz [193] ............................ if (tOpenLocV - tMarginV) < 0 then
+  [180] getparam 1 .............................. <tClickLocation>
+  [182] pushint8 2 .............................. <2>
+  [184] pusharglist 2 ........................... <tClickLocation, 2>
+  [186] objcall 42 .............................. <tClickLocation[2]>
+  [188] getlocal 4 .............................. <tMarginV>
+  [190] add ..................................... <tClickLocation[2] + tMarginV>
+  [191] setlocal 7 .............................. tOpenLocV = tClickLocation[2] + tMarginV
+  [193] getlocal 0 .............................. <tWndObj>
+  [195] getlocal 6 .............................. <tOpenLocH>
+  [197] getlocal 7 .............................. <tOpenLocV>
+  [199] pusharglistnoret 3 ...................... <tWndObj, tOpenLocH, tOpenLocV>
+  [201] objcall 43 .............................. tWndObj.moveTo(tOpenLocH, tOpenLocV)
+  [203] getparam 0 .............................. <me>
+  [205] pusharglistnoret 1 ...................... <me>
+  [207] objcall 4 ............................... me.createWindowTimeout()
+  [209] getparam 0 .............................. <me>
+  [211] pusharglistnoret 1 ...................... <me>
+  [213] objcall 5 ............................... me.createActivateTimeout()
+  [215] ret
+end
+
+on eventProc me, tEvent, tElemID, tParam
+  [  0] getprop 11 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 30 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tWndObj = 0>
+  [ 12] jmpifz [ 20] ............................ if tWndObj = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 18 .............................. return 0
+  [ 20] getparam 1 .............................. <tEvent>
+  [ 22] pushsymb 52 ............................. <#mouseUp>
+  [ 24] eq ...................................... <tEvent = #mouseUp>
+  [ 25] jmpifz [ 34] ............................ if tEvent = #mouseUp then
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglistnoret 1 ...................... <me>
+  [ 32] objcall 2 ............................... me.removeTooltipWindow()
+  [ 34] ret
+end

@@ -1,0 +1,573 @@
+property pConnectionId, pTimeOutID, pQueue, pCrypto, pUseCrypto, pHandshakeFinished
+
+on construct me
+  [  0] gettoplevelprop 8 ....................... <_player>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 9 ............................... <VOID>
+  [  6] nteq .................................... <_player <> VOID>
+  [  7] jmpifz [ 27] ............................ if _player <> VOID then
+  [ 10] gettoplevelprop 8 ....................... <_player>
+  [ 12] getobjprop 10 ........................... <_player.traceScript>
+  [ 14] gettoplevelprop 12 ...................... <_movie>
+  [ 16] getobjprop 10 ........................... <_movie.traceScript>
+  [ 18] or ...................................... <_player.traceScript or _movie.traceScript>
+  [ 19] jmpifz [ 27] ............................ if _player.traceScript or _movie.traceScript then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 11 .............................. return 0
+  [ 27] gettoplevelprop 8 ....................... <_player>
+  [ 29] pushzero ................................ <0>
+  [ 30] setobjprop 10 ........................... _player.traceScript = 0
+  [ 32] gettoplevelprop 12 ...................... <_movie>
+  [ 34] pushzero ................................ <0>
+  [ 35] setobjprop 10 ........................... _movie.traceScript = 0
+  [ 37] pushcons 0 .............................. <"connection.mus.id">
+  [ 39] pushsymb 1208 ........................... <#mus>
+  [ 42] pusharglist 2 ........................... <"connection.mus.id", #mus>
+  [ 44] extcall 461 ............................. <getVariable("connection.mus.id", #mus)>
+  [ 47] setprop 1207 ............................ pConnectionId = getVariable("connection.mus.id", #mus)
+  [ 50] pushcons 1 .............................. <"mus_close_delay">
+  [ 52] setprop 1209 ............................ pTimeOutID = "mus_close_delay"
+  [ 55] pusharglist 0 ........................... <[:]>
+  [ 57] pushproplist ............................ <[:]>
+  [ 58] setlocal 0 .............................. pCallBacks = [:]
+  [ 60] pusharglist 0 ........................... <[]>
+  [ 62] pushlist ................................ <[]>
+  [ 63] setprop 1210 ............................ pQueue = []
+  [ 66] pushsymb 66 ............................. <#temp>
+  [ 68] pushcons 2 .............................. <"RC4 Class">
+  [ 70] pusharglist 1 ........................... <["RC4 Class"]>
+  [ 72] pushlist ................................ <["RC4 Class"]>
+  [ 73] pusharglist 2 ........................... <#temp, ["RC4 Class"]>
+  [ 75] extcall 177 ............................. <createObject(#temp, ["RC4 Class"])>
+  [ 77] setprop 1211 ............................ pCrypto = createObject(#temp, ["RC4 Class"])
+  [ 80] pushzero ................................ <0>
+  [ 81] setprop 1212 ............................ pUseCrypto = 0
+  [ 84] pushzero ................................ <0>
+  [ 85] setprop 1213 ............................ pHandshakeFinished = 0
+  [ 88] getparam 0 .............................. <me>
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] pusharglist 2 ........................... <me, 1>
+  [ 94] objcall 1204 ............................ <me.registerCmds(1)>
+  [ 97] pusharglistnoret 1 ...................... <me.registerCmds(1)>
+  [ 99] extcall 11 .............................. return me.registerCmds(1)
+  [101] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 1204 ............................ me.registerCmds(0)
+  [  8] pushzero ................................ <0>
+  [  9] setprop 1213 ............................ pHandshakeFinished = 0
+  [ 12] pushzero ................................ <0>
+  [ 13] setprop 1212 ............................ pUseCrypto = 0
+  [ 16] getprop 1207 ............................ <pConnectionId>
+  [ 19] pusharglist 1 ........................... <pConnectionId>
+  [ 21] extcall 527 ............................. <removeMultiuser(pConnectionId)>
+  [ 24] pusharglistnoret 1 ...................... <removeMultiuser(pConnectionId)>
+  [ 26] extcall 11 .............................. return removeMultiuser(pConnectionId)
+  [ 28] ret
+end
+
+on retrieveData me, tID, tAuth, tCallBackObj
+  [  0] getprop 1210 ............................ <pQueue>
+  [  3] pushsymb 552 ............................ <#type>
+  [  6] pushsymb 1215 ........................... <#retrieve>
+  [  9] pushsymb 117 ............................ <#id>
+  [ 11] getparam 1 .............................. <tID>
+  [ 13] pushsymb 1216 ........................... <#auth>
+  [ 16] getparam 2 .............................. <tAuth>
+  [ 18] pushsymb 909 ............................ <#callback>
+  [ 21] getparam 3 .............................. <tCallBackObj>
+  [ 23] pusharglist 8 ........................... <[#type: #retrieve, #id: tID, #auth: tAuth, #callback: tCallBackObj]>
+  [ 25] pushproplist ............................ <[#type: #retrieve, #id: tID, #auth: tAuth, #callback: tCallBackObj]>
+  [ 26] pusharglistnoret 2 ...................... <pQueue, [#type: #retrieve, #id: tID, #auth: tAuth, #callback: tCallBackObj]>
+  [ 28] objcall 60 .............................. pQueue.add([#type: #retrieve, #id: tID, #auth: tAuth, #callback: tCallBackObj])
+  [ 30] getprop 1210 ............................ <pQueue>
+  [ 33] pusharglist 1 ........................... <pQueue>
+  [ 35] extcall 28 .............................. <count(pQueue)>
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] eq ...................................... <count(pQueue) = 1>
+  [ 40] getprop 1207 ............................ <pConnectionId>
+  [ 43] pusharglist 1 ........................... <pConnectionId>
+  [ 45] extcall 529 ............................. <multiuserExists(pConnectionId)>
+  [ 48] not ..................................... <not multiuserExists(pConnectionId)>
+  [ 49] or ...................................... <(count(pQueue) = 1) or not multiuserExists(pConnectionId)>
+  [ 50] jmpifz [ 60] ............................ if (count(pQueue) = 1) or not multiuserExists(pConnectionId) then
+  [ 53] getparam 0 .............................. <me>
+  [ 55] pusharglistnoret 1 ...................... <me>
+  [ 57] objcall 1199 ............................ me.next()
+  [ 60] ret
+end
+
+on storeData me, tdata, tCallBackObj
+  [  0] getprop 1210 ............................ <pQueue>
+  [  3] pushsymb 552 ............................ <#type>
+  [  6] pushsymb 1218 ........................... <#store>
+  [  9] pushsymb 1219 ........................... <#data>
+  [ 12] getparam 1 .............................. <tdata>
+  [ 14] pushsymb 909 ............................ <#callback>
+  [ 17] getparam 2 .............................. <tCallBackObj>
+  [ 19] pusharglist 6 ........................... <[#type: #store, #data: tdata, #callback: tCallBackObj]>
+  [ 21] pushproplist ............................ <[#type: #store, #data: tdata, #callback: tCallBackObj]>
+  [ 22] pusharglistnoret 2 ...................... <pQueue, [#type: #store, #data: tdata, #callback: tCallBackObj]>
+  [ 24] objcall 60 .............................. pQueue.add([#type: #store, #data: tdata, #callback: tCallBackObj])
+  [ 26] getprop 1210 ............................ <pQueue>
+  [ 29] pusharglist 1 ........................... <pQueue>
+  [ 31] extcall 28 .............................. <count(pQueue)>
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] eq ...................................... <count(pQueue) = 1>
+  [ 36] getprop 1207 ............................ <pConnectionId>
+  [ 39] pusharglist 1 ........................... <pConnectionId>
+  [ 41] extcall 529 ............................. <multiuserExists(pConnectionId)>
+  [ 44] not ..................................... <not multiuserExists(pConnectionId)>
+  [ 45] or ...................................... <(count(pQueue) = 1) or not multiuserExists(pConnectionId)>
+  [ 46] jmpifz [ 56] ............................ if (count(pQueue) = 1) or not multiuserExists(pConnectionId) then
+  [ 49] getparam 0 .............................. <me>
+  [ 51] pusharglistnoret 1 ...................... <me>
+  [ 53] objcall 1199 ............................ me.next()
+  [ 56] ret
+end
+
+on addMessageToQueue me, tMsg
+  [  0] getprop 1210 ............................ <pQueue>
+  [  3] pushsymb 552 ............................ <#type>
+  [  6] pushsymb 1220 ........................... <#fusemsg>
+  [  9] pushsymb 1039 ........................... <#message>
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] pusharglist 4 ........................... <[#type: #fusemsg, #message: tMsg]>
+  [ 16] pushproplist ............................ <[#type: #fusemsg, #message: tMsg]>
+  [ 17] pusharglistnoret 2 ...................... <pQueue, [#type: #fusemsg, #message: tMsg]>
+  [ 19] objcall 60 .............................. pQueue.add([#type: #fusemsg, #message: tMsg])
+  [ 21] getprop 1210 ............................ <pQueue>
+  [ 24] pusharglist 1 ........................... <pQueue>
+  [ 26] extcall 28 .............................. <count(pQueue)>
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] eq ...................................... <count(pQueue) = 1>
+  [ 31] getprop 1207 ............................ <pConnectionId>
+  [ 34] pusharglist 1 ........................... <pConnectionId>
+  [ 36] extcall 529 ............................. <multiuserExists(pConnectionId)>
+  [ 39] not ..................................... <not multiuserExists(pConnectionId)>
+  [ 40] or ...................................... <(count(pQueue) = 1) or not multiuserExists(pConnectionId)>
+  [ 41] jmpifz [ 51] ............................ if (count(pQueue) = 1) or not multiuserExists(pConnectionId) then
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglistnoret 1 ...................... <me>
+  [ 48] objcall 1199 ............................ me.next()
+  [ 51] ret
+end
+
+on checkConnection me
+  [  0] getprop 1207 ............................ <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 529 ............................. <multiuserExists(pConnectionId)>
+  [  8] not ..................................... <not multiuserExists(pConnectionId)>
+  [  9] jmpifz [ 34] ............................ if not multiuserExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 3 .............................. <"MUS connection not found:">
+  [ 16] getprop 1207 ............................ <pConnectionId>
+  [ 19] joinpadstr .............................. <"MUS connection not found:" && pConnectionId>
+  [ 20] pushsymb 1198 ........................... <#checkConnection>
+  [ 23] pushsymb 764 ............................ <#minor>
+  [ 26] pusharglist 4 ........................... <me, "MUS connection not found:" && pConnectionId, #checkConnection, #minor>
+  [ 28] extcall 122 ............................. <error(me, "MUS connection not found:" && pConnectionId, #checkConnection, #minor)>
+  [ 30] pusharglistnoret 1 ...................... <error(me, "MUS connection not found:" && pConnectionId, #checkConnection, #minor)>
+  [ 32] extcall 11 .............................. return error(me, "MUS connection not found:" && pConnectionId, #checkConnection, #minor)
+  [ 34] getprop 1207 ............................ <pConnectionId>
+  [ 37] pusharglist 1 ........................... <pConnectionId>
+  [ 39] extcall 528 ............................. <getMultiuser(pConnectionId)>
+  [ 42] pusharglist 1 ........................... <getMultiuser(pConnectionId)>
+  [ 44] objcall 1221 ............................ <getMultiuser(pConnectionId).connectionReady()>
+  [ 47] getprop 1213 ............................ <pHandshakeFinished>
+  [ 50] and ..................................... <getMultiuser(pConnectionId).connectionReady() and pHandshakeFinished>
+  [ 51] jmpifz [141] ............................ if getMultiuser(pConnectionId).connectionReady() and pHandshakeFinished then / else
+  [ 54] pushsymb 142 ............................ <#session>
+  [ 56] pusharglist 1 ........................... <#session>
+  [ 58] extcall 141 ............................. <getObject(#session)>
+  [ 60] pushsymb 1222 ........................... <#user_user_id>
+  [ 63] pusharglist 2 ........................... <getObject(#session), #user_user_id>
+  [ 65] objcall 173 ............................. <getObject(#session).GET(#user_user_id)>
+  [ 67] setlocal 0 .............................. tUserID = getObject(#session).GET(#user_user_id)
+  [ 69] pusharglist 0 ........................... <>
+  [ 71] extcall 146 ............................. <getSpecialServices()>
+  [ 73] pusharglist 1 ........................... <getSpecialServices()>
+  [ 75] objcall 498 ............................. <getSpecialServices().getMachineID()>
+  [ 78] setlocal 1 .............................. tMachineID = getSpecialServices().getMachineID()
+  [ 80] getprop 1212 ............................ <pUseCrypto>
+  [ 83] jmpifz [110] ............................ if pUseCrypto then
+  [ 86] getprop 1211 ............................ <pCrypto>
+  [ 89] getlocal 0 .............................. <tUserID>
+  [ 91] pusharglist 2 ........................... <pCrypto, tUserID>
+  [ 93] objcall 1866 ............................ <pCrypto.encipher(tUserID)>
+  [ 96] setlocal 0 .............................. tUserID = pCrypto.encipher(tUserID)
+  [ 98] getprop 1211 ............................ <pCrypto>
+  [101] getlocal 1 .............................. <tMachineID>
+  [103] pusharglist 2 ........................... <pCrypto, tMachineID>
+  [105] objcall 1866 ............................ <pCrypto.encipher(tMachineID)>
+  [108] setlocal 1 .............................. tMachineID = pCrypto.encipher(tMachineID)
+  [110] getprop 1207 ............................ <pConnectionId>
+  [113] pusharglist 1 ........................... <pConnectionId>
+  [115] extcall 528 ............................. <getMultiuser(pConnectionId)>
+  [118] pushcons 4 .............................. <"LOGIN">
+  [120] getlocal 0 .............................. <tUserID>
+  [122] joinpadstr .............................. <"LOGIN" && tUserID>
+  [123] getlocal 1 .............................. <tMachineID>
+  [125] joinpadstr .............................. <"LOGIN" && tUserID && tMachineID>
+  [126] pusharglistnoret 2 ...................... <getMultiuser(pConnectionId), "LOGIN" && tUserID && tMachineID>
+  [128] objcall 1223 ............................ getMultiuser(pConnectionId).send("LOGIN" && tUserID && tMachineID)
+  [131] getparam 0 .............................. <me>
+  [133] pusharglistnoret 1 ...................... <me>
+  [135] objcall 1199 ............................ me.next()
+  [138] jmp [154]
+  [141] getparam 0 .............................. <me>
+  [143] pushint16 1000 .......................... <1000>
+  [146] pushsymb 1198 ........................... <#checkConnection>
+  [149] pusharglistnoret 3 ...................... <me, 1000, #checkConnection>
+  [151] objcall 646 ............................. me.delay(1000, #checkConnection)
+  [154] ret
+end
+
+on next me
+  [  0] getprop 1207 ............................ <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 529 ............................. <multiuserExists(pConnectionId)>
+  [  8] not ..................................... <not multiuserExists(pConnectionId)>
+  [  9] jmpifz [ 72] ............................ if not multiuserExists(pConnectionId) then / else
+  [ 12] getprop 1207 ............................ <pConnectionId>
+  [ 15] pushcons 5 .............................. <"connection.mus.host">
+  [ 17] pusharglist 1 ........................... <"connection.mus.host">
+  [ 19] extcall 461 ............................. <getVariable("connection.mus.host")>
+  [ 22] pushcons 6 .............................. <"connection.mus.port">
+  [ 24] pusharglist 1 ........................... <"connection.mus.port">
+  [ 26] extcall 462 ............................. <getIntVariable("connection.mus.port")>
+  [ 29] pusharglistnoret 3 ...................... <pConnectionId, getVariable("connection.mus.host"), getIntVariable("connection.mus.port")>
+  [ 31] extcall 526 ............................. createMultiuser(pConnectionId, getVariable("connection.mus.host"), getIntVariable("connection.mus.port"))
+  [ 34] getprop 1207 ............................ <pConnectionId>
+  [ 37] pusharglist 1 ........................... <pConnectionId>
+  [ 39] extcall 528 ............................. <getMultiuser(pConnectionId)>
+  [ 42] getparam 0 .............................. <me>
+  [ 44] pusharglist 1 ........................... <me>
+  [ 46] objcall 92 .............................. <me.getID()>
+  [ 48] pushsymb 1202 ........................... <#binaryDataReceived>
+  [ 51] pusharglistnoret 3 ...................... <getMultiuser(pConnectionId), me.getID(), #binaryDataReceived>
+  [ 53] objcall 1226 ............................ getMultiuser(pConnectionId).registerBinaryDataHandler(me.getID(), #binaryDataReceived)
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pushint16 1000 .......................... <1000>
+  [ 61] pushsymb 1198 ........................... <#checkConnection>
+  [ 64] pusharglistnoret 3 ...................... <me, 1000, #checkConnection>
+  [ 66] objcall 646 ............................. me.delay(1000, #checkConnection)
+  [ 69] jmp [298]
+  [ 72] getprop 1207 ............................ <pConnectionId>
+  [ 75] pusharglist 1 ........................... <pConnectionId>
+  [ 77] extcall 528 ............................. <getMultiuser(pConnectionId)>
+  [ 80] pusharglist 1 ........................... <getMultiuser(pConnectionId)>
+  [ 82] objcall 1221 ............................ <getMultiuser(pConnectionId).connectionReady()>
+  [ 85] jmpifz [298] ............................ if getMultiuser(pConnectionId).connectionReady() then
+  [ 88] getprop 1209 ............................ <pTimeOutID>
+  [ 91] pusharglist 1 ........................... <pTimeOutID>
+  [ 93] extcall 339 ............................. <timeoutExists(pTimeOutID)>
+  [ 96] jmpifz [107] ............................ if timeoutExists(pTimeOutID) then
+  [ 99] getprop 1209 ............................ <pTimeOutID>
+  [102] pusharglistnoret 1 ...................... <pTimeOutID>
+  [104] extcall 337 ............................. removeTimeout(pTimeOutID)
+  [107] getprop 1210 ............................ <pQueue>
+  [110] pusharglist 1 ........................... <pQueue>
+  [112] extcall 28 .............................. <count(pQueue)>
+  [114] pushzero ................................ <0>
+  [115] gt ...................................... <count(pQueue) > 0>
+  [116] jmpifz [272] ............................ if count(pQueue) > 0 then / else
+  [119] getprop 1210 ............................ <pQueue>
+  [122] pushint8 1 .............................. <1>
+  [124] pusharglist 2 ........................... <pQueue, 1>
+  [126] objcall 29 .............................. <pQueue[1]>
+  [128] setlocal 0 .............................. tTask = pQueue[1]
+  [130] getlocal 0 .............................. <tTask>
+  [132] getobjprop 552 .......................... <tTask.type>
+  [135] peek 0 .................................. case tTask.type of
+  [137] pushsymb 1218 ........................... <#store>
+  [140] eq
+  [141] jmpifz [171] ............................ (case) #store:
+  [144] pop 1
+  [146] getprop 1207 ............................ <pConnectionId>
+  [149] pusharglist 1 ........................... <pConnectionId>
+  [151] extcall 528 ............................. <getMultiuser(pConnectionId)>
+  [154] getlocal 0 .............................. <tTask>
+  [156] getobjprop 1219 ......................... <tTask.data>
+  [159] pusharglist 2 ........................... <getMultiuser(pConnectionId), tTask.data>
+  [161] objcall 1227 ............................ <getMultiuser(pConnectionId).sendBinary(tTask.data)>
+  [164] pusharglistnoret 1 ...................... <getMultiuser(pConnectionId).sendBinary(tTask.data)>
+  [166] extcall 11 .............................. return getMultiuser(pConnectionId).sendBinary(tTask.data)
+  [168] jmp [267]
+  [171] peek 0
+  [173] pushsymb 1215 ........................... <#retrieve>
+  [176] eq
+  [177] jmpifz [215] ............................ (case) #retrieve:
+  [180] pop 1
+  [182] getprop 1207 ............................ <pConnectionId>
+  [185] pusharglist 1 ........................... <pConnectionId>
+  [187] extcall 528 ............................. <getMultiuser(pConnectionId)>
+  [190] pushcons 7 .............................. <"GETBINDATA">
+  [192] getlocal 0 .............................. <tTask>
+  [194] getobjprop 117 .......................... <tTask.id>
+  [196] joinpadstr .............................. <"GETBINDATA" && tTask.id>
+  [197] getlocal 0 .............................. <tTask>
+  [199] getobjprop 1216 ......................... <tTask.auth>
+  [202] joinpadstr .............................. <"GETBINDATA" && tTask.id && tTask.auth>
+  [203] pusharglist 2 ........................... <getMultiuser(pConnectionId), "GETBINDATA" && tTask.id && tTask.auth>
+  [205] objcall 1223 ............................ <getMultiuser(pConnectionId).send("GETBINDATA" && tTask.id && tTask.auth)>
+  [208] pusharglistnoret 1 ...................... <getMultiuser(pConnectionId).send("GETBINDATA" && tTask.id && tTask.auth)>
+  [210] extcall 11 .............................. return getMultiuser(pConnectionId).send("GETBINDATA" && tTask.id && tTask.auth)
+  [212] jmp [267]
+  [215] peek 0
+  [217] pushsymb 1220 ........................... <#fusemsg>
+  [220] eq
+  [221] jmpifz [267] ............................ (case) #fusemsg:
+  [224] getprop 1210 ............................ <pQueue>
+  [227] pushint8 1 .............................. <1>
+  [229] pusharglistnoret 2 ...................... <pQueue, 1>
+  [231] objcall 624 ............................. pQueue.deleteAt(1)
+  [234] getprop 1207 ............................ <pConnectionId>
+  [237] pusharglist 1 ........................... <pConnectionId>
+  [239] extcall 528 ............................. <getMultiuser(pConnectionId)>
+  [242] getlocal 0 .............................. <tTask>
+  [244] getobjprop 1039 ......................... <tTask.message>
+  [247] pusharglistnoret 2 ...................... <getMultiuser(pConnectionId), tTask.message>
+  [249] objcall 1223 ............................ getMultiuser(pConnectionId).send(tTask.message)
+  [252] getparam 0 .............................. <me>
+  [254] pusharglistnoret 1 ...................... <me>
+  [256] objcall 1199 ............................ me.next()
+  [259] pop 1
+  [261] pushint8 1 .............................. <1>
+  [263] pusharglistnoret 1 ...................... <1>
+  [265] extcall 11 .............................. return 1
+  [267] pop 1 ................................... end case
+  [269] jmp [298]
+  [272] getprop 1209 ............................ <pTimeOutID>
+  [275] pushint16 30000 ......................... <30000>
+  [278] pushsymb 1203 ........................... <#delayedClosing>
+  [281] getparam 0 .............................. <me>
+  [283] pusharglist 1 ........................... <me>
+  [285] objcall 92 .............................. <me.getID()>
+  [287] pusharglist 0 ........................... <>
+  [289] extcall 9 ............................... <VOID>
+  [291] pushint8 1 .............................. <1>
+  [293] pusharglistnoret 6 ...................... <pTimeOutID, 30000, #delayedClosing, me.getID(), VOID, 1>
+  [295] extcall 336 ............................. createTimeout(pTimeOutID, 30000, #delayedClosing, me.getID(), VOID, 1)
+  [298] ret
+end
+
+on binaryDataStored me, tMsg
+  [  0] getprop 1210 ............................ <pQueue>
+  [  3] pushint8 1 .............................. <1>
+  [  5] pusharglist 2 ........................... <pQueue, 1>
+  [  7] objcall 29 .............................. <pQueue[1]>
+  [  9] setlocal 0 .............................. tTask = pQueue[1]
+  [ 11] getlocal 0 .............................. <tTask>
+  [ 13] pushsymb 909 ............................ <#callback>
+  [ 16] pusharglist 2 ........................... <tTask, #callback>
+  [ 18] objcall 29 .............................. <tTask[#callback]>
+  [ 20] pusharglist 0 ........................... <>
+  [ 22] extcall 9 ............................... <VOID>
+  [ 24] nteq .................................... <tTask[#callback] <> VOID>
+  [ 25] jmpifz [ 73] ............................ if tTask[#callback] <> VOID then
+  [ 28] getlocal 0 .............................. <tTask>
+  [ 30] pushsymb 909 ............................ <#callback>
+  [ 33] pusharglist 2 ........................... <tTask, #callback>
+  [ 35] objcall 29 .............................. <tTask[#callback]>
+  [ 37] pusharglist 1 ........................... <tTask[#callback]>
+  [ 39] extcall 141 ............................. <getObject(tTask[#callback])>
+  [ 41] setlocal 1 .............................. tObject = getObject(tTask[#callback])
+  [ 43] getlocal 1 .............................. <tObject>
+  [ 45] getobjprop 586 .......................... <tObject.ilk>
+  [ 48] pushsymb 754 ............................ <#instance>
+  [ 51] eq ...................................... <tObject.ilk = #instance>
+  [ 52] jmpifz [ 73] ............................ if tObject.ilk = #instance then
+  [ 55] pushsymb 1200 ........................... <#binaryDataStored>
+  [ 58] getlocal 1 .............................. <tObject>
+  [ 60] getparam 1 .............................. <tMsg>
+  [ 62] pushsymb 583 ............................ <#content>
+  [ 65] pusharglist 2 ........................... <tMsg, #content>
+  [ 67] objcall 115 ............................. <tMsg.getaProp(#content)>
+  [ 69] pusharglistnoret 3 ...................... <#binaryDataStored, tObject, tMsg.getaProp(#content)>
+  [ 71] extcall 151 ............................. call(#binaryDataStored, tObject, tMsg.getaProp(#content))
+  [ 73] getprop 1210 ............................ <pQueue>
+  [ 76] pushint8 1 .............................. <1>
+  [ 78] pusharglistnoret 2 ...................... <pQueue, 1>
+  [ 80] objcall 624 ............................. pQueue.deleteAt(1)
+  [ 83] getparam 0 .............................. <me>
+  [ 85] pusharglistnoret 1 ...................... <me>
+  [ 87] objcall 1199 ............................ me.next()
+  [ 90] ret
+end
+
+on binaryDataAuthKeyError me
+  [  0] getprop 1210 ............................ <pQueue>
+  [  3] pushint8 1 .............................. <1>
+  [  5] pusharglistnoret 2 ...................... <pQueue, 1>
+  [  7] objcall 624 ............................. pQueue.deleteAt(1)
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 1199 ............................ me.next()
+  [ 17] ret
+end
+
+on binaryDataReceived me, tdata
+  [  0] getprop 1210 ............................ <pQueue>
+  [  3] pushint8 1 .............................. <1>
+  [  5] pusharglist 2 ........................... <pQueue, 1>
+  [  7] objcall 29 .............................. <pQueue[1]>
+  [  9] setlocal 0 .............................. tTask = pQueue[1]
+  [ 11] getprop 1210 ............................ <pQueue>
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 2 ...................... <pQueue, 1>
+  [ 18] objcall 624 ............................. pQueue.deleteAt(1)
+  [ 21] getlocal 0 .............................. <tTask>
+  [ 23] pushsymb 909 ............................ <#callback>
+  [ 26] pusharglist 2 ........................... <tTask, #callback>
+  [ 28] objcall 29 .............................. <tTask[#callback]>
+  [ 30] pusharglist 0 ........................... <>
+  [ 32] extcall 9 ............................... <VOID>
+  [ 34] nteq .................................... <tTask[#callback] <> VOID>
+  [ 35] jmpifz [ 84] ............................ if tTask[#callback] <> VOID then
+  [ 38] getlocal 0 .............................. <tTask>
+  [ 40] pushsymb 909 ............................ <#callback>
+  [ 43] pusharglist 2 ........................... <tTask, #callback>
+  [ 45] objcall 29 .............................. <tTask[#callback]>
+  [ 47] pusharglist 1 ........................... <tTask[#callback]>
+  [ 49] extcall 141 ............................. <getObject(tTask[#callback])>
+  [ 51] setlocal 1 .............................. tObject = getObject(tTask[#callback])
+  [ 53] getlocal 1 .............................. <tObject>
+  [ 55] getobjprop 586 .......................... <tObject.ilk>
+  [ 58] pushsymb 754 ............................ <#instance>
+  [ 61] eq ...................................... <tObject.ilk = #instance>
+  [ 62] jmpifz [ 84] ............................ if tObject.ilk = #instance then
+  [ 65] pushsymb 1202 ........................... <#binaryDataReceived>
+  [ 68] getlocal 1 .............................. <tObject>
+  [ 70] getparam 1 .............................. <tdata>
+  [ 72] getlocal 0 .............................. <tTask>
+  [ 74] pushsymb 117 ............................ <#id>
+  [ 76] pusharglist 2 ........................... <tTask, #id>
+  [ 78] objcall 29 .............................. <tTask[#id]>
+  [ 80] pusharglistnoret 4 ...................... <#binaryDataReceived, tObject, tdata, tTask[#id]>
+  [ 82] extcall 151 ............................. call(#binaryDataReceived, tObject, tdata, tTask[#id])
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglistnoret 1 ...................... <me>
+  [ 88] objcall 1199 ............................ me.next()
+  [ 91] ret
+end
+
+on delayedClosing me
+  [  0] getprop 1207 ............................ <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 529 ............................. <multiuserExists(pConnectionId)>
+  [  8] getprop 1210 ............................ <pQueue>
+  [ 11] pusharglist 1 ........................... <pQueue>
+  [ 13] extcall 28 .............................. <count(pQueue)>
+  [ 15] pushzero ................................ <0>
+  [ 16] eq ...................................... <count(pQueue) = 0>
+  [ 17] and ..................................... <multiuserExists(pConnectionId) and (count(pQueue) = 0)>
+  [ 18] jmpifz [ 29] ............................ if multiuserExists(pConnectionId) and (count(pQueue) = 0) then
+  [ 21] getprop 1207 ............................ <pConnectionId>
+  [ 24] pusharglistnoret 1 ...................... <pConnectionId>
+  [ 26] extcall 527 ............................. removeMultiuser(pConnectionId)
+  [ 29] ret
+end
+
+on registerCmds me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tList = [:]
+  [  5] getlocal 0 .............................. <tList>
+  [  7] pushcons 8 .............................. <"BINDATA_SAVED">
+  [  9] pushsymb 1200 ........................... <#binaryDataStored>
+  [ 12] pusharglistnoret 3 ...................... <tList, "BINDATA_SAVED", #binaryDataStored>
+  [ 14] objcall 23 .............................. tList["BINDATA_SAVED"] = #binaryDataStored
+  [ 16] getlocal 0 .............................. <tList>
+  [ 18] pushcons 9 .............................. <"BINDATA_AUTHKEYERROR">
+  [ 20] pushsymb 1201 ........................... <#binaryDataAuthKeyError>
+  [ 23] pusharglistnoret 3 ...................... <tList, "BINDATA_AUTHKEYERROR", #binaryDataAuthKeyError>
+  [ 25] objcall 23 .............................. tList["BINDATA_AUTHKEYERROR"] = #binaryDataAuthKeyError
+  [ 27] getlocal 0 .............................. <tList>
+  [ 29] pushcons 10 ............................. <"DISCONNECT">
+  [ 31] pushsymb 200 ............................ <#deconstruct>
+  [ 33] pusharglistnoret 3 ...................... <tList, "DISCONNECT", #deconstruct>
+  [ 35] objcall 23 .............................. tList["DISCONNECT"] = #deconstruct
+  [ 37] getlocal 0 .............................. <tList>
+  [ 39] pushcons 11 ............................. <"HELLO">
+  [ 41] pushsymb 1206 ........................... <#helloReply>
+  [ 44] pusharglistnoret 3 ...................... <tList, "HELLO", #helloReply>
+  [ 46] objcall 23 .............................. tList["HELLO"] = #helloReply
+  [ 48] getlocal 0 .............................. <tList>
+  [ 50] pushcons 12 ............................. <"U_RTS">
+  [ 52] pushsymb 1205 ........................... <#foo>
+  [ 55] pusharglistnoret 3 ...................... <tList, "U_RTS", #foo>
+  [ 57] objcall 23 .............................. tList["U_RTS"] = #foo
+  [ 59] getparam 1 .............................. <tBool>
+  [ 61] jmpifz [ 92] ............................ if tBool then / else
+  [ 64] pusharglist 0 ........................... <>
+  [ 66] extcall 525 ............................. <getMultiuserManager()>
+  [ 69] getprop 1207 ............................ <pConnectionId>
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglist 1 ........................... <me>
+  [ 76] objcall 92 .............................. <me.getID()>
+  [ 78] getlocal 0 .............................. <tList>
+  [ 80] pusharglist 4 ........................... <getMultiuserManager(), pConnectionId, me.getID(), tList>
+  [ 82] objcall 312 ............................. <getMultiuserManager().registerListener(pConnectionId, me.getID(), tList)>
+  [ 85] pusharglistnoret 1 ...................... <getMultiuserManager().registerListener(pConnectionId, me.getID(), tList)>
+  [ 87] extcall 11 .............................. return getMultiuserManager().registerListener(pConnectionId, me.getID(), tList)
+  [ 89] jmp [117]
+  [ 92] pusharglist 0 ........................... <>
+  [ 94] extcall 525 ............................. <getMultiuserManager()>
+  [ 97] getprop 1207 ............................ <pConnectionId>
+  [100] getparam 0 .............................. <me>
+  [102] pusharglist 1 ........................... <me>
+  [104] objcall 92 .............................. <me.getID()>
+  [106] getlocal 0 .............................. <tList>
+  [108] pusharglist 4 ........................... <getMultiuserManager(), pConnectionId, me.getID(), tList>
+  [110] objcall 313 ............................. <getMultiuserManager().unregisterListener(pConnectionId, me.getID(), tList)>
+  [113] pusharglistnoret 1 ...................... <getMultiuserManager().unregisterListener(pConnectionId, me.getID(), tList)>
+  [115] extcall 11 .............................. return getMultiuserManager().unregisterListener(pConnectionId, me.getID(), tList)
+  [117] ret
+end
+
+on foo me
+  [  0] ret
+end
+
+on helloReply me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 583 ............................ <#content>
+  [  5] pusharglist 2 ........................... <tMsg, #content>
+  [  7] objcall 29 .............................. <tMsg[#content]>
+  [  9] setlocal 0 .............................. tSecretKey = tMsg[#content]
+  [ 11] getlocal 0 .............................. <tSecretKey>
+  [ 13] pusharglist 1 ........................... <tSecretKey>
+  [ 15] extcall 1132 ............................ <integer(tSecretKey)>
+  [ 18] setlocal 0 .............................. tSecretKey = integer(tSecretKey)
+  [ 20] getlocal 0 .............................. <tSecretKey>
+  [ 22] pusharglist 1 ........................... <tSecretKey>
+  [ 24] extcall 14 .............................. <voidp(tSecretKey)>
+  [ 26] getlocal 0 .............................. <tSecretKey>
+  [ 28] pushcons 13 ............................. <EMPTY>
+  [ 30] eq ...................................... <tSecretKey = EMPTY>
+  [ 31] or ...................................... <voidp(tSecretKey) or (tSecretKey = EMPTY)>
+  [ 32] getlocal 0 .............................. <tSecretKey>
+  [ 34] pushzero ................................ <0>
+  [ 35] eq ...................................... <tSecretKey = 0>
+  [ 36] or ...................................... <voidp(tSecretKey) or (tSecretKey = EMPTY) or (tSecretKey = 0)>
+  [ 37] jmpifz [ 47] ............................ if voidp(tSecretKey) or (tSecretKey = EMPTY) or (tSecretKey = 0) then / else
+  [ 40] pushzero ................................ <0>
+  [ 41] setprop 1212 ............................ pUseCrypto = 0
+  [ 44] jmp [ 65]
+  [ 47] getprop 1211 ............................ <pCrypto>
+  [ 50] getlocal 0 .............................. <tSecretKey>
+  [ 52] pushsymb 1878 ........................... <#initPremix>
+  [ 55] pusharglistnoret 3 ...................... <pCrypto, tSecretKey, #initPremix>
+  [ 57] objcall 1865 ............................ pCrypto.setKey(tSecretKey, #initPremix)
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] setprop 1212 ............................ pUseCrypto = 1
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] setprop 1213 ............................ pHandshakeFinished = 1
+  [ 70] ret
+end

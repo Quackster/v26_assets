@@ -1,0 +1,2919 @@
+property pStrLastFlatSearch, pFlatPasswords, pFlatInfoAction, pModifyFlatInfo, pDoorStatusModified
+
+on construct me
+  [  0] pushcons 0 .............................. <EMPTY>
+  [  2] setprop 493 ............................. pStrLastFlatSearch = EMPTY
+  [  5] pushzero ................................ <0>
+  [  6] setprop 494 ............................. pFlatInfoAction = 0
+  [  9] pushzero ................................ <0>
+  [ 10] setprop 495 ............................. pDoorStatusModified = 0
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] pusharglistnoret 1 ...................... <1>
+  [ 17] extcall 93 .............................. return 1
+  [ 19] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 93 .............................. return 1
+  [  6] ret
+end
+
+on showSpaceNodeUsers me, tNodeId, tUserList
+  [  0] pushcons 0 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. tUsersStr = EMPTY
+  [  4] pushint8 1 .............................. <1>
+  [  6] setlocal 1
+  [  8] getlocal 1
+  [ 10] getparam 2 .............................. <tUserList>
+  [ 12] getobjprop 106 .......................... <tUserList.count>
+  [ 14] lteq
+  [ 15] jmpifz [ 57] ............................ repeat with i = 1 to tUserList.count
+  [ 18] getlocal 0 .............................. <tUsersStr>
+  [ 20] getparam 2 .............................. <tUserList>
+  [ 22] getlocal 1 .............................. <i>
+  [ 24] pusharglist 2 ........................... <tUserList, i>
+  [ 26] objcall 105 ............................. <tUserList[i]>
+  [ 28] joinstr ................................. <tUsersStr & tUserList[i]>
+  [ 29] setlocal 0 .............................. tUsersStr = tUsersStr & tUserList[i]
+  [ 31] getlocal 1 .............................. <i>
+  [ 33] getparam 2 .............................. <tUserList>
+  [ 35] getobjprop 106 .......................... <tUserList.count>
+  [ 37] lt ...................................... <i < tUserList.count>
+  [ 38] jmpifz [ 48] ............................ if i < tUserList.count then
+  [ 41] getlocal 0 .............................. <tUsersStr>
+  [ 43] pushcons 1 .............................. <", ">
+  [ 45] joinstr ................................. <tUsersStr & ", ">
+  [ 46] setlocal 0 .............................. tUsersStr = tUsersStr & ", "
+  [ 48] pushint8 1
+  [ 50] getlocal 1
+  [ 52] add
+  [ 53] setlocal 1
+  [ 55] endrepeat [  8]
+  [ 57] pushcons 2 .............................. <"nav_people">
+  [ 59] pusharglist 1 ........................... <"nav_people">
+  [ 61] extcall 172 ............................. <getText("nav_people")>
+  [ 63] setlocal 2 .............................. pWinId = getText("nav_people")
+  [ 65] getlocal 2 .............................. <pWinId>
+  [ 67] pushcons 3 .............................. <"habbo_basic.window">
+  [ 69] pusharglist 2 ........................... <pWinId, "habbo_basic.window">
+  [ 71] extcall 284 ............................. <createWindow(pWinId, "habbo_basic.window")>
+  [ 74] not ..................................... <not createWindow(pWinId, "habbo_basic.window")>
+  [ 75] jmpifz [ 83] ............................ if not createWindow(pWinId, "habbo_basic.window") then
+  [ 78] pushzero ................................ <0>
+  [ 79] pusharglistnoret 1 ...................... <0>
+  [ 81] extcall 93 .............................. return 0
+  [ 83] getlocal 2 .............................. <pWinId>
+  [ 85] pusharglist 1 ........................... <pWinId>
+  [ 87] extcall 275 ............................. <getWindow(pWinId)>
+  [ 90] setlocal 3 .............................. tWndObj = getWindow(pWinId)
+  [ 92] getlocal 3 .............................. <tWndObj>
+  [ 94] pushcons 4 .............................. <"habbo_alert_b.window">
+  [ 96] pusharglist 2 ........................... <tWndObj, "habbo_alert_b.window">
+  [ 98] objcall 286 ............................. <tWndObj.merge("habbo_alert_b.window")>
+  [101] not ..................................... <not tWndObj.merge("habbo_alert_b.window")>
+  [102] jmpifz [116] ............................ if not tWndObj.merge("habbo_alert_b.window") then
+  [105] getlocal 3 .............................. <tWndObj>
+  [107] pusharglist 1 ........................... <tWndObj>
+  [109] objcall 287 ............................. <tWndObj.close()>
+  [112] pusharglistnoret 1 ...................... <tWndObj.close()>
+  [114] extcall 93 .............................. return tWndObj.close()
+  [116] getparam 0 .............................. <me>
+  [118] getchainedprop 370 ...................... <me.pWriterPlainNormWrap>
+  [121] getlocal 0 .............................. <tUsersStr>
+  [123] pusharglist 2 ........................... <me.pWriterPlainNormWrap, tUsersStr>
+  [125] objcall 314 ............................. <me.pWriterPlainNormWrap.render(tUsersStr)>
+  [128] setlocal 4 .............................. tTextImg = me.pWriterPlainNormWrap.render(tUsersStr)
+  [130] getlocal 3 .............................. <tWndObj>
+  [132] pushcons 5 .............................. <"alert_text">
+  [134] pusharglist 2 ........................... <tWndObj, "alert_text">
+  [136] objcall 281 ............................. <tWndObj.getElement("alert_text")>
+  [139] getlocal 4 .............................. <tTextImg>
+  [141] pusharglistnoret 2 ...................... <tWndObj.getElement("alert_text"), tTextImg>
+  [143] objcall 308 ............................. tWndObj.getElement("alert_text").feedImage(tTextImg)
+  [146] getlocal 3 .............................. <tWndObj>
+  [148] getlocal 4 .............................. <tTextImg>
+  [150] getobjprop 339 .......................... <tTextImg.width>
+  [153] pushint8 50 ............................. <50>
+  [155] add ..................................... <tTextImg.width + 50>
+  [156] getlocal 4 .............................. <tTextImg>
+  [158] getobjprop 315 .......................... <tTextImg.height>
+  [161] pushint8 100 ............................ <100>
+  [163] add ..................................... <tTextImg.height + 100>
+  [164] pusharglistnoret 3 ...................... <tWndObj, tTextImg.width + 50, tTextImg.height + 100>
+  [166] objcall 496 ............................. tWndObj.resizeTo(tTextImg.width + 50, tTextImg.height + 100)
+  [169] getlocal 3 .............................. <tWndObj>
+  [171] pushsymb 479 ............................ <#hideSpaceNodeUsers>
+  [174] getparam 0 .............................. <me>
+  [176] pusharglist 1 ........................... <me>
+  [178] objcall 86 .............................. <me.getID()>
+  [180] pushsymb 296 ............................ <#mouseUp>
+  [183] pusharglistnoret 4 ...................... <tWndObj, #hideSpaceNodeUsers, me.getID(), #mouseUp>
+  [185] objcall 295 ............................. tWndObj.registerProcedure(#hideSpaceNodeUsers, me.getID(), #mouseUp)
+  [188] pushint8 1 .............................. <1>
+  [190] pusharglistnoret 1 ...................... <1>
+  [192] extcall 93 .............................. return 1
+  [194] ret
+end
+
+on hideSpaceNodeUsers me
+  [  0] pushcons 2 .............................. <"nav_people">
+  [  2] pusharglist 1 ........................... <"nav_people">
+  [  4] extcall 172 ............................. <getText("nav_people")>
+  [  6] pusharglist 1 ........................... <getText("nav_people")>
+  [  8] extcall 270 ............................. <removeWindow(getText("nav_people"))>
+  [ 11] pusharglistnoret 1 ...................... <removeWindow(getText("nav_people"))>
+  [ 13] extcall 93 .............................. return removeWindow(getText("nav_people"))
+  [ 15] ret
+end
+
+on getPasswordFromField me, tElementId
+  [  0] getprop 466 ............................. <pFlatPasswords>
+  [  3] getparam 1 .............................. <tElementId>
+  [  5] pusharglist 2 ........................... <pFlatPasswords, tElementId>
+  [  7] objcall 105 ............................. <pFlatPasswords[tElementId]>
+  [  9] setlocal 0 .............................. tPwd = pFlatPasswords[tElementId]
+  [ 11] getlocal 0 .............................. <tPwd>
+  [ 13] pusharglistnoret 1 ...................... <tPwd>
+  [ 15] extcall 93 .............................. return tPwd
+  [ 17] ret
+end
+
+on flatPasswordIncorrect me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 6 .............................. <"nav_gr_passwordincorrect">
+  [  4] pusharglistnoret 2 ...................... <me, "nav_gr_passwordincorrect">
+  [  6] objcall 240 ............................. me.ChangeWindowView("nav_gr_passwordincorrect")
+  [  8] ret
+end
+
+on checkFlatAccess me, tFlatData
+  [  0] getparam 1 .............................. <tFlatData>
+  [  2] pushsymb 229 ............................ <#owner>
+  [  4] pusharglist 2 ........................... <tFlatData, #owner>
+  [  6] objcall 105 ............................. <tFlatData[#owner]>
+  [  8] pushsymb 82 ............................. <#session>
+  [ 10] pusharglist 1 ........................... <#session>
+  [ 12] extcall 81 .............................. <getObject(#session)>
+  [ 14] pushcons 7 .............................. <"user_name">
+  [ 16] pusharglist 2 ........................... <getObject(#session), "user_name">
+  [ 18] objcall 153 ............................. <getObject(#session).GET("user_name")>
+  [ 20] eq ...................................... <tFlatData[#owner] = getObject(#session).GET("user_name")>
+  [ 21] jmpifz [ 31] ............................ if tFlatData[#owner] = getObject(#session).GET("user_name") then / else
+  [ 24] pushcons 8 .............................. <"open">
+  [ 26] setlocal 0 .............................. tDoor = "open"
+  [ 28] jmp [ 47]
+  [ 31] getparam 1 .............................. <tFlatData>
+  [ 33] pushsymb 184 ............................ <#door>
+  [ 35] pusharglist 2 ........................... <tFlatData, #door>
+  [ 37] objcall 105 ............................. <tFlatData[#door]>
+  [ 39] setlocal 0 .............................. tDoor = tFlatData[#door]
+  [ 41] pusharglist 0 ........................... <[:]>
+  [ 43] pushproplist ............................ <[:]>
+  [ 44] setprop 466 ............................. pFlatPasswords = [:]
+  [ 47] getlocal 0 .............................. <tDoor>
+  [ 49] peek 0 .................................. case tDoor of
+  [ 51] pushcons 9 .............................. <"password">
+  [ 53] eq
+  [ 54] jmpifz [114] ............................ (case) "password":
+  [ 57] getparam 0 .............................. <me>
+  [ 59] pushcons 10 ............................. <"nav_gr_password">
+  [ 61] pusharglistnoret 2 ...................... <me, "nav_gr_password">
+  [ 63] objcall 240 ............................. me.ChangeWindowView("nav_gr_password")
+  [ 65] getparam 0 .............................. <me>
+  [ 67] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 69] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 71] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 74] pushcons 11 ............................. <"nav_roomname_text">
+  [ 76] pusharglist 2 ........................... <getWindow(me.pWindowTitle), "nav_roomname_text">
+  [ 78] objcall 281 ............................. <getWindow(me.pWindowTitle).getElement("nav_roomname_text")>
+  [ 81] getparam 1 .............................. <tFlatData>
+  [ 83] pushsymb 171 ............................ <#name>
+  [ 85] pusharglist 2 ........................... <tFlatData, #name>
+  [ 87] objcall 105 ............................. <tFlatData[#name]>
+  [ 89] pusharglistnoret 2 ...................... <getWindow(me.pWindowTitle).getElement("nav_roomname_text"), tFlatData[#name]>
+  [ 91] objcall 289 ............................. getWindow(me.pWindowTitle).getElement("nav_roomname_text").setText(tFlatData[#name])
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pushsymb 501 ............................ <#passwordNodeId>
+  [ 99] getparam 1 .............................. <tFlatData>
+  [101] pushsymb 147 ............................ <#id>
+  [103] pusharglist 2 ........................... <tFlatData, #id>
+  [105] objcall 105 ............................. <tFlatData[#id]>
+  [107] pusharglistnoret 3 ...................... <me, #passwordNodeId, tFlatData[#id]>
+  [109] objcall 146 ............................. me.setProperty(#passwordNodeId, tFlatData[#id])
+  [111] jmp [166] ............................... (case) otherwise:
+  [114] getparam 1 .............................. <tFlatData>
+  [116] pusharglist 1 ........................... <tFlatData>
+  [118] extcall 102 ............................. <voidp(tFlatData)>
+  [120] jmpifz [142] ............................ if voidp(tFlatData) then
+  [123] pop 1
+  [125] getparam 0 .............................. <me>
+  [127] pushcons 12 ............................. <"Can't enter flat, no room is selected!!!">
+  [129] pushsymb 502 ............................ <#processFlatInfo>
+  [132] pushsymb 138 ............................ <#major>
+  [134] pusharglist 4 ........................... <me, "Can't enter flat, no room is selected!!!", #processFlatInfo, #major>
+  [136] extcall 137 ............................. <error(me, "Can't enter flat, no room is selected!!!", #processFlatInfo, #major)>
+  [138] pusharglistnoret 1 ...................... <error(me, "Can't enter flat, no room is selected!!!", #processFlatInfo, #major)>
+  [140] extcall 93 .............................. return error(me, "Can't enter flat, no room is selected!!!", #processFlatInfo, #major)
+  [142] pop 1
+  [144] getparam 0 .............................. <me>
+  [146] pusharglist 1 ........................... <me>
+  [148] objcall 136 ............................. <me.getComponent()>
+  [150] getparam 1 .............................. <tFlatData>
+  [152] pushsymb 147 ............................ <#id>
+  [154] pusharglist 2 ........................... <tFlatData, #id>
+  [156] objcall 105 ............................. <tFlatData[#id]>
+  [158] pusharglist 2 ........................... <me.getComponent(), tFlatData[#id]>
+  [160] objcall 20 .............................. <me.getComponent().executeRoomEntry(tFlatData[#id])>
+  [162] pusharglistnoret 1 ...................... <me.getComponent().executeRoomEntry(tFlatData[#id])>
+  [164] extcall 93 .............................. return me.getComponent().executeRoomEntry(tFlatData[#id])
+  [166] pop 1 ................................... end case
+  [168] pushint8 1 .............................. <1>
+  [170] pusharglistnoret 1 ...................... <1>
+  [172] extcall 93 .............................. return 1
+  [174] ret
+end
+
+on handleRecommendedRoomListClicked me, tParm
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 136 ............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 9 ............................... <me.getComponent().getRecomNodeInfo()>
+  [ 10] setlocal 0 .............................. tNodeInfo = me.getComponent().getRecomNodeInfo()
+  [ 12] getlocal 0 .............................. <tNodeInfo>
+  [ 14] pushsymb 104 ............................ <#children>
+  [ 16] pusharglist 2 ........................... <tNodeInfo, #children>
+  [ 18] objcall 117 ............................. <tNodeInfo.getaProp(#children)>
+  [ 20] setlocal 1 .............................. tRoomList = tNodeInfo.getaProp(#children)
+  [ 22] getlocal 1 .............................. <tRoomList>
+  [ 24] pusharglist 1 ........................... <tRoomList>
+  [ 26] extcall 102 ............................. <voidp(tRoomList)>
+  [ 28] jmpifz [ 36] ............................ if voidp(tRoomList) then
+  [ 31] pushzero ................................ <0>
+  [ 32] pusharglistnoret 1 ...................... <0>
+  [ 34] extcall 93 .............................. return 0
+  [ 36] getparam 1 .............................. <tParm>
+  [ 38] getobjprop 329 .......................... <tParm.locV>
+  [ 41] getparam 0 .............................. <me>
+  [ 43] getobjprop 259 .......................... <me.pListItemHeight>
+  [ 46] div ..................................... <tParm.locV / me.pListItemHeight>
+  [ 47] pusharglist 1 ........................... <tParm.locV / me.pListItemHeight>
+  [ 49] extcall 201 ............................. <integer(tParm.locV / me.pListItemHeight)>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] add ..................................... <integer(tParm.locV / me.pListItemHeight) + 1>
+  [ 54] setlocal 2 .............................. tClickedLine = integer(tParm.locV / me.pListItemHeight) + 1
+  [ 56] getlocal 2 .............................. <tClickedLine>
+  [ 58] getlocal 1 .............................. <tRoomList>
+  [ 60] getobjprop 106 .......................... <tRoomList.count>
+  [ 62] gt ...................................... <tClickedLine > tRoomList.count>
+  [ 63] jmpifz [ 71] ............................ if tClickedLine > tRoomList.count then
+  [ 66] pushzero ................................ <0>
+  [ 67] pusharglistnoret 1 ...................... <0>
+  [ 69] extcall 93 .............................. return 0
+  [ 71] getlocal 1 .............................. <tRoomList>
+  [ 73] getlocal 2 .............................. <tClickedLine>
+  [ 75] pusharglist 2 ........................... <tRoomList, tClickedLine>
+  [ 77] objcall 105 ............................. <tRoomList[tClickedLine]>
+  [ 79] setlocal 0 .............................. tNodeInfo = tRoomList[tClickedLine]
+  [ 81] getparam 0 .............................. <me>
+  [ 83] pushsymb 288 ............................ <#viewedNodeId>
+  [ 86] getlocal 0 .............................. <tNodeInfo>
+  [ 88] pushsymb 147 ............................ <#id>
+  [ 90] pusharglist 2 ........................... <tNodeInfo, #id>
+  [ 92] objcall 105 ............................. <tNodeInfo[#id]>
+  [ 94] pusharglistnoret 3 ...................... <me, #viewedNodeId, tNodeInfo[#id]>
+  [ 96] objcall 146 ............................. me.setProperty(#viewedNodeId, tNodeInfo[#id])
+  [ 98] pushint16 255 ........................... <255>
+  [101] setlocal 3 .............................. tGoLinkH = 255
+  [103] getparam 0 .............................. <me>
+  [105] pushint8 1 .............................. <1>
+  [107] pusharglistnoret 2 ...................... <me, 1>
+  [109] objcall 250 ............................. me.setLoadingCursor(1)
+  [111] getparam 1 .............................. <tParm>
+  [113] getobjprop 505 .......................... <tParm.locH>
+  [116] getlocal 3 .............................. <tGoLinkH>
+  [118] gt ...................................... <tParm.locH > tGoLinkH>
+  [119] jmpifz [149] ............................ if tParm.locH > tGoLinkH then / else
+  [122] getparam 0 .............................. <me>
+  [124] pusharglist 1 ........................... <me>
+  [126] objcall 136 ............................. <me.getComponent()>
+  [128] getlocal 0 .............................. <tNodeInfo>
+  [130] pushsymb 147 ............................ <#id>
+  [132] pusharglist 2 ........................... <tNodeInfo, #id>
+  [134] objcall 105 ............................. <tNodeInfo[#id]>
+  [136] pusharglist 1 ........................... <tNodeInfo[#id]>
+  [138] extcall 61 .............................. <string(tNodeInfo[#id])>
+  [140] pushsymb 133 ............................ <#private>
+  [142] pusharglistnoret 3 ...................... <me.getComponent(), string(tNodeInfo[#id]), #private>
+  [144] objcall 19 .............................. me.getComponent().prepareRoomEntry(string(tNodeInfo[#id]), #private)
+  [146] jmp [165]
+  [149] getparam 0 .............................. <me>
+  [151] getlocal 0 .............................. <tNodeInfo>
+  [153] pushsymb 147 ............................ <#id>
+  [155] pusharglist 2 ........................... <tNodeInfo, #id>
+  [157] objcall 105 ............................. <tNodeInfo[#id]>
+  [159] pushsymb 101 ............................ <#recom>
+  [161] pusharglistnoret 3 ...................... <me, tNodeInfo[#id], #recom>
+  [163] objcall 241 ............................. me.showNodeInfo(tNodeInfo[#id], #recom)
+  [165] pushint8 1 .............................. <1>
+  [167] pusharglistnoret 1 ...................... <1>
+  [169] extcall 93 .............................. return 1
+  [171] ret
+end
+
+on handleRoomListClicked me, tParm
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 144 ............................ <#categoryId>
+  [  4] pusharglist 2 ........................... <me, #categoryId>
+  [  6] objcall 180 ............................. <me.getProperty(#categoryId)>
+  [  8] setlocal 0 .............................. tCategoryId = me.getProperty(#categoryId)
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 136 ............................. <me.getComponent()>
+  [ 16] getlocal 0 .............................. <tCategoryId>
+  [ 18] pusharglist 2 ........................... <me.getComponent(), tCategoryId>
+  [ 20] objcall 8 ............................... <me.getComponent().getNodeInfo(tCategoryId)>
+  [ 22] setlocal 1 .............................. tNodeInfo = me.getComponent().getNodeInfo(tCategoryId)
+  [ 24] getlocal 1 .............................. <tNodeInfo>
+  [ 26] pusharglist 1 ........................... <tNodeInfo>
+  [ 28] extcall 141 ............................. <listp(tNodeInfo)>
+  [ 30] not ..................................... <not listp(tNodeInfo)>
+  [ 31] jmpifz [ 54] ............................ if not listp(tNodeInfo) then
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pushcons 13 ............................. <"Nodeinfo not found, id:">
+  [ 38] getlocal 0 .............................. <tCategoryId>
+  [ 40] joinpadstr .............................. <"Nodeinfo not found, id:" && tCategoryId>
+  [ 41] pushsymb 482 ............................ <#handleRoomListClicked>
+  [ 44] pushsymb 138 ............................ <#major>
+  [ 46] pusharglist 4 ........................... <me, "Nodeinfo not found, id:" && tCategoryId, #handleRoomListClicked, #major>
+  [ 48] extcall 137 ............................. <error(me, "Nodeinfo not found, id:" && tCategoryId, #handleRoomListClicked, #major)>
+  [ 50] pusharglistnoret 1 ...................... <error(me, "Nodeinfo not found, id:" && tCategoryId, #handleRoomListClicked, #major)>
+  [ 52] extcall 93 .............................. return error(me, "Nodeinfo not found, id:" && tCategoryId, #handleRoomListClicked, #major)
+  [ 54] getlocal 1 .............................. <tNodeInfo>
+  [ 56] pushsymb 104 ............................ <#children>
+  [ 58] pusharglist 2 ........................... <tNodeInfo, #children>
+  [ 60] objcall 105 ............................. <tNodeInfo[#children]>
+  [ 62] setlocal 2 .............................. tNodeList = tNodeInfo[#children]
+  [ 64] getlocal 2 .............................. <tNodeList>
+  [ 66] pusharglist 1 ........................... <tNodeList>
+  [ 68] extcall 141 ............................. <listp(tNodeList)>
+  [ 70] not ..................................... <not listp(tNodeList)>
+  [ 71] jmpifz [ 94] ............................ if not listp(tNodeList) then
+  [ 74] getparam 0 .............................. <me>
+  [ 76] pushcons 14 ............................. <"Node content not found, id:">
+  [ 78] getlocal 0 .............................. <tCategoryId>
+  [ 80] joinstr ................................. <"Node content not found, id:" & tCategoryId>
+  [ 81] pushsymb 482 ............................ <#handleRoomListClicked>
+  [ 84] pushsymb 138 ............................ <#major>
+  [ 86] pusharglist 4 ........................... <me, "Node content not found, id:" & tCategoryId, #handleRoomListClicked, #major>
+  [ 88] extcall 137 ............................. <error(me, "Node content not found, id:" & tCategoryId, #handleRoomListClicked, #major)>
+  [ 90] pusharglistnoret 1 ...................... <error(me, "Node content not found, id:" & tCategoryId, #handleRoomListClicked, #major)>
+  [ 92] extcall 93 .............................. return error(me, "Node content not found, id:" & tCategoryId, #handleRoomListClicked, #major)
+  [ 94] getlocal 2 .............................. <tNodeList>
+  [ 96] getobjprop 106 .......................... <tNodeList.count>
+  [ 98] setlocal 3 .............................. tNodeCount = tNodeList.count
+  [100] getparam 1 .............................. <tParm>
+  [102] pushsymb 420 ............................ <#point>
+  [105] pusharglist 2 ........................... <tParm, #point>
+  [107] extcall 159 ............................. <ilk(tParm, #point)>
+  [109] not ..................................... <not ilk(tParm, #point)>
+  [110] getlocal 3 .............................. <tNodeCount>
+  [112] pushzero ................................ <0>
+  [113] eq ...................................... <tNodeCount = 0>
+  [114] or ...................................... <not ilk(tParm, #point) or (tNodeCount = 0)>
+  [115] jmpifz [123] ............................ if not ilk(tParm, #point) or (tNodeCount = 0) then
+  [118] pushzero ................................ <0>
+  [119] pusharglistnoret 1 ...................... <0>
+  [121] extcall 93 .............................. return 0
+  [123] getparam 1 .............................. <tParm>
+  [125] getobjprop 329 .......................... <tParm.locV>
+  [128] getparam 0 .............................. <me>
+  [130] getobjprop 259 .......................... <me.pListItemHeight>
+  [133] div ..................................... <tParm.locV / me.pListItemHeight>
+  [134] pusharglist 1 ........................... <tParm.locV / me.pListItemHeight>
+  [136] extcall 201 ............................. <integer(tParm.locV / me.pListItemHeight)>
+  [138] pushint8 1 .............................. <1>
+  [140] add ..................................... <integer(tParm.locV / me.pListItemHeight) + 1>
+  [141] setlocal 4 .............................. tClickedLine = integer(tParm.locV / me.pListItemHeight) + 1
+  [143] getlocal 4 .............................. <tClickedLine>
+  [145] getlocal 3 .............................. <tNodeCount>
+  [147] gt ...................................... <tClickedLine > tNodeCount>
+  [148] jmpifz [158] ............................ if tClickedLine > tNodeCount then / else
+  [151] getlocal 3 .............................. <tNodeCount>
+  [153] setlocal 4 .............................. tClickedLine = tNodeCount
+  [155] jmp [170]
+  [158] getlocal 4 .............................. <tClickedLine>
+  [160] pushint8 1 .............................. <1>
+  [162] lt ...................................... <tClickedLine < 1>
+  [163] jmpifz [170] ............................ if tClickedLine < 1 then
+  [166] pushint8 1 .............................. <1>
+  [168] setlocal 4 .............................. tClickedLine = 1
+  [170] getlocal 2 .............................. <tNodeList>
+  [172] getlocal 4 .............................. <tClickedLine>
+  [174] pusharglist 2 ........................... <tNodeList, tClickedLine>
+  [176] objcall 105 ............................. <tNodeList[tClickedLine]>
+  [178] setlocal 1 .............................. tNodeInfo = tNodeList[tClickedLine]
+  [180] getlocal 1 .............................. <tNodeInfo>
+  [182] pusharglist 1 ........................... <tNodeInfo>
+  [184] extcall 141 ............................. <listp(tNodeInfo)>
+  [186] not ..................................... <not listp(tNodeInfo)>
+  [187] jmpifz [195] ............................ if not listp(tNodeInfo) then
+  [190] pushzero ................................ <0>
+  [191] pusharglistnoret 1 ...................... <0>
+  [193] extcall 93 .............................. return 0
+  [195] getparam 0 .............................. <me>
+  [197] pushsymb 288 ............................ <#viewedNodeId>
+  [200] getlocal 1 .............................. <tNodeInfo>
+  [202] pushsymb 147 ............................ <#id>
+  [204] pusharglist 2 ........................... <tNodeInfo, #id>
+  [206] objcall 105 ............................. <tNodeInfo[#id]>
+  [208] pusharglistnoret 3 ...................... <me, #viewedNodeId, tNodeInfo[#id]>
+  [210] objcall 146 ............................. me.setProperty(#viewedNodeId, tNodeInfo[#id])
+  [212] pushint16 255 ........................... <255>
+  [215] setlocal 5 .............................. tGoLinkH = 255
+  [217] getlocal 1 .............................. <tNodeInfo>
+  [219] pushsymb 140 ............................ <#nodeType>
+  [221] pusharglist 2 ........................... <tNodeInfo, #nodeType>
+  [223] objcall 105 ............................. <tNodeInfo[#nodeType]>
+  [225] pushzero ................................ <0>
+  [226] eq ...................................... <tNodeInfo[#nodeType] = 0>
+  [227] jmpifz [266] ............................ if tNodeInfo[#nodeType] = 0 then / else
+  [230] getparam 0 .............................. <me>
+  [232] pushint8 1 .............................. <1>
+  [234] pusharglistnoret 2 ...................... <me, 1>
+  [236] objcall 250 ............................. me.setLoadingCursor(1)
+  [238] getparam 0 .............................. <me>
+  [240] pusharglist 1 ........................... <me>
+  [242] objcall 136 ............................. <me.getComponent()>
+  [244] getlocal 1 .............................. <tNodeInfo>
+  [246] pushsymb 147 ............................ <#id>
+  [248] pusharglist 2 ........................... <tNodeInfo, #id>
+  [250] objcall 105 ............................. <tNodeInfo[#id]>
+  [252] pusharglistnoret 2 ...................... <me.getComponent(), tNodeInfo[#id]>
+  [254] objcall 21 .............................. me.getComponent().expandNode(tNodeInfo[#id])
+  [256] pushsymb 509 ............................ <#tutorial_roomcategory_expanded>
+  [259] pusharglistnoret 1 ...................... <#tutorial_roomcategory_expanded>
+  [261] extcall 97 .............................. executeMessage(#tutorial_roomcategory_expanded)
+  [263] jmp [366]
+  [266] pusharglist 0 ........................... <>
+  [268] thebuiltin 510 .......................... <the shiftDown>
+  [271] jmpifz [310] ............................ if the shiftDown then
+  [274] getlocal 1 .............................. <tNodeInfo>
+  [276] pushsymb 140 ............................ <#nodeType>
+  [278] pusharglist 2 ........................... <tNodeInfo, #nodeType>
+  [280] objcall 105 ............................. <tNodeInfo[#nodeType]>
+  [282] pushint8 1 .............................. <1>
+  [284] eq ...................................... <tNodeInfo[#nodeType] = 1>
+  [285] jmpifz [310] ............................ if tNodeInfo[#nodeType] = 1 then
+  [288] getparam 0 .............................. <me>
+  [290] pusharglist 1 ........................... <me>
+  [292] objcall 136 ............................. <me.getComponent()>
+  [294] getlocal 1 .............................. <tNodeInfo>
+  [296] pushsymb 147 ............................ <#id>
+  [298] pusharglist 2 ........................... <tNodeInfo, #id>
+  [300] objcall 105 ............................. <tNodeInfo[#id]>
+  [302] pusharglist 2 ........................... <me.getComponent(), tNodeInfo[#id]>
+  [304] objcall 48 .............................. <me.getComponent().sendGetSpaceNodeUsers(tNodeInfo[#id])>
+  [306] pusharglistnoret 1 ...................... <me.getComponent().sendGetSpaceNodeUsers(tNodeInfo[#id])>
+  [308] extcall 93 .............................. return me.getComponent().sendGetSpaceNodeUsers(tNodeInfo[#id])
+  [310] getparam 0 .............................. <me>
+  [312] pushint8 1 .............................. <1>
+  [314] pusharglistnoret 2 ...................... <me, 1>
+  [316] objcall 250 ............................. me.setLoadingCursor(1)
+  [318] getparam 1 .............................. <tParm>
+  [320] getobjprop 505 .......................... <tParm.locH>
+  [323] getlocal 5 .............................. <tGoLinkH>
+  [325] gt ...................................... <tParm.locH > tGoLinkH>
+  [326] jmpifz [350] ............................ if tParm.locH > tGoLinkH then / else
+  [329] getparam 0 .............................. <me>
+  [331] pusharglist 1 ........................... <me>
+  [333] objcall 136 ............................. <me.getComponent()>
+  [335] getlocal 1 .............................. <tNodeInfo>
+  [337] pushsymb 147 ............................ <#id>
+  [339] pusharglist 2 ........................... <tNodeInfo, #id>
+  [341] objcall 105 ............................. <tNodeInfo[#id]>
+  [343] pusharglistnoret 2 ...................... <me.getComponent(), tNodeInfo[#id]>
+  [345] objcall 19 .............................. me.getComponent().prepareRoomEntry(tNodeInfo[#id])
+  [347] jmp [366]
+  [350] getparam 0 .............................. <me>
+  [352] getlocal 1 .............................. <tNodeInfo>
+  [354] pushsymb 147 ............................ <#id>
+  [356] pusharglist 2 ........................... <tNodeInfo, #id>
+  [358] objcall 105 ............................. <tNodeInfo[#id]>
+  [360] getlocal 0 .............................. <tCategoryId>
+  [362] pusharglistnoret 3 ...................... <me, tNodeInfo[#id], tCategoryId>
+  [364] objcall 241 ............................. me.showNodeInfo(tNodeInfo[#id], tCategoryId)
+  [366] pushint8 1 .............................. <1>
+  [368] pusharglistnoret 1 ...................... <1>
+  [370] extcall 93 .............................. return 1
+  [372] ret
+end
+
+on startFlatSearch me
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 255 .......................... <me.pWindowTitle>
+  [  4] pusharglist 1 ........................... <me.pWindowTitle>
+  [  6] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [  9] setlocal 0 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [ 11] getlocal 0 .............................. <tWndObj>
+  [ 13] pushcons 15 ............................. <"nav_private_search_field">
+  [ 15] pusharglist 2 ........................... <tWndObj, "nav_private_search_field">
+  [ 17] objcall 280 ............................. <tWndObj.elementExists("nav_private_search_field")>
+  [ 20] jmpifz [103] ............................ if tWndObj.elementExists("nav_private_search_field") then
+  [ 23] getlocal 0 .............................. <tWndObj>
+  [ 25] pushcons 15 ............................. <"nav_private_search_field">
+  [ 27] pusharglist 2 ........................... <tWndObj, "nav_private_search_field">
+  [ 29] objcall 281 ............................. <tWndObj.getElement("nav_private_search_field")>
+  [ 32] pusharglist 1 ........................... <tWndObj.getElement("nav_private_search_field")>
+  [ 34] objcall 172 ............................. <tWndObj.getElement("nav_private_search_field").getText()>
+  [ 36] setlocal 1 .............................. tSearchQuery = tWndObj.getElement("nav_private_search_field").getText()
+  [ 38] getlocal 1 .............................. <tSearchQuery>
+  [ 40] setprop 493 ............................. pStrLastFlatSearch = tSearchQuery
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglistnoret 1 ...................... <me>
+  [ 47] objcall 163 ............................. me.clearRoomList()
+  [ 49] getlocal 1 .............................. <tSearchQuery>
+  [ 51] pushcons 0 .............................. <EMPTY>
+  [ 53] eq ...................................... <tSearchQuery = EMPTY>
+  [ 54] jmpifz [ 73] ............................ if tSearchQuery = EMPTY then
+  [ 57] getparam 0 .............................. <me>
+  [ 59] pushcons 16 ............................. <"nav_prvrooms_notfound">
+  [ 61] pusharglist 1 ........................... <"nav_prvrooms_notfound">
+  [ 63] extcall 172 ............................. <getText("nav_prvrooms_notfound")>
+  [ 65] pusharglist 2 ........................... <me, getText("nav_prvrooms_notfound")>
+  [ 67] objcall 212 ............................. <me.showRoomlistError(getText("nav_prvrooms_notfound"))>
+  [ 69] pusharglistnoret 1 ...................... <me.showRoomlistError(getText("nav_prvrooms_notfound"))>
+  [ 71] extcall 93 .............................. return me.showRoomlistError(getText("nav_prvrooms_notfound"))
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] pusharglistnoret 2 ...................... <me, 1>
+  [ 79] objcall 250 ............................. me.setLoadingCursor(1)
+  [ 81] getparam 0 .............................. <me>
+  [ 83] pusharglistnoret 1 ...................... <me>
+  [ 85] objcall 251 ............................. me.renderLoadingText()
+  [ 87] getparam 0 .............................. <me>
+  [ 89] pusharglist 1 ........................... <me>
+  [ 91] objcall 136 ............................. <me.getComponent()>
+  [ 93] getlocal 1 .............................. <tSearchQuery>
+  [ 95] pusharglist 2 ........................... <me.getComponent(), tSearchQuery>
+  [ 97] objcall 47 .............................. <me.getComponent().sendSearchFlats(tSearchQuery)>
+  [ 99] pusharglistnoret 1 ...................... <me.getComponent().sendSearchFlats(tSearchQuery)>
+  [101] extcall 93 .............................. return me.getComponent().sendSearchFlats(tSearchQuery)
+  [103] ret
+end
+
+on showRoomlistError me, tText
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 250 ............................. me.setLoadingCursor(0)
+  [  7] getparam 0 .............................. <me>
+  [  9] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 11] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 13] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 16] pushcons 17 ............................. <"nav_roomlist">
+  [ 18] pusharglist 2 ........................... <getWindow(me.pWindowTitle), "nav_roomlist">
+  [ 20] objcall 281 ............................. <getWindow(me.pWindowTitle).getElement("nav_roomlist")>
+  [ 23] setlocal 0 .............................. tElem = getWindow(me.pWindowTitle).getElement("nav_roomlist")
+  [ 25] getlocal 0 .............................. <tElem>
+  [ 27] pushzero ................................ <0>
+  [ 28] nteq .................................... <tElem <> 0>
+  [ 29] jmpifz [123] ............................ if tElem <> 0 then
+  [ 32] getlocal 0 .............................. <tElem>
+  [ 34] pushsymb 339 ............................ <#width>
+  [ 37] pusharglist 2 ........................... <tElem, #width>
+  [ 39] objcall 180 ............................. <tElem.getProperty(#width)>
+  [ 41] setlocal 1 .............................. tWidth = tElem.getProperty(#width)
+  [ 43] getlocal 0 .............................. <tElem>
+  [ 45] pushsymb 315 ............................ <#height>
+  [ 48] pusharglist 2 ........................... <tElem, #height>
+  [ 50] objcall 180 ............................. <tElem.getProperty(#height)>
+  [ 52] setlocal 2 .............................. tHeight = tElem.getProperty(#height)
+  [ 54] getlocal 1 .............................. <tWidth>
+  [ 56] getlocal 2 .............................. <tHeight>
+  [ 58] pushint8 8 .............................. <8>
+  [ 60] pusharglist 3 ........................... <tWidth, tHeight, 8>
+  [ 62] extcall 338 ............................. <image(tWidth, tHeight, 8)>
+  [ 65] setlocal 3 .............................. tTempImg = image(tWidth, tHeight, 8)
+  [ 67] getparam 0 .............................. <me>
+  [ 69] getchainedprop 394 ...................... <me.pWriterPlainNormLeft>
+  [ 72] getparam 1 .............................. <tText>
+  [ 74] pusharglist 2 ........................... <me.pWriterPlainNormLeft, tText>
+  [ 76] objcall 314 ............................. <me.pWriterPlainNormLeft.render(tText)>
+  [ 79] setlocal 4 .............................. tTextImg = me.pWriterPlainNormLeft.render(tText)
+  [ 81] getlocal 3 .............................. <tTempImg>
+  [ 83] getlocal 4 .............................. <tTextImg>
+  [ 85] getlocal 4 .............................. <tTextImg>
+  [ 87] getobjprop 340 .......................... <tTextImg.rect>
+  [ 90] pushint8 8 .............................. <8>
+  [ 92] pushint8 5 .............................. <5>
+  [ 94] pushint8 8 .............................. <8>
+  [ 96] pushint8 5 .............................. <5>
+  [ 98] pusharglist 4 ........................... <8, 5, 8, 5>
+  [100] extcall 340 ............................. <rect(8, 5, 8, 5)>
+  [103] add ..................................... <tTextImg.rect + rect(8, 5, 8, 5)>
+  [104] getlocal 4 .............................. <tTextImg>
+  [106] getobjprop 340 .......................... <tTextImg.rect>
+  [109] pusharglistnoret 4 ...................... <tTempImg, tTextImg, tTextImg.rect + rect(8, 5, 8, 5), tTextImg.rect>
+  [111] objcall 341 ............................. tTempImg.copyPixels(tTextImg, tTextImg.rect + rect(8, 5, 8, 5), tTextImg.rect)
+  [114] getlocal 0 .............................. <tElem>
+  [116] getlocal 3 .............................. <tTempImg>
+  [118] pusharglistnoret 2 ...................... <tElem, tTempImg>
+  [120] objcall 308 ............................. tElem.feedImage(tTempImg)
+  [123] ret
+end
+
+on modifyPrivateRoom me, tFlatInfo
+  [  0] getparam 1 .............................. <tFlatInfo>
+  [  2] getobjprop 159 .......................... <tFlatInfo.ilk>
+  [  4] pushsymb 160 ............................ <#propList>
+  [  6] eq ...................................... <tFlatInfo.ilk = #propList>
+  [  7] not ..................................... <not (tFlatInfo.ilk = #propList)>
+  [  8] jmpifz [ 45] ............................ if not (tFlatInfo.ilk = #propList) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglist 1 ........................... <me>
+  [ 15] objcall 136 ............................. <me.getComponent()>
+  [ 17] pusharglist 1 ........................... <me.getComponent()>
+  [ 19] objcall 6 ............................... <me.getComponent().getInfoBroker()>
+  [ 21] getparam 1 .............................. <tFlatInfo>
+  [ 23] pushsymb 133 ............................ <#private>
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglist 1 ........................... <me>
+  [ 29] objcall 86 .............................. <me.getID()>
+  [ 31] pushsymb 484 ............................ <#modifyPrivateRoom>
+  [ 34] pusharglist 2 ........................... <[me.getID(), #modifyPrivateRoom]>
+  [ 36] pushlist ................................ <[me.getID(), #modifyPrivateRoom]>
+  [ 37] pusharglist 4 ........................... <me.getComponent().getInfoBroker(), tFlatInfo, #private, [me.getID(), #modifyPrivateRoom]>
+  [ 39] objcall 139 ............................. <me.getComponent().getInfoBroker().requestRoomData(tFlatInfo, #private, [me.getID(), #modifyPrivateRoom])>
+  [ 41] pusharglistnoret 1 ...................... <me.getComponent().getInfoBroker().requestRoomData(tFlatInfo, #private, [me.getID(), #modifyPrivateRoom])>
+  [ 43] extcall 93 .............................. return me.getComponent().getInfoBroker().requestRoomData(tFlatInfo, #private, [me.getID(), #modifyPrivateRoom])
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 136 ............................. <me.getComponent()>
+  [ 51] getparam 1 .............................. <tFlatInfo>
+  [ 53] pushsymb 147 ............................ <#id>
+  [ 55] pusharglist 2 ........................... <tFlatInfo, #id>
+  [ 57] objcall 105 ............................. <tFlatInfo[#id]>
+  [ 59] pushsymb 118 ............................ <#own>
+  [ 61] pusharglist 3 ........................... <me.getComponent(), tFlatInfo[#id], #own>
+  [ 63] objcall 8 ............................... <me.getComponent().getNodeInfo(tFlatInfo[#id], #own)>
+  [ 65] setparam 1 .............................. tFlatInfo = me.getComponent().getNodeInfo(tFlatInfo[#id], #own)
+  [ 67] getparam 1 .............................. <tFlatInfo>
+  [ 69] pushzero ................................ <0>
+  [ 70] eq ...................................... <tFlatInfo = 0>
+  [ 71] jmpifz [ 94] ............................ if tFlatInfo = 0 then / else
+  [ 74] getparam 0 .............................. <me>
+  [ 76] pushcons 18 ............................. <"Flat info is VOID">
+  [ 78] pushsymb 484 ............................ <#modifyPrivateRoom>
+  [ 81] pushsymb 138 ............................ <#major>
+  [ 83] pusharglist 4 ........................... <me, "Flat info is VOID", #modifyPrivateRoom, #major>
+  [ 85] extcall 137 ............................. <error(me, "Flat info is VOID", #modifyPrivateRoom, #major)>
+  [ 87] pusharglistnoret 1 ...................... <error(me, "Flat info is VOID", #modifyPrivateRoom, #major)>
+  [ 89] extcall 93 .............................. return error(me, "Flat info is VOID", #modifyPrivateRoom, #major)
+  [ 91] jmp [ 99]
+  [ 94] getparam 1 .............................. <tFlatInfo>
+  [ 96] setprop 514 ............................. pModifyFlatInfo = tFlatInfo
+  [ 99] getparam 1 .............................. <tFlatInfo>
+  [101] pushsymb 142 ............................ <#parentid>
+  [103] pusharglist 2 ........................... <tFlatInfo, #parentid>
+  [105] objcall 143 ............................. <tFlatInfo.findPos(#parentid)>
+  [107] pusharglist 0 ........................... <>
+  [109] extcall 95 .............................. <VOID>
+  [111] eq ...................................... <tFlatInfo.findPos(#parentid) = VOID>
+  [112] jmpifz [153] ............................ if tFlatInfo.findPos(#parentid) = VOID then
+  [115] pushsymb 515 ............................ <#flatcat_received>
+  [118] getparam 0 .............................. <me>
+  [120] pusharglist 1 ........................... <me>
+  [122] objcall 86 .............................. <me.getID()>
+  [124] pushsymb 484 ............................ <#modifyPrivateRoom>
+  [127] pusharglistnoret 3 ...................... <#flatcat_received, me.getID(), #modifyPrivateRoom>
+  [129] extcall 84 .............................. registerMessage(#flatcat_received, me.getID(), #modifyPrivateRoom)
+  [131] getparam 0 .............................. <me>
+  [133] pusharglist 1 ........................... <me>
+  [135] objcall 136 ............................. <me.getComponent()>
+  [137] getparam 1 .............................. <tFlatInfo>
+  [139] pushsymb 147 ............................ <#id>
+  [141] pusharglist 2 ........................... <tFlatInfo, #id>
+  [143] objcall 105 ............................. <tFlatInfo[#id]>
+  [145] pusharglist 2 ........................... <me.getComponent(), tFlatInfo[#id]>
+  [147] objcall 50 .............................. <me.getComponent().sendGetFlatCategory(tFlatInfo[#id])>
+  [149] pusharglistnoret 1 ...................... <me.getComponent().sendGetFlatCategory(tFlatInfo[#id])>
+  [151] extcall 93 .............................. return me.getComponent().sendGetFlatCategory(tFlatInfo[#id])
+  [153] pushsymb 515 ............................ <#flatcat_received>
+  [156] getparam 0 .............................. <me>
+  [158] pusharglist 1 ........................... <me>
+  [160] objcall 86 .............................. <me.getID()>
+  [162] pusharglistnoret 2 ...................... <#flatcat_received, me.getID()>
+  [164] extcall 96 .............................. unregisterMessage(#flatcat_received, me.getID())
+  [166] pusharglist 0 ........................... <[:]>
+  [168] pushproplist ............................ <[:]>
+  [169] setprop 466 ............................. pFlatPasswords = [:]
+  [172] pushzero ................................ <0>
+  [173] setprop 495 ............................. pDoorStatusModified = 0
+  [176] getparam 1 .............................. <tFlatInfo>
+  [178] pushsymb 229 ............................ <#owner>
+  [180] pusharglist 2 ........................... <tFlatInfo, #owner>
+  [182] objcall 105 ............................. <tFlatInfo[#owner]>
+  [184] pushsymb 82 ............................. <#session>
+  [186] pusharglist 1 ........................... <#session>
+  [188] extcall 81 .............................. <getObject(#session)>
+  [190] pushcons 7 .............................. <"user_name">
+  [192] pusharglist 2 ........................... <getObject(#session), "user_name">
+  [194] objcall 153 ............................. <getObject(#session).GET("user_name")>
+  [196] nteq .................................... <tFlatInfo[#owner] <> getObject(#session).GET("user_name")>
+  [197] jmpifz [205] ............................ if tFlatInfo[#owner] <> getObject(#session).GET("user_name") then
+  [200] pushzero ................................ <0>
+  [201] pusharglistnoret 1 ...................... <0>
+  [203] extcall 93 .............................. return 0
+  [205] getparam 0 .............................. <me>
+  [207] pusharglistnoret 1 ...................... <me>
+  [209] objcall 485 ............................. me.setModifyFirstPage()
+  [212] ret
+end
+
+on setModifyFirstPage me
+  [  0] getprop 514 ............................. <pModifyFlatInfo>
+  [  3] setlocal 0 .............................. tFlatInfo = pModifyFlatInfo
+  [  5] getparam 0 .............................. <me>
+  [  7] pushcons 19 ............................. <"nav_gr_mod">
+  [  9] pusharglistnoret 2 ...................... <me, "nav_gr_mod">
+  [ 11] objcall 240 ............................. me.ChangeWindowView("nav_gr_mod")
+  [ 13] getparam 0 .............................. <me>
+  [ 15] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 17] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 19] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 22] setlocal 1 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [ 24] pushsymb 171 ............................ <#name>
+  [ 26] pushcons 20 ............................. <"nav_modify_roomnamefield">
+  [ 28] pushsymb 218 ............................ <#description>
+  [ 30] pushcons 21 ............................. <"nav_modify_roomdescription_field">
+  [ 32] pusharglist 4 ........................... <[#name: "nav_modify_roomnamefield", #description: "nav_modify_roomdescription_field"]>
+  [ 34] pushproplist ............................ <[#name: "nav_modify_roomnamefield", #description: "nav_modify_roomdescription_field"]>
+  [ 35] setlocal 2 .............................. tTempProps = [#name: "nav_modify_roomnamefield", #description: "nav_modify_roomdescription_field"]
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] setlocal 3
+  [ 41] getlocal 3
+  [ 43] getlocal 2 .............................. <tTempProps>
+  [ 45] getobjprop 106 .......................... <tTempProps.count>
+  [ 47] lteq
+  [ 48] jmpifz [130] ............................ repeat with f = 1 to tTempProps.count
+  [ 51] getlocal 2 .............................. <tTempProps>
+  [ 53] getlocal 3 .............................. <f>
+  [ 55] pusharglist 2 ........................... <tTempProps, f>
+  [ 57] objcall 196 ............................. <tTempProps.getPropAt(f)>
+  [ 59] setlocal 4 .............................. tProp = tTempProps.getPropAt(f)
+  [ 61] getlocal 2 .............................. <tTempProps>
+  [ 63] getlocal 4 .............................. <tProp>
+  [ 65] pusharglist 2 ........................... <tTempProps, tProp>
+  [ 67] objcall 105 ............................. <tTempProps[tProp]>
+  [ 69] setlocal 5 .............................. tField = tTempProps[tProp]
+  [ 71] getlocal 1 .............................. <tWndObj>
+  [ 73] getlocal 5 .............................. <tField>
+  [ 75] pusharglist 2 ........................... <tWndObj, tField>
+  [ 77] objcall 280 ............................. <tWndObj.elementExists(tField)>
+  [ 80] jmpifz [121] ............................ if tWndObj.elementExists(tField) then
+  [ 83] getlocal 0 .............................. <tFlatInfo>
+  [ 85] getlocal 4 .............................. <tProp>
+  [ 87] pusharglist 2 ........................... <tFlatInfo, tProp>
+  [ 89] objcall 105 ............................. <tFlatInfo[tProp]>
+  [ 91] pusharglist 1 ........................... <tFlatInfo[tProp]>
+  [ 93] extcall 102 ............................. <voidp(tFlatInfo[tProp])>
+  [ 95] not ..................................... <not voidp(tFlatInfo[tProp])>
+  [ 96] jmpifz [121] ............................ if not voidp(tFlatInfo[tProp]) then
+  [ 99] getlocal 1 .............................. <tWndObj>
+  [101] getlocal 5 .............................. <tField>
+  [103] pusharglist 2 ........................... <tWndObj, tField>
+  [105] objcall 281 ............................. <tWndObj.getElement(tField)>
+  [108] getlocal 0 .............................. <tFlatInfo>
+  [110] getlocal 4 .............................. <tProp>
+  [112] pusharglist 2 ........................... <tFlatInfo, tProp>
+  [114] objcall 105 ............................. <tFlatInfo[tProp]>
+  [116] pusharglistnoret 2 ...................... <tWndObj.getElement(tField), tFlatInfo[tProp]>
+  [118] objcall 289 ............................. tWndObj.getElement(tField).setText(tFlatInfo[tProp])
+  [121] pushint8 1
+  [123] getlocal 3
+  [125] add
+  [126] setlocal 3
+  [128] endrepeat [ 41]
+  [130] pushcons 22 ............................. <"button.checkbox.on">
+  [132] pusharglist 1 ........................... <"button.checkbox.on">
+  [134] extcall 373 ............................. <getmemnum("button.checkbox.on")>
+  [137] pusharglist 1 ........................... <getmemnum("button.checkbox.on")>
+  [139] extcall 372 ............................. <member(getmemnum("button.checkbox.on"))>
+  [142] getobjprop 338 .......................... <member(getmemnum("button.checkbox.on")).image>
+  [145] setlocal 6 .............................. tCheckOnImg = member(getmemnum("button.checkbox.on")).image
+  [147] pushcons 23 ............................. <"button.checkbox.off">
+  [149] pusharglist 1 ........................... <"button.checkbox.off">
+  [151] extcall 373 ............................. <getmemnum("button.checkbox.off")>
+  [154] pusharglist 1 ........................... <getmemnum("button.checkbox.off")>
+  [156] extcall 372 ............................. <member(getmemnum("button.checkbox.off"))>
+  [159] getobjprop 338 .......................... <member(getmemnum("button.checkbox.off")).image>
+  [162] setlocal 7 .............................. tCheckOffImg = member(getmemnum("button.checkbox.off")).image
+  [164] getlocal 0 .............................. <tFlatInfo>
+  [166] pushsymb 217 ............................ <#showownername>
+  [168] pusharglist 2 ........................... <tFlatInfo, #showownername>
+  [170] objcall 105 ............................. <tFlatInfo[#showownername]>
+  [172] pushint8 1 .............................. <1>
+  [174] eq ...................................... <tFlatInfo[#showownername] = 1>
+  [175] jmpifz [195] ............................ if tFlatInfo[#showownername] = 1 then / else
+  [178] getparam 0 .............................. <me>
+  [180] pushcons 24 ............................. <"nav_modify_nameshow_yes_radio">
+  [182] pushcons 25 ............................. <"nav_modify_nameshow_no_radio">
+  [184] pusharglist 1 ........................... <["nav_modify_nameshow_no_radio"]>
+  [186] pushlist ................................ <["nav_modify_nameshow_no_radio"]>
+  [187] pusharglistnoret 3 ...................... <me, "nav_modify_nameshow_yes_radio", ["nav_modify_nameshow_no_radio"]>
+  [189] objcall 490 ............................. me.updateRadioButton("nav_modify_nameshow_yes_radio", ["nav_modify_nameshow_no_radio"])
+  [192] jmp [209]
+  [195] getparam 0 .............................. <me>
+  [197] pushcons 25 ............................. <"nav_modify_nameshow_no_radio">
+  [199] pushcons 24 ............................. <"nav_modify_nameshow_yes_radio">
+  [201] pusharglist 1 ........................... <["nav_modify_nameshow_yes_radio"]>
+  [203] pushlist ................................ <["nav_modify_nameshow_yes_radio"]>
+  [204] pusharglistnoret 3 ...................... <me, "nav_modify_nameshow_no_radio", ["nav_modify_nameshow_yes_radio"]>
+  [206] objcall 490 ............................. me.updateRadioButton("nav_modify_nameshow_no_radio", ["nav_modify_nameshow_yes_radio"])
+  [209] getlocal 1 .............................. <tWndObj>
+  [211] pushcons 26 ............................. <"nav_maxusers_amount">
+  [213] pusharglist 2 ........................... <tWndObj, "nav_maxusers_amount">
+  [215] objcall 281 ............................. <tWndObj.getElement("nav_maxusers_amount")>
+  [218] setlocal 8 .............................. tMaxVisitorsElm = tWndObj.getElement("nav_maxusers_amount")
+  [220] getprop 514 ............................. <pModifyFlatInfo>
+  [223] pushsymb 220 ............................ <#maxVisitors>
+  [225] pusharglist 2 ........................... <pModifyFlatInfo, #maxVisitors>
+  [227] objcall 105 ............................. <pModifyFlatInfo[#maxVisitors]>
+  [229] setlocal 9 .............................. tMaxVisitors = pModifyFlatInfo[#maxVisitors]
+  [231] getprop 514 ............................. <pModifyFlatInfo>
+  [234] pushsymb 516 ............................ <#absoluteMaxVisitors>
+  [237] pusharglist 2 ........................... <pModifyFlatInfo, #absoluteMaxVisitors>
+  [239] objcall 105 ............................. <pModifyFlatInfo[#absoluteMaxVisitors]>
+  [241] setlocal 10 ............................. tAbsoluteMaxVisitors = pModifyFlatInfo[#absoluteMaxVisitors]
+  [243] getlocal 9 .............................. <tMaxVisitors>
+  [245] getlocal 10 ............................. <tAbsoluteMaxVisitors>
+  [247] gt ...................................... <tMaxVisitors > tAbsoluteMaxVisitors>
+  [248] jmpifz [255] ............................ if tMaxVisitors > tAbsoluteMaxVisitors then
+  [251] getlocal 10 ............................. <tAbsoluteMaxVisitors>
+  [253] setlocal 9 .............................. tMaxVisitors = tAbsoluteMaxVisitors
+  [255] getlocal 8 .............................. <tMaxVisitorsElm>
+  [257] getprop 514 ............................. <pModifyFlatInfo>
+  [260] pushsymb 220 ............................ <#maxVisitors>
+  [262] pusharglist 2 ........................... <pModifyFlatInfo, #maxVisitors>
+  [264] objcall 105 ............................. <pModifyFlatInfo[#maxVisitors]>
+  [266] pusharglistnoret 2 ...................... <tMaxVisitorsElm, pModifyFlatInfo[#maxVisitors]>
+  [268] objcall 289 ............................. tMaxVisitorsElm.setText(pModifyFlatInfo[#maxVisitors])
+  [271] ret
+end
+
+on setModifySecondPage me
+  [  0] getprop 514 ............................. <pModifyFlatInfo>
+  [  3] setlocal 0 .............................. tFlatInfo = pModifyFlatInfo
+  [  5] getparam 0 .............................. <me>
+  [  7] pushcons 27 ............................. <"nav_gr_mod_b">
+  [  9] pusharglistnoret 2 ...................... <me, "nav_gr_mod_b">
+  [ 11] objcall 240 ............................. me.ChangeWindowView("nav_gr_mod_b")
+  [ 13] getparam 0 .............................. <me>
+  [ 15] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 17] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 19] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 22] setlocal 1 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [ 24] getlocal 0 .............................. <tFlatInfo>
+  [ 26] pushsymb 184 ............................ <#door>
+  [ 28] pusharglist 2 ........................... <tFlatInfo, #door>
+  [ 30] objcall 105 ............................. <tFlatInfo[#door]>
+  [ 32] peek 0 .................................. case tFlatInfo[#door] of
+  [ 34] pushcons 8 .............................. <"open">
+  [ 36] eq
+  [ 37] jmpifz [ 68] ............................ (case) "open":
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pushcons 28 ............................. <"nav_modify_door_open_radio">
+  [ 44] pushcons 29 ............................. <"nav_modify_door_locked_radio">
+  [ 46] pushcons 30 ............................. <"nav_modify_door_pw_radio">
+  [ 48] pusharglist 2 ........................... <["nav_modify_door_locked_radio", "nav_modify_door_pw_radio"]>
+  [ 50] pushlist ................................ <["nav_modify_door_locked_radio", "nav_modify_door_pw_radio"]>
+  [ 51] pusharglistnoret 3 ...................... <me, "nav_modify_door_open_radio", ["nav_modify_door_locked_radio", "nav_modify_door_pw_radio"]>
+  [ 53] objcall 490 ............................. me.updateRadioButton("nav_modify_door_open_radio", ["nav_modify_door_locked_radio", "nav_modify_door_pw_radio"])
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pushint8 1 .............................. <1>
+  [ 60] pusharglistnoret 2 ...................... <me, 1>
+  [ 62] objcall 488 ............................. me.hidePasswordFields(1)
+  [ 65] jmp [136]
+  [ 68] peek 0
+  [ 70] pushcons 31 ............................. <"closed">
+  [ 72] eq
+  [ 73] jmpifz [104] ............................ (case) "closed":
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pushcons 29 ............................. <"nav_modify_door_locked_radio">
+  [ 80] pushcons 28 ............................. <"nav_modify_door_open_radio">
+  [ 82] pushcons 30 ............................. <"nav_modify_door_pw_radio">
+  [ 84] pusharglist 2 ........................... <["nav_modify_door_open_radio", "nav_modify_door_pw_radio"]>
+  [ 86] pushlist ................................ <["nav_modify_door_open_radio", "nav_modify_door_pw_radio"]>
+  [ 87] pusharglistnoret 3 ...................... <me, "nav_modify_door_locked_radio", ["nav_modify_door_open_radio", "nav_modify_door_pw_radio"]>
+  [ 89] objcall 490 ............................. me.updateRadioButton("nav_modify_door_locked_radio", ["nav_modify_door_open_radio", "nav_modify_door_pw_radio"])
+  [ 92] getparam 0 .............................. <me>
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] pusharglistnoret 2 ...................... <me, 1>
+  [ 98] objcall 488 ............................. me.hidePasswordFields(1)
+  [101] jmp [136]
+  [104] peek 0
+  [106] pushcons 9 .............................. <"password">
+  [108] eq
+  [109] jmpifz [136] ............................ (case) "password":
+  [112] getparam 0 .............................. <me>
+  [114] pushcons 30 ............................. <"nav_modify_door_pw_radio">
+  [116] pushcons 28 ............................. <"nav_modify_door_open_radio">
+  [118] pushcons 29 ............................. <"nav_modify_door_locked_radio">
+  [120] pusharglist 2 ........................... <["nav_modify_door_open_radio", "nav_modify_door_locked_radio"]>
+  [122] pushlist ................................ <["nav_modify_door_open_radio", "nav_modify_door_locked_radio"]>
+  [123] pusharglistnoret 3 ...................... <me, "nav_modify_door_pw_radio", ["nav_modify_door_open_radio", "nav_modify_door_locked_radio"]>
+  [125] objcall 490 ............................. me.updateRadioButton("nav_modify_door_pw_radio", ["nav_modify_door_open_radio", "nav_modify_door_locked_radio"])
+  [128] getparam 0 .............................. <me>
+  [130] pushzero ................................ <0>
+  [131] pusharglistnoret 2 ...................... <me, 0>
+  [133] objcall 488 ............................. me.hidePasswordFields(0)
+  [136] pop 1 ................................... end case
+  [138] getparam 0 .............................. <me>
+  [140] pushcons 32 ............................. <"nav_modify_furnituremove_check">
+  [142] getlocal 0 .............................. <tFlatInfo>
+  [144] pushsymb 219 ............................ <#ableothersmovefurniture>
+  [146] pusharglist 2 ........................... <tFlatInfo, #ableothersmovefurniture>
+  [148] objcall 105 ............................. <tFlatInfo[#ableothersmovefurniture]>
+  [150] pusharglistnoret 3 ...................... <me, "nav_modify_furnituremove_check", tFlatInfo[#ableothersmovefurniture]>
+  [152] objcall 491 ............................. me.updateCheckButton("nav_modify_furnituremove_check", tFlatInfo[#ableothersmovefurniture])
+  [155] ret
+end
+
+on leaveModifyPage me
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 266 .......................... <me.pLastWindowName>
+  [  5] setlocal 0 .............................. tPage = me.pLastWindowName
+  [  7] getlocal 0 .............................. <tPage>
+  [  9] peek 0 .................................. case tPage of
+  [ 11] pushcons 19 ............................. <"nav_gr_mod">
+  [ 13] eq
+  [ 14] jmpifz [107] ............................ (case) "nav_gr_mod":
+  [ 17] getprop 514 ............................. <pModifyFlatInfo>
+  [ 20] pushsymb 171 ............................ <#name>
+  [ 22] getparam 0 .............................. <me>
+  [ 24] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 26] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 28] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 31] pushcons 20 ............................. <"nav_modify_roomnamefield">
+  [ 33] pusharglist 2 ........................... <getWindow(me.pWindowTitle), "nav_modify_roomnamefield">
+  [ 35] objcall 281 ............................. <getWindow(me.pWindowTitle).getElement("nav_modify_roomnamefield")>
+  [ 38] pusharglist 1 ........................... <getWindow(me.pWindowTitle).getElement("nav_modify_roomnamefield")>
+  [ 40] objcall 172 ............................. <getWindow(me.pWindowTitle).getElement("nav_modify_roomnamefield").getText()>
+  [ 42] pusharglistnoret 3 ...................... <pModifyFlatInfo, #name, getWindow(me.pWindowTitle).getElement("nav_modify_roomnamefield").getText()>
+  [ 44] objcall 182 ............................. pModifyFlatInfo[#name] = getWindow(me.pWindowTitle).getElement("nav_modify_roomnamefield").getText()
+  [ 46] getprop 514 ............................. <pModifyFlatInfo>
+  [ 49] pushsymb 218 ............................ <#description>
+  [ 51] getparam 0 .............................. <me>
+  [ 53] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 55] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 57] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 60] pushcons 21 ............................. <"nav_modify_roomdescription_field">
+  [ 62] pusharglist 2 ........................... <getWindow(me.pWindowTitle), "nav_modify_roomdescription_field">
+  [ 64] objcall 281 ............................. <getWindow(me.pWindowTitle).getElement("nav_modify_roomdescription_field")>
+  [ 67] pusharglist 1 ........................... <getWindow(me.pWindowTitle).getElement("nav_modify_roomdescription_field")>
+  [ 69] objcall 172 ............................. <getWindow(me.pWindowTitle).getElement("nav_modify_roomdescription_field").getText()>
+  [ 71] pusharglistnoret 3 ...................... <pModifyFlatInfo, #description, getWindow(me.pWindowTitle).getElement("nav_modify_roomdescription_field").getText()>
+  [ 73] objcall 182 ............................. pModifyFlatInfo[#description] = getWindow(me.pWindowTitle).getElement("nav_modify_roomdescription_field").getText()
+  [ 75] getprop 514 ............................. <pModifyFlatInfo>
+  [ 78] pushsymb 220 ............................ <#maxVisitors>
+  [ 80] getparam 0 .............................. <me>
+  [ 82] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 84] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 86] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 89] pushcons 26 ............................. <"nav_maxusers_amount">
+  [ 91] pusharglist 2 ........................... <getWindow(me.pWindowTitle), "nav_maxusers_amount">
+  [ 93] objcall 281 ............................. <getWindow(me.pWindowTitle).getElement("nav_maxusers_amount")>
+  [ 96] pusharglist 1 ........................... <getWindow(me.pWindowTitle).getElement("nav_maxusers_amount")>
+  [ 98] objcall 172 ............................. <getWindow(me.pWindowTitle).getElement("nav_maxusers_amount").getText()>
+  [100] pusharglistnoret 3 ...................... <pModifyFlatInfo, #maxVisitors, getWindow(me.pWindowTitle).getElement("nav_maxusers_amount").getText()>
+  [102] objcall 182 ............................. pModifyFlatInfo[#maxVisitors] = getWindow(me.pWindowTitle).getElement("nav_maxusers_amount").getText()
+  [104] jmp [133]
+  [107] peek 0
+  [109] pushcons 27 ............................. <"nav_gr_mod_b">
+  [111] eq
+  [112] jmpifz [133] ............................ (case) "nav_gr_mod_b":
+  [115] getprop 514 ............................. <pModifyFlatInfo>
+  [118] pushsymb 185 ............................ <#Password>
+  [120] getparam 0 .............................. <me>
+  [122] pushcons 33 ............................. <"nav_modify_door_pw">
+  [124] pusharglist 2 ........................... <me, "nav_modify_door_pw">
+  [126] objcall 480 ............................. <me.getPasswordFromField("nav_modify_door_pw")>
+  [129] pusharglistnoret 3 ...................... <pModifyFlatInfo, #Password, me.getPasswordFromField("nav_modify_door_pw")>
+  [131] objcall 182 ............................. pModifyFlatInfo[#Password] = me.getPasswordFromField("nav_modify_door_pw")
+  [133] pop 1 ................................... end case
+  [135] ret
+end
+
+on showHideRefreshRecomLink me, tShow
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 255 .......................... <me.pWindowTitle>
+  [  4] pusharglist 1 ........................... <me.pWindowTitle>
+  [  6] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [  9] setlocal 0 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [ 11] getlocal 0 .............................. <tWndObj>
+  [ 13] not ..................................... <not tWndObj>
+  [ 14] jmpifz [ 22] ............................ if not tWndObj then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 93 .............................. return 0
+  [ 22] getlocal 0 .............................. <tWndObj>
+  [ 24] pushcons 34 ............................. <"nav_refresh_recoms">
+  [ 26] pusharglist 2 ........................... <tWndObj, "nav_refresh_recoms">
+  [ 28] objcall 280 ............................. <tWndObj.elementExists("nav_refresh_recoms")>
+  [ 31] not ..................................... <not tWndObj.elementExists("nav_refresh_recoms")>
+  [ 32] jmpifz [ 40] ............................ if not tWndObj.elementExists("nav_refresh_recoms") then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 93 .............................. return 0
+  [ 40] getlocal 0 .............................. <tWndObj>
+  [ 42] pushcons 34 ............................. <"nav_refresh_recoms">
+  [ 44] pusharglist 2 ........................... <tWndObj, "nav_refresh_recoms">
+  [ 46] objcall 281 ............................. <tWndObj.getElement("nav_refresh_recoms")>
+  [ 49] setlocal 1 .............................. tElem = tWndObj.getElement("nav_refresh_recoms")
+  [ 51] getparam 1 .............................. <tShow>
+  [ 53] jmpifz [ 66] ............................ if tShow then / else
+  [ 56] getlocal 1 .............................. <tElem>
+  [ 58] pusharglistnoret 1 ...................... <tElem>
+  [ 60] objcall 276 ............................. tElem.show()
+  [ 63] jmp [ 72]
+  [ 66] getlocal 1 .............................. <tElem>
+  [ 68] pusharglistnoret 1 ...................... <tElem>
+  [ 70] objcall 99 .............................. tElem.hide()
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 1 ...................... <1>
+  [ 76] extcall 93 .............................. return 1
+  [ 78] ret
+end
+
+on hidePasswordFields me, tHidden
+  [  0] pushcons 33 ............................. <"nav_modify_door_pw">
+  [  2] pushcons 35 ............................. <"nav_modify_door_pw2">
+  [  4] pushcons 36 ............................. <"nav_pwfields">
+  [  6] pushcons 37 ............................. <"nav_pwdescr">
+  [  8] pusharglist 4 ........................... <["nav_modify_door_pw", "nav_modify_door_pw2", "nav_pwfields", "nav_pwdescr"]>
+  [ 10] pushlist ................................ <["nav_modify_door_pw", "nav_modify_door_pw2", "nav_pwfields", "nav_pwdescr"]>
+  [ 11] setlocal 0 .............................. tPassWordElements = ["nav_modify_door_pw", "nav_modify_door_pw2", "nav_pwfields", "nav_pwdescr"]
+  [ 13] getparam 0 .............................. <me>
+  [ 15] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 17] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 19] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 22] setlocal 1 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [ 24] getlocal 0 .............................. <tPassWordElements>
+  [ 26] peek 0
+  [ 28] pusharglist 1
+  [ 30] extcall 106
+  [ 32] pushint8 1
+  [ 34] peek 0
+  [ 36] peek 2
+  [ 38] lteq
+  [ 39] jmpifz [ 80] ............................ repeat with tElemID in tPassWordElements
+  [ 42] peek 2
+  [ 44] peek 1
+  [ 46] pusharglist 2
+  [ 48] extcall 105
+  [ 50] setlocal 2
+  [ 52] getlocal 1 .............................. <tWndObj>
+  [ 54] getlocal 2 .............................. <tElemID>
+  [ 56] pusharglist 2 ........................... <tWndObj, tElemID>
+  [ 58] objcall 281 ............................. <tWndObj.getElement(tElemID)>
+  [ 61] setlocal 3 .............................. tElem = tWndObj.getElement(tElemID)
+  [ 63] getlocal 3 .............................. <tElem>
+  [ 65] pushsymb 279 ............................ <#visible>
+  [ 68] getparam 1 .............................. <tHidden>
+  [ 70] not ..................................... <not tHidden>
+  [ 71] pusharglistnoret 3 ...................... <tElem, #visible, not tHidden>
+  [ 73] objcall 146 ............................. tElem.setProperty(#visible, not tHidden)
+  [ 75] pushint8 1
+  [ 77] add
+  [ 78] endrepeat [ 34]
+  [ 80] pop 3
+  [ 82] ret
+end
+
+on checkModifiedFlatPasswords me
+  [  0] pushcons 33 ............................. <"nav_modify_door_pw">
+  [  2] setlocal 0 .............................. tElementId1 = "nav_modify_door_pw"
+  [  4] pushcons 35 ............................. <"nav_modify_door_pw2">
+  [  6] setlocal 1 .............................. tElementId2 = "nav_modify_door_pw2"
+  [  8] getprop 466 ............................. <pFlatPasswords>
+  [ 11] getlocal 0 .............................. <tElementId1>
+  [ 13] pusharglist 2 ........................... <pFlatPasswords, tElementId1>
+  [ 15] objcall 105 ............................. <pFlatPasswords[tElementId1]>
+  [ 17] setlocal 2 .............................. tPw1 = pFlatPasswords[tElementId1]
+  [ 19] getprop 466 ............................. <pFlatPasswords>
+  [ 22] getlocal 1 .............................. <tElementId2>
+  [ 24] pusharglist 2 ........................... <pFlatPasswords, tElementId2>
+  [ 26] objcall 105 ............................. <pFlatPasswords[tElementId2]>
+  [ 28] setlocal 3 .............................. tPw2 = pFlatPasswords[tElementId2]
+  [ 30] getlocal 2 .............................. <tPw1>
+  [ 32] getobjprop 214 .......................... <tPw1.length>
+  [ 34] pushzero ................................ <0>
+  [ 35] eq ...................................... <tPw1.length = 0>
+  [ 36] jmpifz [ 62] ............................ if tPw1.length = 0 then
+  [ 39] pushsymb 191 ............................ <#alert>
+  [ 41] pushsymb 192 ............................ <#Msg>
+  [ 43] pushcons 38 ............................. <"Alert_ForgotSetPassword">
+  [ 45] pushsymb 527 ............................ <#modal>
+  [ 48] pushint8 1 .............................. <1>
+  [ 50] pusharglist 4 ........................... <[#Msg: "Alert_ForgotSetPassword", #modal: 1]>
+  [ 52] pushproplist ............................ <[#Msg: "Alert_ForgotSetPassword", #modal: 1]>
+  [ 53] pusharglistnoret 2 ...................... <#alert, [#Msg: "Alert_ForgotSetPassword", #modal: 1]>
+  [ 55] extcall 97 .............................. executeMessage(#alert, [#Msg: "Alert_ForgotSetPassword", #modal: 1])
+  [ 57] pushzero ................................ <0>
+  [ 58] pusharglistnoret 1 ...................... <0>
+  [ 60] extcall 93 .............................. return 0
+  [ 62] getlocal 2 .............................. <tPw1>
+  [ 64] getobjprop 214 .......................... <tPw1.length>
+  [ 66] pushint8 3 .............................. <3>
+  [ 68] lt ...................................... <tPw1.length < 3>
+  [ 69] jmpifz [ 95] ............................ if tPw1.length < 3 then
+  [ 72] pushsymb 191 ............................ <#alert>
+  [ 74] pushsymb 192 ............................ <#Msg>
+  [ 76] pushcons 39 ............................. <"nav_error_passwordtooshort">
+  [ 78] pushsymb 527 ............................ <#modal>
+  [ 81] pushint8 1 .............................. <1>
+  [ 83] pusharglist 4 ........................... <[#Msg: "nav_error_passwordtooshort", #modal: 1]>
+  [ 85] pushproplist ............................ <[#Msg: "nav_error_passwordtooshort", #modal: 1]>
+  [ 86] pusharglistnoret 2 ...................... <#alert, [#Msg: "nav_error_passwordtooshort", #modal: 1]>
+  [ 88] extcall 97 .............................. executeMessage(#alert, [#Msg: "nav_error_passwordtooshort", #modal: 1])
+  [ 90] pushzero ................................ <0>
+  [ 91] pusharglistnoret 1 ...................... <0>
+  [ 93] extcall 93 .............................. return 0
+  [ 95] getlocal 2 .............................. <tPw1>
+  [ 97] getlocal 3 .............................. <tPw2>
+  [ 99] nteq .................................... <tPw1 <> tPw2>
+  [100] jmpifz [126] ............................ if tPw1 <> tPw2 then
+  [103] pushsymb 191 ............................ <#alert>
+  [105] pushsymb 192 ............................ <#Msg>
+  [107] pushcons 40 ............................. <"Alert_WrongPassword">
+  [109] pushsymb 527 ............................ <#modal>
+  [112] pushint8 1 .............................. <1>
+  [114] pusharglist 4 ........................... <[#Msg: "Alert_WrongPassword", #modal: 1]>
+  [116] pushproplist ............................ <[#Msg: "Alert_WrongPassword", #modal: 1]>
+  [117] pusharglistnoret 2 ...................... <#alert, [#Msg: "Alert_WrongPassword", #modal: 1]>
+  [119] extcall 97 .............................. executeMessage(#alert, [#Msg: "Alert_WrongPassword", #modal: 1])
+  [121] pushzero ................................ <0>
+  [122] pusharglistnoret 1 ...................... <0>
+  [124] extcall 93 .............................. return 0
+  [126] pushint8 1 .............................. <1>
+  [128] pusharglistnoret 1 ...................... <1>
+  [130] extcall 93 .............................. return 1
+  [132] ret
+end
+
+on updateRadioButton me, tElement, tListOfOthersElements
+  [  0] pushcons 41 ............................. <"button.radio.on">
+  [  2] pusharglist 1 ........................... <"button.radio.on">
+  [  4] extcall 373 ............................. <getmemnum("button.radio.on")>
+  [  7] pusharglist 1 ........................... <getmemnum("button.radio.on")>
+  [  9] extcall 372 ............................. <member(getmemnum("button.radio.on"))>
+  [ 12] getobjprop 338 .......................... <member(getmemnum("button.radio.on")).image>
+  [ 15] setlocal 0 .............................. tOnImg = member(getmemnum("button.radio.on")).image
+  [ 17] pushcons 42 ............................. <"button.radio.off">
+  [ 19] pusharglist 1 ........................... <"button.radio.off">
+  [ 21] extcall 373 ............................. <getmemnum("button.radio.off")>
+  [ 24] pusharglist 1 ........................... <getmemnum("button.radio.off")>
+  [ 26] extcall 372 ............................. <member(getmemnum("button.radio.off"))>
+  [ 29] getobjprop 338 .......................... <member(getmemnum("button.radio.off")).image>
+  [ 32] setlocal 1 .............................. tOffImg = member(getmemnum("button.radio.off")).image
+  [ 34] getparam 0 .............................. <me>
+  [ 36] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 38] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 40] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 43] setlocal 2 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [ 45] getlocal 2 .............................. <tWndObj>
+  [ 47] getparam 1 .............................. <tElement>
+  [ 49] pusharglist 2 ........................... <tWndObj, tElement>
+  [ 51] objcall 280 ............................. <tWndObj.elementExists(tElement)>
+  [ 54] jmpifz [ 73] ............................ if tWndObj.elementExists(tElement) then
+  [ 57] getlocal 2 .............................. <tWndObj>
+  [ 59] getparam 1 .............................. <tElement>
+  [ 61] pusharglist 2 ........................... <tWndObj, tElement>
+  [ 63] objcall 281 ............................. <tWndObj.getElement(tElement)>
+  [ 66] getlocal 0 .............................. <tOnImg>
+  [ 68] pusharglistnoret 2 ...................... <tWndObj.getElement(tElement), tOnImg>
+  [ 70] objcall 308 ............................. tWndObj.getElement(tElement).feedImage(tOnImg)
+  [ 73] getparam 2 .............................. <tListOfOthersElements>
+  [ 75] peek 0
+  [ 77] pusharglist 1
+  [ 79] extcall 106
+  [ 81] pushint8 1
+  [ 83] peek 0
+  [ 85] peek 2
+  [ 87] lteq
+  [ 88] jmpifz [134] ............................ repeat with tRadioElement in tListOfOthersElements
+  [ 91] peek 2
+  [ 93] peek 1
+  [ 95] pusharglist 2
+  [ 97] extcall 105
+  [ 99] setlocal 3
+  [101] getlocal 2 .............................. <tWndObj>
+  [103] getlocal 3 .............................. <tRadioElement>
+  [105] pusharglist 2 ........................... <tWndObj, tRadioElement>
+  [107] objcall 280 ............................. <tWndObj.elementExists(tRadioElement)>
+  [110] jmpifz [129] ............................ if tWndObj.elementExists(tRadioElement) then
+  [113] getlocal 2 .............................. <tWndObj>
+  [115] getlocal 3 .............................. <tRadioElement>
+  [117] pusharglist 2 ........................... <tWndObj, tRadioElement>
+  [119] objcall 281 ............................. <tWndObj.getElement(tRadioElement)>
+  [122] getlocal 1 .............................. <tOffImg>
+  [124] pusharglistnoret 2 ...................... <tWndObj.getElement(tRadioElement), tOffImg>
+  [126] objcall 308 ............................. tWndObj.getElement(tRadioElement).feedImage(tOffImg)
+  [129] pushint8 1
+  [131] add
+  [132] endrepeat [ 83]
+  [134] pop 3
+  [136] ret
+end
+
+on updateCheckButton me, tElement, tstate
+  [  0] pushcons 22 ............................. <"button.checkbox.on">
+  [  2] pusharglist 1 ........................... <"button.checkbox.on">
+  [  4] extcall 373 ............................. <getmemnum("button.checkbox.on")>
+  [  7] pusharglist 1 ........................... <getmemnum("button.checkbox.on")>
+  [  9] extcall 372 ............................. <member(getmemnum("button.checkbox.on"))>
+  [ 12] getobjprop 338 .......................... <member(getmemnum("button.checkbox.on")).image>
+  [ 15] setlocal 0 .............................. tOnImg = member(getmemnum("button.checkbox.on")).image
+  [ 17] pushcons 23 ............................. <"button.checkbox.off">
+  [ 19] pusharglist 1 ........................... <"button.checkbox.off">
+  [ 21] extcall 373 ............................. <getmemnum("button.checkbox.off")>
+  [ 24] pusharglist 1 ........................... <getmemnum("button.checkbox.off")>
+  [ 26] extcall 372 ............................. <member(getmemnum("button.checkbox.off"))>
+  [ 29] getobjprop 338 .......................... <member(getmemnum("button.checkbox.off")).image>
+  [ 32] setlocal 1 .............................. tOffImg = member(getmemnum("button.checkbox.off")).image
+  [ 34] getparam 0 .............................. <me>
+  [ 36] getobjprop 255 .......................... <me.pWindowTitle>
+  [ 38] pusharglist 1 ........................... <me.pWindowTitle>
+  [ 40] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [ 43] setlocal 2 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [ 45] getparam 2 .............................. <tstate>
+  [ 47] jmpifz [ 81] ............................ if tstate then / else
+  [ 50] getlocal 2 .............................. <tWndObj>
+  [ 52] getparam 1 .............................. <tElement>
+  [ 54] pusharglist 2 ........................... <tWndObj, tElement>
+  [ 56] objcall 280 ............................. <tWndObj.elementExists(tElement)>
+  [ 59] jmpifz [ 78] ............................ if tWndObj.elementExists(tElement) then
+  [ 62] getlocal 2 .............................. <tWndObj>
+  [ 64] getparam 1 .............................. <tElement>
+  [ 66] pusharglist 2 ........................... <tWndObj, tElement>
+  [ 68] objcall 281 ............................. <tWndObj.getElement(tElement)>
+  [ 71] getlocal 0 .............................. <tOnImg>
+  [ 73] pusharglistnoret 2 ...................... <tWndObj.getElement(tElement), tOnImg>
+  [ 75] objcall 308 ............................. tWndObj.getElement(tElement).feedImage(tOnImg)
+  [ 78] jmp [109]
+  [ 81] getlocal 2 .............................. <tWndObj>
+  [ 83] getparam 1 .............................. <tElement>
+  [ 85] pusharglist 2 ........................... <tWndObj, tElement>
+  [ 87] objcall 280 ............................. <tWndObj.elementExists(tElement)>
+  [ 90] jmpifz [109] ............................ if tWndObj.elementExists(tElement) then
+  [ 93] getlocal 2 .............................. <tWndObj>
+  [ 95] getparam 1 .............................. <tElement>
+  [ 97] pusharglist 2 ........................... <tWndObj, tElement>
+  [ 99] objcall 281 ............................. <tWndObj.getElement(tElement)>
+  [102] getlocal 1 .............................. <tOffImg>
+  [104] pusharglistnoret 2 ...................... <tWndObj.getElement(tElement), tOffImg>
+  [106] objcall 308 ............................. tWndObj.getElement(tElement).feedImage(tOffImg)
+  [109] ret
+end
+
+on prepareCategoryDropMenu me, tNodeId
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 255 .......................... <me.pWindowTitle>
+  [  4] pusharglist 1 ........................... <me.pWindowTitle>
+  [  6] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [  9] setlocal 0 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [ 11] getlocal 0 .............................. <tWndObj>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tWndObj = 0>
+  [ 15] jmpifz [ 23] ............................ if tWndObj = 0 then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 93 .............................. return 0
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglist 1 ........................... <me>
+  [ 27] objcall 136 ............................. <me.getComponent()>
+  [ 29] getparam 1 .............................. <tNodeId>
+  [ 31] pushsymb 142 ............................ <#parentid>
+  [ 33] pusharglist 3 ........................... <me.getComponent(), tNodeId, #parentid>
+  [ 35] objcall 12 .............................. <me.getComponent().getNodeProperty(tNodeId, #parentid)>
+  [ 37] setlocal 1 .............................. tDefaultCatId = me.getComponent().getNodeProperty(tNodeId, #parentid)
+  [ 39] getlocal 0 .............................. <tWndObj>
+  [ 41] pushcons 43 ............................. <"nav_choosecategory">
+  [ 43] pusharglist 2 ........................... <tWndObj, "nav_choosecategory">
+  [ 45] objcall 281 ............................. <tWndObj.getElement("nav_choosecategory")>
+  [ 48] setlocal 2 .............................. tDropDown = tWndObj.getElement("nav_choosecategory")
+  [ 50] getlocal 2 .............................. <tDropDown>
+  [ 52] pushsymb 536 ............................ <#instance>
+  [ 55] pusharglist 2 ........................... <tDropDown, #instance>
+  [ 57] extcall 159 ............................. <ilk(tDropDown, #instance)>
+  [ 59] not ..................................... <not ilk(tDropDown, #instance)>
+  [ 60] jmpifz [ 83] ............................ if not ilk(tDropDown, #instance) then
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pushcons 44 ............................. <"Unable to retrieve dropdown:">
+  [ 67] getlocal 2 .............................. <tDropDown>
+  [ 69] joinpadstr .............................. <"Unable to retrieve dropdown:" && tDropDown>
+  [ 70] pushsymb 300 ............................ <#prepareCategoryDropMenu>
+  [ 73] pushsymb 138 ............................ <#major>
+  [ 75] pusharglist 4 ........................... <me, "Unable to retrieve dropdown:" && tDropDown, #prepareCategoryDropMenu, #major>
+  [ 77] extcall 137 ............................. <error(me, "Unable to retrieve dropdown:" && tDropDown, #prepareCategoryDropMenu, #major)>
+  [ 79] pusharglistnoret 1 ...................... <error(me, "Unable to retrieve dropdown:" && tDropDown, #prepareCategoryDropMenu, #major)>
+  [ 81] extcall 93 .............................. return error(me, "Unable to retrieve dropdown:" && tDropDown, #prepareCategoryDropMenu, #major)
+  [ 83] pushsymb 82 ............................. <#session>
+  [ 85] pusharglist 1 ........................... <#session>
+  [ 87] extcall 81 .............................. <getObject(#session)>
+  [ 89] pushcons 45 ............................. <"user_flat_cats">
+  [ 91] pusharglist 2 ........................... <getObject(#session), "user_flat_cats">
+  [ 93] objcall 153 ............................. <getObject(#session).GET("user_flat_cats")>
+  [ 95] setlocal 3 .............................. tCatProps = getObject(#session).GET("user_flat_cats")
+  [ 97] getlocal 3 .............................. <tCatProps>
+  [ 99] pushsymb 160 ............................ <#propList>
+  [101] pusharglist 2 ........................... <tCatProps, #propList>
+  [103] extcall 159 ............................. <ilk(tCatProps, #propList)>
+  [105] not ..................................... <not ilk(tCatProps, #propList)>
+  [106] jmpifz [129] ............................ if not ilk(tCatProps, #propList) then
+  [109] getparam 0 .............................. <me>
+  [111] pushcons 46 ............................. <"Category list was not a property list:">
+  [113] getlocal 3 .............................. <tCatProps>
+  [115] joinpadstr .............................. <"Category list was not a property list:" && tCatProps>
+  [116] pushsymb 300 ............................ <#prepareCategoryDropMenu>
+  [119] pushsymb 138 ............................ <#major>
+  [121] pusharglist 4 ........................... <me, "Category list was not a property list:" && tCatProps, #prepareCategoryDropMenu, #major>
+  [123] extcall 137 ............................. <error(me, "Category list was not a property list:" && tCatProps, #prepareCategoryDropMenu, #major)>
+  [125] pusharglistnoret 1 ...................... <error(me, "Category list was not a property list:" && tCatProps, #prepareCategoryDropMenu, #major)>
+  [127] extcall 93 .............................. return error(me, "Category list was not a property list:" && tCatProps, #prepareCategoryDropMenu, #major)
+  [129] pusharglist 0 ........................... <[]>
+  [131] pushlist ................................ <[]>
+  [132] setlocal 4 .............................. tCatTxtItems = []
+  [134] pusharglist 0 ........................... <[]>
+  [136] pushlist ................................ <[]>
+  [137] setlocal 5 .............................. tCatKeyItems = []
+  [139] pushint8 1 .............................. <1>
+  [141] setlocal 6
+  [143] getlocal 6
+  [145] getlocal 3 .............................. <tCatProps>
+  [147] getobjprop 106 .......................... <tCatProps.count>
+  [149] lteq
+  [150] jmpifz [194] ............................ repeat with i = 1 to tCatProps.count
+  [153] getlocal 4 .............................. <tCatTxtItems>
+  [155] getlocal 6 .............................. <i>
+  [157] getlocal 3 .............................. <tCatProps>
+  [159] getlocal 6 .............................. <i>
+  [161] pusharglist 2 ........................... <tCatProps, i>
+  [163] extcall 105 ............................. <getAt(tCatProps, i)>
+  [165] pusharglistnoret 3 ...................... <tCatTxtItems, i, getAt(tCatProps, i)>
+  [167] objcall 182 ............................. tCatTxtItems[i] = getAt(tCatProps, i)
+  [169] getlocal 5 .............................. <tCatKeyItems>
+  [171] getlocal 6 .............................. <i>
+  [173] getlocal 3 .............................. <tCatProps>
+  [175] getlocal 6 .............................. <i>
+  [177] pusharglist 2 ........................... <tCatProps, i>
+  [179] extcall 196 ............................. <getPropAt(tCatProps, i)>
+  [181] pusharglistnoret 3 ...................... <tCatKeyItems, i, getPropAt(tCatProps, i)>
+  [183] objcall 182 ............................. tCatKeyItems[i] = getPropAt(tCatProps, i)
+  [185] pushint8 1
+  [187] getlocal 6
+  [189] add
+  [190] setlocal 6
+  [192] endrepeat [143]
+  [194] getlocal 5 .............................. <tCatKeyItems>
+  [196] getlocal 1 .............................. <tDefaultCatId>
+  [198] pusharglist 2 ........................... <tCatKeyItems, tDefaultCatId>
+  [200] objcall 168 ............................. <tCatKeyItems.getPos(tDefaultCatId)>
+  [202] setlocal 7 .............................. tDefaultCatItem = tCatKeyItems.getPos(tDefaultCatId)
+  [204] getlocal 7 .............................. <tDefaultCatItem>
+  [206] pushzero ................................ <0>
+  [207] eq ...................................... <tDefaultCatItem = 0>
+  [208] jmpifz [215] ............................ if tDefaultCatItem = 0 then
+  [211] pushint8 1 .............................. <1>
+  [213] setlocal 7 .............................. tDefaultCatItem = 1
+  [215] getlocal 2 .............................. <tDropDown>
+  [217] getlocal 4 .............................. <tCatTxtItems>
+  [219] getlocal 5 .............................. <tCatKeyItems>
+  [221] getlocal 7 .............................. <tDefaultCatItem>
+  [223] pusharglistnoret 4 ...................... <tDropDown, tCatTxtItems, tCatKeyItems, tDefaultCatItem>
+  [225] objcall 537 ............................. tDropDown.updateData(tCatTxtItems, tCatKeyItems, tDefaultCatItem)
+  [228] pushint8 1 .............................. <1>
+  [230] pusharglistnoret 1 ...................... <1>
+  [232] extcall 93 .............................. return 1
+  [234] ret
+end
+
+on eventProcNavigatorPublic me, tEvent, tSprID, tParm
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 294 ............................ <#mouseDown>
+  [  5] eq ...................................... <tEvent = #mouseDown>
+  [  6] jmpifz [165] ............................ if tEvent = #mouseDown then / else
+  [  9] getparam 2 .............................. <tSprID>
+  [ 11] peek 0 .................................. case tSprID of
+  [ 13] pushcons 47 ............................. <"nav_closeInfo">
+  [ 15] eq
+  [ 16] jmpifz [ 30] ............................ (case) "nav_closeInfo":
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushsymb 99 ............................. <#hide>
+  [ 23] pusharglistnoret 2 ...................... <me, #hide>
+  [ 25] objcall 249 ............................. me.setRoomInfoArea(#hide)
+  [ 27] jmp [160]
+  [ 30] peek 0
+  [ 32] pushcons 48 ............................. <"nav_tb_guestRooms">
+  [ 34] eq
+  [ 35] jmpifz [ 66] ............................ (case) "nav_tb_guestRooms":
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] pusharglistnoret 2 ...................... <me, 1>
+  [ 44] objcall 250 ............................. me.setLoadingCursor(1)
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pushsymb 276 ............................ <#show>
+  [ 51] pusharglistnoret 2 ...................... <me, #show>
+  [ 53] objcall 249 ............................. me.setRoomInfoArea(#show)
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pushcons 49 ............................. <"nav_gr0">
+  [ 59] pusharglistnoret 2 ...................... <me, "nav_gr0">
+  [ 61] objcall 240 ............................. me.ChangeWindowView("nav_gr0")
+  [ 63] jmp [160]
+  [ 66] peek 0
+  [ 68] pushcons 50 ............................. <"nav_roomlistBackLinks">
+  [ 70] eq
+  [ 71] jmpifz [111] ............................ (case) "nav_roomlistBackLinks":
+  [ 74] pop 1
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pusharglist 1 ........................... <me>
+  [ 80] objcall 136 ............................. <me.getComponent()>
+  [ 82] getparam 3 .............................. <tParm>
+  [ 84] getobjprop 329 .......................... <tParm.locV>
+  [ 87] getparam 0 .............................. <me>
+  [ 89] getobjprop 260 .......................... <me.pHistoryItemHeight>
+  [ 92] div ..................................... <tParm.locV / me.pHistoryItemHeight>
+  [ 93] pusharglist 1 ........................... <tParm.locV / me.pHistoryItemHeight>
+  [ 95] extcall 201 ............................. <integer(tParm.locV / me.pHistoryItemHeight)>
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] add ..................................... <integer(tParm.locV / me.pHistoryItemHeight) + 1>
+  [100] pusharglist 2 ........................... <me.getComponent(), integer(tParm.locV / me.pHistoryItemHeight) + 1>
+  [102] objcall 22 .............................. <me.getComponent().expandHistoryItem(integer(tParm.locV / me.pHistoryItemHeight) + 1)>
+  [104] pusharglistnoret 1 ...................... <me.getComponent().expandHistoryItem(integer(tParm.locV / me.pHistoryItemHeight) + 1)>
+  [106] extcall 93 .............................. return me.getComponent().expandHistoryItem(integer(tParm.locV / me.pHistoryItemHeight) + 1)
+  [108] jmp [160]
+  [111] peek 0
+  [113] pushcons 17 ............................. <"nav_roomlist">
+  [115] eq
+  [116] jmpifz [131] ............................ (case) "nav_roomlist":
+  [119] getparam 0 .............................. <me>
+  [121] getparam 3 .............................. <tParm>
+  [123] pusharglistnoret 2 ...................... <me, tParm>
+  [125] objcall 482 ............................. me.handleRoomListClicked(tParm)
+  [128] jmp [160]
+  [131] peek 0
+  [133] pushcons 51 ............................. <"create_room">
+  [135] nteq
+  [136] jmpifz [147] ............................ (case) "create_room", ...
+  [139] peek 0
+  [141] pushcons 52 ............................. <"nav_public_helptext">
+  [143] eq
+  [144] jmpifz [160] ............................ (case) ..., "nav_public_helptext":
+  [147] pop 1
+  [149] pushsymb 544 ............................ <#open_roomkiosk>
+  [152] pusharglist 1 ........................... <#open_roomkiosk>
+  [154] extcall 97 .............................. <executeMessage(#open_roomkiosk)>
+  [156] pusharglistnoret 1 ...................... <executeMessage(#open_roomkiosk)>
+  [158] extcall 93 .............................. return executeMessage(#open_roomkiosk)
+  [160] pop 1 ................................... end case
+  [162] jmp [317]
+  [165] getparam 1 .............................. <tEvent>
+  [167] pushsymb 296 ............................ <#mouseUp>
+  [170] eq ...................................... <tEvent = #mouseUp>
+  [171] jmpifz [317] ............................ if tEvent = #mouseUp then
+  [174] getparam 2 .............................. <tSprID>
+  [176] peek 0 .................................. case tSprID of
+  [178] pushcons 53 ............................. <"close">
+  [180] eq
+  [181] jmpifz [201] ............................ (case) "close":
+  [184] pop 1
+  [186] getparam 0 .............................. <me>
+  [188] pushsymb 99 ............................. <#hide>
+  [190] pusharglist 2 ........................... <me, #hide>
+  [192] objcall 3 ............................... <me.hideNavigator(#hide)>
+  [194] pusharglistnoret 1 ...................... <me.hideNavigator(#hide)>
+  [196] extcall 93 .............................. return me.hideNavigator(#hide)
+  [198] jmp [315]
+  [201] peek 0
+  [203] pushcons 54 ............................. <"nav_go_button">
+  [205] eq
+  [206] jmpifz [237] ............................ (case) "nav_go_button":
+  [209] pop 1
+  [211] getparam 0 .............................. <me>
+  [213] pusharglist 1 ........................... <me>
+  [215] objcall 136 ............................. <me.getComponent()>
+  [217] getparam 0 .............................. <me>
+  [219] pushsymb 288 ............................ <#viewedNodeId>
+  [222] pusharglist 2 ........................... <me, #viewedNodeId>
+  [224] objcall 180 ............................. <me.getProperty(#viewedNodeId)>
+  [226] pusharglist 2 ........................... <me.getComponent(), me.getProperty(#viewedNodeId)>
+  [228] objcall 19 .............................. <me.getComponent().prepareRoomEntry(me.getProperty(#viewedNodeId))>
+  [230] pusharglistnoret 1 ...................... <me.getComponent().prepareRoomEntry(me.getProperty(#viewedNodeId))>
+  [232] extcall 93 .............................. return me.getComponent().prepareRoomEntry(me.getProperty(#viewedNodeId))
+  [234] jmp [315]
+  [237] peek 0
+  [239] pushcons 55 ............................. <"nav_addtofavourites_button">
+  [241] eq
+  [242] jmpifz [283] ............................ (case) "nav_addtofavourites_button":
+  [245] getparam 0 .............................. <me>
+  [247] pusharglist 1 ........................... <me>
+  [249] objcall 136 ............................. <me.getComponent()>
+  [251] getparam 0 .............................. <me>
+  [253] pushsymb 288 ............................ <#viewedNodeId>
+  [256] pusharglist 2 ........................... <me, #viewedNodeId>
+  [258] objcall 180 ............................. <me.getProperty(#viewedNodeId)>
+  [260] pusharglistnoret 2 ...................... <me.getComponent(), me.getProperty(#viewedNodeId)>
+  [262] objcall 44 .............................. me.getComponent().sendAddFavoriteFlat(me.getProperty(#viewedNodeId))
+  [264] pop 1
+  [266] getparam 0 .............................. <me>
+  [268] pusharglist 1 ........................... <me>
+  [270] objcall 136 ............................. <me.getComponent()>
+  [272] pusharglist 1 ........................... <me.getComponent()>
+  [274] objcall 43 .............................. <me.getComponent().sendGetFavoriteFlats()>
+  [276] pusharglistnoret 1 ...................... <me.getComponent().sendGetFavoriteFlats()>
+  [278] extcall 93 .............................. return me.getComponent().sendGetFavoriteFlats()
+  [280] jmp [315]
+  [283] peek 0
+  [285] pushcons 56 ............................. <"nav_hidefull">
+  [287] eq
+  [288] jmpifz [315] ............................ (case) "nav_hidefull":
+  [291] pop 1
+  [293] getparam 0 .............................. <me>
+  [295] pusharglist 1 ........................... <me>
+  [297] objcall 136 ............................. <me.getComponent()>
+  [299] getparam 0 .............................. <me>
+  [301] pushsymb 144 ............................ <#categoryId>
+  [303] pusharglist 2 ........................... <me, #categoryId>
+  [305] objcall 180 ............................. <me.getProperty(#categoryId)>
+  [307] pusharglist 2 ........................... <me.getComponent(), me.getProperty(#categoryId)>
+  [309] objcall 25 .............................. <me.getComponent().showHideFullRooms(me.getProperty(#categoryId))>
+  [311] pusharglistnoret 1 ...................... <me.getComponent().showHideFullRooms(me.getProperty(#categoryId))>
+  [313] extcall 93 .............................. return me.getComponent().showHideFullRooms(me.getProperty(#categoryId))
+  [315] pop 1 ................................... end case
+  [317] ret
+end
+
+on eventProcNavigatorPrivate me, tEvent, tSprID, tParm
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 294 ............................ <#mouseDown>
+  [  5] eq ...................................... <tEvent = #mouseDown>
+  [  6] jmpifz [228] ............................ if tEvent = #mouseDown then / else
+  [  9] getparam 2 .............................. <tSprID>
+  [ 11] peek 0 .................................. case tSprID of
+  [ 13] pushcons 47 ............................. <"nav_closeInfo">
+  [ 15] eq
+  [ 16] jmpifz [ 30] ............................ (case) "nav_closeInfo":
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushsymb 99 ............................. <#hide>
+  [ 23] pusharglistnoret 2 ...................... <me, #hide>
+  [ 25] objcall 249 ............................. me.setRoomInfoArea(#hide)
+  [ 27] jmp [223]
+  [ 30] peek 0
+  [ 32] pushcons 57 ............................. <"nav_tb_publicRooms">
+  [ 34] eq
+  [ 35] jmpifz [ 66] ............................ (case) "nav_tb_publicRooms":
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] pusharglistnoret 2 ...................... <me, 1>
+  [ 44] objcall 250 ............................. me.setLoadingCursor(1)
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pushsymb 276 ............................ <#show>
+  [ 51] pusharglistnoret 2 ...................... <me, #show>
+  [ 53] objcall 249 ............................. me.setRoomInfoArea(#show)
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pushcons 58 ............................. <"nav_pr">
+  [ 59] pusharglistnoret 2 ...................... <me, "nav_pr">
+  [ 61] objcall 240 ............................. me.ChangeWindowView("nav_pr")
+  [ 63] jmp [223]
+  [ 66] peek 0
+  [ 68] pushcons 48 ............................. <"nav_tb_guestRooms">
+  [ 70] eq
+  [ 71] jmpifz [ 93] ............................ (case) "nav_tb_guestRooms":
+  [ 74] getparam 0 .............................. <me>
+  [ 76] pushint8 1 .............................. <1>
+  [ 78] pusharglistnoret 2 ...................... <me, 1>
+  [ 80] objcall 250 ............................. me.setLoadingCursor(1)
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pushcons 49 ............................. <"nav_gr0">
+  [ 86] pusharglistnoret 2 ...................... <me, "nav_gr0">
+  [ 88] objcall 240 ............................. me.ChangeWindowView("nav_gr0")
+  [ 90] jmp [223]
+  [ 93] peek 0
+  [ 95] pushcons 59 ............................. <"nav_tab_srch">
+  [ 97] eq
+  [ 98] jmpifz [112] ............................ (case) "nav_tab_srch":
+  [101] getparam 0 .............................. <me>
+  [103] pushcons 60 ............................. <"nav_gr_src">
+  [105] pusharglistnoret 2 ...................... <me, "nav_gr_src">
+  [107] objcall 240 ............................. me.ChangeWindowView("nav_gr_src")
+  [109] jmp [223]
+  [112] peek 0
+  [114] pushcons 61 ............................. <"nav_tab_own">
+  [116] eq
+  [117] jmpifz [146] ............................ (case) "nav_tab_own":
+  [120] getparam 0 .............................. <me>
+  [122] pushint8 1 .............................. <1>
+  [124] pusharglistnoret 2 ...................... <me, 1>
+  [126] objcall 250 ............................. me.setLoadingCursor(1)
+  [128] getparam 0 .............................. <me>
+  [130] pushcons 62 ............................. <"nav_gr_own">
+  [132] pusharglistnoret 2 ...................... <me, "nav_gr_own">
+  [134] objcall 240 ............................. me.ChangeWindowView("nav_gr_own")
+  [136] pushsymb 547 ............................ <#tutorial_ownrooms_tab_clicked>
+  [139] pusharglistnoret 1 ...................... <#tutorial_ownrooms_tab_clicked>
+  [141] extcall 97 .............................. executeMessage(#tutorial_ownrooms_tab_clicked)
+  [143] jmp [223]
+  [146] peek 0
+  [148] pushcons 63 ............................. <"nav_tab_fav">
+  [150] eq
+  [151] jmpifz [173] ............................ (case) "nav_tab_fav":
+  [154] getparam 0 .............................. <me>
+  [156] pushint8 1 .............................. <1>
+  [158] pusharglistnoret 2 ...................... <me, 1>
+  [160] objcall 250 ............................. me.setLoadingCursor(1)
+  [162] getparam 0 .............................. <me>
+  [164] pushcons 64 ............................. <"nav_gr_fav">
+  [166] pusharglistnoret 2 ...................... <me, "nav_gr_fav">
+  [168] objcall 240 ............................. me.ChangeWindowView("nav_gr_fav")
+  [170] jmp [223]
+  [173] peek 0
+  [175] pushcons 50 ............................. <"nav_roomlistBackLinks">
+  [177] eq
+  [178] jmpifz [223] ............................ (case) "nav_roomlistBackLinks":
+  [181] getparam 0 .............................. <me>
+  [183] pushint8 1 .............................. <1>
+  [185] pusharglistnoret 2 ...................... <me, 1>
+  [187] objcall 250 ............................. me.setLoadingCursor(1)
+  [189] pop 1
+  [191] getparam 0 .............................. <me>
+  [193] pusharglist 1 ........................... <me>
+  [195] objcall 136 ............................. <me.getComponent()>
+  [197] getparam 3 .............................. <tParm>
+  [199] getobjprop 329 .......................... <tParm.locV>
+  [202] getparam 0 .............................. <me>
+  [204] getobjprop 260 .......................... <me.pHistoryItemHeight>
+  [207] div ..................................... <tParm.locV / me.pHistoryItemHeight>
+  [208] pusharglist 1 ........................... <tParm.locV / me.pHistoryItemHeight>
+  [210] extcall 201 ............................. <integer(tParm.locV / me.pHistoryItemHeight)>
+  [212] pushint8 1 .............................. <1>
+  [214] add ..................................... <integer(tParm.locV / me.pHistoryItemHeight) + 1>
+  [215] pusharglist 2 ........................... <me.getComponent(), integer(tParm.locV / me.pHistoryItemHeight) + 1>
+  [217] objcall 22 .............................. <me.getComponent().expandHistoryItem(integer(tParm.locV / me.pHistoryItemHeight) + 1)>
+  [219] pusharglistnoret 1 ...................... <me.getComponent().expandHistoryItem(integer(tParm.locV / me.pHistoryItemHeight) + 1)>
+  [221] extcall 93 .............................. return me.getComponent().expandHistoryItem(integer(tParm.locV / me.pHistoryItemHeight) + 1)
+  [223] pop 1 ................................... end case
+  [225] jmp [959]
+  [228] getparam 1 .............................. <tEvent>
+  [230] pushsymb 296 ............................ <#mouseUp>
+  [233] eq ...................................... <tEvent = #mouseUp>
+  [234] jmpifz [831] ............................ if tEvent = #mouseUp then / else
+  [237] getparam 2 .............................. <tSprID>
+  [239] peek 0 .................................. case tSprID of
+  [241] pushcons 65 ............................. <"nav_recom_roomlist">
+  [243] eq
+  [244] jmpifz [273] ............................ (case) "nav_recom_roomlist":
+  [247] getparam 0 .............................. <me>
+  [249] pushint8 1 .............................. <1>
+  [251] pusharglistnoret 2 ...................... <me, 1>
+  [253] objcall 250 ............................. me.setLoadingCursor(1)
+  [255] pop 1
+  [257] getparam 0 .............................. <me>
+  [259] getparam 3 .............................. <tParm>
+  [261] pusharglist 2 ........................... <me, tParm>
+  [263] objcall 481 ............................. <me.handleRecommendedRoomListClicked(tParm)>
+  [266] pusharglistnoret 1 ...................... <me.handleRecommendedRoomListClicked(tParm)>
+  [268] extcall 93 .............................. return me.handleRecommendedRoomListClicked(tParm)
+  [270] jmp [826]
+  [273] peek 0
+  [275] pushcons 17 ............................. <"nav_roomlist">
+  [277] eq
+  [278] jmpifz [307] ............................ (case) "nav_roomlist":
+  [281] getparam 0 .............................. <me>
+  [283] pushint8 1 .............................. <1>
+  [285] pusharglistnoret 2 ...................... <me, 1>
+  [287] objcall 250 ............................. me.setLoadingCursor(1)
+  [289] pop 1
+  [291] getparam 0 .............................. <me>
+  [293] getparam 3 .............................. <tParm>
+  [295] pusharglist 2 ........................... <me, tParm>
+  [297] objcall 482 ............................. <me.handleRoomListClicked(tParm)>
+  [300] pusharglistnoret 1 ...................... <me.handleRoomListClicked(tParm)>
+  [302] extcall 93 .............................. return me.handleRoomListClicked(tParm)
+  [304] jmp [826]
+  [307] peek 0
+  [309] pushcons 53 ............................. <"close">
+  [311] eq
+  [312] jmpifz [326] ............................ (case) "close":
+  [315] getparam 0 .............................. <me>
+  [317] pushsymb 99 ............................. <#hide>
+  [319] pusharglistnoret 2 ...................... <me, #hide>
+  [321] objcall 3 ............................... me.hideNavigator(#hide)
+  [323] jmp [826]
+  [326] peek 0
+  [328] pushcons 54 ............................. <"nav_go_button">
+  [330] eq
+  [331] jmpifz [362] ............................ (case) "nav_go_button":
+  [334] pop 1
+  [336] getparam 0 .............................. <me>
+  [338] pusharglist 1 ........................... <me>
+  [340] objcall 136 ............................. <me.getComponent()>
+  [342] getparam 0 .............................. <me>
+  [344] pushsymb 288 ............................ <#viewedNodeId>
+  [347] pusharglist 2 ........................... <me, #viewedNodeId>
+  [349] objcall 180 ............................. <me.getProperty(#viewedNodeId)>
+  [351] pusharglist 2 ........................... <me.getComponent(), me.getProperty(#viewedNodeId)>
+  [353] objcall 19 .............................. <me.getComponent().prepareRoomEntry(me.getProperty(#viewedNodeId))>
+  [355] pusharglistnoret 1 ...................... <me.getComponent().prepareRoomEntry(me.getProperty(#viewedNodeId))>
+  [357] extcall 93 .............................. return me.getComponent().prepareRoomEntry(me.getProperty(#viewedNodeId))
+  [359] jmp [826]
+  [362] peek 0
+  [364] pushcons 66 ............................. <"nav_private_button_search">
+  [366] eq
+  [367] jmpifz [386] ............................ (case) "nav_private_button_search":
+  [370] pop 1
+  [372] getparam 0 .............................. <me>
+  [374] pusharglist 1 ........................... <me>
+  [376] objcall 483 ............................. <me.startFlatSearch()>
+  [379] pusharglistnoret 1 ...................... <me.startFlatSearch()>
+  [381] extcall 93 .............................. return me.startFlatSearch()
+  [383] jmp [826]
+  [386] peek 0
+  [388] pushcons 67 ............................. <"nav_modify_button">
+  [390] eq
+  [391] jmpifz [413] ............................ (case) "nav_modify_button":
+  [394] getparam 0 .............................. <me>
+  [396] getparam 0 .............................. <me>
+  [398] pushsymb 288 ............................ <#viewedNodeId>
+  [401] pusharglist 2 ........................... <me, #viewedNodeId>
+  [403] objcall 180 ............................. <me.getProperty(#viewedNodeId)>
+  [405] pusharglistnoret 2 ...................... <me, me.getProperty(#viewedNodeId)>
+  [407] objcall 484 ............................. me.modifyPrivateRoom(me.getProperty(#viewedNodeId))
+  [410] jmp [826]
+  [413] peek 0
+  [415] pushcons 55 ............................. <"nav_addtofavourites_button">
+  [417] eq
+  [418] jmpifz [453] ............................ (case) "nav_addtofavourites_button":
+  [421] getparam 0 .............................. <me>
+  [423] pusharglist 1 ........................... <me>
+  [425] objcall 136 ............................. <me.getComponent()>
+  [427] getparam 0 .............................. <me>
+  [429] pushsymb 288 ............................ <#viewedNodeId>
+  [432] pusharglist 2 ........................... <me, #viewedNodeId>
+  [434] objcall 180 ............................. <me.getProperty(#viewedNodeId)>
+  [436] pusharglistnoret 2 ...................... <me.getComponent(), me.getProperty(#viewedNodeId)>
+  [438] objcall 44 .............................. me.getComponent().sendAddFavoriteFlat(me.getProperty(#viewedNodeId))
+  [440] getparam 0 .............................. <me>
+  [442] pusharglist 1 ........................... <me>
+  [444] objcall 136 ............................. <me.getComponent()>
+  [446] pusharglistnoret 1 ...................... <me.getComponent()>
+  [448] objcall 43 .............................. me.getComponent().sendGetFavoriteFlats()
+  [450] jmp [826]
+  [453] peek 0
+  [455] pushcons 68 ............................. <"nav_removefavourites_button">
+  [457] eq
+  [458] jmpifz [514] ............................ (case) "nav_removefavourites_button":
+  [461] getparam 0 .............................. <me>
+  [463] pusharglist 1 ........................... <me>
+  [465] objcall 136 ............................. <me.getComponent()>
+  [467] getparam 0 .............................. <me>
+  [469] pushsymb 288 ............................ <#viewedNodeId>
+  [472] pusharglist 2 ........................... <me, #viewedNodeId>
+  [474] objcall 180 ............................. <me.getProperty(#viewedNodeId)>
+  [476] pusharglistnoret 2 ...................... <me.getComponent(), me.getProperty(#viewedNodeId)>
+  [478] objcall 45 .............................. me.getComponent().sendRemoveFavoriteFlat(me.getProperty(#viewedNodeId))
+  [480] getparam 0 .............................. <me>
+  [482] pushsymb 288 ............................ <#viewedNodeId>
+  [485] pusharglist 0 ........................... <>
+  [487] extcall 95 .............................. <VOID>
+  [489] pusharglistnoret 3 ...................... <me, #viewedNodeId, VOID>
+  [491] objcall 146 ............................. me.setProperty(#viewedNodeId, VOID)
+  [493] getparam 0 .............................. <me>
+  [495] pushsymb 99 ............................. <#hide>
+  [497] pusharglistnoret 2 ...................... <me, #hide>
+  [499] objcall 249 ............................. me.setRoomInfoArea(#hide)
+  [501] getparam 0 .............................. <me>
+  [503] pusharglist 1 ........................... <me>
+  [505] objcall 136 ............................. <me.getComponent()>
+  [507] pusharglistnoret 1 ...................... <me.getComponent()>
+  [509] objcall 43 .............................. me.getComponent().sendGetFavoriteFlats()
+  [511] jmp [826]
+  [514] peek 0
+  [516] pushcons 69 ............................. <"nav_ringbell_cancel_button">
+  [518] nteq
+  [519] jmpifz [546] ............................ (case) "nav_ringbell_cancel_button", ...
+  [522] peek 0
+  [524] pushcons 70 ............................. <"nav_flatpassword_cancel_button">
+  [526] nteq
+  [527] jmpifz [546] ............................ (case) ..., "nav_flatpassword_cancel_button", ...
+  [530] peek 0
+  [532] pushcons 71 ............................. <"nav_trypw_cancel_button">
+  [534] nteq
+  [535] jmpifz [546] ............................ (case) ..., "nav_trypw_cancel_button", ...
+  [538] peek 0
+  [540] pushcons 72 ............................. <"nav_noanswer_ok_button">
+  [542] eq
+  [543] jmpifz [569] ............................ (case) ..., "nav_noanswer_ok_button":
+  [546] getparam 0 .............................. <me>
+  [548] pushcons 49 ............................. <"nav_gr0">
+  [550] pusharglistnoret 2 ...................... <me, "nav_gr0">
+  [552] objcall 240 ............................. me.ChangeWindowView("nav_gr0")
+  [554] getparam 0 .............................. <me>
+  [556] pusharglist 1 ........................... <me>
+  [558] objcall 136 ............................. <me.getComponent()>
+  [560] pushcons 73 ............................. <"enterEntry">
+  [562] pusharglistnoret 2 ...................... <me.getComponent(), "enterEntry">
+  [564] objcall 57 .............................. me.getComponent().updateState("enterEntry")
+  [566] jmp [826]
+  [569] peek 0
+  [571] pushcons 74 ............................. <"nav_flatpassword_ok_button">
+  [573] eq
+  [574] jmpifz [705] ............................ (case) "nav_flatpassword_ok_button":
+  [577] getparam 0 .............................. <me>
+  [579] pushsymb 501 ............................ <#passwordNodeId>
+  [582] pusharglist 2 ........................... <me, #passwordNodeId>
+  [584] objcall 180 ............................. <me.getProperty(#passwordNodeId)>
+  [586] setlocal 0 .............................. tLastClickedId = me.getProperty(#passwordNodeId)
+  [588] getparam 0 .............................. <me>
+  [590] pushsymb 144 ............................ <#categoryId>
+  [592] pusharglist 2 ........................... <me, #categoryId>
+  [594] objcall 180 ............................. <me.getProperty(#categoryId)>
+  [596] setlocal 1 .............................. tCategory = me.getProperty(#categoryId)
+  [598] getparam 0 .............................. <me>
+  [600] pushcons 75 ............................. <"nav_flatpassword_field">
+  [602] pusharglist 2 ........................... <me, "nav_flatpassword_field">
+  [604] objcall 480 ............................. <me.getPasswordFromField("nav_flatpassword_field")>
+  [607] setlocal 2 .............................. tTemp = me.getPasswordFromField("nav_flatpassword_field")
+  [609] getlocal 2 .............................. <tTemp>
+  [611] pusharglist 1 ........................... <tTemp>
+  [613] extcall 102 ............................. <voidp(tTemp)>
+  [615] getlocal 2 .............................. <tTemp>
+  [617] pushcons 0 .............................. <EMPTY>
+  [619] eq ...................................... <tTemp = EMPTY>
+  [620] or ...................................... <voidp(tTemp) or (tTemp = EMPTY)>
+  [621] jmpifz [630] ............................ if voidp(tTemp) or (tTemp = EMPTY) then
+  [624] pop 1
+  [626] pusharglistnoret 0 ...................... <>
+  [628] extcall 93 .............................. return 
+  [630] getparam 0 .............................. <me>
+  [632] pusharglist 1 ........................... <me>
+  [634] objcall 136 ............................. <me.getComponent()>
+  [636] getlocal 0 .............................. <tLastClickedId>
+  [638] getlocal 1 .............................. <tCategory>
+  [640] pusharglist 3 ........................... <me.getComponent(), tLastClickedId, tCategory>
+  [642] objcall 8 ............................... <me.getComponent().getNodeInfo(tLastClickedId, tCategory)>
+  [644] setlocal 3 .............................. tFlatData = me.getComponent().getNodeInfo(tLastClickedId, tCategory)
+  [646] getlocal 3 .............................. <tFlatData>
+  [648] pushzero ................................ <0>
+  [649] eq ...................................... <tFlatData = 0>
+  [650] jmpifz [660] ............................ if tFlatData = 0 then
+  [653] pop 1
+  [655] pushzero ................................ <0>
+  [656] pusharglistnoret 1 ...................... <0>
+  [658] extcall 93 .............................. return 0
+  [660] getlocal 3 .............................. <tFlatData>
+  [662] pushsymb 185 ............................ <#Password>
+  [664] getlocal 2 .............................. <tTemp>
+  [666] pusharglistnoret 3 ...................... <tFlatData, #Password, tTemp>
+  [668] objcall 182 ............................. tFlatData[#Password] = tTemp
+  [670] getparam 0 .............................. <me>
+  [672] pusharglist 1 ........................... <me>
+  [674] objcall 136 ............................. <me.getComponent()>
+  [676] getlocal 3 .............................. <tFlatData>
+  [678] pusharglistnoret 2 ...................... <me.getComponent(), tFlatData>
+  [680] objcall 38 .............................. me.getComponent().updateSingleSubNodeInfo(tFlatData)
+  [682] getparam 0 .............................. <me>
+  [684] pushcons 76 ............................. <"nav_gr_trypassword">
+  [686] pusharglistnoret 2 ...................... <me, "nav_gr_trypassword">
+  [688] objcall 240 ............................. me.ChangeWindowView("nav_gr_trypassword")
+  [690] getparam 0 .............................. <me>
+  [692] pusharglist 1 ........................... <me>
+  [694] objcall 136 ............................. <me.getComponent()>
+  [696] getlocal 0 .............................. <tLastClickedId>
+  [698] pusharglistnoret 2 ...................... <me.getComponent(), tLastClickedId>
+  [700] objcall 20 .............................. me.getComponent().executeRoomEntry(tLastClickedId)
+  [702] jmp [826]
+  [705] peek 0
+  [707] pushcons 77 ............................. <"nav_tryagain_ok_button">
+  [709] eq
+  [710] jmpifz [735] ............................ (case) "nav_tryagain_ok_button":
+  [713] getprop 466 ............................. <pFlatPasswords>
+  [716] pushcons 75 ............................. <"nav_flatpassword_field">
+  [718] pushcons 0 .............................. <EMPTY>
+  [720] pusharglistnoret 3 ...................... <pFlatPasswords, "nav_flatpassword_field", EMPTY>
+  [722] objcall 182 ............................. pFlatPasswords["nav_flatpassword_field"] = EMPTY
+  [724] getparam 0 .............................. <me>
+  [726] pushcons 10 ............................. <"nav_gr_password">
+  [728] pusharglistnoret 2 ...................... <me, "nav_gr_password">
+  [730] objcall 240 ............................. me.ChangeWindowView("nav_gr_password")
+  [732] jmp [826]
+  [735] peek 0
+  [737] pushcons 78 ............................. <"nav_createroom_button">
+  [739] nteq
+  [740] jmpifz [751] ............................ (case) "nav_createroom_button", ...
+  [743] peek 0
+  [745] pushcons 79 ............................. <"nav_createroom_icon">
+  [747] eq
+  [748] jmpifz [767] ............................ (case) ..., "nav_createroom_icon":
+  [751] pop 1
+  [753] pushsymb 544 ............................ <#open_roomkiosk>
+  [756] pusharglist 1 ........................... <#open_roomkiosk>
+  [758] extcall 97 .............................. <executeMessage(#open_roomkiosk)>
+  [760] pusharglistnoret 1 ...................... <executeMessage(#open_roomkiosk)>
+  [762] extcall 93 .............................. return executeMessage(#open_roomkiosk)
+  [764] jmp [826]
+  [767] peek 0
+  [769] pushcons 56 ............................. <"nav_hidefull">
+  [771] eq
+  [772] jmpifz [802] ............................ (case) "nav_hidefull":
+  [775] pop 1
+  [777] getparam 0 .............................. <me>
+  [779] pusharglist 1 ........................... <me>
+  [781] objcall 136 ............................. <me.getComponent()>
+  [783] getparam 0 .............................. <me>
+  [785] pushsymb 144 ............................ <#categoryId>
+  [787] pusharglist 2 ........................... <me, #categoryId>
+  [789] objcall 180 ............................. <me.getProperty(#categoryId)>
+  [791] pusharglist 2 ........................... <me.getComponent(), me.getProperty(#categoryId)>
+  [793] objcall 25 .............................. <me.getComponent().showHideFullRooms(me.getProperty(#categoryId))>
+  [795] pusharglistnoret 1 ...................... <me.getComponent().showHideFullRooms(me.getProperty(#categoryId))>
+  [797] extcall 93 .............................. return me.getComponent().showHideFullRooms(me.getProperty(#categoryId))
+  [799] jmp [826]
+  [802] peek 0
+  [804] pushcons 34 ............................. <"nav_refresh_recoms">
+  [806] eq
+  [807] jmpifz [826] ............................ (case) "nav_refresh_recoms":
+  [810] pop 1
+  [812] getparam 0 .............................. <me>
+  [814] pusharglist 1 ........................... <me>
+  [816] objcall 136 ............................. <me.getComponent()>
+  [818] pusharglist 1 ........................... <me.getComponent()>
+  [820] objcall 18 .............................. <me.getComponent().updateRecomRooms()>
+  [822] pusharglistnoret 1 ...................... <me.getComponent().updateRecomRooms()>
+  [824] extcall 93 .............................. return me.getComponent().updateRecomRooms()
+  [826] pop 1 ................................... end case
+  [828] jmp [959]
+  [831] getparam 1 .............................. <tEvent>
+  [833] pushsymb 297 ............................ <#keyDown>
+  [836] eq ...................................... <tEvent = #keyDown>
+  [837] jmpifz [959] ............................ if tEvent = #keyDown then
+  [840] getparam 2 .............................. <tSprID>
+  [842] peek 0 .................................. case tSprID of
+  [844] pushcons 15 ............................. <"nav_private_search_field">
+  [846] eq
+  [847] jmpifz [877] ............................ (case) "nav_private_search_field":
+  [850] pusharglist 0 ........................... <>
+  [852] thebuiltin 548 .......................... <the key>
+  [855] pushcons 80 ............................. <RETURN>
+  [857] eq ...................................... <the key = RETURN>
+  [858] jmpifz [874] ............................ if the key = RETURN then
+  [861] pop 1
+  [863] getparam 0 .............................. <me>
+  [865] pusharglist 1 ........................... <me>
+  [867] objcall 483 ............................. <me.startFlatSearch()>
+  [870] pusharglistnoret 1 ...................... <me.startFlatSearch()>
+  [872] extcall 93 .............................. return me.startFlatSearch()
+  [874] jmp [957]
+  [877] peek 0
+  [879] pushcons 81 ............................. <"OLD">
+  [881] eq
+  [882] jmpifz [888] ............................ (case) "OLD":
+  [885] jmp [957]
+  [888] peek 0
+  [890] pushcons 75 ............................. <"nav_flatpassword_field">
+  [892] eq
+  [893] jmpifz [957] ............................ (case) "nav_flatpassword_field":
+  [896] getparam 0 .............................. <me>
+  [898] getparam 2 .............................. <tSprID>
+  [900] pushzero ................................ <0>
+  [901] pusharglist 3 ........................... <me, tSprID, 0>
+  [903] objcall 492 ............................. <me.passwordFieldTypeEvent(tSprID, 0)>
+  [906] setlocal 4 .............................. tKeyCatched = me.passwordFieldTypeEvent(tSprID, 0)
+  [908] getlocal 4 .............................. <tKeyCatched>
+  [910] jmpifz [950] ............................ if tKeyCatched then
+  [913] pushzero ................................ <0>
+  [914] setlocal 5 .............................. pPasswordChecked = 0
+  [916] pushcons 82 ............................. <"asteriskUpdate">
+  [918] getmovieprop 128 ........................ <the milliSeconds>
+  [920] joinstr ................................. <"asteriskUpdate" & the milliSeconds>
+  [921] setlocal 6 .............................. tTimeoutHideName = "asteriskUpdate" & the milliSeconds
+  [923] getlocal 6 .............................. <tTimeoutHideName>
+  [925] pushint8 1 .............................. <1>
+  [927] pushsymb 253 ............................ <#updatePasswordAsterisks>
+  [929] getparam 0 .............................. <me>
+  [931] pusharglist 1 ........................... <me>
+  [933] objcall 86 .............................. <me.getID()>
+  [935] getparam 0 .............................. <me>
+  [937] getobjprop 255 .......................... <me.pWindowTitle>
+  [939] getparam 2 .............................. <tSprID>
+  [941] pusharglist 2 ........................... <[me.pWindowTitle, tSprID]>
+  [943] pushlist ................................ <[me.pWindowTitle, tSprID]>
+  [944] pushint8 1 .............................. <1>
+  [946] pusharglistnoret 6 ...................... <tTimeoutHideName, 1, #updatePasswordAsterisks, me.getID(), [me.pWindowTitle, tSprID], 1>
+  [948] extcall 125 ............................. createTimeout(tTimeoutHideName, 1, #updatePasswordAsterisks, me.getID(), [me.pWindowTitle, tSprID], 1)
+  [950] pop 1
+  [952] pushzero ................................ <0>
+  [953] pusharglistnoret 1 ...................... <0>
+  [955] extcall 93 .............................. return 0
+  [957] pop 1 ................................... end case
+  [959] ret
+end
+
+on eventProcNavigatorModify me, tEvent, tSprID, tParm
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 288 ............................ <#viewedNodeId>
+  [  5] pusharglist 2 ........................... <me, #viewedNodeId>
+  [  7] objcall 180 ............................. <me.getProperty(#viewedNodeId)>
+  [  9] setlocal 0 .............................. tNodeId = me.getProperty(#viewedNodeId)
+  [ 11] getparam 1 .............................. <tEvent>
+  [ 13] pushsymb 294 ............................ <#mouseDown>
+  [ 16] eq ...................................... <tEvent = #mouseDown>
+  [ 17] jmpifz [603] ............................ if tEvent = #mouseDown then / else
+  [ 20] getparam 2 .............................. <tSprID>
+  [ 22] peek 0 .................................. case tSprID of
+  [ 24] pushcons 83 ............................. <"nav_modify_removerights">
+  [ 26] eq
+  [ 27] jmpifz [ 41] ............................ (case) "nav_modify_removerights":
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pushcons 84 ............................. <"nav_remove_rights">
+  [ 34] pusharglistnoret 2 ...................... <me, "nav_remove_rights">
+  [ 36] objcall 240 ............................. me.ChangeWindowView("nav_remove_rights")
+  [ 38] jmp [598]
+  [ 41] peek 0
+  [ 43] pushcons 85 ............................. <"nav_remove_rights_cancel_2">
+  [ 45] eq
+  [ 46] jmpifz [ 59] ............................ (case) "nav_remove_rights_cancel_2":
+  [ 49] getparam 0 .............................. <me>
+  [ 51] pusharglistnoret 1 ...................... <me>
+  [ 53] objcall 486 ............................. me.setModifySecondPage()
+  [ 56] jmp [598]
+  [ 59] peek 0
+  [ 61] pushcons 86 ............................. <"nav_remove_rights_ok_2">
+  [ 63] eq
+  [ 64] jmpifz [103] ............................ (case) "nav_remove_rights_ok_2":
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pushsymb 288 ............................ <#viewedNodeId>
+  [ 72] pushsymb 272 ............................ <#mod>
+  [ 75] pusharglist 3 ........................... <me, #viewedNodeId, #mod>
+  [ 77] objcall 180 ............................. <me.getProperty(#viewedNodeId, #mod)>
+  [ 79] setlocal 0 .............................. tNodeId = me.getProperty(#viewedNodeId, #mod)
+  [ 81] getparam 0 .............................. <me>
+  [ 83] pusharglist 1 ........................... <me>
+  [ 85] objcall 136 ............................. <me.getComponent()>
+  [ 87] getlocal 0 .............................. <tNodeId>
+  [ 89] pusharglistnoret 2 ...................... <me.getComponent(), tNodeId>
+  [ 91] objcall 53 .............................. me.getComponent().sendRemoveAllRights(tNodeId)
+  [ 93] getparam 0 .............................. <me>
+  [ 95] pusharglistnoret 1 ...................... <me>
+  [ 97] objcall 486 ............................. me.setModifySecondPage()
+  [100] jmp [598]
+  [103] peek 0
+  [105] pushcons 87 ............................. <"nav_maxusers_minus">
+  [107] eq
+  [108] jmpifz [188] ............................ (case) "nav_maxusers_minus":
+  [111] getparam 0 .............................. <me>
+  [113] pusharglist 1 ........................... <me>
+  [115] objcall 136 ............................. <me.getComponent()>
+  [117] getlocal 0 .............................. <tNodeId>
+  [119] pushsymb 220 ............................ <#maxVisitors>
+  [121] pusharglist 3 ........................... <me.getComponent(), tNodeId, #maxVisitors>
+  [123] objcall 12 .............................. <me.getComponent().getNodeProperty(tNodeId, #maxVisitors)>
+  [125] pushint8 5 .............................. <5>
+  [127] sub ..................................... <me.getComponent().getNodeProperty(tNodeId, #maxVisitors) - 5>
+  [128] pusharglist 1 ........................... <me.getComponent().getNodeProperty(tNodeId, #maxVisitors) - 5>
+  [130] extcall 201 ............................. <integer(me.getComponent().getNodeProperty(tNodeId, #maxVisitors) - 5)>
+  [132] setlocal 1 .............................. tMaxVisitors = integer(me.getComponent().getNodeProperty(tNodeId, #maxVisitors) - 5)
+  [134] getlocal 1 .............................. <tMaxVisitors>
+  [136] pushint8 10 ............................. <10>
+  [138] lt ...................................... <tMaxVisitors < 10>
+  [139] jmpifz [146] ............................ if tMaxVisitors < 10 then
+  [142] pushint8 10 ............................. <10>
+  [144] setlocal 1 .............................. tMaxVisitors = 10
+  [146] getparam 0 .............................. <me>
+  [148] getobjprop 255 .......................... <me.pWindowTitle>
+  [150] pusharglist 1 ........................... <me.pWindowTitle>
+  [152] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [155] pushcons 26 ............................. <"nav_maxusers_amount">
+  [157] pusharglist 2 ........................... <getWindow(me.pWindowTitle), "nav_maxusers_amount">
+  [159] objcall 281 ............................. <getWindow(me.pWindowTitle).getElement("nav_maxusers_amount")>
+  [162] getlocal 1 .............................. <tMaxVisitors>
+  [164] pusharglistnoret 2 ...................... <getWindow(me.pWindowTitle).getElement("nav_maxusers_amount"), tMaxVisitors>
+  [166] objcall 289 ............................. getWindow(me.pWindowTitle).getElement("nav_maxusers_amount").setText(tMaxVisitors)
+  [169] getparam 0 .............................. <me>
+  [171] pusharglist 1 ........................... <me>
+  [173] objcall 136 ............................. <me.getComponent()>
+  [175] getlocal 0 .............................. <tNodeId>
+  [177] pushsymb 220 ............................ <#maxVisitors>
+  [179] getlocal 1 .............................. <tMaxVisitors>
+  [181] pusharglistnoret 4 ...................... <me.getComponent(), tNodeId, #maxVisitors, tMaxVisitors>
+  [183] objcall 11 .............................. me.getComponent().setNodeProperty(tNodeId, #maxVisitors, tMaxVisitors)
+  [185] jmp [598]
+  [188] peek 0
+  [190] pushcons 88 ............................. <"nav_maxusers_plus">
+  [192] eq
+  [193] jmpifz [290] ............................ (case) "nav_maxusers_plus":
+  [196] getparam 0 .............................. <me>
+  [198] pusharglist 1 ........................... <me>
+  [200] objcall 136 ............................. <me.getComponent()>
+  [202] getlocal 0 .............................. <tNodeId>
+  [204] pushsymb 516 ............................ <#absoluteMaxVisitors>
+  [207] pusharglist 3 ........................... <me.getComponent(), tNodeId, #absoluteMaxVisitors>
+  [209] objcall 12 .............................. <me.getComponent().getNodeProperty(tNodeId, #absoluteMaxVisitors)>
+  [211] setlocal 2 .............................. tAbsoluteMax = me.getComponent().getNodeProperty(tNodeId, #absoluteMaxVisitors)
+  [213] getparam 0 .............................. <me>
+  [215] pusharglist 1 ........................... <me>
+  [217] objcall 136 ............................. <me.getComponent()>
+  [219] getlocal 0 .............................. <tNodeId>
+  [221] pushsymb 220 ............................ <#maxVisitors>
+  [223] pusharglist 3 ........................... <me.getComponent(), tNodeId, #maxVisitors>
+  [225] objcall 12 .............................. <me.getComponent().getNodeProperty(tNodeId, #maxVisitors)>
+  [227] pushint8 5 .............................. <5>
+  [229] add ..................................... <me.getComponent().getNodeProperty(tNodeId, #maxVisitors) + 5>
+  [230] pusharglist 1 ........................... <me.getComponent().getNodeProperty(tNodeId, #maxVisitors) + 5>
+  [232] extcall 201 ............................. <integer(me.getComponent().getNodeProperty(tNodeId, #maxVisitors) + 5)>
+  [234] setlocal 1 .............................. tMaxVisitors = integer(me.getComponent().getNodeProperty(tNodeId, #maxVisitors) + 5)
+  [236] getlocal 1 .............................. <tMaxVisitors>
+  [238] getlocal 2 .............................. <tAbsoluteMax>
+  [240] gt ...................................... <tMaxVisitors > tAbsoluteMax>
+  [241] jmpifz [248] ............................ if tMaxVisitors > tAbsoluteMax then
+  [244] getlocal 2 .............................. <tAbsoluteMax>
+  [246] setlocal 1 .............................. tMaxVisitors = tAbsoluteMax
+  [248] getparam 0 .............................. <me>
+  [250] getobjprop 255 .......................... <me.pWindowTitle>
+  [252] pusharglist 1 ........................... <me.pWindowTitle>
+  [254] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [257] pushcons 26 ............................. <"nav_maxusers_amount">
+  [259] pusharglist 2 ........................... <getWindow(me.pWindowTitle), "nav_maxusers_amount">
+  [261] objcall 281 ............................. <getWindow(me.pWindowTitle).getElement("nav_maxusers_amount")>
+  [264] getlocal 1 .............................. <tMaxVisitors>
+  [266] pusharglistnoret 2 ...................... <getWindow(me.pWindowTitle).getElement("nav_maxusers_amount"), tMaxVisitors>
+  [268] objcall 289 ............................. getWindow(me.pWindowTitle).getElement("nav_maxusers_amount").setText(tMaxVisitors)
+  [271] getparam 0 .............................. <me>
+  [273] pusharglist 1 ........................... <me>
+  [275] objcall 136 ............................. <me.getComponent()>
+  [277] getlocal 0 .............................. <tNodeId>
+  [279] pushsymb 220 ............................ <#maxVisitors>
+  [281] getlocal 1 .............................. <tMaxVisitors>
+  [283] pusharglistnoret 4 ...................... <me.getComponent(), tNodeId, #maxVisitors, tMaxVisitors>
+  [285] objcall 11 .............................. me.getComponent().setNodeProperty(tNodeId, #maxVisitors, tMaxVisitors)
+  [287] jmp [598]
+  [290] peek 0
+  [292] pushcons 24 ............................. <"nav_modify_nameshow_yes_radio">
+  [294] eq
+  [295] jmpifz [331] ............................ (case) "nav_modify_nameshow_yes_radio":
+  [298] getparam 0 .............................. <me>
+  [300] pusharglist 1 ........................... <me>
+  [302] objcall 136 ............................. <me.getComponent()>
+  [304] getlocal 0 .............................. <tNodeId>
+  [306] pushsymb 217 ............................ <#showownername>
+  [308] pushcons 89 ............................. <"1">
+  [310] pusharglistnoret 4 ...................... <me.getComponent(), tNodeId, #showownername, "1">
+  [312] objcall 11 .............................. me.getComponent().setNodeProperty(tNodeId, #showownername, "1")
+  [314] getparam 0 .............................. <me>
+  [316] pushcons 24 ............................. <"nav_modify_nameshow_yes_radio">
+  [318] pushcons 25 ............................. <"nav_modify_nameshow_no_radio">
+  [320] pusharglist 1 ........................... <["nav_modify_nameshow_no_radio"]>
+  [322] pushlist ................................ <["nav_modify_nameshow_no_radio"]>
+  [323] pusharglistnoret 3 ...................... <me, "nav_modify_nameshow_yes_radio", ["nav_modify_nameshow_no_radio"]>
+  [325] objcall 490 ............................. me.updateRadioButton("nav_modify_nameshow_yes_radio", ["nav_modify_nameshow_no_radio"])
+  [328] jmp [598]
+  [331] peek 0
+  [333] pushcons 25 ............................. <"nav_modify_nameshow_no_radio">
+  [335] eq
+  [336] jmpifz [372] ............................ (case) "nav_modify_nameshow_no_radio":
+  [339] getparam 0 .............................. <me>
+  [341] pusharglist 1 ........................... <me>
+  [343] objcall 136 ............................. <me.getComponent()>
+  [345] getlocal 0 .............................. <tNodeId>
+  [347] pushsymb 217 ............................ <#showownername>
+  [349] pushcons 90 ............................. <"0">
+  [351] pusharglistnoret 4 ...................... <me.getComponent(), tNodeId, #showownername, "0">
+  [353] objcall 11 .............................. me.getComponent().setNodeProperty(tNodeId, #showownername, "0")
+  [355] getparam 0 .............................. <me>
+  [357] pushcons 25 ............................. <"nav_modify_nameshow_no_radio">
+  [359] pushcons 24 ............................. <"nav_modify_nameshow_yes_radio">
+  [361] pusharglist 1 ........................... <["nav_modify_nameshow_yes_radio"]>
+  [363] pushlist ................................ <["nav_modify_nameshow_yes_radio"]>
+  [364] pusharglistnoret 3 ...................... <me, "nav_modify_nameshow_no_radio", ["nav_modify_nameshow_yes_radio"]>
+  [366] objcall 490 ............................. me.updateRadioButton("nav_modify_nameshow_no_radio", ["nav_modify_nameshow_yes_radio"])
+  [369] jmp [598]
+  [372] peek 0
+  [374] pushcons 28 ............................. <"nav_modify_door_open_radio">
+  [376] eq
+  [377] jmpifz [429] ............................ (case) "nav_modify_door_open_radio":
+  [380] getparam 0 .............................. <me>
+  [382] pusharglist 1 ........................... <me>
+  [384] objcall 136 ............................. <me.getComponent()>
+  [386] getlocal 0 .............................. <tNodeId>
+  [388] pushsymb 184 ............................ <#door>
+  [390] pushcons 8 .............................. <"open">
+  [392] pusharglistnoret 4 ...................... <me.getComponent(), tNodeId, #door, "open">
+  [394] objcall 11 .............................. me.getComponent().setNodeProperty(tNodeId, #door, "open")
+  [396] getparam 0 .............................. <me>
+  [398] pushcons 28 ............................. <"nav_modify_door_open_radio">
+  [400] pushcons 29 ............................. <"nav_modify_door_locked_radio">
+  [402] pushcons 30 ............................. <"nav_modify_door_pw_radio">
+  [404] pusharglist 2 ........................... <["nav_modify_door_locked_radio", "nav_modify_door_pw_radio"]>
+  [406] pushlist ................................ <["nav_modify_door_locked_radio", "nav_modify_door_pw_radio"]>
+  [407] pusharglistnoret 3 ...................... <me, "nav_modify_door_open_radio", ["nav_modify_door_locked_radio", "nav_modify_door_pw_radio"]>
+  [409] objcall 490 ............................. me.updateRadioButton("nav_modify_door_open_radio", ["nav_modify_door_locked_radio", "nav_modify_door_pw_radio"])
+  [412] pushint8 1 .............................. <1>
+  [414] setprop 495 ............................. pDoorStatusModified = 1
+  [417] getparam 0 .............................. <me>
+  [419] pushint8 1 .............................. <1>
+  [421] pusharglistnoret 2 ...................... <me, 1>
+  [423] objcall 488 ............................. me.hidePasswordFields(1)
+  [426] jmp [598]
+  [429] peek 0
+  [431] pushcons 29 ............................. <"nav_modify_door_locked_radio">
+  [433] eq
+  [434] jmpifz [486] ............................ (case) "nav_modify_door_locked_radio":
+  [437] getparam 0 .............................. <me>
+  [439] pusharglist 1 ........................... <me>
+  [441] objcall 136 ............................. <me.getComponent()>
+  [443] getlocal 0 .............................. <tNodeId>
+  [445] pushsymb 184 ............................ <#door>
+  [447] pushcons 31 ............................. <"closed">
+  [449] pusharglistnoret 4 ...................... <me.getComponent(), tNodeId, #door, "closed">
+  [451] objcall 11 .............................. me.getComponent().setNodeProperty(tNodeId, #door, "closed")
+  [453] getparam 0 .............................. <me>
+  [455] pushcons 29 ............................. <"nav_modify_door_locked_radio">
+  [457] pushcons 28 ............................. <"nav_modify_door_open_radio">
+  [459] pushcons 30 ............................. <"nav_modify_door_pw_radio">
+  [461] pusharglist 2 ........................... <["nav_modify_door_open_radio", "nav_modify_door_pw_radio"]>
+  [463] pushlist ................................ <["nav_modify_door_open_radio", "nav_modify_door_pw_radio"]>
+  [464] pusharglistnoret 3 ...................... <me, "nav_modify_door_locked_radio", ["nav_modify_door_open_radio", "nav_modify_door_pw_radio"]>
+  [466] objcall 490 ............................. me.updateRadioButton("nav_modify_door_locked_radio", ["nav_modify_door_open_radio", "nav_modify_door_pw_radio"])
+  [469] pushint8 1 .............................. <1>
+  [471] setprop 495 ............................. pDoorStatusModified = 1
+  [474] getparam 0 .............................. <me>
+  [476] pushint8 1 .............................. <1>
+  [478] pusharglistnoret 2 ...................... <me, 1>
+  [480] objcall 488 ............................. me.hidePasswordFields(1)
+  [483] jmp [598]
+  [486] peek 0
+  [488] pushcons 30 ............................. <"nav_modify_door_pw_radio">
+  [490] eq
+  [491] jmpifz [542] ............................ (case) "nav_modify_door_pw_radio":
+  [494] getparam 0 .............................. <me>
+  [496] pusharglist 1 ........................... <me>
+  [498] objcall 136 ............................. <me.getComponent()>
+  [500] getlocal 0 .............................. <tNodeId>
+  [502] pushsymb 184 ............................ <#door>
+  [504] pushcons 9 .............................. <"password">
+  [506] pusharglistnoret 4 ...................... <me.getComponent(), tNodeId, #door, "password">
+  [508] objcall 11 .............................. me.getComponent().setNodeProperty(tNodeId, #door, "password")
+  [510] getparam 0 .............................. <me>
+  [512] pushcons 30 ............................. <"nav_modify_door_pw_radio">
+  [514] pushcons 28 ............................. <"nav_modify_door_open_radio">
+  [516] pushcons 29 ............................. <"nav_modify_door_locked_radio">
+  [518] pusharglist 2 ........................... <["nav_modify_door_open_radio", "nav_modify_door_locked_radio"]>
+  [520] pushlist ................................ <["nav_modify_door_open_radio", "nav_modify_door_locked_radio"]>
+  [521] pusharglistnoret 3 ...................... <me, "nav_modify_door_pw_radio", ["nav_modify_door_open_radio", "nav_modify_door_locked_radio"]>
+  [523] objcall 490 ............................. me.updateRadioButton("nav_modify_door_pw_radio", ["nav_modify_door_open_radio", "nav_modify_door_locked_radio"])
+  [526] pushint8 1 .............................. <1>
+  [528] setprop 495 ............................. pDoorStatusModified = 1
+  [531] getparam 0 .............................. <me>
+  [533] pushzero ................................ <0>
+  [534] pusharglistnoret 2 ...................... <me, 0>
+  [536] objcall 488 ............................. me.hidePasswordFields(0)
+  [539] jmp [598]
+  [542] peek 0
+  [544] pushcons 32 ............................. <"nav_modify_furnituremove_check">
+  [546] eq
+  [547] jmpifz [598] ............................ (case) "nav_modify_furnituremove_check":
+  [550] getparam 0 .............................. <me>
+  [552] pusharglist 1 ........................... <me>
+  [554] objcall 136 ............................. <me.getComponent()>
+  [556] getlocal 0 .............................. <tNodeId>
+  [558] pushsymb 219 ............................ <#ableothersmovefurniture>
+  [560] pusharglist 3 ........................... <me.getComponent(), tNodeId, #ableothersmovefurniture>
+  [562] objcall 12 .............................. <me.getComponent().getNodeProperty(tNodeId, #ableothersmovefurniture)>
+  [564] not ..................................... <not me.getComponent().getNodeProperty(tNodeId, #ableothersmovefurniture)>
+  [565] pusharglist 1 ........................... <not me.getComponent().getNodeProperty(tNodeId, #ableothersmovefurniture)>
+  [567] extcall 201 ............................. <integer(not me.getComponent().getNodeProperty(tNodeId, #ableothersmovefurniture))>
+  [569] setlocal 3 .............................. tValue = integer(not me.getComponent().getNodeProperty(tNodeId, #ableothersmovefurniture))
+  [571] getparam 0 .............................. <me>
+  [573] pusharglist 1 ........................... <me>
+  [575] objcall 136 ............................. <me.getComponent()>
+  [577] getlocal 0 .............................. <tNodeId>
+  [579] pushsymb 219 ............................ <#ableothersmovefurniture>
+  [581] getlocal 3 .............................. <tValue>
+  [583] pusharglistnoret 4 ...................... <me.getComponent(), tNodeId, #ableothersmovefurniture, tValue>
+  [585] objcall 11 .............................. me.getComponent().setNodeProperty(tNodeId, #ableothersmovefurniture, tValue)
+  [587] getparam 0 .............................. <me>
+  [589] pushcons 32 ............................. <"nav_modify_furnituremove_check">
+  [591] getlocal 3 .............................. <tValue>
+  [593] pusharglistnoret 3 ...................... <me, "nav_modify_furnituremove_check", tValue>
+  [595] objcall 491 ............................. me.updateCheckButton("nav_modify_furnituremove_check", tValue)
+  [598] pop 1 ................................... end case
+  [600] jmp [1441]
+  [603] getparam 1 .............................. <tEvent>
+  [605] pushsymb 296 ............................ <#mouseUp>
+  [608] eq ...................................... <tEvent = #mouseUp>
+  [609] jmpifz [1296] ........................... if tEvent = #mouseUp then / else
+  [612] getparam 2 .............................. <tSprID>
+  [614] peek 0 .................................. case tSprID of
+  [616] pushcons 53 ............................. <"close">
+  [618] eq
+  [619] jmpifz [640] ............................ (case) "close":
+  [622] pushsymb 555 ............................ <#removeEnterRoomAlert>
+  [625] pusharglistnoret 1 ...................... <#removeEnterRoomAlert>
+  [627] extcall 97 .............................. executeMessage(#removeEnterRoomAlert)
+  [629] getparam 0 .............................. <me>
+  [631] pushsymb 99 ............................. <#hide>
+  [633] pusharglistnoret 2 ...................... <me, #hide>
+  [635] objcall 3 ............................... me.hideNavigator(#hide)
+  [637] jmp [1291]
+  [640] peek 0
+  [642] pushcons 54 ............................. <"nav_go_button">
+  [644] eq
+  [645] jmpifz [663] ............................ (case) "nav_go_button":
+  [648] getparam 0 .............................. <me>
+  [650] pusharglist 1 ........................... <me>
+  [652] objcall 136 ............................. <me.getComponent()>
+  [654] getlocal 0 .............................. <tNodeId>
+  [656] pusharglistnoret 2 ...................... <me.getComponent(), tNodeId>
+  [658] objcall 19 .............................. me.getComponent().prepareRoomEntry(tNodeId)
+  [660] jmp [1291]
+  [663] peek 0
+  [665] pushcons 43 ............................. <"nav_choosecategory">
+  [667] eq
+  [668] jmpifz [696] ............................ (case) "nav_choosecategory":
+  [671] pop 1
+  [673] getparam 0 .............................. <me>
+  [675] pusharglist 1 ........................... <me>
+  [677] objcall 136 ............................. <me.getComponent()>
+  [679] getlocal 0 .............................. <tNodeId>
+  [681] pushsymb 142 ............................ <#parentid>
+  [683] getparam 3 .............................. <tParm>
+  [685] pusharglist 4 ........................... <me.getComponent(), tNodeId, #parentid, tParm>
+  [687] objcall 11 .............................. <me.getComponent().setNodeProperty(tNodeId, #parentid, tParm)>
+  [689] pusharglistnoret 1 ...................... <me.getComponent().setNodeProperty(tNodeId, #parentid, tParm)>
+  [691] extcall 93 .............................. return me.getComponent().setNodeProperty(tNodeId, #parentid, tParm)
+  [693] jmp [1291]
+  [696] peek 0
+  [698] pushcons 91 ............................. <"nav_modify_next">
+  [700] eq
+  [701] jmpifz [721] ............................ (case) "nav_modify_next":
+  [704] getparam 0 .............................. <me>
+  [706] pusharglistnoret 1 ...................... <me>
+  [708] objcall 487 ............................. me.leaveModifyPage()
+  [711] getparam 0 .............................. <me>
+  [713] pusharglistnoret 1 ...................... <me>
+  [715] objcall 486 ............................. me.setModifySecondPage()
+  [718] jmp [1291]
+  [721] peek 0
+  [723] pushcons 92 ............................. <"nav_modify_prev">
+  [725] eq
+  [726] jmpifz [746] ............................ (case) "nav_modify_prev":
+  [729] getparam 0 .............................. <me>
+  [731] pusharglistnoret 1 ...................... <me>
+  [733] objcall 487 ............................. me.leaveModifyPage()
+  [736] getparam 0 .............................. <me>
+  [738] pusharglistnoret 1 ...................... <me>
+  [740] objcall 485 ............................. me.setModifyFirstPage()
+  [743] jmp [1291]
+  [746] peek 0
+  [748] pushcons 93 ............................. <"nav_modify_ready">
+  [750] eq
+  [751] jmpifz [1043] ........................... (case) "nav_modify_ready":
+  [754] getlocal 0 .............................. <tNodeId>
+  [756] pusharglist 1 ........................... <tNodeId>
+  [758] extcall 102 ............................. <voidp(tNodeId)>
+  [760] jmpifz [770] ............................ if voidp(tNodeId) then
+  [763] pop 1
+  [765] pushzero ................................ <0>
+  [766] pusharglistnoret 1 ...................... <0>
+  [768] extcall 93 .............................. return 0
+  [770] getparam 0 .............................. <me>
+  [772] pusharglistnoret 1 ...................... <me>
+  [774] objcall 487 ............................. me.leaveModifyPage()
+  [777] getparam 0 .............................. <me>
+  [779] getobjprop 255 .......................... <me.pWindowTitle>
+  [781] pusharglist 1 ........................... <me.pWindowTitle>
+  [783] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [786] setlocal 4 .............................. tWndObj = getWindow(me.pWindowTitle)
+  [788] getparam 0 .............................. <me>
+  [790] pusharglist 1 ........................... <me>
+  [792] objcall 136 ............................. <me.getComponent()>
+  [794] getlocal 0 .............................. <tNodeId>
+  [796] pushsymb 118 ............................ <#own>
+  [798] pusharglist 3 ........................... <me.getComponent(), tNodeId, #own>
+  [800] objcall 8 ............................... <me.getComponent().getNodeInfo(tNodeId, #own)>
+  [802] setlocal 5 .............................. tFlatData = me.getComponent().getNodeInfo(tNodeId, #own)
+  [804] getlocal 5 .............................. <tFlatData>
+  [806] pushsymb 184 ............................ <#door>
+  [808] pusharglist 2 ........................... <tFlatData, #door>
+  [810] objcall 105 ............................. <tFlatData[#door]>
+  [812] pushcons 9 .............................. <"password">
+  [814] eq ...................................... <tFlatData[#door] = "password">
+  [815] getprop 495 ............................. <pDoorStatusModified>
+  [818] and ..................................... <(tFlatData[#door] = "password") and pDoorStatusModified>
+  [819] jmpifz [840] ............................ if (tFlatData[#door] = "password") and pDoorStatusModified then
+  [822] getparam 0 .............................. <me>
+  [824] pusharglist 1 ........................... <me>
+  [826] objcall 489 ............................. <me.checkModifiedFlatPasswords()>
+  [829] not ..................................... <not me.checkModifiedFlatPasswords()>
+  [830] jmpifz [840] ............................ if not me.checkModifiedFlatPasswords() then
+  [833] pop 1
+  [835] pushzero ................................ <0>
+  [836] pusharglistnoret 1 ...................... <0>
+  [838] extcall 93 .............................. return 0
+  [840] getlocal 5 .............................. <tFlatData>
+  [842] pushsymb 171 ............................ <#name>
+  [844] getprop 514 ............................. <pModifyFlatInfo>
+  [847] pushsymb 171 ............................ <#name>
+  [849] pusharglist 2 ........................... <pModifyFlatInfo, #name>
+  [851] objcall 105 ............................. <pModifyFlatInfo[#name]>
+  [853] pushsymb 332 ............................ <#line>
+  [856] pushint8 1 .............................. <1>
+  [858] pusharglist 3 ........................... <pModifyFlatInfo[#name], #line, 1>
+  [860] objcall 135 ............................. <pModifyFlatInfo[#name].line[1]>
+  [862] pushcons 94 ............................. <"/">
+  [864] pushcons 0 .............................. <EMPTY>
+  [866] pusharglist 3 ........................... <pModifyFlatInfo[#name].line[1], "/", EMPTY>
+  [868] extcall 556 ............................. <replaceChars(pModifyFlatInfo[#name].line[1], "/", EMPTY)>
+  [871] pusharglistnoret 3 ...................... <tFlatData, #name, replaceChars(pModifyFlatInfo[#name].line[1], "/", EMPTY)>
+  [873] objcall 182 ............................. tFlatData[#name] = replaceChars(pModifyFlatInfo[#name].line[1], "/", EMPTY)
+  [875] getlocal 5 .............................. <tFlatData>
+  [877] pushsymb 171 ............................ <#name>
+  [879] pusharglist 2 ........................... <tFlatData, #name>
+  [881] objcall 105 ............................. <tFlatData[#name]>
+  [883] pushcons 0 .............................. <EMPTY>
+  [885] eq ...................................... <tFlatData[#name] = EMPTY>
+  [886] jmpifz [896] ............................ if tFlatData[#name] = EMPTY then
+  [889] pop 1
+  [891] pushzero ................................ <0>
+  [892] pusharglistnoret 1 ...................... <0>
+  [894] extcall 93 .............................. return 0
+  [896] getlocal 5 .............................. <tFlatData>
+  [898] pushsymb 218 ............................ <#description>
+  [900] getprop 514 ............................. <pModifyFlatInfo>
+  [903] pushsymb 218 ............................ <#description>
+  [905] pusharglist 2 ........................... <pModifyFlatInfo, #description>
+  [907] objcall 105 ............................. <pModifyFlatInfo[#description]>
+  [909] pusharglistnoret 3 ...................... <tFlatData, #description, pModifyFlatInfo[#description]>
+  [911] objcall 182 ............................. tFlatData[#description] = pModifyFlatInfo[#description]
+  [913] getlocal 5 .............................. <tFlatData>
+  [915] pushsymb 185 ............................ <#Password>
+  [917] getprop 514 ............................. <pModifyFlatInfo>
+  [920] pushsymb 185 ............................ <#Password>
+  [922] pusharglist 2 ........................... <pModifyFlatInfo, #Password>
+  [924] objcall 105 ............................. <pModifyFlatInfo[#Password]>
+  [926] pusharglistnoret 3 ...................... <tFlatData, #Password, pModifyFlatInfo[#Password]>
+  [928] objcall 182 ............................. tFlatData[#Password] = pModifyFlatInfo[#Password]
+  [930] getlocal 5 .............................. <tFlatData>
+  [932] pushsymb 171 ............................ <#name>
+  [934] getlocal 5 .............................. <tFlatData>
+  [936] pushsymb 171 ............................ <#name>
+  [938] pusharglist 2 ........................... <tFlatData, #name>
+  [940] objcall 105 ............................. <tFlatData[#name]>
+  [942] pushint8 1 .............................. <1>
+  [944] pusharglist 2 ........................... <tFlatData[#name], 1>
+  [946] extcall 215 ............................. <convertSpecialChars(tFlatData[#name], 1)>
+  [948] pusharglistnoret 3 ...................... <tFlatData, #name, convertSpecialChars(tFlatData[#name], 1)>
+  [950] objcall 182 ............................. tFlatData[#name] = convertSpecialChars(tFlatData[#name], 1)
+  [952] getlocal 5 .............................. <tFlatData>
+  [954] pushsymb 218 ............................ <#description>
+  [956] getlocal 5 .............................. <tFlatData>
+  [958] pushsymb 218 ............................ <#description>
+  [960] pusharglist 2 ........................... <tFlatData, #description>
+  [962] objcall 105 ............................. <tFlatData[#description]>
+  [964] pushint8 1 .............................. <1>
+  [966] pusharglist 2 ........................... <tFlatData[#description], 1>
+  [968] extcall 215 ............................. <convertSpecialChars(tFlatData[#description], 1)>
+  [970] pusharglistnoret 3 ...................... <tFlatData, #description, convertSpecialChars(tFlatData[#description], 1)>
+  [972] objcall 182 ............................. tFlatData[#description] = convertSpecialChars(tFlatData[#description], 1)
+  [974] getparam 0 .............................. <me>
+  [976] pusharglist 1 ........................... <me>
+  [978] objcall 136 ............................. <me.getComponent()>
+  [980] getlocal 5 .............................. <tFlatData>
+  [982] pusharglistnoret 2 ...................... <me.getComponent(), tFlatData>
+  [984] objcall 52 .............................. me.getComponent().sendupdateFlatInfo(tFlatData)
+  [986] getlocal 5 .............................. <tFlatData>
+  [988] pushsymb 142 ............................ <#parentid>
+  [990] pusharglist 2 ........................... <tFlatData, #parentid>
+  [992] objcall 143 ............................. <tFlatData.findPos(#parentid)>
+  [994] pusharglist 0 ........................... <>
+  [996] extcall 95 .............................. <VOID>
+  [998] nteq .................................... <tFlatData.findPos(#parentid) <> VOID>
+  [999] jmpifz [1022] ........................... if tFlatData.findPos(#parentid) <> VOID then
+  [1002] getparam 0 ............................. <me>
+  [1004] pusharglist 1 .......................... <me>
+  [1006] objcall 136 ............................ <me.getComponent()>
+  [1008] getlocal 0 ............................. <tNodeId>
+  [1010] getlocal 5 ............................. <tFlatData>
+  [1012] pushsymb 142 ........................... <#parentid>
+  [1014] pusharglist 2 .......................... <tFlatData, #parentid>
+  [1016] objcall 105 ............................ <tFlatData[#parentid]>
+  [1018] pusharglistnoret 3 ..................... <me.getComponent(), tNodeId, tFlatData[#parentid]>
+  [1020] objcall 51 ............................. me.getComponent().sendSetFlatCategory(tNodeId, tFlatData[#parentid])
+  [1022] getparam 0 ............................. <me>
+  [1024] pusharglist 1 .......................... <me>
+  [1026] objcall 136 ............................ <me.getComponent()>
+  [1028] pusharglistnoret 1 ..................... <me.getComponent()>
+  [1030] objcall 24 ............................. me.getComponent().callNodeUpdate()
+  [1032] getparam 0 ............................. <me>
+  [1034] pushcons 95 ............................ <"nav_gr_mod2">
+  [1036] pusharglistnoret 2 ..................... <me, "nav_gr_mod2">
+  [1038] objcall 240 ............................ me.ChangeWindowView("nav_gr_mod2")
+  [1040] jmp [1291]
+  [1043] peek 0
+  [1045] pushcons 96 ............................ <"nav_modify_ok">
+  [1047] eq
+  [1048] jmpifz [1069] .......................... (case) "nav_modify_ok":
+  [1051] pushsymb 555 ........................... <#removeEnterRoomAlert>
+  [1054] pusharglistnoret 1 ..................... <#removeEnterRoomAlert>
+  [1056] extcall 97 ............................. executeMessage(#removeEnterRoomAlert)
+  [1058] getparam 0 ............................. <me>
+  [1060] pushcons 62 ............................ <"nav_gr_own">
+  [1062] pusharglistnoret 2 ..................... <me, "nav_gr_own">
+  [1064] objcall 240 ............................ me.ChangeWindowView("nav_gr_own")
+  [1066] jmp [1291]
+  [1069] peek 0
+  [1071] pushcons 97 ............................ <"nav_modify_cancel">
+  [1073] eq
+  [1074] jmpifz [1095] .......................... (case) "nav_modify_cancel":
+  [1077] pushsymb 555 ........................... <#removeEnterRoomAlert>
+  [1080] pusharglistnoret 1 ..................... <#removeEnterRoomAlert>
+  [1082] extcall 97 ............................. executeMessage(#removeEnterRoomAlert)
+  [1084] getparam 0 ............................. <me>
+  [1086] pushcons 62 ............................ <"nav_gr_own">
+  [1088] pusharglistnoret 2 ..................... <me, "nav_gr_own">
+  [1090] objcall 240 ............................ me.ChangeWindowView("nav_gr_own")
+  [1092] jmp [1291]
+  [1095] peek 0
+  [1097] pushcons 98 ............................ <"nav_modify_deleteroom">
+  [1099] eq
+  [1100] jmpifz [1121] .......................... (case) "nav_modify_deleteroom":
+  [1103] pushsymb 555 ........................... <#removeEnterRoomAlert>
+  [1106] pusharglistnoret 1 ..................... <#removeEnterRoomAlert>
+  [1108] extcall 97 ............................. executeMessage(#removeEnterRoomAlert)
+  [1110] getparam 0 ............................. <me>
+  [1112] pushcons 99 ............................ <"nav_gr_modify_delete1">
+  [1114] pusharglistnoret 2 ..................... <me, "nav_gr_modify_delete1">
+  [1116] objcall 240 ............................ me.ChangeWindowView("nav_gr_modify_delete1")
+  [1118] jmp [1291]
+  [1121] peek 0
+  [1123] pushcons 100 ........................... <"nav_modifyBackTab">
+  [1125] eq
+  [1126] jmpifz [1140] .......................... (case) "nav_modifyBackTab":
+  [1129] getparam 0 ............................. <me>
+  [1131] pushcons 62 ............................ <"nav_gr_own">
+  [1133] pusharglistnoret 2 ..................... <me, "nav_gr_own">
+  [1135] objcall 240 ............................ me.ChangeWindowView("nav_gr_own")
+  [1137] jmp [1291] ............................. (case) otherwise:
+  [1140] getlocal 0 ............................. <tNodeId>
+  [1142] pusharglist 1 .......................... <tNodeId>
+  [1144] extcall 102 ............................ <voidp(tNodeId)>
+  [1146] jmpifz [1156] .......................... if voidp(tNodeId) then
+  [1149] pop 1
+  [1151] pushzero ............................... <0>
+  [1152] pusharglistnoret 1 ..................... <0>
+  [1154] extcall 93 ............................. return 0
+  [1156] getparam 2 ............................. <tSprID>
+  [1158] pushcons 101 ........................... <"nav_delete_room_ok_">
+  [1160] containsstr ............................ <tSprID contains "nav_delete_room_ok_">
+  [1161] jmpifz [1274] .......................... if tSprID contains "nav_delete_room_ok_" then / else
+  [1164] getparam 2 ............................. <tSprID>
+  [1166] pushsymb 134 ........................... <#char>
+  [1168] getparam 2 ............................. <tSprID>
+  [1170] pusharglist 1 .......................... <tSprID>
+  [1172] extcall 214 ............................ <length(tSprID)>
+  [1174] pusharglist 3 .......................... <tSprID, #char, length(tSprID)>
+  [1176] objcall 135 ............................ <tSprID.char[length(tSprID)]>
+  [1178] peek 0 ................................. case tSprID.char[length(tSprID)] of
+  [1180] pushint8 1 ............................. <1>
+  [1182] eq
+  [1183] jmpifz [1197] .......................... (case) 1:
+  [1186] getparam 0 ............................. <me>
+  [1188] pushcons 102 ........................... <"nav_gr_modify_delete2">
+  [1190] pusharglistnoret 2 ..................... <me, "nav_gr_modify_delete2">
+  [1192] objcall 240 ............................ me.ChangeWindowView("nav_gr_modify_delete2")
+  [1194] jmp [1269]
+  [1197] peek 0
+  [1199] pushint8 2 ............................. <2>
+  [1201] eq
+  [1202] jmpifz [1216] .......................... (case) 2:
+  [1205] getparam 0 ............................. <me>
+  [1207] pushcons 103 ........................... <"nav_gr_modify_delete3">
+  [1209] pusharglistnoret 2 ..................... <me, "nav_gr_modify_delete3">
+  [1211] objcall 240 ............................ me.ChangeWindowView("nav_gr_modify_delete3")
+  [1213] jmp [1269]
+  [1216] peek 0
+  [1218] pushint8 3 ............................. <3>
+  [1220] eq
+  [1221] jmpifz [1269] .......................... (case) 3:
+  [1224] getparam 0 ............................. <me>
+  [1226] pushsymb 288 ........................... <#viewedNodeId>
+  [1229] pusharglist 0 .......................... <>
+  [1231] extcall 95 ............................. <VOID>
+  [1233] pushsymb 118 ........................... <#own>
+  [1235] pusharglistnoret 4 ..................... <me, #viewedNodeId, VOID, #own>
+  [1237] objcall 146 ............................ me.setProperty(#viewedNodeId, VOID, #own)
+  [1239] getparam 0 ............................. <me>
+  [1241] pusharglist 1 .......................... <me>
+  [1243] objcall 136 ............................ <me.getComponent()>
+  [1245] getlocal 0 ............................. <tNodeId>
+  [1247] pusharglistnoret 2 ..................... <me.getComponent(), tNodeId>
+  [1249] objcall 49 ............................. me.getComponent().sendDeleteFlat(tNodeId)
+  [1251] getparam 0 ............................. <me>
+  [1253] pusharglist 1 .......................... <me>
+  [1255] objcall 136 ............................ <me.getComponent()>
+  [1257] pusharglistnoret 1 ..................... <me.getComponent()>
+  [1259] objcall 42 ............................. me.getComponent().sendGetOwnFlats()
+  [1261] getparam 0 ............................. <me>
+  [1263] pushcons 62 ............................ <"nav_gr_own">
+  [1265] pusharglistnoret 2 ..................... <me, "nav_gr_own">
+  [1267] objcall 240 ............................ me.ChangeWindowView("nav_gr_own")
+  [1269] pop 1 .................................. end case
+  [1271] jmp [1291]
+  [1274] getparam 2 ............................. <tSprID>
+  [1276] pushcons 104 ........................... <"nav_delete_room_cancel_">
+  [1278] containsstr ............................ <tSprID contains "nav_delete_room_cancel_">
+  [1279] jmpifz [1291] .......................... if tSprID contains "nav_delete_room_cancel_" then
+  [1282] getparam 0 ............................. <me>
+  [1284] getlocal 0 ............................. <tNodeId>
+  [1286] pusharglistnoret 2 ..................... <me, tNodeId>
+  [1288] objcall 484 ............................ me.modifyPrivateRoom(tNodeId)
+  [1291] pop 1 .................................. end case
+  [1293] jmp [1441]
+  [1296] getparam 1 ............................. <tEvent>
+  [1298] pushsymb 297 ........................... <#keyDown>
+  [1301] eq ..................................... <tEvent = #keyDown>
+  [1302] jmpifz [1441] .......................... if tEvent = #keyDown then
+  [1305] getparam 2 ............................. <tSprID>
+  [1307] peek 0 ................................. case tSprID of
+  [1309] pushcons 33 ............................ <"nav_modify_door_pw">
+  [1311] nteq
+  [1312] jmpifz [1323] .......................... (case) "nav_modify_door_pw", ...
+  [1315] peek 0
+  [1317] pushcons 35 ............................ <"nav_modify_door_pw2">
+  [1319] eq
+  [1320] jmpifz [1388] .......................... (case) ..., "nav_modify_door_pw2":
+  [1323] getparam 0 ............................. <me>
+  [1325] getparam 2 ............................. <tSprID>
+  [1327] pushint8 1 ............................. <1>
+  [1329] pusharglist 3 .......................... <me, tSprID, 1>
+  [1331] objcall 492 ............................ <me.passwordFieldTypeEvent(tSprID, 1)>
+  [1334] setlocal 6 ............................. tKeyCatched = me.passwordFieldTypeEvent(tSprID, 1)
+  [1336] getlocal 6 ............................. <tKeyCatched>
+  [1338] jmpifz [1378] .......................... if tKeyCatched then
+  [1341] pushzero ............................... <0>
+  [1342] setlocal 7 ............................. pPasswordChecked = 0
+  [1344] pushcons 82 ............................ <"asteriskUpdate">
+  [1346] getmovieprop 128 ....................... <the milliSeconds>
+  [1348] joinstr ................................ <"asteriskUpdate" & the milliSeconds>
+  [1349] setlocal 8 ............................. tTimeoutHideName = "asteriskUpdate" & the milliSeconds
+  [1351] getlocal 8 ............................. <tTimeoutHideName>
+  [1353] pushint8 1 ............................. <1>
+  [1355] pushsymb 253 ........................... <#updatePasswordAsterisks>
+  [1357] getparam 0 ............................. <me>
+  [1359] pusharglist 1 .......................... <me>
+  [1361] objcall 86 ............................. <me.getID()>
+  [1363] getparam 0 ............................. <me>
+  [1365] getobjprop 255 ......................... <me.pWindowTitle>
+  [1367] getparam 2 ............................. <tSprID>
+  [1369] pusharglist 2 .......................... <[me.pWindowTitle, tSprID]>
+  [1371] pushlist ............................... <[me.pWindowTitle, tSprID]>
+  [1372] pushint8 1 ............................. <1>
+  [1374] pusharglistnoret 6 ..................... <tTimeoutHideName, 1, #updatePasswordAsterisks, me.getID(), [me.pWindowTitle, tSprID], 1>
+  [1376] extcall 125 ............................ createTimeout(tTimeoutHideName, 1, #updatePasswordAsterisks, me.getID(), [me.pWindowTitle, tSprID], 1)
+  [1378] pop 1
+  [1380] pushzero ............................... <0>
+  [1381] pusharglistnoret 1 ..................... <0>
+  [1383] extcall 93 ............................. return 0
+  [1385] jmp [1439]
+  [1388] peek 0
+  [1390] pushcons 21 ............................ <"nav_modify_roomdescription_field">
+  [1392] nteq
+  [1393] jmpifz [1404] .......................... (case) "nav_modify_roomdescription_field", ...
+  [1396] peek 0
+  [1398] pushcons 20 ............................ <"nav_modify_roomnamefield">
+  [1400] eq
+  [1401] jmpifz [1439] .......................... (case) ..., "nav_modify_roomnamefield":
+  [1404] pusharglist 0 .......................... <>
+  [1406] thebuiltin 557 ......................... <the keyCode>
+  [1409] setlocal 9 ............................. tKeyCode = the keyCode
+  [1411] getlocal 9 ............................. <tKeyCode>
+  [1413] peek 0 ................................. case tKeyCode of
+  [1415] pushint8 36 ............................ <36>
+  [1417] nteq
+  [1418] jmpifz [1429] .......................... (case) 36, ...
+  [1421] peek 0
+  [1423] pushint8 76 ............................ <76>
+  [1425] eq
+  [1426] jmpifz [1437] .......................... (case) ..., 76:
+  [1429] pop 2
+  [1431] pushint8 1 ............................. <1>
+  [1433] pusharglistnoret 1 ..................... <1>
+  [1435] extcall 93 ............................. return 1
+  [1437] pop 1
+  [1439] pop 1 .................................. end case
+  [1441] ret
+end
+
+on passwordFieldTypeEvent me, tSprID, tCheckLength
+  [  0] getparam 1 .............................. <tSprID>
+  [  2] pusharglist 1 ........................... <tSprID>
+  [  4] extcall 102 ............................. <voidp(tSprID)>
+  [  6] jmpifz [ 26] ............................ if voidp(tSprID) then
+  [  9] getparam 0 .............................. <me>
+  [ 11] pushcons 105 ............................ <"No password field defined!">
+  [ 13] pushsymb 492 ............................ <#passwordFieldTypeEvent>
+  [ 16] pushsymb 169 ............................ <#minor>
+  [ 18] pusharglist 4 ........................... <me, "No password field defined!", #passwordFieldTypeEvent, #minor>
+  [ 20] extcall 137 ............................. <error(me, "No password field defined!", #passwordFieldTypeEvent, #minor)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "No password field defined!", #passwordFieldTypeEvent, #minor)>
+  [ 24] extcall 93 .............................. return error(me, "No password field defined!", #passwordFieldTypeEvent, #minor)
+  [ 26] getparam 2 .............................. <tCheckLength>
+  [ 28] pusharglist 1 ........................... <tCheckLength>
+  [ 30] extcall 102 ............................. <voidp(tCheckLength)>
+  [ 32] jmpifz [ 39] ............................ if voidp(tCheckLength) then
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setparam 2 .............................. tCheckLength = 1
+  [ 39] pushcons 106 ............................ <"permitted.name.chars">
+  [ 41] pushcons 107 ............................ <"1234567890qwertyuiopasdfghjklzxcvbnm_-=+?!@<>:.,">
+  [ 43] pusharglist 2 ........................... <"permitted.name.chars", "1234567890qwertyuiopasdfghjklzxcvbnm_-=+?!@<>:.,">
+  [ 45] extcall 165 ............................. <getVariable("permitted.name.chars", "1234567890qwertyuiopasdfghjklzxcvbnm_-=+?!@<>:.,")>
+  [ 47] setlocal 0 .............................. tValidKeys = getVariable("permitted.name.chars", "1234567890qwertyuiopasdfghjklzxcvbnm_-=+?!@<>:.,")
+  [ 49] getprop 466 ............................. <pFlatPasswords>
+  [ 52] getparam 1 .............................. <tSprID>
+  [ 54] pusharglist 2 ........................... <pFlatPasswords, tSprID>
+  [ 56] objcall 105 ............................. <pFlatPasswords[tSprID]>
+  [ 58] pusharglist 1 ........................... <pFlatPasswords[tSprID]>
+  [ 60] extcall 102 ............................. <voidp(pFlatPasswords[tSprID])>
+  [ 62] jmpifz [ 76] ............................ if voidp(pFlatPasswords[tSprID]) then
+  [ 65] getprop 466 ............................. <pFlatPasswords>
+  [ 68] getparam 1 .............................. <tSprID>
+  [ 70] pushcons 0 .............................. <EMPTY>
+  [ 72] pusharglistnoret 3 ...................... <pFlatPasswords, tSprID, EMPTY>
+  [ 74] objcall 182 ............................. pFlatPasswords[tSprID] = EMPTY
+  [ 76] pusharglist 0 ........................... <>
+  [ 78] thebuiltin 557 .......................... <the keyCode>
+  [ 81] peek 0 .................................. case the keyCode of
+  [ 83] pushint8 36 ............................. <36>
+  [ 85] nteq
+  [ 86] jmpifz [ 97] ............................ (case) 36, ...
+  [ 89] peek 0
+  [ 91] pushint8 76 ............................. <76>
+  [ 93] eq
+  [ 94] jmpifz [108] ............................ (case) ..., 76:
+  [ 97] pop 1
+  [ 99] pushint8 1 .............................. <1>
+  [101] pusharglistnoret 1 ...................... <1>
+  [103] extcall 93 .............................. return 1
+  [105] jmp [404]
+  [108] peek 0
+  [110] pushint8 48 ............................. <48>
+  [112] eq
+  [113] jmpifz [126] ............................ (case) 48:
+  [116] pop 1
+  [118] pushzero ................................ <0>
+  [119] pusharglistnoret 1 ...................... <0>
+  [121] extcall 93 .............................. return 0
+  [123] jmp [404]
+  [126] peek 0
+  [128] pushint8 123 ............................ <123>
+  [130] nteq
+  [131] jmpifz [158] ............................ (case) 123, ...
+  [134] peek 0
+  [136] pushint8 124 ............................ <124>
+  [138] nteq
+  [139] jmpifz [158] ............................ (case) ..., 124, ...
+  [142] peek 0
+  [144] pushint8 125 ............................ <125>
+  [146] nteq
+  [147] jmpifz [158] ............................ (case) ..., 125, ...
+  [150] peek 0
+  [152] pushint8 126 ............................ <126>
+  [154] eq
+  [155] jmpifz [169] ............................ (case) ..., 126:
+  [158] pop 1
+  [160] pushint8 1 .............................. <1>
+  [162] pusharglistnoret 1 ...................... <1>
+  [164] extcall 93 .............................. return 1
+  [166] jmp [404]
+  [169] peek 0
+  [171] pushint8 51 ............................. <51>
+  [173] eq
+  [174] jmpifz [232] ............................ (case) 51:
+  [177] getprop 466 ............................. <pFlatPasswords>
+  [180] getparam 1 .............................. <tSprID>
+  [182] pusharglist 2 ........................... <pFlatPasswords, tSprID>
+  [184] objcall 105 ............................. <pFlatPasswords[tSprID]>
+  [186] getobjprop 214 .......................... <pFlatPasswords[tSprID].length>
+  [188] pushzero ................................ <0>
+  [189] gt ...................................... <pFlatPasswords[tSprID].length > 0>
+  [190] jmpifz [229] ............................ if pFlatPasswords[tSprID].length > 0 then
+  [193] getprop 466 ............................. <pFlatPasswords>
+  [196] getparam 1 .............................. <tSprID>
+  [198] pusharglist 2 ........................... <pFlatPasswords, tSprID>
+  [200] objcall 105 ............................. <pFlatPasswords[tSprID]>
+  [202] setlocal 1 .............................. tTempPass = pFlatPasswords[tSprID]
+  [204] getprop 466 ............................. <pFlatPasswords>
+  [207] getparam 1 .............................. <tSprID>
+  [209] getlocal 1 .............................. <tTempPass>
+  [211] pushint8 1 .............................. <1>
+  [213] getlocal 1 .............................. <tTempPass>
+  [215] getobjprop 214 .......................... <tTempPass.length>
+  [217] pushint8 1 .............................. <1>
+  [219] sub ..................................... <tTempPass.length - 1>
+  [220] pusharglist 3 ........................... <tTempPass, 1, tTempPass.length - 1>
+  [222] extcall 467 ............................. <chars(tTempPass, 1, tTempPass.length - 1)>
+  [225] pusharglistnoret 3 ...................... <pFlatPasswords, tSprID, chars(tTempPass, 1, tTempPass.length - 1)>
+  [227] objcall 182 ............................. pFlatPasswords[tSprID] = chars(tTempPass, 1, tTempPass.length - 1)
+  [229] jmp [404]
+  [232] peek 0
+  [234] pushint8 117 ............................ <117>
+  [236] eq
+  [237] jmpifz [277] ............................ (case) 117:
+  [240] getparam 0 .............................. <me>
+  [242] getobjprop 255 .......................... <me.pWindowTitle>
+  [244] pusharglist 1 ........................... <me.pWindowTitle>
+  [246] extcall 275 ............................. <getWindow(me.pWindowTitle)>
+  [249] getparam 1 .............................. <tSprID>
+  [251] pusharglist 2 ........................... <getWindow(me.pWindowTitle), tSprID>
+  [253] objcall 281 ............................. <getWindow(me.pWindowTitle).getElement(tSprID)>
+  [256] pushcons 0 .............................. <EMPTY>
+  [258] pusharglistnoret 2 ...................... <getWindow(me.pWindowTitle).getElement(tSprID), EMPTY>
+  [260] objcall 289 ............................. getWindow(me.pWindowTitle).getElement(tSprID).setText(EMPTY)
+  [263] getprop 466 ............................. <pFlatPasswords>
+  [266] getparam 1 .............................. <tSprID>
+  [268] pushcons 0 .............................. <EMPTY>
+  [270] pusharglistnoret 3 ...................... <pFlatPasswords, tSprID, EMPTY>
+  [272] objcall 182 ............................. pFlatPasswords[tSprID] = EMPTY
+  [274] jmp [404] ............................... (case) otherwise:
+  [277] pushcons 106 ............................ <"permitted.name.chars">
+  [279] pusharglist 1 ........................... <"permitted.name.chars">
+  [281] extcall 165 ............................. <getVariable("permitted.name.chars")>
+  [283] setlocal 0 .............................. tValidKeys = getVariable("permitted.name.chars")
+  [285] pusharglist 0 ........................... <>
+  [287] thebuiltin 548 .......................... <the key>
+  [290] setlocal 2 .............................. tTheKey = the key
+  [292] getlocal 0 .............................. <tValidKeys>
+  [294] pushcons 108 ............................ <"void">
+  [296] eq ...................................... <tValidKeys = "void">
+  [297] not ..................................... <not (tValidKeys = "void")>
+  [298] jmpifz [404] ............................ if not (tValidKeys = "void") then
+  [301] getlocal 0 .............................. <tValidKeys>
+  [303] getlocal 2 .............................. <tTheKey>
+  [305] containsstr ............................. <tValidKeys contains tTheKey>
+  [306] not ..................................... <not (tValidKeys contains tTheKey)>
+  [307] jmpifz [350] ............................ if not (tValidKeys contains tTheKey) then
+  [310] pushcons 109 ............................ <"reg_use_allowed_chars">
+  [312] pusharglist 1 ........................... <"reg_use_allowed_chars">
+  [314] extcall 172 ............................. <getText("reg_use_allowed_chars")>
+  [316] pushcons 80 ............................. <RETURN>
+  [318] joinstr ................................. <getText("reg_use_allowed_chars") & RETURN>
+  [319] getlocal 0 .............................. <tValidKeys>
+  [321] joinstr ................................. <getText("reg_use_allowed_chars") & RETURN & tValidKeys>
+  [322] setlocal 3 .............................. tMessageTxt = getText("reg_use_allowed_chars") & RETURN & tValidKeys
+  [324] pushsymb 191 ............................ <#alert>
+  [326] pushsymb 192 ............................ <#Msg>
+  [328] getlocal 3 .............................. <tMessageTxt>
+  [330] pushsymb 527 ............................ <#modal>
+  [333] pushint8 1 .............................. <1>
+  [335] pusharglist 4 ........................... <[#Msg: tMessageTxt, #modal: 1]>
+  [337] pushproplist ............................ <[#Msg: tMessageTxt, #modal: 1]>
+  [338] pusharglistnoret 2 ...................... <#alert, [#Msg: tMessageTxt, #modal: 1]>
+  [340] extcall 97 .............................. executeMessage(#alert, [#Msg: tMessageTxt, #modal: 1])
+  [342] pop 1
+  [344] pushint8 1 .............................. <1>
+  [346] pusharglistnoret 1 ...................... <1>
+  [348] extcall 93 .............................. return 1
+  [350] getparam 2 .............................. <tCheckLength>
+  [352] jmpifz [404] ............................ if tCheckLength then
+  [355] getprop 466 ............................. <pFlatPasswords>
+  [358] getparam 1 .............................. <tSprID>
+  [360] pusharglist 2 ........................... <pFlatPasswords, tSprID>
+  [362] objcall 105 ............................. <pFlatPasswords[tSprID]>
+  [364] getobjprop 214 .......................... <pFlatPasswords[tSprID].length>
+  [366] pushcons 110 ............................ <"pass.length.max">
+  [368] pushint8 16 ............................. <16>
+  [370] pusharglist 2 ........................... <"pass.length.max", 16>
+  [372] extcall 62 .............................. <getIntVariable("pass.length.max", 16)>
+  [374] gt ...................................... <pFlatPasswords[tSprID].length > getIntVariable("pass.length.max", 16)>
+  [375] jmpifz [404] ............................ if pFlatPasswords[tSprID].length > getIntVariable("pass.length.max", 16) then
+  [378] pushsymb 191 ............................ <#alert>
+  [380] pushsymb 192 ............................ <#Msg>
+  [382] pushcons 111 ............................ <"alert_shortenPW">
+  [384] pushsymb 527 ............................ <#modal>
+  [387] pushint8 1 .............................. <1>
+  [389] pusharglist 4 ........................... <[#Msg: "alert_shortenPW", #modal: 1]>
+  [391] pushproplist ............................ <[#Msg: "alert_shortenPW", #modal: 1]>
+  [392] pusharglistnoret 2 ...................... <#alert, [#Msg: "alert_shortenPW", #modal: 1]>
+  [394] extcall 97 .............................. executeMessage(#alert, [#Msg: "alert_shortenPW", #modal: 1])
+  [396] pop 1
+  [398] pushint8 1 .............................. <1>
+  [400] pusharglistnoret 1 ...................... <1>
+  [402] extcall 93 .............................. return 1
+  [404] pop 1 ................................... end case
+  [406] pushint8 1 .............................. <1>
+  [408] pusharglistnoret 1 ...................... <1>
+  [410] extcall 93 .............................. return 1
+  [412] ret
+end

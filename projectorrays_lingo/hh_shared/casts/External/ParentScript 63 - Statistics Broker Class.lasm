@@ -1,0 +1,85 @@
+property pTrackingURL
+
+on construct me
+  [  0] pushcons 0 .............................. <"stats.tracking.url">
+  [  2] pusharglist 1 ........................... <"stats.tracking.url">
+  [  4] extcall 26 .............................. <getVariable("stats.tracking.url")>
+  [  6] setprop 629 ............................. pTrackingURL = getVariable("stats.tracking.url")
+  [  9] getprop 629 ............................. <pTrackingURL>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <pTrackingURL = 0>
+  [ 14] getprop 629 ............................. <pTrackingURL>
+  [ 17] pushcons 1 .............................. <EMPTY>
+  [ 19] eq ...................................... <pTrackingURL = EMPTY>
+  [ 20] or ...................................... <(pTrackingURL = 0) or (pTrackingURL = EMPTY)>
+  [ 21] jmpifz [ 36] ............................ if (pTrackingURL = 0) or (pTrackingURL = EMPTY) then
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pushcons 2 .............................. <"Stats tracking URL not found!">
+  [ 28] pushsymb 0 .............................. <#construct>
+  [ 30] pushsymb 211 ............................ <#minor>
+  [ 32] pusharglistnoret 4 ...................... <me, "Stats tracking URL not found!", #construct, #minor>
+  [ 34] extcall 153 ............................. error(me, "Stats tracking URL not found!", #construct, #minor)
+  [ 36] pushcons 3 .............................. <"connection.info.id">
+  [ 38] pushsymb 630 ............................ <#Info>
+  [ 41] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [ 43] extcall 26 .............................. <getVariable("connection.info.id", #Info)>
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 17 .............................. <me.getID()>
+  [ 51] pushint16 166 ........................... <166>
+  [ 54] pushsymb 628 ............................ <#updateStats>
+  [ 57] pusharglist 2 ........................... <[166: #updateStats]>
+  [ 59] pushproplist ............................ <[166: #updateStats]>
+  [ 60] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), [166: #updateStats]>
+  [ 62] extcall 294 ............................. registerListener(getVariable("connection.info.id", #Info), me.getID(), [166: #updateStats])
+  [ 65] pushsymb 631 ............................ <#sendTrackingData>
+  [ 68] getparam 0 .............................. <me>
+  [ 70] pusharglist 1 ........................... <me>
+  [ 72] objcall 17 .............................. <me.getID()>
+  [ 74] pushsymb 628 ............................ <#updateStats>
+  [ 77] pusharglistnoret 3 ...................... <#sendTrackingData, me.getID(), #updateStats>
+  [ 79] extcall 15 .............................. registerMessage(#sendTrackingData, me.getID(), #updateStats)
+  [ 81] pushint8 1 .............................. <1>
+  [ 83] pusharglistnoret 1 ...................... <1>
+  [ 85] extcall 18 .............................. return 1
+  [ 87] ret
+end
+
+on deconstruct me
+  [  0] pushcons 3 .............................. <"connection.info.id">
+  [  2] pushsymb 630 ............................ <#Info>
+  [  5] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [  7] extcall 26 .............................. <getVariable("connection.info.id", #Info)>
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglist 1 ........................... <me>
+  [ 13] objcall 17 .............................. <me.getID()>
+  [ 15] pushint16 166 ........................... <166>
+  [ 18] pushsymb 628 ............................ <#updateStats>
+  [ 21] pusharglist 2 ........................... <[166: #updateStats]>
+  [ 23] pushproplist ............................ <[166: #updateStats]>
+  [ 24] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), [166: #updateStats]>
+  [ 26] extcall 296 ............................. unregisterListener(getVariable("connection.info.id", #Info), me.getID(), [166: #updateStats])
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] pusharglistnoret 1 ...................... <1>
+  [ 33] extcall 18 .............................. return 1
+  [ 35] ret
+end
+
+on updateStats me, tMsg
+  [  0] getprop 629 ............................. <pTrackingURL>
+  [  3] pushcons 4 .............................. <"\\TCODE">
+  [  5] getparam 1 .............................. <tMsg>
+  [  7] getobjprop 303 .......................... <tMsg.content>
+  [ 10] pusharglist 3 ........................... <pTrackingURL, "\\TCODE", tMsg.content>
+  [ 12] extcall 265 ............................. <replaceChunks(pTrackingURL, "\\TCODE", tMsg.content)>
+  [ 15] setlocal 0 .............................. tNetThing = replaceChunks(pTrackingURL, "\\TCODE", tMsg.content)
+  [ 17] getprop 629 ............................. <pTrackingURL>
+  [ 20] getobjprop 35 ........................... <pTrackingURL.ilk>
+  [ 22] pushsymb 198 ............................ <#string>
+  [ 24] eq ...................................... <pTrackingURL.ilk = #string>
+  [ 25] jmpifz [ 35] ............................ if pTrackingURL.ilk = #string then
+  [ 28] getlocal 0 .............................. <tNetThing>
+  [ 30] pusharglistnoret 1 ...................... <tNetThing>
+  [ 32] extcall 632 ............................. preloadNetThing(tNetThing)
+  [ 35] ret
+end

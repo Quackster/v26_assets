@@ -1,0 +1,264 @@
+property pCallbackObj, pCallbackMethod, pCallbackList, pDynamicDownloader, pImageLibraryURL, pAssetLoadingList
+
+on construct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 15 .............................. <VOID>
+  [  4] setprop 423 ............................. pCallbackObj = VOID
+  [  7] pusharglist 0 ........................... <>
+  [  9] extcall 15 .............................. <VOID>
+  [ 11] setprop 424 ............................. pCallbackMethod = VOID
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] extcall 15 .............................. <VOID>
+  [ 18] setprop 425 ............................. pDynamicDownloader = VOID
+  [ 21] pushcons 0 .............................. <"image.library.url">
+  [ 23] pusharglist 1 ........................... <"image.library.url">
+  [ 25] extcall 371 ............................. <getVariable("image.library.url")>
+  [ 28] setprop 426 ............................. pImageLibraryURL = getVariable("image.library.url")
+  [ 31] pusharglist 0 ........................... <[]>
+  [ 33] pushlist ................................ <[]>
+  [ 34] setprop 427 ............................. pCallbackList = []
+  [ 37] pusharglist 0 ........................... <[]>
+  [ 39] pushlist ................................ <[]>
+  [ 40] setprop 428 ............................. pAssetLoadingList = []
+  [ 43] ret
+end
+
+on deconstruct me
+  [  0] ret
+end
+
+on isAssetDownloading me, tAssetId
+  [  0] getprop 428 ............................. <pAssetLoadingList>
+  [  3] getparam 1 .............................. <tAssetId>
+  [  5] pusharglist 2 ........................... <pAssetLoadingList, tAssetId>
+  [  7] objcall 429 ............................. <pAssetLoadingList.getPos(tAssetId)>
+  [ 10] pushzero ................................ <0>
+  [ 11] nteq .................................... <pAssetLoadingList.getPos(tAssetId) <> 0>
+  [ 12] pusharglistnoret 1 ...................... <pAssetLoadingList.getPos(tAssetId) <> 0>
+  [ 14] extcall 30 .............................. return pAssetLoadingList.getPos(tAssetId) <> 0
+  [ 16] ret
+end
+
+on defineCallback me, tCallBackObj, tMethod
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0 .............................. tCallbackReg = 1
+  [  4] getprop 427 ............................. <pCallbackList>
+  [  7] peek 0
+  [  9] pusharglist 1
+  [ 11] extcall 58
+  [ 13] pushint8 1
+  [ 15] peek 0
+  [ 17] peek 2
+  [ 19] lteq
+  [ 20] jmpifz [ 69] ............................ repeat with tCallback in pCallbackList
+  [ 23] peek 2
+  [ 25] peek 1
+  [ 27] pusharglist 2
+  [ 29] extcall 57
+  [ 31] setlocal 1
+  [ 33] getlocal 1 .............................. <tCallback>
+  [ 35] pushsymb 431 ............................ <#obj>
+  [ 38] pusharglist 2 ........................... <tCallback, #obj>
+  [ 40] objcall 57 .............................. <tCallback[#obj]>
+  [ 42] getparam 1 .............................. <tCallBackObj>
+  [ 44] eq ...................................... <tCallback[#obj] = tCallBackObj>
+  [ 45] getlocal 1 .............................. <tCallback>
+  [ 47] pushsymb 350 ............................ <#method>
+  [ 50] pusharglist 2 ........................... <tCallback, #method>
+  [ 52] objcall 57 .............................. <tCallback[#method]>
+  [ 54] getparam 2 .............................. <tMethod>
+  [ 56] eq ...................................... <tCallback[#method] = tMethod>
+  [ 57] and ..................................... <(tCallback[#obj] = tCallBackObj) and (tCallback[#method] = tMethod)>
+  [ 58] jmpifz [ 64] ............................ if (tCallback[#obj] = tCallBackObj) and (tCallback[#method] = tMethod) then
+  [ 61] pushzero ................................ <0>
+  [ 62] setlocal 0 .............................. tCallbackReg = 0
+  [ 64] pushint8 1
+  [ 66] add
+  [ 67] endrepeat [ 15]
+  [ 69] pop 3
+  [ 71] getlocal 0 .............................. <tCallbackReg>
+  [ 73] jmpifz [ 96] ............................ if tCallbackReg then
+  [ 76] getprop 427 ............................. <pCallbackList>
+  [ 79] pushsymb 431 ............................ <#obj>
+  [ 82] getparam 1 .............................. <tCallBackObj>
+  [ 84] pushsymb 350 ............................ <#method>
+  [ 87] getparam 2 .............................. <tMethod>
+  [ 89] pusharglist 4 ........................... <[#obj: tCallBackObj, #method: tMethod]>
+  [ 91] pushproplist ............................ <[#obj: tCallBackObj, #method: tMethod]>
+  [ 92] pusharglistnoret 2 ...................... <pCallbackList, [#obj: tCallBackObj, #method: tMethod]>
+  [ 94] objcall 97 .............................. pCallbackList.add([#obj: tCallBackObj, #method: tMethod])
+  [ 96] ret
+end
+
+on removeCallback me, tCallBackObj, tMethod
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0 .............................. i = 1
+  [  4] getlocal 0 .............................. <i>
+  [  6] getprop 427 ............................. <pCallbackList>
+  [  9] getobjprop 58 ........................... <pCallbackList.count>
+  [ 11] lteq .................................... <i <= pCallbackList.count>
+  [ 12] jmpifz [ 76] ............................ repeat while i <= pCallbackList.count
+  [ 15] getprop 427 ............................. <pCallbackList>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pCallbackList, i>
+  [ 22] objcall 57 .............................. <pCallbackList[i]>
+  [ 24] setlocal 1 .............................. tCallback = pCallbackList[i]
+  [ 26] getlocal 1 .............................. <tCallback>
+  [ 28] pushsymb 431 ............................ <#obj>
+  [ 31] pusharglist 2 ........................... <tCallback, #obj>
+  [ 33] objcall 57 .............................. <tCallback[#obj]>
+  [ 35] getparam 1 .............................. <tCallBackObj>
+  [ 37] eq ...................................... <tCallback[#obj] = tCallBackObj>
+  [ 38] getlocal 1 .............................. <tCallback>
+  [ 40] pushsymb 350 ............................ <#method>
+  [ 43] pusharglist 2 ........................... <tCallback, #method>
+  [ 45] objcall 57 .............................. <tCallback[#method]>
+  [ 47] getparam 2 .............................. <tMethod>
+  [ 49] eq ...................................... <tCallback[#method] = tMethod>
+  [ 50] and ..................................... <(tCallback[#obj] = tCallBackObj) and (tCallback[#method] = tMethod)>
+  [ 51] jmpifz [ 67] ............................ if (tCallback[#obj] = tCallBackObj) and (tCallback[#method] = tMethod) then
+  [ 54] getprop 427 ............................. <pCallbackList>
+  [ 57] getlocal 0 .............................. <i>
+  [ 59] pusharglistnoret 2 ...................... <pCallbackList, i>
+  [ 61] objcall 435 ............................. pCallbackList.deleteAt(i)
+  [ 64] jmp [ 74] ............................... next repeat
+  [ 67] getlocal 0 .............................. <i>
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] add ..................................... <i + 1>
+  [ 72] setlocal 0 .............................. i = i + 1
+  [ 74] endrepeat [  4]
+  [ 76] ret
+end
+
+on registerDownload me, ttype, tAssetId, tProps
+  [  0] getprop 425 ............................. <pDynamicDownloader>
+  [  3] pusharglist 1 ........................... <pDynamicDownloader>
+  [  5] extcall 44 .............................. <voidp(pDynamicDownloader)>
+  [  7] jmpifz [ 23] ............................ if voidp(pDynamicDownloader) then
+  [ 10] pushsymb 109 ............................ <#dynamicdownloader>
+  [ 12] pusharglist 1 ........................... <#dynamicdownloader>
+  [ 14] extcall 20 .............................. <getThread(#dynamicdownloader)>
+  [ 16] pusharglist 1 ........................... <getThread(#dynamicdownloader)>
+  [ 18] objcall 22 .............................. <getThread(#dynamicdownloader).getComponent()>
+  [ 20] setprop 425 ............................. pDynamicDownloader = getThread(#dynamicdownloader).getComponent()
+  [ 23] pushsymb 90 ............................. <#type>
+  [ 25] getparam 1 .............................. <ttype>
+  [ 27] pushsymb 71 ............................. <#assetId>
+  [ 29] getparam 2 .............................. <tAssetId>
+  [ 31] pushsymb 149 ............................ <#props>
+  [ 33] getparam 3 .............................. <tProps>
+  [ 35] pusharglist 6 ........................... <[#type: ttype, #assetId: tAssetId, #props: tProps]>
+  [ 37] pushproplist ............................ <[#type: ttype, #assetId: tAssetId, #props: tProps]>
+  [ 38] setparam 3 .............................. tProps = [#type: ttype, #assetId: tAssetId, #props: tProps]
+  [ 40] getparam 1 .............................. <ttype>
+  [ 42] pushsymb 68 ............................. <#bitmap>
+  [ 44] eq ...................................... <ttype = #bitmap>
+  [ 45] jmpifz [114] ............................ if ttype = #bitmap then / else
+  [ 48] getprop 426 ............................. <pImageLibraryURL>
+  [ 51] pushcons 1 .............................. <"catalogue/">
+  [ 53] joinstr ................................. <pImageLibraryURL & "catalogue/">
+  [ 54] getparam 2 .............................. <tAssetId>
+  [ 56] joinstr ................................. <pImageLibraryURL & "catalogue/" & tAssetId>
+  [ 57] pushcons 2 .............................. <".gif">
+  [ 59] joinstr ................................. <pImageLibraryURL & "catalogue/" & tAssetId & ".gif">
+  [ 60] setlocal 0 .............................. tSourceURL = pImageLibraryURL & "catalogue/" & tAssetId & ".gif"
+  [ 62] getlocal 0 .............................. <tSourceURL>
+  [ 64] getparam 2 .............................. <tAssetId>
+  [ 66] pushsymb 68 ............................. <#bitmap>
+  [ 68] pushint8 1 .............................. <1>
+  [ 70] pusharglist 4 ........................... <tSourceURL, tAssetId, #bitmap, 1>
+  [ 72] extcall 436 ............................. <queueDownload(tSourceURL, tAssetId, #bitmap, 1)>
+  [ 75] setlocal 1 .............................. tMemNum = queueDownload(tSourceURL, tAssetId, #bitmap, 1)
+  [ 77] getlocal 1 .............................. <tMemNum>
+  [ 79] pushzero ................................ <0>
+  [ 80] gt ...................................... <tMemNum > 0>
+  [ 81] jmpifz [111] ............................ if tMemNum > 0 then
+  [ 84] getlocal 1 .............................. <tMemNum>
+  [ 86] pushsymb 422 ............................ <#downloadCallback>
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglist 1 ........................... <me>
+  [ 93] objcall 34 .............................. <me.getID()>
+  [ 95] getparam 3 .............................. <tProps>
+  [ 97] pusharglistnoret 4 ...................... <tMemNum, #downloadCallback, me.getID(), tProps>
+  [ 99] extcall 437 ............................. registerDownloadCallback(tMemNum, #downloadCallback, me.getID(), tProps)
+  [102] getprop 428 ............................. <pAssetLoadingList>
+  [105] getparam 2 .............................. <tAssetId>
+  [107] pusharglistnoret 2 ...................... <pAssetLoadingList, tAssetId>
+  [109] objcall 97 .............................. pAssetLoadingList.add(tAssetId)
+  [111] jmp [170]
+  [114] getparam 1 .............................. <ttype>
+  [116] pushsymb 438 ............................ <#furni>
+  [119] eq ...................................... <ttype = #furni>
+  [120] jmpifz [161] ............................ if ttype = #furni then / else
+  [123] getprop 425 ............................. <pDynamicDownloader>
+  [126] getparam 2 .............................. <tAssetId>
+  [128] pushsymb 439 ............................ <#Active>
+  [131] getparam 0 .............................. <me>
+  [133] pusharglist 1 ........................... <me>
+  [135] objcall 34 .............................. <me.getID()>
+  [137] pushsymb 422 ............................ <#downloadCallback>
+  [140] pushint8 1 .............................. <1>
+  [142] getparam 3 .............................. <tProps>
+  [144] pusharglistnoret 7 ...................... <pDynamicDownloader, tAssetId, #Active, me.getID(), #downloadCallback, 1, tProps>
+  [146] objcall 440 ............................. pDynamicDownloader.downloadCastDynamically(tAssetId, #Active, me.getID(), #downloadCallback, 1, tProps)
+  [149] getprop 428 ............................. <pAssetLoadingList>
+  [152] getparam 2 .............................. <tAssetId>
+  [154] pusharglistnoret 2 ...................... <pAssetLoadingList, tAssetId>
+  [156] objcall 97 .............................. pAssetLoadingList.add(tAssetId)
+  [158] jmp [170]
+  [161] getparam 1 .............................. <ttype>
+  [163] pushsymb 441 ............................ <#soundset>
+  [166] eq ...................................... <ttype = #soundset>
+  [167] jmpifz [170] ............................ if ttype = #soundset then
+  [170] ret
+end
+
+on downloadCallback me, tName, tSuccess, tProps
+  [  0] getparam 2 .............................. <tSuccess>
+  [  2] jmpifz [ 99] ............................ if tSuccess then
+  [  5] getparam 1 .............................. <tName>
+  [  7] pusharglist 1 ........................... <tName>
+  [  9] extcall 125 ............................. <ilk(tName)>
+  [ 11] pushsymb 261 ............................ <#propList>
+  [ 14] eq ...................................... <ilk(tName) = #propList>
+  [ 15] jmpifz [ 22] ............................ if ilk(tName) = #propList then
+  [ 18] getparam 1 .............................. <tName>
+  [ 20] setparam 3 .............................. tProps = tName
+  [ 22] getprop 427 ............................. <pCallbackList>
+  [ 25] peek 0
+  [ 27] pusharglist 1
+  [ 29] extcall 58
+  [ 31] pushint8 1
+  [ 33] peek 0
+  [ 35] peek 2
+  [ 37] lteq
+  [ 38] jmpifz [ 81] ............................ repeat with tCallback in pCallbackList
+  [ 41] peek 2
+  [ 43] peek 1
+  [ 45] pusharglist 2
+  [ 47] extcall 57
+  [ 49] setlocal 0
+  [ 51] getlocal 0 .............................. <tCallback>
+  [ 53] pushsymb 350 ............................ <#method>
+  [ 56] pusharglist 2 ........................... <tCallback, #method>
+  [ 58] objcall 57 .............................. <tCallback[#method]>
+  [ 60] getlocal 0 .............................. <tCallback>
+  [ 62] pushsymb 431 ............................ <#obj>
+  [ 65] pusharglist 2 ........................... <tCallback, #obj>
+  [ 67] objcall 57 .............................. <tCallback[#obj]>
+  [ 69] getparam 3 .............................. <tProps>
+  [ 71] pusharglistnoret 3 ...................... <tCallback[#method], tCallback[#obj], tProps>
+  [ 73] extcall 445 ............................. call(tCallback[#method], tCallback[#obj], tProps)
+  [ 76] pushint8 1
+  [ 78] add
+  [ 79] endrepeat [ 33]
+  [ 81] pop 3
+  [ 83] getprop 428 ............................. <pAssetLoadingList>
+  [ 86] getparam 3 .............................. <tProps>
+  [ 88] pushsymb 71 ............................. <#assetId>
+  [ 90] pusharglist 2 ........................... <tProps, #assetId>
+  [ 92] objcall 57 .............................. <tProps[#assetId]>
+  [ 94] pusharglistnoret 2 ...................... <pAssetLoadingList, tProps[#assetId]>
+  [ 96] objcall 446 ............................. pAssetLoadingList.deleteOne(tProps[#assetId])
+  [ 99] ret
+end

@@ -1,0 +1,951 @@
+property pBottomBarId, pMaxHealth, pMaxHealthBarHeight, pOrigHealthBarLoc, pLastHealth, pLastBallcount, pMaxBallcount, pBallCountAnimTimer, pBallCreateAnimTimer
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 775 ............................. pBallCountAnimTimer = 0
+  [  4] pushzero ................................ <0>
+  [  5] setprop 776 ............................. pBallCreateAnimTimer = 0
+  [  8] pushcons 0 .............................. <"RoomBarID">
+  [ 10] setprop 777 ............................. pBottomBarId = "RoomBarID"
+  [ 13] pushsymb 778 ............................ <#roomReady>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 197 ............................. <me.getID()>
+  [ 22] pushsymb 773 ............................ <#replaceRoomBar>
+  [ 25] pusharglistnoret 3 ...................... <#roomReady, me.getID(), #replaceRoomBar>
+  [ 27] extcall 220 ............................. registerMessage(#roomReady, me.getID(), #replaceRoomBar)
+  [ 29] pushsymb 1205 ........................... <#updateInfostandAvatar>
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 197 ............................. <me.getID()>
+  [ 38] pushsymb 1206 ........................... <#updateRoomBarFigure>
+  [ 41] pusharglistnoret 3 ...................... <#updateInfostandAvatar, me.getID(), #updateRoomBarFigure>
+  [ 43] extcall 220 ............................. registerMessage(#updateInfostandAvatar, me.getID(), #updateRoomBarFigure)
+  [ 45] pushcons 1 .............................. <"snowwar.health.maximum">
+  [ 47] pusharglist 1 ........................... <"snowwar.health.maximum">
+  [ 49] extcall 394 ............................. <getIntVariable("snowwar.health.maximum")>
+  [ 52] setprop 779 ............................. pMaxHealth = getIntVariable("snowwar.health.maximum")
+  [ 55] pushcons 2 .............................. <"snowwar.snowball.maximum">
+  [ 57] pusharglist 1 ........................... <"snowwar.snowball.maximum">
+  [ 59] extcall 394 ............................. <getIntVariable("snowwar.snowball.maximum")>
+  [ 62] setprop 708 ............................. pMaxBallcount = getIntVariable("snowwar.snowball.maximum")
+  [ 65] getprop 779 ............................. <pMaxHealth>
+  [ 68] setprop 780 ............................. pLastHealth = pMaxHealth
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglistnoret 1 ...................... <1>
+  [ 75] extcall 35 .............................. return 1
+  [ 77] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 778 ............................ <#roomReady>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 197 ............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#roomReady, me.getID()>
+  [ 11] extcall 222 ............................. unregisterMessage(#roomReady, me.getID())
+  [ 13] pushsymb 1205 ........................... <#updateInfostandAvatar>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 197 ............................. <me.getID()>
+  [ 22] pusharglistnoret 2 ...................... <#updateInfostandAvatar, me.getID()>
+  [ 24] extcall 222 ............................. unregisterMessage(#updateInfostandAvatar, me.getID())
+  [ 26] getprop 777 ............................. <pBottomBarId>
+  [ 29] pusharglistnoret 1 ...................... <pBottomBarId>
+  [ 31] extcall 765 ............................. removeWindow(pBottomBarId)
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] pusharglistnoret 1 ...................... <1>
+  [ 38] extcall 35 .............................. return 1
+  [ 40] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 488 ............................ <#gamestart>
+  [  7] eq
+  [  8] jmpifz [ 30] ............................ (case) #gamestart:
+  [ 11] pop 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] getprop 781 ............................. <pLastBallcount>
+  [ 18] pusharglist 2 ........................... <me, pLastBallcount>
+  [ 20] objcall 768 ............................. <me.updateBallCount(pLastBallcount)>
+  [ 23] pusharglistnoret 1 ...................... <me.updateBallCount(pLastBallcount)>
+  [ 25] extcall 35 .............................. return me.updateBallCount(pLastBallcount)
+  [ 27] jmp [213]
+  [ 30] peek 0
+  [ 32] pushsymb 292 ............................ <#gameend>
+  [ 35] eq
+  [ 36] jmpifz [ 57] ............................ (case) #gameend:
+  [ 39] pop 1
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pushcons 3 .............................. <"_off">
+  [ 45] pusharglist 2 ........................... <me, "_off">
+  [ 47] objcall 771 ............................. <me.setCreateButtonState("_off")>
+  [ 50] pusharglistnoret 1 ...................... <me.setCreateButtonState("_off")>
+  [ 52] extcall 35 .............................. return me.setCreateButtonState("_off")
+  [ 54] jmp [213]
+  [ 57] peek 0
+  [ 59] pushsymb 483 ............................ <#update_game_visuals>
+  [ 62] eq
+  [ 63] jmpifz [ 82] ............................ (case) #update_game_visuals:
+  [ 66] pop 1
+  [ 68] getparam 0 .............................. <me>
+  [ 70] pusharglist 1 ........................... <me>
+  [ 72] objcall 766 ............................. <me.updateGameVisuals()>
+  [ 75] pusharglistnoret 1 ...................... <me.updateGameVisuals()>
+  [ 77] extcall 35 .............................. return me.updateGameVisuals()
+  [ 79] jmp [213]
+  [ 82] peek 0
+  [ 84] pushsymb 578 ............................ <#statusbar_health_update>
+  [ 87] eq
+  [ 88] jmpifz [109] ............................ (case) #statusbar_health_update:
+  [ 91] pop 1
+  [ 93] getparam 0 .............................. <me>
+  [ 95] getparam 2 .............................. <tdata>
+  [ 97] pusharglist 2 ........................... <me, tdata>
+  [ 99] objcall 767 ............................. <me.updateHealth(tdata)>
+  [102] pusharglistnoret 1 ...................... <me.updateHealth(tdata)>
+  [104] extcall 35 .............................. return me.updateHealth(tdata)
+  [106] jmp [213]
+  [109] peek 0
+  [111] pushsymb 579 ............................ <#statusbar_ballcount_update>
+  [114] eq
+  [115] jmpifz [136] ............................ (case) #statusbar_ballcount_update:
+  [118] pop 1
+  [120] getparam 0 .............................. <me>
+  [122] getparam 2 .............................. <tdata>
+  [124] pusharglist 2 ........................... <me, tdata>
+  [126] objcall 768 ............................. <me.updateBallCount(tdata)>
+  [129] pusharglistnoret 1 ...................... <me.updateBallCount(tdata)>
+  [131] extcall 35 .............................. return me.updateBallCount(tdata)
+  [133] jmp [213]
+  [136] peek 0
+  [138] pushsymb 590 ............................ <#statusbar_createball_started>
+  [141] eq
+  [142] jmpifz [161] ............................ (case) #statusbar_createball_started:
+  [145] pop 1
+  [147] getparam 0 .............................. <me>
+  [149] pusharglist 1 ........................... <me>
+  [151] objcall 770 ............................. <me.animateBallCreateStarted()>
+  [154] pusharglistnoret 1 ...................... <me.animateBallCreateStarted()>
+  [156] extcall 35 .............................. return me.animateBallCreateStarted()
+  [158] jmp [213]
+  [161] peek 0
+  [163] pushsymb 584 ............................ <#statusbar_createball_stopped>
+  [166] eq
+  [167] jmpifz [189] ............................ (case) #statusbar_createball_stopped:
+  [170] pop 1
+  [172] getparam 0 .............................. <me>
+  [174] getprop 781 ............................. <pLastBallcount>
+  [177] pusharglist 2 ........................... <me, pLastBallcount>
+  [179] objcall 768 ............................. <me.updateBallCount(pLastBallcount)>
+  [182] pusharglistnoret 1 ...................... <me.updateBallCount(pLastBallcount)>
+  [184] extcall 35 .............................. return me.updateBallCount(pLastBallcount)
+  [186] jmp [213]
+  [189] peek 0
+  [191] pushsymb 592 ............................ <#statusbar_disable_buttons>
+  [194] eq
+  [195] jmpifz [213] ............................ (case) #statusbar_disable_buttons:
+  [198] pop 1
+  [200] getparam 0 .............................. <me>
+  [202] pushcons 3 .............................. <"_off">
+  [204] pusharglist 2 ........................... <me, "_off">
+  [206] objcall 771 ............................. <me.setCreateButtonState("_off")>
+  [209] pusharglistnoret 1 ...................... <me.setCreateButtonState("_off")>
+  [211] extcall 35 .............................. return me.setCreateButtonState("_off")
+  [213] pop 1 ................................... end case
+  [215] pushint8 1 .............................. <1>
+  [217] pusharglistnoret 1 ...................... <1>
+  [219] extcall 35 .............................. return 1
+  [221] ret
+end
+
+on update me
+  [  0] getprop 775 ............................. <pBallCountAnimTimer>
+  [  3] pushzero ................................ <0>
+  [  4] gt ...................................... <pBallCountAnimTimer > 0>
+  [  5] jmpifz [ 15] ............................ if pBallCountAnimTimer > 0 then
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglistnoret 1 ...................... <me>
+  [ 12] objcall 769 ............................. me.animateBallCountFlashing()
+  [ 15] getprop 776 ............................. <pBallCreateAnimTimer>
+  [ 18] pushzero ................................ <0>
+  [ 19] gt ...................................... <pBallCreateAnimTimer > 0>
+  [ 20] jmpifz [ 30] ............................ if pBallCreateAnimTimer > 0 then
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglistnoret 1 ...................... <me>
+  [ 27] objcall 770 ............................. me.animateBallCreateStarted()
+  [ 30] ret
+end
+
+on updateGameVisuals me
+  [  0] pushsymb 61 ............................. <#session>
+  [  2] pusharglist 1 ........................... <#session>
+  [  4] extcall 56 .............................. <getObject(#session)>
+  [  6] pushcons 4 .............................. <"user_game_index">
+  [  8] pusharglist 2 ........................... <getObject(#session), "user_game_index">
+  [ 10] objcall 62 .............................. <getObject(#session).exists("user_game_index")>
+  [ 12] not ..................................... <not getObject(#session).exists("user_game_index")>
+  [ 13] jmpifz [ 21] ............................ if not getObject(#session).exists("user_game_index") then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 35 .............................. return 0
+  [ 21] pushsymb 61 ............................. <#session>
+  [ 23] pusharglist 1 ........................... <#session>
+  [ 25] extcall 56 .............................. <getObject(#session)>
+  [ 27] pushcons 4 .............................. <"user_game_index">
+  [ 29] pusharglist 2 ........................... <getObject(#session), "user_game_index">
+  [ 31] objcall 63 .............................. <getObject(#session).GET("user_game_index")>
+  [ 33] setlocal 0 .............................. tObjectID = getObject(#session).GET("user_game_index")
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 228 ............................. <me.getGameSystem()>
+  [ 41] getlocal 0 .............................. <tObjectID>
+  [ 43] pushsymb 526 ............................ <#hit_points>
+  [ 46] pusharglist 3 ........................... <me.getGameSystem(), tObjectID, #hit_points>
+  [ 48] objcall 239 ............................. <me.getGameSystem().getGameObjectProperty(tObjectID, #hit_points)>
+  [ 50] setlocal 1 .............................. tHealth = me.getGameSystem().getGameObjectProperty(tObjectID, #hit_points)
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pusharglist 1 ........................... <me>
+  [ 56] objcall 228 ............................. <me.getGameSystem()>
+  [ 58] getlocal 0 .............................. <tObjectID>
+  [ 60] pushsymb 393 ............................ <#snowball_count>
+  [ 63] pusharglist 3 ........................... <me.getGameSystem(), tObjectID, #snowball_count>
+  [ 65] objcall 239 ............................. <me.getGameSystem().getGameObjectProperty(tObjectID, #snowball_count)>
+  [ 67] setlocal 2 .............................. tBallCount = me.getGameSystem().getGameObjectProperty(tObjectID, #snowball_count)
+  [ 69] getparam 0 .............................. <me>
+  [ 71] getlocal 1 .............................. <tHealth>
+  [ 73] pusharglistnoret 2 ...................... <me, tHealth>
+  [ 75] objcall 767 ............................. me.updateHealth(tHealth)
+  [ 78] getparam 0 .............................. <me>
+  [ 80] getlocal 2 .............................. <tBallCount>
+  [ 82] pusharglistnoret 2 ...................... <me, tBallCount>
+  [ 84] objcall 768 ............................. me.updateBallCount(tBallCount)
+  [ 87] pushint8 1 .............................. <1>
+  [ 89] pusharglistnoret 1 ...................... <1>
+  [ 91] extcall 35 .............................. return 1
+  [ 93] ret
+end
+
+on updateHealth me, tValue
+  [  0] getprop 779 ............................. <pMaxHealth>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 55 .............................. <VOID>
+  [  7] eq ...................................... <pMaxHealth = VOID>
+  [  8] jmpifz [ 16] ............................ if pMaxHealth = VOID then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 35 .............................. return 0
+  [ 16] getparam 1 .............................. <tValue>
+  [ 18] setprop 780 ............................. pLastHealth = tValue
+  [ 21] getprop 777 ............................. <pBottomBarId>
+  [ 24] pusharglist 1 ........................... <pBottomBarId>
+  [ 26] extcall 747 ............................. <getWindow(pBottomBarId)>
+  [ 29] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 31] getlocal 0 .............................. <tWndObj>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <tWndObj = 0>
+  [ 35] jmpifz [ 43] ............................ if tWndObj = 0 then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 35 .............................. return 0
+  [ 43] getlocal 0 .............................. <tWndObj>
+  [ 45] pushcons 5 .............................. <"snowwar_bar_hit_points">
+  [ 47] pusharglist 2 ........................... <tWndObj, "snowwar_bar_hit_points">
+  [ 49] objcall 748 ............................. <tWndObj.getElement("snowwar_bar_hit_points")>
+  [ 52] setlocal 1 .............................. tElem = tWndObj.getElement("snowwar_bar_hit_points")
+  [ 54] getlocal 1 .............................. <tElem>
+  [ 56] pushzero ................................ <0>
+  [ 57] eq ...................................... <tElem = 0>
+  [ 58] jmpifz [ 66] ............................ if tElem = 0 then
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 35 .............................. return 0
+  [ 66] getprop 784 ............................. <pOrigHealthBarLoc>
+  [ 69] pusharglist 0 ........................... <>
+  [ 71] extcall 55 .............................. <VOID>
+  [ 73] eq ...................................... <pOrigHealthBarLoc = VOID>
+  [ 74] jmpifz [102] ............................ if pOrigHealthBarLoc = VOID then
+  [ 77] getlocal 1 .............................. <tElem>
+  [ 79] pushsymb 159 ............................ <#locH>
+  [ 81] pusharglist 2 ........................... <tElem, #locH>
+  [ 83] objcall 351 ............................. <tElem.getProperty(#locH)>
+  [ 86] getlocal 1 .............................. <tElem>
+  [ 88] pushsymb 160 ............................ <#locV>
+  [ 90] pusharglist 2 ........................... <tElem, #locV>
+  [ 92] objcall 351 ............................. <tElem.getProperty(#locV)>
+  [ 95] pusharglist 2 ........................... <tElem.getProperty(#locH), tElem.getProperty(#locV)>
+  [ 97] extcall 148 ............................. <point(tElem.getProperty(#locH), tElem.getProperty(#locV))>
+  [ 99] setprop 784 ............................. pOrigHealthBarLoc = point(tElem.getProperty(#locH), tElem.getProperty(#locV))
+  [102] getparam 1 .............................. <tValue>
+  [104] pushfloat32 1.0 ......................... <1.0>
+  [109] mul ..................................... <tValue * 1.0>
+  [110] getprop 779 ............................. <pMaxHealth>
+  [113] div ..................................... <tValue * 1.0 / pMaxHealth>
+  [114] setlocal 2 .............................. tPercent = tValue * 1.0 / pMaxHealth
+  [116] getlocal 2 .............................. <tPercent>
+  [118] pushcons 6 .............................. <0.69999999999999996>
+  [120] gt ...................................... <tPercent > 0.69999999999999996>
+  [121] jmpifz [131] ............................ if tPercent > 0.69999999999999996 then / else
+  [124] pushcons 7 .............................. <"ui_healthbar_green">
+  [126] setlocal 3 .............................. tmember = "ui_healthbar_green"
+  [128] jmp [150]
+  [131] getlocal 2 .............................. <tPercent>
+  [133] pushcons 8 .............................. <0.29999999999999999>
+  [135] gt ...................................... <tPercent > 0.29999999999999999>
+  [136] jmpifz [146] ............................ if tPercent > 0.29999999999999999 then / else
+  [139] pushcons 9 .............................. <"ui_healthbar_yellow">
+  [141] setlocal 3 .............................. tmember = "ui_healthbar_yellow"
+  [143] jmp [150]
+  [146] pushcons 10 ............................. <"ui_healthbar_red">
+  [148] setlocal 3 .............................. tmember = "ui_healthbar_red"
+  [150] getlocal 1 .............................. <tElem>
+  [152] pushsymb 122 ............................ <#member>
+  [154] pusharglist 2 ........................... <tElem, #member>
+  [156] objcall 351 ............................. <tElem.getProperty(#member)>
+  [159] getlocal 3 .............................. <tmember>
+  [161] nteq .................................... <tElem.getProperty(#member) <> tmember>
+  [162] jmpifz [184] ............................ if tElem.getProperty(#member) <> tmember then
+  [165] getlocal 1 .............................. <tElem>
+  [167] pushsymb 122 ............................ <#member>
+  [169] getlocal 3 .............................. <tmember>
+  [171] pusharglist 1 ........................... <tmember>
+  [173] extcall 141 ............................. <getmemnum(tmember)>
+  [175] pusharglist 1 ........................... <getmemnum(tmember)>
+  [177] extcall 122 ............................. <member(getmemnum(tmember))>
+  [179] pusharglistnoret 3 ...................... <tElem, #member, member(getmemnum(tmember))>
+  [181] objcall 763 ............................. tElem.setProperty(#member, member(getmemnum(tmember)))
+  [184] getlocal 1 .............................. <tElem>
+  [186] pushsymb 153 ............................ <#height>
+  [188] pusharglist 2 ........................... <tElem, #height>
+  [190] objcall 351 ............................. <tElem.getProperty(#height)>
+  [193] setlocal 4 .............................. tElemHeight = tElem.getProperty(#height)
+  [195] getlocal 1 .............................. <tElem>
+  [197] pushsymb 160 ............................ <#locV>
+  [199] pusharglist 2 ........................... <tElem, #locV>
+  [201] objcall 351 ............................. <tElem.getProperty(#locV)>
+  [204] setlocal 5 .............................. tElemLocV = tElem.getProperty(#locV)
+  [206] getparam 1 .............................. <tValue>
+  [208] getprop 779 ............................. <pMaxHealth>
+  [211] eq ...................................... <tValue = pMaxHealth>
+  [212] jmpifz [220] ............................ if tValue = pMaxHealth then
+  [215] getlocal 4 .............................. <tElemHeight>
+  [217] setprop 785 ............................. pMaxHealthBarHeight = tElemHeight
+  [220] getlocal 2 .............................. <tPercent>
+  [222] getprop 785 ............................. <pMaxHealthBarHeight>
+  [225] mul ..................................... <tPercent * pMaxHealthBarHeight>
+  [226] getlocal 4 .............................. <tElemHeight>
+  [228] sub ..................................... <(tPercent * pMaxHealthBarHeight) - tElemHeight>
+  [229] pusharglist 1 ........................... <(tPercent * pMaxHealthBarHeight) - tElemHeight>
+  [231] extcall 89 .............................. <integer((tPercent * pMaxHealthBarHeight) - tElemHeight)>
+  [233] setlocal 6 .............................. tHeightAdjust = integer((tPercent * pMaxHealthBarHeight) - tElemHeight)
+  [235] getprop 785 ............................. <pMaxHealthBarHeight>
+  [238] getlocal 4 .............................. <tElemHeight>
+  [240] getlocal 6 .............................. <tHeightAdjust>
+  [242] add ..................................... <tElemHeight + tHeightAdjust>
+  [243] sub ..................................... <pMaxHealthBarHeight - (tElemHeight + tHeightAdjust)>
+  [244] setlocal 7 .............................. tTotalAdjust = pMaxHealthBarHeight - (tElemHeight + tHeightAdjust)
+  [246] getlocal 1 .............................. <tElem>
+  [248] pushzero ................................ <0>
+  [249] getlocal 6 .............................. <tHeightAdjust>
+  [251] pusharglistnoret 3 ...................... <tElem, 0, tHeightAdjust>
+  [253] objcall 786 ............................. tElem.resizeBy(0, tHeightAdjust)
+  [256] getlocal 1 .............................. <tElem>
+  [258] getprop 784 ............................. <pOrigHealthBarLoc>
+  [261] getobjprop 159 .......................... <pOrigHealthBarLoc.locH>
+  [263] getprop 784 ............................. <pOrigHealthBarLoc>
+  [266] getobjprop 160 .......................... <pOrigHealthBarLoc.locV>
+  [268] getlocal 7 .............................. <tTotalAdjust>
+  [270] add ..................................... <pOrigHealthBarLoc.locV + tTotalAdjust>
+  [271] pusharglistnoret 3 ...................... <tElem, pOrigHealthBarLoc.locH, pOrigHealthBarLoc.locV + tTotalAdjust>
+  [273] objcall 760 ............................. tElem.moveTo(pOrigHealthBarLoc.locH, pOrigHealthBarLoc.locV + tTotalAdjust)
+  [276] pushint8 1 .............................. <1>
+  [278] pusharglistnoret 1 ...................... <1>
+  [280] extcall 35 .............................. return 1
+  [282] ret
+end
+
+on updateBallCount me, tValue
+  [  0] getprop 708 ............................. <pMaxBallcount>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 55 .............................. <VOID>
+  [  7] eq ...................................... <pMaxBallcount = VOID>
+  [  8] jmpifz [ 16] ............................ if pMaxBallcount = VOID then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 35 .............................. return 0
+  [ 16] getparam 1 .............................. <tValue>
+  [ 18] setprop 781 ............................. pLastBallcount = tValue
+  [ 21] getprop 777 ............................. <pBottomBarId>
+  [ 24] pusharglist 1 ........................... <pBottomBarId>
+  [ 26] extcall 747 ............................. <getWindow(pBottomBarId)>
+  [ 29] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 31] getlocal 0 .............................. <tWndObj>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <tWndObj = 0>
+  [ 35] jmpifz [ 43] ............................ if tWndObj = 0 then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 35 .............................. return 0
+  [ 43] pushint8 1 .............................. <1>
+  [ 45] setlocal 1
+  [ 47] getlocal 1
+  [ 49] getprop 708 ............................. <pMaxBallcount>
+  [ 52] lteq
+  [ 53] jmpifz [100] ............................ repeat with tBallNum = 1 to pMaxBallcount
+  [ 56] getlocal 0 .............................. <tWndObj>
+  [ 58] pushcons 11 ............................. <"snowball_">
+  [ 60] getlocal 1 .............................. <tBallNum>
+  [ 62] joinstr ................................. <"snowball_" & tBallNum>
+  [ 63] pusharglist 2 ........................... <tWndObj, "snowball_" & tBallNum>
+  [ 65] objcall 748 ............................. <tWndObj.getElement("snowball_" & tBallNum)>
+  [ 68] setlocal 2 .............................. tElem = tWndObj.getElement("snowball_" & tBallNum)
+  [ 70] getlocal 2 .............................. <tElem>
+  [ 72] pushzero ................................ <0>
+  [ 73] nteq .................................... <tElem <> 0>
+  [ 74] jmpifz [ 91] ............................ if tElem <> 0 then
+  [ 77] getlocal 2 .............................. <tElem>
+  [ 79] pushsymb 201 ............................ <#visible>
+  [ 81] getlocal 1 .............................. <tBallNum>
+  [ 83] getparam 1 .............................. <tValue>
+  [ 85] lteq .................................... <tBallNum <= tValue>
+  [ 86] pusharglistnoret 3 ...................... <tElem, #visible, tBallNum <= tValue>
+  [ 88] objcall 763 ............................. tElem.setProperty(#visible, tBallNum <= tValue)
+  [ 91] pushint8 1
+  [ 93] getlocal 1
+  [ 95] add
+  [ 96] setlocal 1
+  [ 98] endrepeat [ 47]
+  [100] getparam 1 .............................. <tValue>
+  [102] peek 0 .................................. case tValue of
+  [104] getprop 708 ............................. <pMaxBallcount>
+  [107] eq
+  [108] jmpifz [129] ............................ (case) pMaxBallcount:
+  [111] pop 1
+  [113] getparam 0 .............................. <me>
+  [115] pushcons 3 .............................. <"_off">
+  [117] pusharglist 2 ........................... <me, "_off">
+  [119] objcall 771 ............................. <me.setCreateButtonState("_off")>
+  [122] pusharglistnoret 1 ...................... <me.setCreateButtonState("_off")>
+  [124] extcall 35 .............................. return me.setCreateButtonState("_off")
+  [126] jmp [183]
+  [129] peek 0
+  [131] pushzero ................................ <0>
+  [132] eq
+  [133] jmpifz [168] ............................ (case) 0:
+  [136] getprop 780 ............................. <pLastHealth>
+  [139] pushzero ................................ <0>
+  [140] eq ...................................... <pLastHealth = 0>
+  [141] jmpifz [152] ............................ if pLastHealth = 0 then
+  [144] pop 1
+  [146] pushint8 1 .............................. <1>
+  [148] pusharglistnoret 1 ...................... <1>
+  [150] extcall 35 .............................. return 1
+  [152] pop 1
+  [154] getparam 0 .............................. <me>
+  [156] pusharglist 1 ........................... <me>
+  [158] objcall 769 ............................. <me.animateBallCountFlashing()>
+  [161] pusharglistnoret 1 ...................... <me.animateBallCountFlashing()>
+  [163] extcall 35 .............................. return me.animateBallCountFlashing()
+  [165] jmp [183] ............................... (case) otherwise:
+  [168] pop 1
+  [170] getparam 0 .............................. <me>
+  [172] pushcons 12 ............................. <EMPTY>
+  [174] pusharglist 2 ........................... <me, EMPTY>
+  [176] objcall 771 ............................. <me.setCreateButtonState(EMPTY)>
+  [179] pusharglistnoret 1 ...................... <me.setCreateButtonState(EMPTY)>
+  [181] extcall 35 .............................. return me.setCreateButtonState(EMPTY)
+  [183] pop 1 ................................... end case
+  [185] ret
+end
+
+on animateBallCountFlashing me
+  [  0] getprop 775 ............................. <pBallCountAnimTimer>
+  [  3] pushzero ................................ <0>
+  [  4] eq ...................................... <pBallCountAnimTimer = 0>
+  [  5] jmpifz [ 27] ............................ if pBallCountAnimTimer = 0 then / else
+  [  8] pushint8 1 .............................. <1>
+  [ 10] setprop 775 ............................. pBallCountAnimTimer = 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pusharglist 1 ........................... <me>
+  [ 17] objcall 197 ............................. <me.getID()>
+  [ 19] pusharglistnoret 1 ...................... <me.getID()>
+  [ 21] extcall 793 ............................. receiveUpdate(me.getID())
+  [ 24] jmp [ 63]
+  [ 27] getprop 775 ............................. <pBallCountAnimTimer>
+  [ 30] pushint8 50 ............................. <50>
+  [ 32] gteq .................................... <pBallCountAnimTimer >= 50>
+  [ 33] jmpifz [ 54] ............................ if pBallCountAnimTimer >= 50 then / else
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pusharglist 1 ........................... <me>
+  [ 40] objcall 197 ............................. <me.getID()>
+  [ 42] pusharglistnoret 1 ...................... <me.getID()>
+  [ 44] extcall 794 ............................. removeUpdate(me.getID())
+  [ 47] pushzero ................................ <0>
+  [ 48] setprop 775 ............................. pBallCountAnimTimer = 0
+  [ 51] jmp [ 63]
+  [ 54] getprop 775 ............................. <pBallCountAnimTimer>
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] add ..................................... <pBallCountAnimTimer + 1>
+  [ 60] setprop 775 ............................. pBallCountAnimTimer = pBallCountAnimTimer + 1
+  [ 63] getprop 777 ............................. <pBottomBarId>
+  [ 66] pusharglist 1 ........................... <pBottomBarId>
+  [ 68] extcall 747 ............................. <getWindow(pBottomBarId)>
+  [ 71] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 73] getlocal 0 .............................. <tWndObj>
+  [ 75] pushzero ................................ <0>
+  [ 76] eq ...................................... <tWndObj = 0>
+  [ 77] jmpifz [ 85] ............................ if tWndObj = 0 then
+  [ 80] pushzero ................................ <0>
+  [ 81] pusharglistnoret 1 ...................... <0>
+  [ 83] extcall 35 .............................. return 0
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] getprop 775 ............................. <pBallCountAnimTimer>
+  [ 90] pushint8 4 .............................. <4>
+  [ 92] div ..................................... <pBallCountAnimTimer / 4>
+  [ 93] pushint8 2 .............................. <2>
+  [ 95] mod ..................................... <pBallCountAnimTimer / 4 mod 2>
+  [ 96] add ..................................... <1 + (pBallCountAnimTimer / 4 mod 2)>
+  [ 97] setlocal 1 .............................. tMemNum = 1 + (pBallCountAnimTimer / 4 mod 2)
+  [ 99] pushcons 13 ............................. <"ui_snowball_slots">
+  [101] pushcons 14 ............................. <"ui_snowball_slots_hilite">
+  [103] pusharglist 2 ........................... <["ui_snowball_slots", "ui_snowball_slots_hilite"]>
+  [105] pushlist ................................ <["ui_snowball_slots", "ui_snowball_slots_hilite"]>
+  [106] getlocal 1 .............................. <tMemNum>
+  [108] pusharglist 2 ........................... <["ui_snowball_slots", "ui_snowball_slots_hilite"], tMemNum>
+  [110] objcall 44 .............................. <["ui_snowball_slots", "ui_snowball_slots_hilite"][tMemNum]>
+  [112] setlocal 2 .............................. tMemName = ["ui_snowball_slots", "ui_snowball_slots_hilite"][tMemNum]
+  [114] getlocal 0 .............................. <tWndObj>
+  [116] pushcons 15 ............................. <"int_alapalkki_balls_bg">
+  [118] pusharglist 2 ........................... <tWndObj, "int_alapalkki_balls_bg">
+  [120] objcall 748 ............................. <tWndObj.getElement("int_alapalkki_balls_bg")>
+  [123] setlocal 3 .............................. tElem = tWndObj.getElement("int_alapalkki_balls_bg")
+  [125] getlocal 3 .............................. <tElem>
+  [127] pushzero ................................ <0>
+  [128] eq ...................................... <tElem = 0>
+  [129] jmpifz [137] ............................ if tElem = 0 then
+  [132] pushzero ................................ <0>
+  [133] pusharglistnoret 1 ...................... <0>
+  [135] extcall 35 .............................. return 0
+  [137] getlocal 3 .............................. <tElem>
+  [139] pushsymb 122 ............................ <#member>
+  [141] pusharglist 2 ........................... <tElem, #member>
+  [143] objcall 351 ............................. <tElem.getProperty(#member)>
+  [146] getobjprop 358 .......................... <tElem.getProperty(#member).name>
+  [149] getlocal 2 .............................. <tMemName>
+  [151] eq ...................................... <tElem.getProperty(#member).name = tMemName>
+  [152] jmpifz [161] ............................ if tElem.getProperty(#member).name = tMemName then
+  [155] pushint8 1 .............................. <1>
+  [157] pusharglistnoret 1 ...................... <1>
+  [159] extcall 35 .............................. return 1
+  [161] getlocal 3 .............................. <tElem>
+  [163] pushsymb 122 ............................ <#member>
+  [165] getlocal 2 .............................. <tMemName>
+  [167] pusharglist 1 ........................... <tMemName>
+  [169] extcall 141 ............................. <getmemnum(tMemName)>
+  [171] pusharglist 1 ........................... <getmemnum(tMemName)>
+  [173] extcall 122 ............................. <member(getmemnum(tMemName))>
+  [175] pusharglistnoret 3 ...................... <tElem, #member, member(getmemnum(tMemName))>
+  [177] objcall 763 ............................. tElem.setProperty(#member, member(getmemnum(tMemName)))
+  [180] pushcons 12 ............................. <EMPTY>
+  [182] pushcons 16 ............................. <"_hilite">
+  [184] pusharglist 2 ........................... <[EMPTY, "_hilite"]>
+  [186] pushlist ................................ <[EMPTY, "_hilite"]>
+  [187] getlocal 1 .............................. <tMemNum>
+  [189] pusharglist 2 ........................... <[EMPTY, "_hilite"], tMemNum>
+  [191] objcall 44 .............................. <[EMPTY, "_hilite"][tMemNum]>
+  [193] setlocal 2 .............................. tMemName = [EMPTY, "_hilite"][tMemNum]
+  [195] getparam 0 .............................. <me>
+  [197] getlocal 2 .............................. <tMemName>
+  [199] pusharglistnoret 2 ...................... <me, tMemName>
+  [201] objcall 771 ............................. me.setCreateButtonState(tMemName)
+  [204] pushint8 1 .............................. <1>
+  [206] pusharglistnoret 1 ...................... <1>
+  [208] extcall 35 .............................. return 1
+  [210] ret
+end
+
+on animateBallCreateStarted me
+  [  0] getprop 776 ............................. <pBallCreateAnimTimer>
+  [  3] pushzero ................................ <0>
+  [  4] eq ...................................... <pBallCreateAnimTimer = 0>
+  [  5] jmpifz [ 36] ............................ if pBallCreateAnimTimer = 0 then / else
+  [  8] pushint8 1 .............................. <1>
+  [ 10] setprop 776 ............................. pBallCreateAnimTimer = 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushcons 17 ............................. <"_pressed">
+  [ 17] pusharglistnoret 2 ...................... <me, "_pressed">
+  [ 19] objcall 771 ............................. me.setCreateButtonState("_pressed")
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pusharglist 1 ........................... <me>
+  [ 26] objcall 197 ............................. <me.getID()>
+  [ 28] pusharglistnoret 1 ...................... <me.getID()>
+  [ 30] extcall 793 ............................. receiveUpdate(me.getID())
+  [ 33] jmp [ 81]
+  [ 36] getprop 776 ............................. <pBallCreateAnimTimer>
+  [ 39] pushint8 3 .............................. <3>
+  [ 41] gteq .................................... <pBallCreateAnimTimer >= 3>
+  [ 42] jmpifz [ 72] ............................ if pBallCreateAnimTimer >= 3 then / else
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 197 ............................. <me.getID()>
+  [ 51] pusharglistnoret 1 ...................... <me.getID()>
+  [ 53] extcall 794 ............................. removeUpdate(me.getID())
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pushcons 3 .............................. <"_off">
+  [ 60] pusharglistnoret 2 ...................... <me, "_off">
+  [ 62] objcall 771 ............................. me.setCreateButtonState("_off")
+  [ 65] pushzero ................................ <0>
+  [ 66] setprop 776 ............................. pBallCreateAnimTimer = 0
+  [ 69] jmp [ 81]
+  [ 72] getprop 776 ............................. <pBallCreateAnimTimer>
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] add ..................................... <pBallCreateAnimTimer + 1>
+  [ 78] setprop 776 ............................. pBallCreateAnimTimer = pBallCreateAnimTimer + 1
+  [ 81] ret
+end
+
+on setCreateButtonState me, tstate
+  [  0] getprop 777 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 747 ............................. <getWindow(pBottomBarId)>
+  [  8] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 10] getlocal 0 .............................. <tWndObj>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tWndObj = 0>
+  [ 14] jmpifz [ 22] ............................ if tWndObj = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 35 .............................. return 0
+  [ 22] getlocal 0 .............................. <tWndObj>
+  [ 24] pushcons 18 ............................. <"snowwar_button_create">
+  [ 26] pusharglist 2 ........................... <tWndObj, "snowwar_button_create">
+  [ 28] objcall 748 ............................. <tWndObj.getElement("snowwar_button_create")>
+  [ 31] setlocal 1 .............................. tElem = tWndObj.getElement("snowwar_button_create")
+  [ 33] getlocal 1 .............................. <tElem>
+  [ 35] pushzero ................................ <0>
+  [ 36] eq ...................................... <tElem = 0>
+  [ 37] jmpifz [ 45] ............................ if tElem = 0 then
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglistnoret 1 ...................... <0>
+  [ 43] extcall 35 .............................. return 0
+  [ 45] pushcons 19 ............................. <"ui_makesnowballgreen">
+  [ 47] getparam 1 .............................. <tstate>
+  [ 49] joinstr ................................. <"ui_makesnowballgreen" & tstate>
+  [ 50] setlocal 2 .............................. tMemName = "ui_makesnowballgreen" & tstate
+  [ 52] getlocal 1 .............................. <tElem>
+  [ 54] pushsymb 122 ............................ <#member>
+  [ 56] pusharglist 2 ........................... <tElem, #member>
+  [ 58] objcall 351 ............................. <tElem.getProperty(#member)>
+  [ 61] getobjprop 358 .......................... <tElem.getProperty(#member).name>
+  [ 64] getlocal 2 .............................. <tMemName>
+  [ 66] eq ...................................... <tElem.getProperty(#member).name = tMemName>
+  [ 67] jmpifz [ 76] ............................ if tElem.getProperty(#member).name = tMemName then
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 1 ...................... <1>
+  [ 74] extcall 35 .............................. return 1
+  [ 76] getlocal 2 .............................. <tMemName>
+  [ 78] pusharglist 1 ........................... <tMemName>
+  [ 80] extcall 141 ............................. <getmemnum(tMemName)>
+  [ 82] setlocal 3 .............................. tMemNum = getmemnum(tMemName)
+  [ 84] getlocal 3 .............................. <tMemNum>
+  [ 86] pushzero ................................ <0>
+  [ 87] eq ...................................... <tMemNum = 0>
+  [ 88] jmpifz [ 96] ............................ if tMemNum = 0 then
+  [ 91] pushzero ................................ <0>
+  [ 92] pusharglistnoret 1 ...................... <0>
+  [ 94] extcall 35 .............................. return 0
+  [ 96] getlocal 1 .............................. <tElem>
+  [ 98] pushsymb 76 ............................. <#sprite>
+  [100] pusharglist 2 ........................... <tElem, #sprite>
+  [102] objcall 351 ............................. <tElem.getProperty(#sprite)>
+  [105] setlocal 4 .............................. tsprite = tElem.getProperty(#sprite)
+  [107] getlocal 4 .............................. <tsprite>
+  [109] pushzero ................................ <0>
+  [110] nteq .................................... <tsprite <> 0>
+  [111] jmpifz [142] ............................ if tsprite <> 0 then
+  [114] getparam 1 .............................. <tstate>
+  [116] pushcons 3 .............................. <"_off">
+  [118] eq ...................................... <tstate = "_off">
+  [119] jmpifz [133] ............................ if tstate = "_off" then / else
+  [122] getlocal 4 .............................. <tsprite>
+  [124] pushzero ................................ <0>
+  [125] pusharglistnoret 2 ...................... <tsprite, 0>
+  [127] objcall 269 ............................. tsprite.setcursor(0)
+  [130] jmp [142]
+  [133] getlocal 4 .............................. <tsprite>
+  [135] pushcons 20 ............................. <"cursor.finger">
+  [137] pusharglistnoret 2 ...................... <tsprite, "cursor.finger">
+  [139] objcall 269 ............................. tsprite.setcursor("cursor.finger")
+  [142] getlocal 1 .............................. <tElem>
+  [144] pushsymb 122 ............................ <#member>
+  [146] getlocal 3 .............................. <tMemNum>
+  [148] pusharglist 1 ........................... <tMemNum>
+  [150] extcall 122 ............................. <member(tMemNum)>
+  [152] pusharglistnoret 3 ...................... <tElem, #member, member(tMemNum)>
+  [154] objcall 763 ............................. tElem.setProperty(#member, member(tMemNum))
+  [157] pushint8 1 .............................. <1>
+  [159] pusharglistnoret 1 ...................... <1>
+  [161] extcall 35 .............................. return 1
+  [163] ret
+end
+
+on updateSoundIcon me
+  [  0] getprop 777 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 747 ............................. <getWindow(pBottomBarId)>
+  [  8] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 10] getlocal 0 .............................. <tWndObj>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tWndObj = 0>
+  [ 14] jmpifz [ 22] ............................ if tWndObj = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 35 .............................. return 0
+  [ 22] getlocal 0 .............................. <tWndObj>
+  [ 24] pushcons 21 ............................. <"gs_int_sound_image">
+  [ 26] pusharglist 2 ........................... <tWndObj, "gs_int_sound_image">
+  [ 28] objcall 748 ............................. <tWndObj.getElement("gs_int_sound_image")>
+  [ 31] setlocal 1 .............................. tElem = tWndObj.getElement("gs_int_sound_image")
+  [ 33] getlocal 1 .............................. <tElem>
+  [ 35] pushzero ................................ <0>
+  [ 36] eq ...................................... <tElem = 0>
+  [ 37] jmpifz [ 45] ............................ if tElem = 0 then
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglistnoret 1 ...................... <0>
+  [ 43] extcall 35 .............................. return 0
+  [ 45] pusharglist 0 ........................... <>
+  [ 47] extcall 797 ............................. <getSoundState()>
+  [ 50] jmpifz [ 60] ............................ if getSoundState() then / else
+  [ 53] pushcons 22 ............................. <"sw_soundon">
+  [ 55] setlocal 2 .............................. tMemName = "sw_soundon"
+  [ 57] jmp [ 64]
+  [ 60] pushcons 23 ............................. <"sw_soundoff">
+  [ 62] setlocal 2 .............................. tMemName = "sw_soundoff"
+  [ 64] getlocal 2 .............................. <tMemName>
+  [ 66] pusharglist 1 ........................... <tMemName>
+  [ 68] extcall 141 ............................. <getmemnum(tMemName)>
+  [ 70] pusharglist 1 ........................... <getmemnum(tMemName)>
+  [ 72] extcall 122 ............................. <member(getmemnum(tMemName))>
+  [ 74] setlocal 3 .............................. tmember = member(getmemnum(tMemName))
+  [ 76] getlocal 3 .............................. <tmember>
+  [ 78] getobjprop 199 .......................... <tmember.type>
+  [ 80] pushsymb 200 ............................ <#bitmap>
+  [ 82] eq ...................................... <tmember.type = #bitmap>
+  [ 83] jmpifz [ 97] ............................ if tmember.type = #bitmap then
+  [ 86] getlocal 1 .............................. <tElem>
+  [ 88] getlocal 3 .............................. <tmember>
+  [ 90] getobjprop 154 .......................... <tmember.image>
+  [ 92] pusharglistnoret 2 ...................... <tElem, tmember.image>
+  [ 94] objcall 798 ............................. tElem.feedImage(tmember.image)
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] pusharglistnoret 1 ...................... <1>
+  [101] extcall 35 .............................. return 1
+  [103] ret
+end
+
+on replaceRoomBar me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 228 ............................. <me.getGameSystem()>
+  [  6] pusharglist 1 ........................... <me.getGameSystem()>
+  [  8] objcall 60 .............................. <me.getGameSystem().getSpectatorModeFlag()>
+  [ 10] setlocal 0 .............................. tSpectator = me.getGameSystem().getSpectatorModeFlag()
+  [ 12] getlocal 0 .............................. <tSpectator>
+  [ 14] jmpifz [ 23] ............................ if tSpectator then
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] pusharglistnoret 1 ...................... <1>
+  [ 21] extcall 35 .............................. return 1
+  [ 23] getprop 777 ............................. <pBottomBarId>
+  [ 26] pusharglistnoret 1 ...................... <pBottomBarId>
+  [ 28] extcall 765 ............................. removeWindow(pBottomBarId)
+  [ 31] getprop 777 ............................. <pBottomBarId>
+  [ 34] pushcons 24 ............................. <"empty.window">
+  [ 36] pushzero ................................ <0>
+  [ 37] pushint16 471 ........................... <471>
+  [ 40] pusharglistnoret 4 ...................... <pBottomBarId, "empty.window", 0, 471>
+  [ 42] extcall 759 ............................. createWindow(pBottomBarId, "empty.window", 0, 471)
+  [ 45] getprop 777 ............................. <pBottomBarId>
+  [ 48] pusharglist 1 ........................... <pBottomBarId>
+  [ 50] extcall 747 ............................. <getWindow(pBottomBarId)>
+  [ 53] setlocal 1 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 55] getlocal 1 .............................. <tWndObj>
+  [ 57] pushzero ................................ <0>
+  [ 58] eq ...................................... <tWndObj = 0>
+  [ 59] jmpifz [ 67] ............................ if tWndObj = 0 then
+  [ 62] pushzero ................................ <0>
+  [ 63] pusharglistnoret 1 ...................... <0>
+  [ 65] extcall 35 .............................. return 0
+  [ 67] getlocal 1 .............................. <tWndObj>
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] pusharglistnoret 2 ...................... <tWndObj, 1>
+  [ 73] objcall 761 ............................. tWndObj.lock(1)
+  [ 76] getlocal 1 .............................. <tWndObj>
+  [ 78] pusharglistnoret 1 ...................... <tWndObj>
+  [ 80] objcall 799 ............................. tWndObj.unmerge()
+  [ 83] pushcons 25 ............................. <"sw_ui.window">
+  [ 85] setlocal 2 .............................. tLayout = "sw_ui.window"
+  [ 87] getlocal 1 .............................. <tWndObj>
+  [ 89] getlocal 2 .............................. <tLayout>
+  [ 91] pusharglist 2 ........................... <tWndObj, tLayout>
+  [ 93] objcall 762 ............................. <tWndObj.merge(tLayout)>
+  [ 96] not ..................................... <not tWndObj.merge(tLayout)>
+  [ 97] jmpifz [105] ............................ if not tWndObj.merge(tLayout) then
+  [100] pushzero ................................ <0>
+  [101] pusharglistnoret 1 ...................... <0>
+  [103] extcall 35 .............................. return 0
+  [105] getparam 0 .............................. <me>
+  [107] pusharglistnoret 1 ...................... <me>
+  [109] objcall 1206 ............................ me.updateRoomBarFigure()
+  [112] getlocal 1 .............................. <tWndObj>
+  [114] getparam 0 .............................. <me>
+  [116] pusharglist 1 ........................... <me>
+  [118] objcall 197 ............................. <me.getID()>
+  [120] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [122] objcall 803 ............................. tWndObj.registerClient(me.getID())
+  [125] getlocal 1 .............................. <tWndObj>
+  [127] pushsymb 774 ............................ <#eventProcRoomBar>
+  [130] getparam 0 .............................. <me>
+  [132] pusharglist 1 ........................... <me>
+  [134] objcall 197 ............................. <me.getID()>
+  [136] pushsymb 357 ............................ <#mouseUp>
+  [139] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseUp>
+  [141] objcall 79 .............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseUp)
+  [143] getlocal 1 .............................. <tWndObj>
+  [145] pushsymb 774 ............................ <#eventProcRoomBar>
+  [148] getparam 0 .............................. <me>
+  [150] pusharglist 1 ........................... <me>
+  [152] objcall 197 ............................. <me.getID()>
+  [154] pushsymb 804 ............................ <#keyDown>
+  [157] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #keyDown>
+  [159] objcall 79 .............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #keyDown)
+  [161] getlocal 1 .............................. <tWndObj>
+  [163] pushsymb 774 ............................ <#eventProcRoomBar>
+  [166] getparam 0 .............................. <me>
+  [168] pusharglist 1 ........................... <me>
+  [170] objcall 197 ............................. <me.getID()>
+  [172] pushsymb 78 ............................. <#mouseEnter>
+  [174] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseEnter>
+  [176] objcall 79 .............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseEnter)
+  [178] getlocal 1 .............................. <tWndObj>
+  [180] pushsymb 774 ............................ <#eventProcRoomBar>
+  [183] getparam 0 .............................. <me>
+  [185] pusharglist 1 ........................... <me>
+  [187] objcall 197 ............................. <me.getID()>
+  [189] pushsymb 80 ............................. <#mouseLeave>
+  [191] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseLeave>
+  [193] objcall 79 .............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseLeave)
+  [195] getparam 0 .............................. <me>
+  [197] pusharglistnoret 1 ...................... <me>
+  [199] objcall 772 ............................. me.updateSoundIcon()
+  [202] getparam 0 .............................. <me>
+  [204] pushcons 3 .............................. <"_off">
+  [206] pusharglistnoret 2 ...................... <me, "_off">
+  [208] objcall 771 ............................. me.setCreateButtonState("_off")
+  [211] pushint8 1 .............................. <1>
+  [213] pusharglistnoret 1 ...................... <1>
+  [215] extcall 35 .............................. return 1
+  [217] ret
+end
+
+on updateRoomBarFigure me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 228 ............................. <me.getGameSystem()>
+  [  6] pusharglist 1 ........................... <me.getGameSystem()>
+  [  8] objcall 60 .............................. <me.getGameSystem().getSpectatorModeFlag()>
+  [ 10] setlocal 0 .............................. tSpectator = me.getGameSystem().getSpectatorModeFlag()
+  [ 12] getlocal 0 .............................. <tSpectator>
+  [ 14] not ..................................... <not tSpectator>
+  [ 15] pushcons 26 ............................. <"Figure_Preview">
+  [ 17] pusharglist 1 ........................... <"Figure_Preview">
+  [ 19] extcall 800 ............................. <objectExists("Figure_Preview")>
+  [ 22] and ..................................... <not tSpectator and objectExists("Figure_Preview")>
+  [ 23] jmpifz [ 45] ............................ if not tSpectator and objectExists("Figure_Preview") then
+  [ 26] pushcons 26 ............................. <"Figure_Preview">
+  [ 28] pusharglist 1 ........................... <"Figure_Preview">
+  [ 30] extcall 56 .............................. <getObject("Figure_Preview")>
+  [ 32] getprop 777 ............................. <pBottomBarId>
+  [ 35] pushcons 27 ............................. <"snowwar_avatar_face">
+  [ 37] pushsymb 801 ............................ <#head>
+  [ 40] pusharglistnoret 4 ...................... <getObject("Figure_Preview"), pBottomBarId, "snowwar_avatar_face", #head>
+  [ 42] objcall 802 ............................. getObject("Figure_Preview").createHumanPartPreview(pBottomBarId, "snowwar_avatar_face", #head)
+  [ 45] ret
+end
+
+on eventProcRoomBar me, tEvent, tSprID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 357 ............................ <#mouseUp>
+  [  5] eq ...................................... <tEvent = #mouseUp>
+  [  6] jmpifz [109] ............................ if tEvent = #mouseUp then
+  [  9] getparam 2 .............................. <tSprID>
+  [ 11] peek 0 .................................. case tSprID of
+  [ 13] pushcons 18 ............................. <"snowwar_button_create">
+  [ 15] eq
+  [ 16] jmpifz [ 75] ............................ (case) "snowwar_button_create":
+  [ 19] pushsymb 61 ............................. <#session>
+  [ 21] pusharglist 1 ........................... <#session>
+  [ 23] extcall 56 .............................. <getObject(#session)>
+  [ 25] pushcons 4 .............................. <"user_game_index">
+  [ 27] pusharglist 2 ........................... <getObject(#session), "user_game_index">
+  [ 29] objcall 62 .............................. <getObject(#session).exists("user_game_index")>
+  [ 31] not ..................................... <not getObject(#session).exists("user_game_index")>
+  [ 32] jmpifz [ 42] ............................ if not getObject(#session).exists("user_game_index") then
+  [ 35] pop 1
+  [ 37] pushzero ................................ <0>
+  [ 38] pusharglistnoret 1 ...................... <0>
+  [ 40] extcall 35 .............................. return 0
+  [ 42] pop 1
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglist 1 ........................... <me>
+  [ 48] objcall 228 ............................. <me.getGameSystem()>
+  [ 50] pushsymb 61 ............................. <#session>
+  [ 52] pusharglist 1 ........................... <#session>
+  [ 54] extcall 56 .............................. <getObject(#session)>
+  [ 56] pushcons 4 .............................. <"user_game_index">
+  [ 58] pusharglist 2 ........................... <getObject(#session), "user_game_index">
+  [ 60] objcall 63 .............................. <getObject(#session).GET("user_game_index")>
+  [ 62] pushsymb 65 ............................. <#send_create_snowball>
+  [ 64] pusharglist 3 ........................... <me.getGameSystem(), getObject(#session).GET("user_game_index"), #send_create_snowball>
+  [ 66] objcall 66 .............................. <me.getGameSystem().executeGameObjectEvent(getObject(#session).GET("user_game_index"), #send_create_snowball)>
+  [ 68] pusharglistnoret 1 ...................... <me.getGameSystem().executeGameObjectEvent(getObject(#session).GET("user_game_index"), #send_create_snowball)>
+  [ 70] extcall 35 .............................. return me.getGameSystem().executeGameObjectEvent(getObject(#session).GET("user_game_index"), #send_create_snowball)
+  [ 72] jmp [107]
+  [ 75] peek 0
+  [ 77] pushcons 21 ............................. <"gs_int_sound_image">
+  [ 79] eq
+  [ 80] jmpifz [107] ............................ (case) "gs_int_sound_image":
+  [ 83] pusharglist 0 ........................... <>
+  [ 85] extcall 797 ............................. <getSoundState()>
+  [ 88] not ..................................... <not getSoundState()>
+  [ 89] pusharglistnoret 1 ...................... <not getSoundState()>
+  [ 91] extcall 807 ............................. setSoundState(not getSoundState())
+  [ 94] pop 1
+  [ 96] getparam 0 .............................. <me>
+  [ 98] pusharglist 1 ........................... <me>
+  [100] objcall 772 ............................. <me.updateSoundIcon()>
+  [103] pusharglistnoret 1 ...................... <me.updateSoundIcon()>
+  [105] extcall 35 .............................. return me.updateSoundIcon()
+  [107] pop 1 ................................... end case
+  [109] pushcons 28 ............................. <"RoomBarProgram">
+  [111] pusharglist 1 ........................... <"RoomBarProgram">
+  [113] extcall 56 .............................. <getObject("RoomBarProgram")>
+  [115] setlocal 0 .............................. tRoomInt = getObject("RoomBarProgram")
+  [117] getlocal 0 .............................. <tRoomInt>
+  [119] pushzero ................................ <0>
+  [120] eq ...................................... <tRoomInt = 0>
+  [121] jmpifz [129] ............................ if tRoomInt = 0 then
+  [124] pushzero ................................ <0>
+  [125] pusharglistnoret 1 ...................... <0>
+  [127] extcall 35 .............................. return 0
+  [129] getlocal 0 .............................. <tRoomInt>
+  [131] getparam 1 .............................. <tEvent>
+  [133] getparam 2 .............................. <tSprID>
+  [135] getparam 3 .............................. <tParam>
+  [137] pusharglist 4 ........................... <tRoomInt, tEvent, tSprID, tParam>
+  [139] objcall 774 ............................. <tRoomInt.eventProcRoomBar(tEvent, tSprID, tParam)>
+  [142] pusharglistnoret 1 ...................... <tRoomInt.eventProcRoomBar(tEvent, tSprID, tParam)>
+  [144] extcall 35 .............................. return tRoomInt.eventProcRoomBar(tEvent, tSprID, tParam)
+  [146] ret
+end

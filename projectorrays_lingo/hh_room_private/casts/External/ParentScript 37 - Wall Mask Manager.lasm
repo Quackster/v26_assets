@@ -1,0 +1,330 @@
+property pMask, pMaskImage, pMaskList, pREquiresUpdate
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 255 ............................. pMaskList = [:]
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglistnoret 1 ...................... <me>
+  [  9] objcall 253 ............................. me.initMask()
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 36 .............................. return 1
+  [ 17] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 36 .............................. return 1
+  [  6] ret
+end
+
+on requiresUpdate me
+  [  0] getprop 211 ............................. <pREquiresUpdate>
+  [  2] pusharglistnoret 1 ...................... <pREquiresUpdate>
+  [  4] extcall 36 .............................. return pREquiresUpdate
+  [  6] ret
+end
+
+on getMask me
+  [  0] getprop 211 ............................. <pREquiresUpdate>
+  [  2] jmpifz [ 11] ............................ if pREquiresUpdate then
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglistnoret 1 ...................... <me>
+  [  9] objcall 254 ............................. me.renderMask()
+  [ 11] pushzero ................................ <0>
+  [ 12] setprop 211 ............................. pREquiresUpdate = 0
+  [ 14] getprop 525 ............................. <pMask>
+  [ 17] pusharglistnoret 1 ...................... <pMask>
+  [ 19] extcall 36 .............................. return pMask
+  [ 21] ret
+end
+
+on insertWallMaskItem me, tID, tClassID, tloc, tdir, tSize
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMaskProps = [:]
+  [  5] getlocal 0 .............................. <tMaskProps>
+  [  7] pushsymb 73 ............................. <#id>
+  [  9] getparam 1 .............................. <tID>
+  [ 11] pusharglistnoret 3 ...................... <tMaskProps, #id, tID>
+  [ 13] objcall 239 ............................. tMaskProps.setaProp(#id, tID)
+  [ 15] getlocal 0 .............................. <tMaskProps>
+  [ 17] pushsymb 204 ............................ <#class>
+  [ 19] getparam 2 .............................. <tClassID>
+  [ 21] pusharglistnoret 3 ...................... <tMaskProps, #class, tClassID>
+  [ 23] objcall 239 ............................. tMaskProps.setaProp(#class, tClassID)
+  [ 25] getlocal 0 .............................. <tMaskProps>
+  [ 27] pushsymb 195 ............................ <#loc>
+  [ 29] getparam 3 .............................. <tloc>
+  [ 31] pusharglistnoret 3 ...................... <tMaskProps, #loc, tloc>
+  [ 33] objcall 239 ............................. tMaskProps.setaProp(#loc, tloc)
+  [ 35] getlocal 0 .............................. <tMaskProps>
+  [ 37] pushsymb 257 ............................ <#Dir>
+  [ 40] getparam 4 .............................. <tdir>
+  [ 42] pusharglistnoret 3 ...................... <tMaskProps, #Dir, tdir>
+  [ 44] objcall 239 ............................. tMaskProps.setaProp(#Dir, tdir)
+  [ 46] getlocal 0 .............................. <tMaskProps>
+  [ 48] pushsymb 258 ............................ <#size>
+  [ 51] getparam 5 .............................. <tSize>
+  [ 53] pusharglistnoret 3 ...................... <tMaskProps, #size, tSize>
+  [ 55] objcall 239 ............................. tMaskProps.setaProp(#size, tSize)
+  [ 57] getprop 255 ............................. <pMaskList>
+  [ 59] getparam 1 .............................. <tID>
+  [ 61] getlocal 0 .............................. <tMaskProps>
+  [ 63] pusharglistnoret 3 ...................... <pMaskList, tID, tMaskProps>
+  [ 65] objcall 239 ............................. pMaskList.setaProp(tID, tMaskProps)
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] setprop 211 ............................. pREquiresUpdate = 1
+  [ 71] ret
+end
+
+on removeWallMaskItem me, tID
+  [  0] getprop 255 ............................. <pMaskList>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglistnoret 2 ...................... <pMaskList, tID>
+  [  6] objcall 261 ............................. pMaskList.deleteProp(tID)
+  [  9] pushint8 1 .............................. <1>
+  [ 11] setprop 211 ............................. pREquiresUpdate = 1
+  [ 13] ret
+end
+
+on getItemCount me
+  [  0] getprop 255 ............................. <pMaskList>
+  [  2] getobjprop 150 .......................... <pMaskList.count>
+  [  4] pusharglistnoret 1 ...................... <pMaskList.count>
+  [  6] extcall 36 .............................. return pMaskList.count
+  [  8] ret
+end
+
+on initMask me
+  [  0] getmovieprop 262 ........................ <the stage>
+  [  3] getchainedprop 90 ....................... <(the stage).rect>
+  [  5] getobjprop 60 ........................... <(the stage).rect.width>
+  [  7] setlocal 0 .............................. tWidth = (the stage).rect.width
+  [  9] getmovieprop 262 ........................ <the stage>
+  [ 12] getchainedprop 90 ....................... <(the stage).rect>
+  [ 14] getobjprop 61 ........................... <(the stage).rect.height>
+  [ 16] setlocal 1 .............................. tHeight = (the stage).rect.height
+  [ 18] getlocal 0 .............................. <tWidth>
+  [ 20] getlocal 1 .............................. <tHeight>
+  [ 22] pushint8 8 .............................. <8>
+  [ 24] pusharglist 3 ........................... <tWidth, tHeight, 8>
+  [ 26] extcall 33 .............................. <image(tWidth, tHeight, 8)>
+  [ 28] setprop 256 ............................. pMaskImage = image(tWidth, tHeight, 8)
+  [ 31] getprop 256 ............................. <pMaskImage>
+  [ 34] getprop 256 ............................. <pMaskImage>
+  [ 37] getobjprop 90 ........................... <pMaskImage.rect>
+  [ 39] pushcons 0 .............................. <"FFFFFF">
+  [ 41] pusharglist 1 ........................... <"FFFFFF">
+  [ 43] extcall 120 ............................. <rgb("FFFFFF")>
+  [ 45] pusharglistnoret 3 ...................... <pMaskImage, pMaskImage.rect, rgb("FFFFFF")>
+  [ 47] objcall 218 ............................. pMaskImage.fill(pMaskImage.rect, rgb("FFFFFF"))
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] setlocal 2 .............................. pIsChanged = 1
+  [ 53] ret
+end
+
+on renderMask me
+  [  0] getprop 256 ............................. <pMaskImage>
+  [  3] getprop 256 ............................. <pMaskImage>
+  [  6] getobjprop 90 ........................... <pMaskImage.rect>
+  [  8] pushcons 0 .............................. <"FFFFFF">
+  [ 10] pusharglist 1 ........................... <"FFFFFF">
+  [ 12] extcall 120 ............................. <rgb("FFFFFF")>
+  [ 14] pusharglistnoret 3 ...................... <pMaskImage, pMaskImage.rect, rgb("FFFFFF")>
+  [ 16] objcall 218 ............................. pMaskImage.fill(pMaskImage.rect, rgb("FFFFFF"))
+  [ 18] getprop 255 ............................. <pMaskList>
+  [ 20] peek 0
+  [ 22] pusharglist 1
+  [ 24] extcall 150
+  [ 26] pushint8 1
+  [ 28] peek 0
+  [ 30] peek 2
+  [ 32] lteq
+  [ 33] jmpifz [378] ............................ repeat with tMask in pMaskList
+  [ 36] peek 2
+  [ 38] peek 1
+  [ 40] pusharglist 2
+  [ 42] extcall 151
+  [ 44] setlocal 0
+  [ 46] getlocal 0 .............................. <tMask>
+  [ 48] pushsymb 195 ............................ <#loc>
+  [ 50] pusharglist 2 ........................... <tMask, #loc>
+  [ 52] objcall 151 ............................. <tMask[#loc]>
+  [ 54] setlocal 1 .............................. tloc = tMask[#loc]
+  [ 56] getlocal 0 .............................. <tMask>
+  [ 58] pushsymb 204 ............................ <#class>
+  [ 60] pusharglist 2 ........................... <tMask, #class>
+  [ 62] objcall 151 ............................. <tMask[#class]>
+  [ 64] setlocal 2 .............................. tClass = tMask[#class]
+  [ 66] getlocal 0 .............................. <tMask>
+  [ 68] pushsymb 257 ............................ <#Dir>
+  [ 71] pusharglist 2 ........................... <tMask, #Dir>
+  [ 73] objcall 151 ............................. <tMask[#Dir]>
+  [ 75] setlocal 3 .............................. tdir = tMask[#Dir]
+  [ 77] getlocal 0 .............................. <tMask>
+  [ 79] pushsymb 258 ............................ <#size>
+  [ 82] pusharglist 2 ........................... <tMask, #size>
+  [ 84] objcall 151 ............................. <tMask[#size]>
+  [ 86] setlocal 4 .............................. tSize = tMask[#size]
+  [ 88] pushcons 1 .............................. <"mask.membername.template">
+  [ 90] pusharglist 1 ........................... <"mask.membername.template">
+  [ 92] extcall 27 .............................. <getVariable("mask.membername.template")>
+  [ 94] setlocal 5 .............................. tNameTemplate = getVariable("mask.membername.template")
+  [ 96] getlocal 5 .............................. <tNameTemplate>
+  [ 98] pushcons 2 .............................. <"%class%">
+  [100] getlocal 2 .............................. <tClass>
+  [102] pusharglist 3 ........................... <tNameTemplate, "%class%", tClass>
+  [104] extcall 266 ............................. <replaceChunks(tNameTemplate, "%class%", tClass)>
+  [107] setlocal 6 .............................. tMemberName = replaceChunks(tNameTemplate, "%class%", tClass)
+  [109] getlocal 6 .............................. <tMemberName>
+  [111] pushcons 3 .............................. <"%dir%">
+  [113] getlocal 3 .............................. <tdir>
+  [115] pusharglist 3 ........................... <tMemberName, "%dir%", tdir>
+  [117] extcall 266 ............................. <replaceChunks(tMemberName, "%dir%", tdir)>
+  [120] setlocal 6 .............................. tMemberName = replaceChunks(tMemberName, "%dir%", tdir)
+  [122] getlocal 4 .............................. <tSize>
+  [124] pushint8 32 ............................. <32>
+  [126] eq ...................................... <tSize = 32>
+  [127] jmpifz [137] ............................ if tSize = 32 then
+  [130] pushcons 4 .............................. <"s_">
+  [132] getlocal 6 .............................. <tMemberName>
+  [134] joinstr ................................. <"s_" & tMemberName>
+  [135] setlocal 6 .............................. tMemberName = "s_" & tMemberName
+  [137] getlocal 6 .............................. <tMemberName>
+  [139] pusharglist 1 ........................... <tMemberName>
+  [141] extcall 28 .............................. <memberExists(tMemberName)>
+  [143] not ..................................... <not memberExists(tMemberName)>
+  [144] jmpifz [150] ............................ if not memberExists(tMemberName) then
+  [147] jmp [372] ............................... next repeat
+  [150] getlocal 6 .............................. <tMemberName>
+  [152] pusharglist 1 ........................... <tMemberName>
+  [154] extcall 154 ............................. <getmemnum(tMemberName)>
+  [156] setlocal 7 .............................. tMemNum = getmemnum(tMemberName)
+  [158] getlocal 7 .............................. <tMemNum>
+  [160] pusharglist 1 ........................... <tMemNum>
+  [162] extcall 267 ............................. <abs(tMemNum)>
+  [165] pusharglist 1 ........................... <abs(tMemNum)>
+  [167] extcall 58 .............................. <member(abs(tMemNum))>
+  [169] setlocal 8 .............................. tmember = member(abs(tMemNum))
+  [171] getlocal 8 .............................. <tmember>
+  [173] getobjprop 33 ........................... <tmember.image>
+  [175] setlocal 9 .............................. tMaskImage = tmember.image
+  [177] getlocal 8 .............................. <tmember>
+  [179] getobjprop 65 ........................... <tmember.regPoint>
+  [181] setlocal 10 ............................. tRegPoint = tmember.regPoint
+  [183] getlocal 3 .............................. <tdir>
+  [185] pushcons 5 .............................. <"rightwall">
+  [187] eq ...................................... <tdir = "rightwall">
+  [188] jmpifz [218] ............................ if tdir = "rightwall" then
+  [191] getlocal 9 .............................. <tMaskImage>
+  [193] getobjprop 60 ........................... <tMaskImage.width>
+  [195] getlocal 10 ............................. <tRegPoint>
+  [197] pushint8 1 .............................. <1>
+  [199] pusharglist 2 ........................... <tRegPoint, 1>
+  [201] objcall 151 ............................. <tRegPoint[1]>
+  [203] sub ..................................... <tMaskImage.width - tRegPoint[1]>
+  [204] getlocal 10 ............................. <tRegPoint>
+  [206] pushint8 2 .............................. <2>
+  [208] pusharglist 2 ........................... <tRegPoint, 2>
+  [210] objcall 151 ............................. <tRegPoint[2]>
+  [212] pusharglist 2 ........................... <tMaskImage.width - tRegPoint[1], tRegPoint[2]>
+  [214] extcall 64 .............................. <point(tMaskImage.width - tRegPoint[1], tRegPoint[2])>
+  [216] setlocal 10 ............................. tRegPoint = point(tMaskImage.width - tRegPoint[1], tRegPoint[2])
+  [218] getlocal 1 .............................. <tloc>
+  [220] getlocal 10 ............................. <tRegPoint>
+  [222] sub ..................................... <tloc - tRegPoint>
+  [223] setlocal 1 .............................. tloc = tloc - tRegPoint
+  [225] getlocal 1 .............................. <tloc>
+  [227] getlocal 9 .............................. <tMaskImage>
+  [229] getobjprop 60 ........................... <tMaskImage.width>
+  [231] getlocal 9 .............................. <tMaskImage>
+  [233] getobjprop 61 ........................... <tMaskImage.height>
+  [235] pusharglist 2 ........................... <tMaskImage.width, tMaskImage.height>
+  [237] extcall 64 .............................. <point(tMaskImage.width, tMaskImage.height)>
+  [239] add ..................................... <tloc + point(tMaskImage.width, tMaskImage.height)>
+  [240] setlocal 11 ............................. tBottomRight = tloc + point(tMaskImage.width, tMaskImage.height)
+  [242] getlocal 7 .............................. <tMemNum>
+  [244] pushzero ................................ <0>
+  [245] gt ...................................... <tMemNum > 0>
+  [246] jmpifz [301] ............................ if tMemNum > 0 then / else
+  [249] getlocal 1 .............................. <tloc>
+  [251] getlocal 11 ............................. <tBottomRight>
+  [253] pushint8 1 .............................. <1>
+  [255] pusharglist 2 ........................... <tBottomRight, 1>
+  [257] objcall 151 ............................. <tBottomRight[1]>
+  [259] getlocal 1 .............................. <tloc>
+  [261] pushint8 2 .............................. <2>
+  [263] pusharglist 2 ........................... <tloc, 2>
+  [265] objcall 151 ............................. <tloc[2]>
+  [267] pusharglist 2 ........................... <tBottomRight[1], tloc[2]>
+  [269] extcall 64 .............................. <point(tBottomRight[1], tloc[2])>
+  [271] getlocal 11 ............................. <tBottomRight>
+  [273] getlocal 1 .............................. <tloc>
+  [275] pushint8 1 .............................. <1>
+  [277] pusharglist 2 ........................... <tloc, 1>
+  [279] objcall 151 ............................. <tloc[1]>
+  [281] getlocal 11 ............................. <tBottomRight>
+  [283] pushint8 2 .............................. <2>
+  [285] pusharglist 2 ........................... <tBottomRight, 2>
+  [287] objcall 151 ............................. <tBottomRight[2]>
+  [289] pusharglist 2 ........................... <tloc[1], tBottomRight[2]>
+  [291] extcall 64 .............................. <point(tloc[1], tBottomRight[2])>
+  [293] pusharglist 4 ........................... <[tloc, point(tBottomRight[1], tloc[2]), tBottomRight, point(tloc[1], tBottomRight[2])]>
+  [295] pushlist ................................ <[tloc, point(tBottomRight[1], tloc[2]), tBottomRight, point(tloc[1], tBottomRight[2])]>
+  [296] setlocal 12 ............................. tQuad = [tloc, point(tBottomRight[1], tloc[2]), tBottomRight, point(tloc[1], tBottomRight[2])]
+  [298] jmp [350]
+  [301] getlocal 11 ............................. <tBottomRight>
+  [303] pushint8 1 .............................. <1>
+  [305] pusharglist 2 ........................... <tBottomRight, 1>
+  [307] objcall 151 ............................. <tBottomRight[1]>
+  [309] getlocal 1 .............................. <tloc>
+  [311] pushint8 2 .............................. <2>
+  [313] pusharglist 2 ........................... <tloc, 2>
+  [315] objcall 151 ............................. <tloc[2]>
+  [317] pusharglist 2 ........................... <tBottomRight[1], tloc[2]>
+  [319] extcall 64 .............................. <point(tBottomRight[1], tloc[2])>
+  [321] getlocal 1 .............................. <tloc>
+  [323] getlocal 1 .............................. <tloc>
+  [325] pushint8 1 .............................. <1>
+  [327] pusharglist 2 ........................... <tloc, 1>
+  [329] objcall 151 ............................. <tloc[1]>
+  [331] getlocal 11 ............................. <tBottomRight>
+  [333] pushint8 2 .............................. <2>
+  [335] pusharglist 2 ........................... <tBottomRight, 2>
+  [337] objcall 151 ............................. <tBottomRight[2]>
+  [339] pusharglist 2 ........................... <tloc[1], tBottomRight[2]>
+  [341] extcall 64 .............................. <point(tloc[1], tBottomRight[2])>
+  [343] getlocal 11 ............................. <tBottomRight>
+  [345] pusharglist 4 ........................... <[point(tBottomRight[1], tloc[2]), tloc, point(tloc[1], tBottomRight[2]), tBottomRight]>
+  [347] pushlist ................................ <[point(tBottomRight[1], tloc[2]), tloc, point(tloc[1], tBottomRight[2]), tBottomRight]>
+  [348] setlocal 12 ............................. tQuad = [point(tBottomRight[1], tloc[2]), tloc, point(tloc[1], tBottomRight[2]), tBottomRight]
+  [350] getprop 256 ............................. <pMaskImage>
+  [353] getlocal 9 .............................. <tMaskImage>
+  [355] getlocal 12 ............................. <tQuad>
+  [357] getlocal 9 .............................. <tMaskImage>
+  [359] getobjprop 90 ........................... <tMaskImage.rect>
+  [361] pushsymb 91 ............................. <#ink>
+  [363] pushint8 36 ............................. <36>
+  [365] pusharglist 2 ........................... <[#ink: 36]>
+  [367] pushproplist ............................ <[#ink: 36]>
+  [368] pusharglistnoret 5 ...................... <pMaskImage, tMaskImage, tQuad, tMaskImage.rect, [#ink: 36]>
+  [370] objcall 94 .............................. pMaskImage.copyPixels(tMaskImage, tQuad, tMaskImage.rect, [#ink: 36])
+  [372] pushint8 1
+  [374] add
+  [375] endrepeat [ 28]
+  [378] pop 3
+  [380] getprop 256 ............................. <pMaskImage>
+  [383] pusharglist 1 ........................... <pMaskImage>
+  [385] extcall 56 .............................. <ilk(pMaskImage)>
+  [387] pushsymb 33 ............................. <#image>
+  [389] eq ...................................... <ilk(pMaskImage) = #image>
+  [390] jmpifz [403] ............................ if ilk(pMaskImage) = #image then
+  [393] getprop 256 ............................. <pMaskImage>
+  [396] pusharglist 1 ........................... <pMaskImage>
+  [398] objcall 226 ............................. <pMaskImage.createMask()>
+  [400] setprop 525 ............................. pMask = pMaskImage.createMask()
+  [403] ret
+end

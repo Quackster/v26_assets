@@ -1,0 +1,2468 @@
+property pUpdateTimeout, pQueueTimeout, pPlayTimeout, pPreviewChannel, pSongChannels, pSongChannelsInUse, pPlaylistStack, pSilentSampleName
+
+on construct me
+  [  0] pushcons 0 .............................. <"song player loop update">
+  [  2] setprop 793 ............................. pUpdateTimeout = "song player loop update"
+  [  5] pushcons 1 .............................. <"song queue timeout">
+  [  7] setprop 794 ............................. pQueueTimeout = "song queue timeout"
+  [ 10] pushcons 2 .............................. <"song play timeout">
+  [ 12] setprop 795 ............................. pPlayTimeout = "song play timeout"
+  [ 15] pushint8 5 .............................. <5>
+  [ 17] setprop 796 ............................. pPreviewChannel = 5
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pushint8 2 .............................. <2>
+  [ 24] pushint8 3 .............................. <3>
+  [ 26] pushint8 4 .............................. <4>
+  [ 28] pusharglist 4 ........................... <[1, 2, 3, 4]>
+  [ 30] pushlist ................................ <[1, 2, 3, 4]>
+  [ 31] setprop 797 ............................. pSongChannels = [1, 2, 3, 4]
+  [ 34] pusharglist 0 ........................... <[]>
+  [ 36] pushlist ................................ <[]>
+  [ 37] setprop 798 ............................. pSongChannelsInUse = []
+  [ 40] pushcons 3 .............................. <"sound_machine_sample_0">
+  [ 42] setprop 799 ............................. pSilentSampleName = "sound_machine_sample_0"
+  [ 45] pusharglist 0 ........................... <[:]>
+  [ 47] pushproplist ............................ <[:]>
+  [ 48] setprop 800 ............................. pPlaylistStack = [:]
+  [ 51] ret
+end
+
+on deconstruct me
+  [  0] getprop 793 ............................. <pUpdateTimeout>
+  [  3] pusharglist 1 ........................... <pUpdateTimeout>
+  [  5] extcall 90 .............................. <timeoutExists(pUpdateTimeout)>
+  [  7] jmpifz [ 17] ............................ if timeoutExists(pUpdateTimeout) then
+  [ 10] getprop 793 ............................. <pUpdateTimeout>
+  [ 13] pusharglistnoret 1 ...................... <pUpdateTimeout>
+  [ 15] extcall 91 .............................. removeTimeout(pUpdateTimeout)
+  [ 17] getprop 794 ............................. <pQueueTimeout>
+  [ 20] pusharglist 1 ........................... <pQueueTimeout>
+  [ 22] extcall 90 .............................. <timeoutExists(pQueueTimeout)>
+  [ 24] jmpifz [ 34] ............................ if timeoutExists(pQueueTimeout) then
+  [ 27] getprop 794 ............................. <pQueueTimeout>
+  [ 30] pusharglistnoret 1 ...................... <pQueueTimeout>
+  [ 32] extcall 91 .............................. removeTimeout(pQueueTimeout)
+  [ 34] getprop 795 ............................. <pPlayTimeout>
+  [ 37] pusharglist 1 ........................... <pPlayTimeout>
+  [ 39] extcall 90 .............................. <timeoutExists(pPlayTimeout)>
+  [ 41] jmpifz [ 51] ............................ if timeoutExists(pPlayTimeout) then
+  [ 44] getprop 795 ............................. <pPlayTimeout>
+  [ 47] pusharglistnoret 1 ...................... <pPlayTimeout>
+  [ 49] extcall 91 .............................. removeTimeout(pPlayTimeout)
+  [ 51] ret
+end
+
+on startSong me, tStackIndex, tSongData, tLoop
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 2 .............................. <tSongData>
+  [  4] pusharglist 2 ........................... <me, tSongData>
+  [  6] objcall 177 ............................. <me.getSongLength(tSongData)>
+  [  8] setlocal 0 .............................. tSongLength = me.getSongLength(tSongData)
+  [ 10] pushzero ................................ <0>
+  [ 11] setlocal 1 .............................. tOffset = 0
+  [ 13] getparam 2 .............................. <tSongData>
+  [ 15] pushsymb 264 ............................ <#offset>
+  [ 18] pusharglist 2 ........................... <tSongData, #offset>
+  [ 20] objcall 116 ............................. <tSongData[#offset]>
+  [ 22] pusharglist 1 ........................... <tSongData[#offset]>
+  [ 24] extcall 161 ............................. <voidp(tSongData[#offset])>
+  [ 26] not ..................................... <not voidp(tSongData[#offset])>
+  [ 27] jmpifz [ 44] ............................ if not voidp(tSongData[#offset]) then
+  [ 30] getparam 2 .............................. <tSongData>
+  [ 32] pushsymb 264 ............................ <#offset>
+  [ 35] pusharglist 2 ........................... <tSongData, #offset>
+  [ 37] objcall 116 ............................. <tSongData[#offset]>
+  [ 39] pushint8 100 ............................ <100>
+  [ 41] div ..................................... <tSongData[#offset] / 100>
+  [ 42] setlocal 1 .............................. tOffset = tSongData[#offset] / 100
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] setlocal 2 .............................. tID = 1
+  [ 48] getparam 0 .............................. <me>
+  [ 50] getparam 1 .............................. <tStackIndex>
+  [ 52] pushsymb 267 ............................ <#length>
+  [ 55] getlocal 0 .............................. <tSongLength>
+  [ 57] pushsymb 425 ............................ <#id>
+  [ 60] getlocal 2 .............................. <tID>
+  [ 62] pusharglist 4 ........................... <[#length: tSongLength, #id: tID]>
+  [ 64] pushproplist ............................ <[#length: tSongLength, #id: tID]>
+  [ 65] pusharglist 1 ........................... <[[#length: tSongLength, #id: tID]]>
+  [ 67] pushlist ................................ <[[#length: tSongLength, #id: tID]]>
+  [ 68] getlocal 1 .............................. <tOffset>
+  [ 70] getparam 3 .............................. <tLoop>
+  [ 72] pusharglist 5 ........................... <me, tStackIndex, [[#length: tSongLength, #id: tID]], tOffset, tLoop>
+  [ 74] objcall 614 ............................. <me.initPlaylist(tStackIndex, [[#length: tSongLength, #id: tID]], tOffset, tLoop)>
+  [ 77] not ..................................... <not me.initPlaylist(tStackIndex, [[#length: tSongLength, #id: tID]], tOffset, tLoop)>
+  [ 78] jmpifz [ 86] ............................ if not me.initPlaylist(tStackIndex, [[#length: tSongLength, #id: tID]], tOffset, tLoop) then
+  [ 81] pushzero ................................ <0>
+  [ 82] pusharglistnoret 1 ...................... <0>
+  [ 84] extcall 87 .............................. return 0
+  [ 86] getparam 0 .............................. <me>
+  [ 88] getlocal 2 .............................. <tID>
+  [ 90] getparam 2 .............................. <tSongData>
+  [ 92] pusharglist 3 ........................... <me, tID, tSongData>
+  [ 94] objcall 630 ............................. <me.updatePlaylistSong(tID, tSongData)>
+  [ 97] pusharglistnoret 1 ...................... <me.updatePlaylistSong(tID, tSongData)>
+  [ 99] extcall 87 .............................. return me.updatePlaylistSong(tID, tSongData)
+  [101] ret
+end
+
+on stopSong me, tStackIndex, tResetPlaylist
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tStackIndex>
+  [  4] pusharglist 2 ........................... <me, tStackIndex>
+  [  6] objcall 778 ............................. <me.getIsTopInstance(tStackIndex)>
+  [  9] jmpifz [160] ............................ if me.getIsTopInstance(tStackIndex) then / else
+  [ 12] getprop 794 ............................. <pQueueTimeout>
+  [ 15] pusharglist 1 ........................... <pQueueTimeout>
+  [ 17] extcall 90 .............................. <timeoutExists(pQueueTimeout)>
+  [ 19] jmpifz [ 29] ............................ if timeoutExists(pQueueTimeout) then
+  [ 22] getprop 794 ............................. <pQueueTimeout>
+  [ 25] pusharglistnoret 1 ...................... <pQueueTimeout>
+  [ 27] extcall 91 .............................. removeTimeout(pQueueTimeout)
+  [ 29] getprop 795 ............................. <pPlayTimeout>
+  [ 32] pusharglist 1 ........................... <pPlayTimeout>
+  [ 34] extcall 90 .............................. <timeoutExists(pPlayTimeout)>
+  [ 36] jmpifz [ 46] ............................ if timeoutExists(pPlayTimeout) then
+  [ 39] getprop 795 ............................. <pPlayTimeout>
+  [ 42] pusharglistnoret 1 ...................... <pPlayTimeout>
+  [ 44] extcall 91 .............................. removeTimeout(pPlayTimeout)
+  [ 46] getprop 793 ............................. <pUpdateTimeout>
+  [ 49] pusharglist 1 ........................... <pUpdateTimeout>
+  [ 51] extcall 90 .............................. <timeoutExists(pUpdateTimeout)>
+  [ 53] jmpifz [ 63] ............................ if timeoutExists(pUpdateTimeout) then
+  [ 56] getprop 793 ............................. <pUpdateTimeout>
+  [ 59] pusharglistnoret 1 ...................... <pUpdateTimeout>
+  [ 61] extcall 91 .............................. removeTimeout(pUpdateTimeout)
+  [ 63] getprop 798 ............................. <pSongChannelsInUse>
+  [ 66] peek 0
+  [ 68] pusharglist 1
+  [ 70] extcall 115
+  [ 72] pushint8 1
+  [ 74] peek 0
+  [ 76] peek 2
+  [ 78] lteq
+  [ 79] jmpifz [128] ............................ repeat with tChannel in pSongChannelsInUse
+  [ 82] peek 2
+  [ 84] peek 1
+  [ 86] pusharglist 2
+  [ 88] extcall 116
+  [ 90] setlocal 0
+  [ 92] getlocal 0 .............................. <tChannel>
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] gteq .................................... <tChannel >= 1>
+  [ 97] getlocal 0 .............................. <tChannel>
+  [ 99] getprop 797 ............................. <pSongChannels>
+  [102] getobjprop 115 .......................... <pSongChannels.count>
+  [104] lteq .................................... <tChannel <= pSongChannels.count>
+  [105] and ..................................... <(tChannel >= 1) and (tChannel <= pSongChannels.count)>
+  [106] jmpifz [123] ............................ if (tChannel >= 1) and (tChannel <= pSongChannels.count) then
+  [109] getprop 797 ............................. <pSongChannels>
+  [112] getlocal 0 .............................. <tChannel>
+  [114] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [116] objcall 116 ............................. <pSongChannels[tChannel]>
+  [118] pusharglistnoret 1 ...................... <pSongChannels[tChannel]>
+  [120] extcall 801 ............................. stopSoundChannel(pSongChannels[tChannel])
+  [123] pushint8 1
+  [125] add
+  [126] endrepeat [ 74]
+  [128] pop 3
+  [130] pusharglist 0 ........................... <[]>
+  [132] pushlist ................................ <[]>
+  [133] setprop 798 ............................. pSongChannelsInUse = []
+  [136] getparam 2 .............................. <tResetPlaylist>
+  [138] jmpifz [157] ............................ if tResetPlaylist then
+  [141] getparam 0 .............................. <me>
+  [143] getparam 1 .............................. <tStackIndex>
+  [145] pusharglistnoret 2 ...................... <me, tStackIndex>
+  [147] objcall 780 ............................. me.removePlaylistInstance(tStackIndex)
+  [150] getparam 0 .............................. <me>
+  [152] pusharglistnoret 1 ...................... <me>
+  [154] objcall 791 ............................. me.checkLoopData()
+  [157] jmp [174]
+  [160] getparam 2 .............................. <tResetPlaylist>
+  [162] jmpifz [174] ............................ if tResetPlaylist then
+  [165] getparam 0 .............................. <me>
+  [167] getparam 1 .............................. <tStackIndex>
+  [169] pusharglistnoret 2 ...................... <me, tStackIndex>
+  [171] objcall 780 ............................. me.removePlaylistInstance(tStackIndex)
+  [174] pushint8 1 .............................. <1>
+  [176] pusharglistnoret 1 ...................... <1>
+  [178] extcall 87 .............................. return 1
+  [180] ret
+end
+
+on initPlaylist me, tStackIndex, tSongList, tPlayTime, tLoop
+  [  0] getparam 2 .............................. <tSongList>
+  [  2] pusharglist 1 ........................... <tSongList>
+  [  4] extcall 119 ............................. <ilk(tSongList)>
+  [  6] pushsymb 716 ............................ <#list>
+  [  9] nteq .................................... <ilk(tSongList) <> #list>
+  [ 10] jmpifz [ 30] ............................ if ilk(tSongList) <> #list then
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushcons 4 .............................. <"Invalid data">
+  [ 17] pushsymb 614 ............................ <#initPlaylist>
+  [ 20] pushsymb 96 ............................. <#major>
+  [ 22] pusharglist 4 ........................... <me, "Invalid data", #initPlaylist, #major>
+  [ 24] extcall 95 .............................. <error(me, "Invalid data", #initPlaylist, #major)>
+  [ 26] pusharglistnoret 1 ...................... <error(me, "Invalid data", #initPlaylist, #major)>
+  [ 28] extcall 87 .............................. return error(me, "Invalid data", #initPlaylist, #major)
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglist 1 ........................... <me>
+  [ 34] objcall 779 ............................. <me.getTopInstanceIndex()>
+  [ 37] setlocal 0 .............................. tTopIndex = me.getTopInstanceIndex()
+  [ 39] getlocal 0 .............................. <tTopIndex>
+  [ 41] getparam 1 .............................. <tStackIndex>
+  [ 43] lteq .................................... <tTopIndex <= tStackIndex>
+  [ 44] jmpifz [ 57] ............................ if tTopIndex <= tStackIndex then
+  [ 47] getparam 0 .............................. <me>
+  [ 49] getlocal 0 .............................. <tTopIndex>
+  [ 51] pushzero ................................ <0>
+  [ 52] pusharglistnoret 3 ...................... <me, tTopIndex, 0>
+  [ 54] objcall 334 ............................. me.stopSong(tTopIndex, 0)
+  [ 57] getparam 4 .............................. <tLoop>
+  [ 59] pusharglist 1 ........................... <tLoop>
+  [ 61] extcall 161 ............................. <voidp(tLoop)>
+  [ 63] jmpifz [ 70] ............................ if voidp(tLoop) then
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] setparam 4 .............................. tLoop = 1
+  [ 70] getparam 0 .............................. <me>
+  [ 72] getparam 1 .............................. <tStackIndex>
+  [ 74] pusharglistnoret 2 ...................... <me, tStackIndex>
+  [ 76] objcall 780 ............................. me.removePlaylistInstance(tStackIndex)
+  [ 79] getparam 0 .............................. <me>
+  [ 81] getparam 1 .............................. <tStackIndex>
+  [ 83] pusharglist 2 ........................... <me, tStackIndex>
+  [ 85] objcall 781 ............................. <me.createPlaylistInstance(tStackIndex)>
+  [ 88] setlocal 1 .............................. tPlaylistInstance = me.createPlaylistInstance(tStackIndex)
+  [ 90] getparam 2 .............................. <tSongList>
+  [ 92] peek 0
+  [ 94] pusharglist 1
+  [ 96] extcall 115
+  [ 98] pushint8 1
+  [100] peek 0
+  [102] peek 2
+  [104] lteq
+  [105] jmpifz [298] ............................ repeat with tSong in tSongList
+  [108] peek 2
+  [110] peek 1
+  [112] pusharglist 2
+  [114] extcall 116
+  [116] setlocal 2
+  [118] getlocal 2 .............................. <tSong>
+  [120] pusharglist 1 ........................... <tSong>
+  [122] extcall 119 ............................. <ilk(tSong)>
+  [124] pushsymb 144 ............................ <#propList>
+  [126] nteq .................................... <ilk(tSong) <> #propList>
+  [127] jmpifz [159] ............................ if ilk(tSong) <> #propList then
+  [130] getlocal 1 .............................. <tPlaylistInstance>
+  [132] pushsymb 803 ............................ <#songList>
+  [135] pusharglist 0 ........................... <[]>
+  [137] pushlist ................................ <[]>
+  [138] pusharglistnoret 3 ...................... <tPlaylistInstance, #songList, []>
+  [140] objcall 150 ............................. tPlaylistInstance[#songList] = []
+  [142] getparam 0 .............................. <me>
+  [144] pushcons 4 .............................. <"Invalid data">
+  [146] pushsymb 614 ............................ <#initPlaylist>
+  [149] pushsymb 96 ............................. <#major>
+  [151] pusharglist 4 ........................... <me, "Invalid data", #initPlaylist, #major>
+  [153] extcall 95 .............................. <error(me, "Invalid data", #initPlaylist, #major)>
+  [155] pusharglistnoret 1 ...................... <error(me, "Invalid data", #initPlaylist, #major)>
+  [157] extcall 87 .............................. return error(me, "Invalid data", #initPlaylist, #major)
+  [159] getlocal 2 .............................. <tSong>
+  [161] pushsymb 267 ............................ <#length>
+  [164] pusharglist 2 ........................... <tSong, #length>
+  [166] objcall 116 ............................. <tSong[#length]>
+  [168] pusharglist 1 ........................... <tSong[#length]>
+  [170] extcall 161 ............................. <voidp(tSong[#length])>
+  [172] getlocal 2 .............................. <tSong>
+  [174] pushsymb 425 ............................ <#id>
+  [177] pusharglist 2 ........................... <tSong, #id>
+  [179] objcall 116 ............................. <tSong[#id]>
+  [181] pusharglist 1 ........................... <tSong[#id]>
+  [183] extcall 161 ............................. <voidp(tSong[#id])>
+  [185] or ...................................... <voidp(tSong[#length]) or voidp(tSong[#id])>
+  [186] jmpifz [218] ............................ if voidp(tSong[#length]) or voidp(tSong[#id]) then
+  [189] getlocal 1 .............................. <tPlaylistInstance>
+  [191] pushsymb 803 ............................ <#songList>
+  [194] pusharglist 0 ........................... <[]>
+  [196] pushlist ................................ <[]>
+  [197] pusharglistnoret 3 ...................... <tPlaylistInstance, #songList, []>
+  [199] objcall 150 ............................. tPlaylistInstance[#songList] = []
+  [201] getparam 0 .............................. <me>
+  [203] pushcons 4 .............................. <"Invalid data">
+  [205] pushsymb 614 ............................ <#initPlaylist>
+  [208] pushsymb 96 ............................. <#major>
+  [210] pusharglist 4 ........................... <me, "Invalid data", #initPlaylist, #major>
+  [212] extcall 95 .............................. <error(me, "Invalid data", #initPlaylist, #major)>
+  [214] pusharglistnoret 1 ...................... <error(me, "Invalid data", #initPlaylist, #major)>
+  [216] extcall 87 .............................. return error(me, "Invalid data", #initPlaylist, #major)
+  [218] getparam 4 .............................. <tLoop>
+  [220] not ..................................... <not tLoop>
+  [221] jmpifz [259] ............................ if not tLoop then
+  [224] getlocal 2 .............................. <tSong>
+  [226] pushsymb 267 ............................ <#length>
+  [229] pusharglist 2 ........................... <tSong, #length>
+  [231] objcall 116 ............................. <tSong[#length]>
+  [233] pushint8 100 ............................ <100>
+  [235] div ..................................... <tSong[#length] / 100>
+  [236] setlocal 3 .............................. tSongLength = tSong[#length] / 100
+  [238] getparam 3 .............................. <tPlayTime>
+  [240] getlocal 3 .............................. <tSongLength>
+  [242] gteq .................................... <tPlayTime >= tSongLength>
+  [243] jmpifz [259] ............................ if tPlayTime >= tSongLength then
+  [246] getparam 3 .............................. <tPlayTime>
+  [248] getlocal 3 .............................. <tSongLength>
+  [250] sub ..................................... <tPlayTime - tSongLength>
+  [251] setparam 3 .............................. tPlayTime = tPlayTime - tSongLength
+  [253] pusharglist 0 ........................... <>
+  [255] extcall 111 ............................. <VOID>
+  [257] setlocal 2 .............................. tSong = VOID
+  [259] getlocal 2 .............................. <tSong>
+  [261] pusharglist 1 ........................... <tSong>
+  [263] extcall 161 ............................. <voidp(tSong)>
+  [265] not ..................................... <not voidp(tSong)>
+  [266] jmpifz [293] ............................ if not voidp(tSong) then
+  [269] getlocal 2 .............................. <tSong>
+  [271] pusharglist 1 ........................... <tSong>
+  [273] objcall 466 ............................. <tSong.duplicate()>
+  [276] setlocal 4 .............................. tPlaylistItem = tSong.duplicate()
+  [278] getlocal 1 .............................. <tPlaylistInstance>
+  [280] pushsymb 803 ............................ <#songList>
+  [283] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [285] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [287] getlocal 4 .............................. <tPlaylistItem>
+  [289] pusharglistnoret 2 ...................... <tPlaylistInstance[#songList], tPlaylistItem>
+  [291] objcall 188 ............................. tPlaylistInstance[#songList].add(tPlaylistItem)
+  [293] pushint8 1
+  [295] add
+  [296] endrepeat [100]
+  [298] pop 3
+  [300] getlocal 1 .............................. <tPlaylistInstance>
+  [302] pushsymb 804 ............................ <#loop>
+  [305] getparam 4 .............................. <tLoop>
+  [307] pusharglistnoret 3 ...................... <tPlaylistInstance, #loop, tLoop>
+  [309] objcall 150 ............................. tPlaylistInstance[#loop] = tLoop
+  [311] getlocal 1 .............................. <tPlaylistInstance>
+  [313] pushsymb 805 ............................ <#playTime>
+  [316] getparam 3 .............................. <tPlayTime>
+  [318] pusharglistnoret 3 ...................... <tPlaylistInstance, #playTime, tPlayTime>
+  [320] objcall 150 ............................. tPlaylistInstance[#playTime] = tPlayTime
+  [322] getlocal 1 .............................. <tPlaylistInstance>
+  [324] pushsymb 806 ............................ <#initialPlayTime>
+  [327] getmovieprop 84 ......................... <the milliSeconds>
+  [329] pusharglistnoret 3 ...................... <tPlaylistInstance, #initialPlayTime, the milliSeconds>
+  [331] objcall 150 ............................. tPlaylistInstance[#initialPlayTime] = the milliSeconds
+  [333] pushint8 1 .............................. <1>
+  [335] pusharglistnoret 1 ...................... <1>
+  [337] extcall 87 .............................. return 1
+  [339] ret
+end
+
+on addPlaylistSong me, tStackIndex, tID, tLength
+  [  0] getparam 2 .............................. <tID>
+  [  2] pusharglist 1 ........................... <tID>
+  [  4] extcall 161 ............................. <voidp(tID)>
+  [  6] getparam 3 .............................. <tLength>
+  [  8] pusharglist 1 ........................... <tLength>
+  [ 10] extcall 161 ............................. <voidp(tLength)>
+  [ 12] or ...................................... <voidp(tID) or voidp(tLength)>
+  [ 13] jmpifz [ 33] ............................ if voidp(tID) or voidp(tLength) then
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pushcons 4 .............................. <"Invalid data">
+  [ 20] pushsymb 285 ............................ <#addPlaylistSong>
+  [ 23] pushsymb 96 ............................. <#major>
+  [ 25] pusharglist 4 ........................... <me, "Invalid data", #addPlaylistSong, #major>
+  [ 27] extcall 95 .............................. <error(me, "Invalid data", #addPlaylistSong, #major)>
+  [ 29] pusharglistnoret 1 ...................... <error(me, "Invalid data", #addPlaylistSong, #major)>
+  [ 31] extcall 87 .............................. return error(me, "Invalid data", #addPlaylistSong, #major)
+  [ 33] getparam 0 .............................. <me>
+  [ 35] getparam 1 .............................. <tStackIndex>
+  [ 37] pusharglist 2 ........................... <me, tStackIndex>
+  [ 39] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [ 42] setlocal 0 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 44] getlocal 0 .............................. <tPlaylistInstance>
+  [ 46] pushzero ................................ <0>
+  [ 47] nteq .................................... <tPlaylistInstance <> 0>
+  [ 48] jmpifz [ 83] ............................ if tPlaylistInstance <> 0 then / else
+  [ 51] getlocal 0 .............................. <tPlaylistInstance>
+  [ 53] pushsymb 804 ............................ <#loop>
+  [ 56] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [ 58] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [ 60] jmpifz [ 80] ............................ if tPlaylistInstance[#loop] then
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pushcons 5 .............................. <"Looping playlist">
+  [ 67] pushsymb 285 ............................ <#addPlaylistSong>
+  [ 70] pushsymb 96 ............................. <#major>
+  [ 72] pusharglist 4 ........................... <me, "Looping playlist", #addPlaylistSong, #major>
+  [ 74] extcall 95 .............................. <error(me, "Looping playlist", #addPlaylistSong, #major)>
+  [ 76] pusharglistnoret 1 ...................... <error(me, "Looping playlist", #addPlaylistSong, #major)>
+  [ 78] extcall 87 .............................. return error(me, "Looping playlist", #addPlaylistSong, #major)
+  [ 80] jmp [104]
+  [ 83] getparam 0 .............................. <me>
+  [ 85] getparam 1 .............................. <tStackIndex>
+  [ 87] pusharglist 2 ........................... <me, tStackIndex>
+  [ 89] objcall 781 ............................. <me.createPlaylistInstance(tStackIndex)>
+  [ 92] setlocal 0 .............................. tPlaylistInstance = me.createPlaylistInstance(tStackIndex)
+  [ 94] getlocal 0 .............................. <tPlaylistInstance>
+  [ 96] pushsymb 804 ............................ <#loop>
+  [ 99] pushzero ................................ <0>
+  [100] pusharglistnoret 3 ...................... <tPlaylistInstance, #loop, 0>
+  [102] objcall 150 ............................. tPlaylistInstance[#loop] = 0
+  [104] getparam 0 .............................. <me>
+  [106] getparam 1 .............................. <tStackIndex>
+  [108] pusharglistnoret 2 ...................... <me, tStackIndex>
+  [110] objcall 792 ............................. me.removePlayedSongs(tStackIndex)
+  [113] pushsymb 267 ............................ <#length>
+  [116] getparam 3 .............................. <tLength>
+  [118] pushsymb 425 ............................ <#id>
+  [121] getparam 2 .............................. <tID>
+  [123] pusharglist 4 ........................... <[#length: tLength, #id: tID]>
+  [125] pushproplist ............................ <[#length: tLength, #id: tID]>
+  [126] setlocal 1 .............................. tPlaylistItem = [#length: tLength, #id: tID]
+  [128] getlocal 0 .............................. <tPlaylistInstance>
+  [130] pushsymb 803 ............................ <#songList>
+  [133] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [135] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [137] getlocal 1 .............................. <tPlaylistItem>
+  [139] pusharglistnoret 2 ...................... <tPlaylistInstance[#songList], tPlaylistItem>
+  [141] objcall 188 ............................. tPlaylistInstance[#songList].add(tPlaylistItem)
+  [143] getlocal 0 .............................. <tPlaylistInstance>
+  [145] pushsymb 803 ............................ <#songList>
+  [148] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [150] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [152] getobjprop 115 .......................... <tPlaylistInstance[#songList].count>
+  [154] pushint8 1 .............................. <1>
+  [156] eq ...................................... <tPlaylistInstance[#songList].count = 1>
+  [157] jmpifz [181] ............................ if tPlaylistInstance[#songList].count = 1 then
+  [160] getlocal 0 .............................. <tPlaylistInstance>
+  [162] pushsymb 805 ............................ <#playTime>
+  [165] pushzero ................................ <0>
+  [166] pusharglistnoret 3 ...................... <tPlaylistInstance, #playTime, 0>
+  [168] objcall 150 ............................. tPlaylistInstance[#playTime] = 0
+  [170] getlocal 0 .............................. <tPlaylistInstance>
+  [172] pushsymb 806 ............................ <#initialPlayTime>
+  [175] getmovieprop 84 ......................... <the milliSeconds>
+  [177] pusharglistnoret 3 ...................... <tPlaylistInstance, #initialPlayTime, the milliSeconds>
+  [179] objcall 150 ............................. tPlaylistInstance[#initialPlayTime] = the milliSeconds
+  [181] pushint8 1 .............................. <1>
+  [183] pusharglistnoret 1 ...................... <1>
+  [185] extcall 87 .............................. return 1
+  [187] ret
+end
+
+on updatePlaylistSong me, tID, tSongData
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tUpdated = 0
+  [  3] pushint8 1 .............................. <1>
+  [  5] setlocal 1
+  [  7] getlocal 1
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglist 1 ........................... <me>
+  [ 13] objcall 782 ............................. <me.getPlaylistInstanceCount()>
+  [ 16] lteq
+  [ 17] jmpifz [229] ............................ repeat with tIndex = 1 to me.getPlaylistInstanceCount()
+  [ 20] getparam 0 .............................. <me>
+  [ 22] getlocal 1 .............................. <tIndex>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglist 3 ........................... <me, tIndex, 1>
+  [ 28] objcall 776 ............................. <me.getPlaylistInstance(tIndex, 1)>
+  [ 31] setlocal 2 .............................. tPlaylistInstance = me.getPlaylistInstance(tIndex, 1)
+  [ 33] getlocal 2 .............................. <tPlaylistInstance>
+  [ 35] pushzero ................................ <0>
+  [ 36] eq ...................................... <tPlaylistInstance = 0>
+  [ 37] jmpifz [ 45] ............................ if tPlaylistInstance = 0 then
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglistnoret 1 ...................... <0>
+  [ 43] extcall 87 .............................. return 0
+  [ 45] getlocal 2 .............................. <tPlaylistInstance>
+  [ 47] pushsymb 803 ............................ <#songList>
+  [ 50] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 52] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 54] setlocal 3 .............................. tSongList = tPlaylistInstance[#songList]
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] setlocal 4
+  [ 60] getlocal 4
+  [ 62] getlocal 3 .............................. <tSongList>
+  [ 64] getobjprop 115 .......................... <tSongList.count>
+  [ 66] lteq
+  [ 67] jmpifz [220] ............................ repeat with i = 1 to tSongList.count
+  [ 70] getlocal 3 .............................. <tSongList>
+  [ 72] getlocal 4 .............................. <i>
+  [ 74] pusharglist 2 ........................... <tSongList, i>
+  [ 76] objcall 116 ............................. <tSongList[i]>
+  [ 78] pushsymb 425 ............................ <#id>
+  [ 81] pusharglist 2 ........................... <tSongList[i], #id>
+  [ 83] objcall 116 ............................. <tSongList[i][#id]>
+  [ 85] getparam 1 .............................. <tID>
+  [ 87] eq ...................................... <tSongList[i][#id] = tID>
+  [ 88] jmpifz [211] ............................ if tSongList[i][#id] = tID then
+  [ 91] getlocal 3 .............................. <tSongList>
+  [ 93] getlocal 4 .............................. <i>
+  [ 95] pusharglist 2 ........................... <tSongList, i>
+  [ 97] objcall 116 ............................. <tSongList[i]>
+  [ 99] pushsymb 810 ............................ <#songData>
+  [102] pusharglist 2 ........................... <tSongList[i], #songData>
+  [104] objcall 116 ............................. <tSongList[i][#songData]>
+  [106] pusharglist 1 ........................... <tSongList[i][#songData]>
+  [108] extcall 161 ............................. <voidp(tSongList[i][#songData])>
+  [110] jmpifz [211] ............................ if voidp(tSongList[i][#songData]) then
+  [113] pushint8 1 .............................. <1>
+  [115] setlocal 0 .............................. tUpdated = 1
+  [117] getparam 2 .............................. <tSongData>
+  [119] pusharglist 1 ........................... <tSongData>
+  [121] objcall 466 ............................. <tSongData.duplicate()>
+  [124] setlocal 5 .............................. tSongDataDuplicate = tSongData.duplicate()
+  [126] getlocal 3 .............................. <tSongList>
+  [128] getlocal 4 .............................. <i>
+  [130] pusharglist 2 ........................... <tSongList, i>
+  [132] objcall 116 ............................. <tSongList[i]>
+  [134] pushsymb 810 ............................ <#songData>
+  [137] getlocal 5 .............................. <tSongDataDuplicate>
+  [139] pusharglistnoret 3 ...................... <tSongList[i], #songData, tSongDataDuplicate>
+  [141] objcall 150 ............................. tSongList[i][#songData] = tSongDataDuplicate
+  [143] getparam 0 .............................. <me>
+  [145] getlocal 5 .............................. <tSongDataDuplicate>
+  [147] pusharglist 2 ........................... <me, tSongDataDuplicate>
+  [149] objcall 177 ............................. <me.getSongLength(tSongDataDuplicate)>
+  [151] setlocal 6 .............................. tLength = me.getSongLength(tSongDataDuplicate)
+  [153] getlocal 6 .............................. <tLength>
+  [155] getlocal 3 .............................. <tSongList>
+  [157] getlocal 4 .............................. <i>
+  [159] pusharglist 2 ........................... <tSongList, i>
+  [161] objcall 116 ............................. <tSongList[i]>
+  [163] pushsymb 267 ............................ <#length>
+  [166] pusharglist 2 ........................... <tSongList[i], #length>
+  [168] objcall 116 ............................. <tSongList[i][#length]>
+  [170] nteq .................................... <tLength <> tSongList[i][#length]>
+  [171] getlocal 2 .............................. <tPlaylistInstance>
+  [173] pushsymb 804 ............................ <#loop>
+  [176] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [178] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [180] and ..................................... <(tLength <> tSongList[i][#length]) and tPlaylistInstance[#loop]>
+  [181] jmpifz [211] ............................ if (tLength <> tSongList[i][#length]) and tPlaylistInstance[#loop] then
+  [184] getparam 0 .............................. <me>
+  [186] getlocal 1 .............................. <tIndex>
+  [188] pushzero ................................ <0>
+  [189] pusharglistnoret 3 ...................... <me, tIndex, 0>
+  [191] objcall 334 ............................. me.stopSong(tIndex, 0)
+  [194] getlocal 3 .............................. <tSongList>
+  [196] getlocal 4 .............................. <i>
+  [198] pusharglist 2 ........................... <tSongList, i>
+  [200] objcall 116 ............................. <tSongList[i]>
+  [202] pushsymb 267 ............................ <#length>
+  [205] getlocal 6 .............................. <tLength>
+  [207] pusharglistnoret 3 ...................... <tSongList[i], #length, tLength>
+  [209] objcall 150 ............................. tSongList[i][#length] = tLength
+  [211] pushint8 1
+  [213] getlocal 4
+  [215] add
+  [216] setlocal 4
+  [218] endrepeat [ 60]
+  [220] pushint8 1
+  [222] getlocal 1
+  [224] add
+  [225] setlocal 1
+  [227] endrepeat [  7]
+  [229] getlocal 0 .............................. <tUpdated>
+  [231] jmpifz [241] ............................ if tUpdated then
+  [234] getparam 0 .............................. <me>
+  [236] pusharglistnoret 1 ...................... <me>
+  [238] objcall 791 ............................. me.checkLoopData()
+  [241] pushint8 1 .............................. <1>
+  [243] pusharglistnoret 1 ...................... <1>
+  [245] extcall 87 .............................. return 1
+  [247] ret
+end
+
+on getPlaylistInstance me, tStackIndex, tAbsoluteIndex
+  [  0] getparam 2 .............................. <tAbsoluteIndex>
+  [  2] pusharglist 1 ........................... <tAbsoluteIndex>
+  [  4] extcall 161 ............................. <voidp(tAbsoluteIndex)>
+  [  6] jmpifz [ 12] ............................ if voidp(tAbsoluteIndex) then
+  [  9] pushzero ................................ <0>
+  [ 10] setparam 2 .............................. tAbsoluteIndex = 0
+  [ 12] getparam 2 .............................. <tAbsoluteIndex>
+  [ 14] not ..................................... <not tAbsoluteIndex>
+  [ 15] jmpifz [ 51] ............................ if not tAbsoluteIndex then / else
+  [ 18] getprop 800 ............................. <pPlaylistStack>
+  [ 21] getparam 1 .............................. <tStackIndex>
+  [ 23] pusharglist 2 ........................... <pPlaylistStack, tStackIndex>
+  [ 25] objcall 355 ............................. <pPlaylistStack.getaProp(tStackIndex)>
+  [ 28] setlocal 0 .............................. tPlaylistInstance = pPlaylistStack.getaProp(tStackIndex)
+  [ 30] getlocal 0 .............................. <tPlaylistInstance>
+  [ 32] pushzero ................................ <0>
+  [ 33] eq ...................................... <tPlaylistInstance = 0>
+  [ 34] jmpifz [ 42] ............................ if tPlaylistInstance = 0 then
+  [ 37] pushzero ................................ <0>
+  [ 38] pusharglistnoret 1 ...................... <0>
+  [ 40] extcall 87 .............................. return 0
+  [ 42] getlocal 0 .............................. <tPlaylistInstance>
+  [ 44] pusharglistnoret 1 ...................... <tPlaylistInstance>
+  [ 46] extcall 87 .............................. return tPlaylistInstance
+  [ 48] jmp [ 86]
+  [ 51] getparam 1 .............................. <tStackIndex>
+  [ 53] pushint8 1 .............................. <1>
+  [ 55] lt ...................................... <tStackIndex < 1>
+  [ 56] getparam 1 .............................. <tStackIndex>
+  [ 58] getprop 800 ............................. <pPlaylistStack>
+  [ 61] getobjprop 115 .......................... <pPlaylistStack.count>
+  [ 63] gt ...................................... <tStackIndex > pPlaylistStack.count>
+  [ 64] or ...................................... <(tStackIndex < 1) or (tStackIndex > pPlaylistStack.count)>
+  [ 65] jmpifz [ 73] ............................ if (tStackIndex < 1) or (tStackIndex > pPlaylistStack.count) then
+  [ 68] pushzero ................................ <0>
+  [ 69] pusharglistnoret 1 ...................... <0>
+  [ 71] extcall 87 .............................. return 0
+  [ 73] getprop 800 ............................. <pPlaylistStack>
+  [ 76] getparam 1 .............................. <tStackIndex>
+  [ 78] pusharglist 2 ........................... <pPlaylistStack, tStackIndex>
+  [ 80] objcall 116 ............................. <pPlaylistStack[tStackIndex]>
+  [ 82] pusharglistnoret 1 ...................... <pPlaylistStack[tStackIndex]>
+  [ 84] extcall 87 .............................. return pPlaylistStack[tStackIndex]
+  [ 86] ret
+end
+
+on getPlaylistTopInstance me
+  [  0] getprop 800 ............................. <pPlaylistStack>
+  [  3] getobjprop 115 .......................... <pPlaylistStack.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pPlaylistStack.count = 0>
+  [  7] jmpifz [ 15] ............................ if pPlaylistStack.count = 0 then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 87 .............................. return 0
+  [ 15] getprop 800 ............................. <pPlaylistStack>
+  [ 18] getprop 800 ............................. <pPlaylistStack>
+  [ 21] getobjprop 115 .......................... <pPlaylistStack.count>
+  [ 23] pusharglist 2 ........................... <pPlaylistStack, pPlaylistStack.count>
+  [ 25] objcall 116 ............................. <pPlaylistStack[pPlaylistStack.count]>
+  [ 27] pusharglistnoret 1 ...................... <pPlaylistStack[pPlaylistStack.count]>
+  [ 29] extcall 87 .............................. return pPlaylistStack[pPlaylistStack.count]
+  [ 31] ret
+end
+
+on getIsTopInstance me, tStackIndex
+  [  0] getprop 800 ............................. <pPlaylistStack>
+  [  3] getparam 1 .............................. <tStackIndex>
+  [  5] pusharglist 2 ........................... <pPlaylistStack, tStackIndex>
+  [  7] objcall 621 ............................. <pPlaylistStack.findPos(tStackIndex)>
+  [ 10] getprop 800 ............................. <pPlaylistStack>
+  [ 13] getobjprop 115 .......................... <pPlaylistStack.count>
+  [ 15] eq ...................................... <pPlaylistStack.findPos(tStackIndex) = pPlaylistStack.count>
+  [ 16] getprop 800 ............................. <pPlaylistStack>
+  [ 19] getobjprop 115 .......................... <pPlaylistStack.count>
+  [ 21] pushzero ................................ <0>
+  [ 22] gt ...................................... <pPlaylistStack.count > 0>
+  [ 23] and ..................................... <(pPlaylistStack.findPos(tStackIndex) = pPlaylistStack.count) and (pPlaylistStack.count > 0)>
+  [ 24] jmpifz [ 33] ............................ if (pPlaylistStack.findPos(tStackIndex) = pPlaylistStack.count) and (pPlaylistStack.count > 0) then
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pusharglistnoret 1 ...................... <1>
+  [ 31] extcall 87 .............................. return 1
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 1 ...................... <0>
+  [ 36] extcall 87 .............................. return 0
+  [ 38] ret
+end
+
+on getTopInstanceIndex me
+  [  0] getprop 800 ............................. <pPlaylistStack>
+  [  3] getobjprop 115 .......................... <pPlaylistStack.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pPlaylistStack.count = 0>
+  [  7] jmpifz [ 15] ............................ if pPlaylistStack.count = 0 then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 87 .............................. return 0
+  [ 15] getprop 800 ............................. <pPlaylistStack>
+  [ 18] getprop 800 ............................. <pPlaylistStack>
+  [ 21] getobjprop 115 .......................... <pPlaylistStack.count>
+  [ 23] pusharglist 2 ........................... <pPlaylistStack, pPlaylistStack.count>
+  [ 25] objcall 620 ............................. <pPlaylistStack.getPropAt(pPlaylistStack.count)>
+  [ 28] pusharglistnoret 1 ...................... <pPlaylistStack.getPropAt(pPlaylistStack.count)>
+  [ 30] extcall 87 .............................. return pPlaylistStack.getPropAt(pPlaylistStack.count)
+  [ 32] ret
+end
+
+on removePlaylistInstance me, tStackIndex
+  [  0] getprop 800 ............................. <pPlaylistStack>
+  [  3] getparam 1 .............................. <tStackIndex>
+  [  5] pusharglist 2 ........................... <pPlaylistStack, tStackIndex>
+  [  7] objcall 621 ............................. <pPlaylistStack.findPos(tStackIndex)>
+  [ 10] setlocal 0 .............................. tPos = pPlaylistStack.findPos(tStackIndex)
+  [ 12] getlocal 0 .............................. <tPos>
+  [ 14] pushzero ................................ <0>
+  [ 15] gt ...................................... <tPos > 0>
+  [ 16] jmpifz [ 35] ............................ if tPos > 0 then
+  [ 19] getprop 800 ............................. <pPlaylistStack>
+  [ 22] getlocal 0 .............................. <tPos>
+  [ 24] pusharglistnoret 2 ...................... <pPlaylistStack, tPos>
+  [ 26] objcall 514 ............................. pPlaylistStack.deleteAt(tPos)
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] pusharglistnoret 1 ...................... <1>
+  [ 33] extcall 87 .............................. return 1
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 87 .............................. return 0
+  [ 40] ret
+end
+
+on createPlaylistInstance me, tStackIndex
+  [  0] getprop 800 ............................. <pPlaylistStack>
+  [  3] getparam 1 .............................. <tStackIndex>
+  [  5] pusharglist 2 ........................... <pPlaylistStack, tStackIndex>
+  [  7] objcall 621 ............................. <pPlaylistStack.findPos(tStackIndex)>
+  [ 10] setlocal 0 .............................. tPos = pPlaylistStack.findPos(tStackIndex)
+  [ 12] getlocal 0 .............................. <tPos>
+  [ 14] pushzero ................................ <0>
+  [ 15] eq ...................................... <tPos = 0>
+  [ 16] jmpifz [ 78] ............................ if tPos = 0 then
+  [ 19] pushsymb 803 ............................ <#songList>
+  [ 22] pusharglist 0 ........................... <[]>
+  [ 24] pushlist ................................ <[]>
+  [ 25] pushsymb 814 ............................ <#listIndex>
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] pushsymb 805 ............................ <#playTime>
+  [ 33] pushzero ................................ <0>
+  [ 34] pushsymb 806 ............................ <#initialPlayTime>
+  [ 37] pushzero ................................ <0>
+  [ 38] pushsymb 815 ............................ <#playOffset>
+  [ 41] pushzero ................................ <0>
+  [ 42] pushsymb 804 ............................ <#loop>
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglist 12 .......................... <[#songList: [], #listIndex: 1, #playTime: 0, #initialPlayTime: 0, #playOffset: 0, #loop: 1]>
+  [ 49] pushproplist ............................ <[#songList: [], #listIndex: 1, #playTime: 0, #initialPlayTime: 0, #playOffset: 0, #loop: 1]>
+  [ 50] setlocal 1 .............................. tPlaylistInstance = [#songList: [], #listIndex: 1, #playTime: 0, #initialPlayTime: 0, #playOffset: 0, #loop: 1]
+  [ 52] getprop 800 ............................. <pPlaylistStack>
+  [ 55] getparam 1 .............................. <tStackIndex>
+  [ 57] getlocal 1 .............................. <tPlaylistInstance>
+  [ 59] pusharglistnoret 3 ...................... <pPlaylistStack, tStackIndex, tPlaylistInstance>
+  [ 61] objcall 448 ............................. pPlaylistStack.addProp(tStackIndex, tPlaylistInstance)
+  [ 64] getprop 800 ............................. <pPlaylistStack>
+  [ 67] pusharglistnoret 1 ...................... <pPlaylistStack>
+  [ 69] objcall 816 ............................. pPlaylistStack.sort()
+  [ 72] getlocal 1 .............................. <tPlaylistInstance>
+  [ 74] pusharglistnoret 1 ...................... <tPlaylistInstance>
+  [ 76] extcall 87 .............................. return tPlaylistInstance
+  [ 78] getprop 800 ............................. <pPlaylistStack>
+  [ 81] getlocal 0 .............................. <tPos>
+  [ 83] pusharglist 2 ........................... <pPlaylistStack, tPos>
+  [ 85] objcall 116 ............................. <pPlaylistStack[tPos]>
+  [ 87] pusharglistnoret 1 ...................... <pPlaylistStack[tPos]>
+  [ 89] extcall 87 .............................. return pPlaylistStack[tPos]
+  [ 91] ret
+end
+
+on getPlaylistInstanceCount me
+  [  0] getprop 800 ............................. <pPlaylistStack>
+  [  3] getobjprop 115 .......................... <pPlaylistStack.count>
+  [  5] pusharglistnoret 1 ...................... <pPlaylistStack.count>
+  [  7] extcall 87 .............................. return pPlaylistStack.count
+  [  9] ret
+end
+
+on getSongData me, tStackIndex, tIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tStackIndex>
+  [  4] pusharglist 2 ........................... <me, tStackIndex>
+  [  6] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [  9] setlocal 0 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 11] getlocal 0 .............................. <tPlaylistInstance>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tPlaylistInstance = 0>
+  [ 15] jmpifz [ 23] ............................ if tPlaylistInstance = 0 then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 87 .............................. return 0
+  [ 23] getparam 2 .............................. <tIndex>
+  [ 25] pusharglist 1 ........................... <tIndex>
+  [ 27] extcall 161 ............................. <voidp(tIndex)>
+  [ 29] jmpifz [ 43] ............................ if voidp(tIndex) then
+  [ 32] getlocal 0 .............................. <tPlaylistInstance>
+  [ 34] pushsymb 814 ............................ <#listIndex>
+  [ 37] pusharglist 2 ........................... <tPlaylistInstance, #listIndex>
+  [ 39] objcall 116 ............................. <tPlaylistInstance[#listIndex]>
+  [ 41] setparam 2 .............................. tIndex = tPlaylistInstance[#listIndex]
+  [ 43] getlocal 0 .............................. <tPlaylistInstance>
+  [ 45] pushsymb 803 ............................ <#songList>
+  [ 48] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 50] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 52] setlocal 1 .............................. tSongList = tPlaylistInstance[#songList]
+  [ 54] getparam 2 .............................. <tIndex>
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] lt ...................................... <tIndex < 1>
+  [ 59] getparam 2 .............................. <tIndex>
+  [ 61] getlocal 1 .............................. <tSongList>
+  [ 63] getobjprop 115 .......................... <tSongList.count>
+  [ 65] gt ...................................... <tIndex > tSongList.count>
+  [ 66] or ...................................... <(tIndex < 1) or (tIndex > tSongList.count)>
+  [ 67] jmpifz [ 75] ............................ if (tIndex < 1) or (tIndex > tSongList.count) then
+  [ 70] pushzero ................................ <0>
+  [ 71] pusharglistnoret 1 ...................... <0>
+  [ 73] extcall 87 .............................. return 0
+  [ 75] getlocal 1 .............................. <tSongList>
+  [ 77] getparam 2 .............................. <tIndex>
+  [ 79] pusharglist 2 ........................... <tSongList, tIndex>
+  [ 81] objcall 116 ............................. <tSongList[tIndex]>
+  [ 83] pushsymb 810 ............................ <#songData>
+  [ 86] pusharglist 2 ........................... <tSongList[tIndex], #songData>
+  [ 88] objcall 116 ............................. <tSongList[tIndex][#songData]>
+  [ 90] pusharglist 1 ........................... <tSongList[tIndex][#songData]>
+  [ 92] extcall 161 ............................. <voidp(tSongList[tIndex][#songData])>
+  [ 94] jmpifz [102] ............................ if voidp(tSongList[tIndex][#songData]) then
+  [ 97] pushzero ................................ <0>
+  [ 98] pusharglistnoret 1 ...................... <0>
+  [100] extcall 87 .............................. return 0
+  [102] getlocal 1 .............................. <tSongList>
+  [104] getparam 2 .............................. <tIndex>
+  [106] pusharglist 2 ........................... <tSongList, tIndex>
+  [108] objcall 116 ............................. <tSongList[tIndex]>
+  [110] pushsymb 810 ............................ <#songData>
+  [113] pusharglist 2 ........................... <tSongList[tIndex], #songData>
+  [115] objcall 116 ............................. <tSongList[tIndex][#songData]>
+  [117] pusharglistnoret 1 ...................... <tSongList[tIndex][#songData]>
+  [119] extcall 87 .............................. return tSongList[tIndex][#songData]
+  [121] ret
+end
+
+on getSongChannelList me, tStackIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tStackIndex>
+  [  4] pusharglist 2 ........................... <me, tStackIndex>
+  [  6] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [  9] setlocal 0 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 11] getlocal 0 .............................. <tPlaylistInstance>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tPlaylistInstance = 0>
+  [ 15] jmpifz [ 25] ............................ if tPlaylistInstance = 0 then
+  [ 18] pusharglist 0 ........................... <[]>
+  [ 20] pushlist ................................ <[]>
+  [ 21] pusharglistnoret 1 ...................... <[]>
+  [ 23] extcall 87 .............................. return []
+  [ 25] getlocal 0 .............................. <tPlaylistInstance>
+  [ 27] pushsymb 803 ............................ <#songList>
+  [ 30] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 32] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 34] getobjprop 115 .......................... <tPlaylistInstance[#songList].count>
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] eq ...................................... <tPlaylistInstance[#songList].count = 1>
+  [ 39] jmpifz [ 97] ............................ if tPlaylistInstance[#songList].count = 1 then
+  [ 42] getparam 0 .............................. <me>
+  [ 44] getparam 1 .............................. <tStackIndex>
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] pusharglist 3 ........................... <me, tStackIndex, 1>
+  [ 50] objcall 541 ............................. <me.getSongData(tStackIndex, 1)>
+  [ 53] setlocal 1 .............................. tSongData = me.getSongData(tStackIndex, 1)
+  [ 55] getlocal 1 .............................. <tSongData>
+  [ 57] pushzero ................................ <0>
+  [ 58] nteq .................................... <tSongData <> 0>
+  [ 59] jmpifz [ 97] ............................ if tSongData <> 0 then
+  [ 62] getlocal 1 .............................. <tSongData>
+  [ 64] pushsymb 817 ............................ <#channelList>
+  [ 67] pusharglist 2 ........................... <tSongData, #channelList>
+  [ 69] objcall 116 ............................. <tSongData[#channelList]>
+  [ 71] pusharglist 1 ........................... <tSongData[#channelList]>
+  [ 73] extcall 161 ............................. <voidp(tSongData[#channelList])>
+  [ 75] not ..................................... <not voidp(tSongData[#channelList])>
+  [ 76] jmpifz [ 97] ............................ if not voidp(tSongData[#channelList]) then
+  [ 79] getlocal 1 .............................. <tSongData>
+  [ 81] pushsymb 817 ............................ <#channelList>
+  [ 84] pusharglist 2 ........................... <tSongData, #channelList>
+  [ 86] objcall 116 ............................. <tSongData[#channelList]>
+  [ 88] pusharglist 1 ........................... <tSongData[#channelList]>
+  [ 90] objcall 466 ............................. <tSongData[#channelList].duplicate()>
+  [ 93] pusharglistnoret 1 ...................... <tSongData[#channelList].duplicate()>
+  [ 95] extcall 87 .............................. return tSongData[#channelList].duplicate()
+  [ 97] pusharglist 0 ........................... <[]>
+  [ 99] pushlist ................................ <[]>
+  [100] setlocal 2 .............................. tChannels = []
+  [102] pushint8 1 .............................. <1>
+  [104] setlocal 3
+  [106] getlocal 3
+  [108] getprop 797 ............................. <pSongChannels>
+  [111] getobjprop 115 .......................... <pSongChannels.count>
+  [113] lteq
+  [114] jmpifz [134] ............................ repeat with i = 1 to pSongChannels.count
+  [117] getlocal 2 .............................. <tChannels>
+  [119] getlocal 3 .............................. <i>
+  [121] pusharglistnoret 2 ...................... <tChannels, i>
+  [123] objcall 188 ............................. tChannels.add(i)
+  [125] pushint8 1
+  [127] getlocal 3
+  [129] add
+  [130] setlocal 3
+  [132] endrepeat [106]
+  [134] getlocal 2 .............................. <tChannels>
+  [136] pusharglistnoret 1 ...................... <tChannels>
+  [138] extcall 87 .............................. return tChannels
+  [140] ret
+end
+
+on getSongLength me, tSongData
+  [  0] getparam 1 .............................. <tSongData>
+  [  2] pusharglist 1 ........................... <tSongData>
+  [  4] extcall 161 ............................. <voidp(tSongData)>
+  [  6] getparam 1 .............................. <tSongData>
+  [  8] pushzero ................................ <0>
+  [  9] eq ...................................... <tSongData = 0>
+  [ 10] or ...................................... <voidp(tSongData) or (tSongData = 0)>
+  [ 11] jmpifz [ 21] ............................ if voidp(tSongData) or (tSongData = 0) then
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] inv ..................................... <-1>
+  [ 17] pusharglistnoret 1 ...................... <-1>
+  [ 19] extcall 87 .............................. return -1
+  [ 21] getparam 1 .............................. <tSongData>
+  [ 23] getobjprop 664 .......................... <tSongData.sounds>
+  [ 26] pusharglist 1 ........................... <tSongData.sounds>
+  [ 28] extcall 161 ............................. <voidp(tSongData.sounds)>
+  [ 30] jmpifz [ 40] ............................ if voidp(tSongData.sounds) then
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] inv ..................................... <-1>
+  [ 36] pusharglistnoret 1 ...................... <-1>
+  [ 38] extcall 87 .............................. return -1
+  [ 40] getparam 1 .............................. <tSongData>
+  [ 42] pushsymb 559 ............................ <#songLength>
+  [ 45] pusharglist 2 ........................... <tSongData, #songLength>
+  [ 47] objcall 116 ............................. <tSongData[#songLength]>
+  [ 49] pusharglist 1 ........................... <tSongData[#songLength]>
+  [ 51] extcall 161 ............................. <voidp(tSongData[#songLength])>
+  [ 53] not ..................................... <not voidp(tSongData[#songLength])>
+  [ 54] jmpifz [ 70] ............................ if not voidp(tSongData[#songLength]) then
+  [ 57] getparam 1 .............................. <tSongData>
+  [ 59] pushsymb 559 ............................ <#songLength>
+  [ 62] pusharglist 2 ........................... <tSongData, #songLength>
+  [ 64] objcall 116 ............................. <tSongData[#songLength]>
+  [ 66] pusharglistnoret 1 ...................... <tSongData[#songLength]>
+  [ 68] extcall 87 .............................. return tSongData[#songLength]
+  [ 70] pusharglist 0 ........................... <[]>
+  [ 72] pushlist ................................ <[]>
+  [ 73] setlocal 0 .............................. tPlayLengthList = []
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] setlocal 1
+  [ 79] getlocal 1
+  [ 81] getprop 797 ............................. <pSongChannels>
+  [ 84] getobjprop 115 .......................... <pSongChannels.count>
+  [ 86] lteq
+  [ 87] jmpifz [106] ............................ repeat with i = 1 to pSongChannels.count
+  [ 90] getlocal 0 .............................. <tPlayLengthList>
+  [ 92] pushzero ................................ <0>
+  [ 93] pusharglistnoret 2 ...................... <tPlayLengthList, 0>
+  [ 95] objcall 188 ............................. tPlayLengthList.add(0)
+  [ 97] pushint8 1
+  [ 99] getlocal 1
+  [101] add
+  [102] setlocal 1
+  [104] endrepeat [ 79]
+  [106] pushint8 1 .............................. <1>
+  [108] setlocal 1
+  [110] getlocal 1
+  [112] getparam 1 .............................. <tSongData>
+  [114] pushsymb 664 ............................ <#sounds>
+  [117] pusharglist 2 ........................... <tSongData, #sounds>
+  [119] objcall 115 ............................. <tSongData.sounds.count>
+  [121] lteq
+  [122] jmpifz [252] ............................ repeat with i = 1 to tSongData.sounds.count
+  [125] getparam 1 .............................. <tSongData>
+  [127] pushsymb 664 ............................ <#sounds>
+  [130] getlocal 1 .............................. <i>
+  [132] pusharglist 3 ........................... <tSongData, #sounds, i>
+  [134] objcall 268 ............................. <tSongData.sounds[i]>
+  [137] setlocal 2 .............................. tSound = tSongData.sounds[i]
+  [139] pushint8 1 .............................. <1>
+  [141] setlocal 3
+  [143] getlocal 3
+  [145] getlocal 2 .............................. <tSound>
+  [147] getobjprop 665 .......................... <tSound.loops>
+  [150] lteq
+  [151] jmpifz [243] ............................ repeat with j = 1 to tSound.loops
+  [154] getlocal 2 .............................. <tSound>
+  [156] getobjprop 666 .......................... <tSound.channel>
+  [159] setlocal 4 .............................. tChannel = tSound.channel
+  [161] getlocal 4 .............................. <tChannel>
+  [163] pushint8 1 .............................. <1>
+  [165] gteq .................................... <tChannel >= 1>
+  [166] getlocal 4 .............................. <tChannel>
+  [168] getprop 797 ............................. <pSongChannels>
+  [171] getobjprop 115 .......................... <pSongChannels.count>
+  [173] lteq .................................... <tChannel <= pSongChannels.count>
+  [174] and ..................................... <(tChannel >= 1) and (tChannel <= pSongChannels.count)>
+  [175] jmpifz [234] ............................ if (tChannel >= 1) and (tChannel <= pSongChannels.count) then
+  [178] getlocal 2 .............................. <tSound>
+  [180] getobjprop 509 .......................... <tSound.name>
+  [183] pusharglist 1 ........................... <tSound.name>
+  [185] extcall 469 ............................. <getMember(tSound.name)>
+  [188] setlocal 5 .............................. tmember = getMember(tSound.name)
+  [190] getlocal 5 .............................. <tmember>
+  [192] pushzero ................................ <0>
+  [193] nteq .................................... <tmember <> 0>
+  [194] jmpifz [234] ............................ if tmember <> 0 then
+  [197] getlocal 5 .............................. <tmember>
+  [199] getobjprop 212 .......................... <tmember.type>
+  [201] pushsymb 671 ............................ <#sound>
+  [204] eq ...................................... <tmember.type = #sound>
+  [205] jmpifz [234] ............................ if tmember.type = #sound then
+  [208] getlocal 5 .............................. <tmember>
+  [210] getobjprop 768 .......................... <tmember.duration>
+  [213] setlocal 6 .............................. tLength = tmember.duration
+  [215] getlocal 0 .............................. <tPlayLengthList>
+  [217] getlocal 4 .............................. <tChannel>
+  [219] getlocal 0 .............................. <tPlayLengthList>
+  [221] getlocal 4 .............................. <tChannel>
+  [223] pusharglist 2 ........................... <tPlayLengthList, tChannel>
+  [225] objcall 116 ............................. <tPlayLengthList[tChannel]>
+  [227] getlocal 6 .............................. <tLength>
+  [229] add ..................................... <tPlayLengthList[tChannel] + tLength>
+  [230] pusharglistnoret 3 ...................... <tPlayLengthList, tChannel, tPlayLengthList[tChannel] + tLength>
+  [232] objcall 150 ............................. tPlayLengthList[tChannel] = tPlayLengthList[tChannel] + tLength
+  [234] pushint8 1
+  [236] getlocal 3
+  [238] add
+  [239] setlocal 3
+  [241] endrepeat [143]
+  [243] pushint8 1
+  [245] getlocal 1
+  [247] add
+  [248] setlocal 1
+  [250] endrepeat [110]
+  [252] getlocal 0 .............................. <tPlayLengthList>
+  [254] pushint8 1 .............................. <1>
+  [256] pusharglist 2 ........................... <tPlayLengthList, 1>
+  [258] objcall 116 ............................. <tPlayLengthList[1]>
+  [260] setlocal 7 .............................. tPlayLength = tPlayLengthList[1]
+  [262] pushint8 2 .............................. <2>
+  [264] setlocal 1
+  [266] getlocal 1
+  [268] getlocal 0 .............................. <tPlayLengthList>
+  [270] getobjprop 115 .......................... <tPlayLengthList.count>
+  [272] lteq
+  [273] jmpifz [309] ............................ repeat with i = 2 to tPlayLengthList.count
+  [276] getlocal 0 .............................. <tPlayLengthList>
+  [278] getlocal 1 .............................. <i>
+  [280] pusharglist 2 ........................... <tPlayLengthList, i>
+  [282] objcall 116 ............................. <tPlayLengthList[i]>
+  [284] getlocal 7 .............................. <tPlayLength>
+  [286] gt ...................................... <tPlayLengthList[i] > tPlayLength>
+  [287] jmpifz [300] ............................ if tPlayLengthList[i] > tPlayLength then
+  [290] getlocal 0 .............................. <tPlayLengthList>
+  [292] getlocal 1 .............................. <i>
+  [294] pusharglist 2 ........................... <tPlayLengthList, i>
+  [296] objcall 116 ............................. <tPlayLengthList[i]>
+  [298] setlocal 7 .............................. tPlayLength = tPlayLengthList[i]
+  [300] pushint8 1
+  [302] getlocal 1
+  [304] add
+  [305] setlocal 1
+  [307] endrepeat [266]
+  [309] getparam 1 .............................. <tSongData>
+  [311] pushsymb 559 ............................ <#songLength>
+  [314] getlocal 7 .............................. <tPlayLength>
+  [316] pusharglistnoret 3 ...................... <tSongData, #songLength, tPlayLength>
+  [318] objcall 150 ............................. tSongData[#songLength] = tPlayLength
+  [320] getlocal 7 .............................. <tPlayLength>
+  [322] pusharglistnoret 1 ...................... <tPlayLength>
+  [324] extcall 87 .............................. return tPlayLength
+  [326] ret
+end
+
+on getPlaylistSongLength me, tStackIndex, tIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tStackIndex>
+  [  4] pusharglist 2 ........................... <me, tStackIndex>
+  [  6] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [  9] setlocal 0 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 11] getlocal 0 .............................. <tPlaylistInstance>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tPlaylistInstance = 0>
+  [ 15] jmpifz [ 25] ............................ if tPlaylistInstance = 0 then
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] inv ..................................... <-1>
+  [ 21] pusharglistnoret 1 ...................... <-1>
+  [ 23] extcall 87 .............................. return -1
+  [ 25] getlocal 0 .............................. <tPlaylistInstance>
+  [ 27] pushsymb 803 ............................ <#songList>
+  [ 30] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 32] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 34] setlocal 1 .............................. tSongList = tPlaylistInstance[#songList]
+  [ 36] getparam 2 .............................. <tIndex>
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] lt ...................................... <tIndex < 1>
+  [ 41] getparam 2 .............................. <tIndex>
+  [ 43] getlocal 1 .............................. <tSongList>
+  [ 45] getobjprop 115 .......................... <tSongList.count>
+  [ 47] gt ...................................... <tIndex > tSongList.count>
+  [ 48] or ...................................... <(tIndex < 1) or (tIndex > tSongList.count)>
+  [ 49] jmpifz [ 59] ............................ if (tIndex < 1) or (tIndex > tSongList.count) then
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] inv ..................................... <-1>
+  [ 55] pusharglistnoret 1 ...................... <-1>
+  [ 57] extcall 87 .............................. return -1
+  [ 59] getparam 0 .............................. <me>
+  [ 61] getparam 1 .............................. <tStackIndex>
+  [ 63] getparam 2 .............................. <tIndex>
+  [ 65] pusharglist 3 ........................... <me, tStackIndex, tIndex>
+  [ 67] objcall 541 ............................. <me.getSongData(tStackIndex, tIndex)>
+  [ 70] setlocal 2 .............................. tSongData = me.getSongData(tStackIndex, tIndex)
+  [ 72] getparam 0 .............................. <me>
+  [ 74] getlocal 2 .............................. <tSongData>
+  [ 76] pusharglist 2 ........................... <me, tSongData>
+  [ 78] objcall 177 ............................. <me.getSongLength(tSongData)>
+  [ 80] setlocal 3 .............................. tLength = me.getSongLength(tSongData)
+  [ 82] getlocal 3 .............................. <tLength>
+  [ 84] pushzero ................................ <0>
+  [ 85] lt ...................................... <tLength < 0>
+  [ 86] jmpifz [106] ............................ if tLength < 0 then
+  [ 89] getlocal 1 .............................. <tSongList>
+  [ 91] getparam 2 .............................. <tIndex>
+  [ 93] pusharglist 2 ........................... <tSongList, tIndex>
+  [ 95] objcall 116 ............................. <tSongList[tIndex]>
+  [ 97] pushsymb 267 ............................ <#length>
+  [100] pusharglist 2 ........................... <tSongList[tIndex], #length>
+  [102] objcall 116 ............................. <tSongList[tIndex][#length]>
+  [104] setlocal 3 .............................. tLength = tSongList[tIndex][#length]
+  [106] getlocal 3 .............................. <tLength>
+  [108] pushzero ................................ <0>
+  [109] lt ...................................... <tLength < 0>
+  [110] jmpifz [120] ............................ if tLength < 0 then
+  [113] pushint16 2000 .......................... <2000>
+  [116] pusharglistnoret 1 ...................... <2000>
+  [118] extcall 87 .............................. return 2000
+  [120] getlocal 3 .............................. <tLength>
+  [122] pusharglistnoret 1 ...................... <tLength>
+  [124] extcall 87 .............................. return tLength
+  [126] ret
+end
+
+on getPlaylistLength me, tStackIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tStackIndex>
+  [  4] pusharglist 2 ........................... <me, tStackIndex>
+  [  6] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [  9] setlocal 0 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 11] getlocal 0 .............................. <tPlaylistInstance>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tPlaylistInstance = 0>
+  [ 15] jmpifz [ 23] ............................ if tPlaylistInstance = 0 then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 87 .............................. return 0
+  [ 23] getlocal 0 .............................. <tPlaylistInstance>
+  [ 25] pushsymb 803 ............................ <#songList>
+  [ 28] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 30] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 32] setlocal 1 .............................. tSongList = tPlaylistInstance[#songList]
+  [ 34] pushzero ................................ <0>
+  [ 35] setlocal 2 .............................. tPlaylistLength = 0
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] setlocal 3
+  [ 41] getlocal 3
+  [ 43] getlocal 1 .............................. <tSongList>
+  [ 45] getobjprop 115 .......................... <tSongList.count>
+  [ 47] lteq
+  [ 48] jmpifz [ 79] ............................ repeat with i = 1 to tSongList.count
+  [ 51] getparam 0 .............................. <me>
+  [ 53] getparam 1 .............................. <tStackIndex>
+  [ 55] getlocal 3 .............................. <i>
+  [ 57] pusharglist 3 ........................... <me, tStackIndex, i>
+  [ 59] objcall 185 ............................. <me.getPlaylistSongLength(tStackIndex, i)>
+  [ 61] setlocal 4 .............................. tLength = me.getPlaylistSongLength(tStackIndex, i)
+  [ 63] getlocal 2 .............................. <tPlaylistLength>
+  [ 65] getlocal 4 .............................. <tLength>
+  [ 67] add ..................................... <tPlaylistLength + tLength>
+  [ 68] setlocal 2 .............................. tPlaylistLength = tPlaylistLength + tLength
+  [ 70] pushint8 1
+  [ 72] getlocal 3
+  [ 74] add
+  [ 75] setlocal 3
+  [ 77] endrepeat [ 41]
+  [ 79] getlocal 2 .............................. <tPlaylistLength>
+  [ 81] pusharglistnoret 1 ...................... <tPlaylistLength>
+  [ 83] extcall 87 .............................. return tPlaylistLength
+  [ 85] ret
+end
+
+on getPlayTime me, tStackIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tStackIndex>
+  [  4] pusharglist 2 ........................... <me, tStackIndex>
+  [  6] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [  9] setlocal 0 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 11] getlocal 0 .............................. <tPlaylistInstance>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tPlaylistInstance = 0>
+  [ 15] jmpifz [ 23] ............................ if tPlaylistInstance = 0 then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 87 .............................. return 0
+  [ 23] getlocal 0 .............................. <tPlaylistInstance>
+  [ 25] pushsymb 805 ............................ <#playTime>
+  [ 28] pusharglist 2 ........................... <tPlaylistInstance, #playTime>
+  [ 30] objcall 116 ............................. <tPlaylistInstance[#playTime]>
+  [ 32] getmovieprop 84 ......................... <the milliSeconds>
+  [ 34] getlocal 0 .............................. <tPlaylistInstance>
+  [ 36] pushsymb 806 ............................ <#initialPlayTime>
+  [ 39] pusharglist 2 ........................... <tPlaylistInstance, #initialPlayTime>
+  [ 41] objcall 116 ............................. <tPlaylistInstance[#initialPlayTime]>
+  [ 43] sub ..................................... <the milliSeconds - tPlaylistInstance[#initialPlayTime]>
+  [ 44] pushint8 100 ............................ <100>
+  [ 46] div ..................................... <(the milliSeconds - tPlaylistInstance[#initialPlayTime]) / 100>
+  [ 47] add ..................................... <tPlaylistInstance[#playTime] + ((the milliSeconds - tPlaylistInstance[#initialPlayTime]) / 100)>
+  [ 48] pusharglistnoret 1 ...................... <tPlaylistInstance[#playTime] + ((the milliSeconds - tPlaylistInstance[#initialPlayTime]) / 100)>
+  [ 50] extcall 87 .............................. return tPlaylistInstance[#playTime] + ((the milliSeconds - tPlaylistInstance[#initialPlayTime]) / 100)
+  [ 52] ret
+end
+
+on initializePlaying me
+  [  0] getprop 794 ............................. <pQueueTimeout>
+  [  3] pusharglist 1 ........................... <pQueueTimeout>
+  [  5] extcall 90 .............................. <timeoutExists(pQueueTimeout)>
+  [  7] getprop 795 ............................. <pPlayTimeout>
+  [ 10] pusharglist 1 ........................... <pPlayTimeout>
+  [ 12] extcall 90 .............................. <timeoutExists(pPlayTimeout)>
+  [ 14] or ...................................... <timeoutExists(pQueueTimeout) or timeoutExists(pPlayTimeout)>
+  [ 15] jmpifz [ 24] ............................ if timeoutExists(pQueueTimeout) or timeoutExists(pPlayTimeout) then
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 87 .............................. return 1
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 779 ............................. <me.getTopInstanceIndex()>
+  [ 31] setlocal 0 .............................. tStackIndex = me.getTopInstanceIndex()
+  [ 33] getparam 0 .............................. <me>
+  [ 35] getlocal 0 .............................. <tStackIndex>
+  [ 37] pusharglist 2 ........................... <me, tStackIndex>
+  [ 39] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [ 42] setlocal 1 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 44] getlocal 1 .............................. <tPlaylistInstance>
+  [ 46] pushzero ................................ <0>
+  [ 47] eq ...................................... <tPlaylistInstance = 0>
+  [ 48] jmpifz [ 56] ............................ if tPlaylistInstance = 0 then
+  [ 51] pushzero ................................ <0>
+  [ 52] pusharglistnoret 1 ...................... <0>
+  [ 54] extcall 87 .............................. return 0
+  [ 56] getlocal 1 .............................. <tPlaylistInstance>
+  [ 58] pushsymb 803 ............................ <#songList>
+  [ 61] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 63] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 65] setlocal 2 .............................. tSongList = tPlaylistInstance[#songList]
+  [ 67] getlocal 1 .............................. <tPlaylistInstance>
+  [ 69] pushsymb 804 ............................ <#loop>
+  [ 72] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [ 74] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [ 76] not ..................................... <not tPlaylistInstance[#loop]>
+  [ 77] jmpifz [118] ............................ if not tPlaylistInstance[#loop] then
+  [ 80] getparam 0 .............................. <me>
+  [ 82] getlocal 0 .............................. <tStackIndex>
+  [ 84] pusharglistnoret 2 ...................... <me, tStackIndex>
+  [ 86] objcall 792 ............................. me.removePlayedSongs(tStackIndex)
+  [ 89] getlocal 2 .............................. <tSongList>
+  [ 91] getobjprop 115 .......................... <tSongList.count>
+  [ 93] pushzero ................................ <0>
+  [ 94] eq ...................................... <tSongList.count = 0>
+  [ 95] jmpifz [118] ............................ if tSongList.count = 0 then
+  [ 98] getparam 0 .............................. <me>
+  [100] getlocal 0 .............................. <tStackIndex>
+  [102] pusharglistnoret 2 ...................... <me, tStackIndex>
+  [104] objcall 780 ............................. me.removePlaylistInstance(tStackIndex)
+  [107] getparam 0 .............................. <me>
+  [109] pusharglist 1 ........................... <me>
+  [111] objcall 784 ............................. <me.initializePlaying()>
+  [114] pusharglistnoret 1 ...................... <me.initializePlaying()>
+  [116] extcall 87 .............................. return me.initializePlaying()
+  [118] getparam 0 .............................. <me>
+  [120] getlocal 0 .............................. <tStackIndex>
+  [122] pusharglist 2 ........................... <me, tStackIndex>
+  [124] objcall 619 ............................. <me.getPlaylistLength(tStackIndex)>
+  [127] pushint8 100 ............................ <100>
+  [129] div ..................................... <me.getPlaylistLength(tStackIndex) / 100>
+  [130] setlocal 3 .............................. tPlaylistLength = me.getPlaylistLength(tStackIndex) / 100
+  [132] getparam 0 .............................. <me>
+  [134] getlocal 0 .............................. <tStackIndex>
+  [136] pusharglist 2 ........................... <me, tStackIndex>
+  [138] objcall 184 ............................. <me.getPlayTime(tStackIndex)>
+  [140] setlocal 4 .............................. tPlayTime = me.getPlayTime(tStackIndex)
+  [142] pushint16 2000 .......................... <2000>
+  [145] pushint8 100 ............................ <100>
+  [147] div ..................................... <2000 / 100>
+  [148] setlocal 5 .............................. tSyncDelta = 2000 / 100
+  [150] getlocal 5 .............................. <tSyncDelta>
+  [152] getlocal 4 .............................. <tPlayTime>
+  [154] getlocal 5 .............................. <tSyncDelta>
+  [156] mod ..................................... <tPlayTime mod tSyncDelta>
+  [157] sub ..................................... <tSyncDelta - (tPlayTime mod tSyncDelta)>
+  [158] getlocal 5 .............................. <tSyncDelta>
+  [160] mod ..................................... <(tSyncDelta - (tPlayTime mod tSyncDelta)) mod tSyncDelta>
+  [161] pushint8 100 ............................ <100>
+  [163] mul ..................................... <(tSyncDelta - (tPlayTime mod tSyncDelta)) mod tSyncDelta * 100>
+  [164] setlocal 6 .............................. tExtraOffset = (tSyncDelta - (tPlayTime mod tSyncDelta)) mod tSyncDelta * 100
+  [166] getlocal 4 .............................. <tPlayTime>
+  [168] getlocal 6 .............................. <tExtraOffset>
+  [170] pushint8 100 ............................ <100>
+  [172] div ..................................... <tExtraOffset / 100>
+  [173] add ..................................... <tPlayTime + (tExtraOffset / 100)>
+  [174] setlocal 4 .............................. tPlayTime = tPlayTime + (tExtraOffset / 100)
+  [176] getlocal 1 .............................. <tPlaylistInstance>
+  [178] pushsymb 815 ............................ <#playOffset>
+  [181] pushzero ................................ <0>
+  [182] pusharglistnoret 3 ...................... <tPlaylistInstance, #playOffset, 0>
+  [184] objcall 150 ............................. tPlaylistInstance[#playOffset] = 0
+  [186] getlocal 1 .............................. <tPlaylistInstance>
+  [188] pushsymb 814 ............................ <#listIndex>
+  [191] pushint8 1 .............................. <1>
+  [193] pusharglistnoret 3 ...................... <tPlaylistInstance, #listIndex, 1>
+  [195] objcall 150 ............................. tPlaylistInstance[#listIndex] = 1
+  [197] getlocal 3 .............................. <tPlaylistLength>
+  [199] pushint8 1 .............................. <1>
+  [201] gteq .................................... <tPlaylistLength >= 1>
+  [202] jmpifz [333] ............................ if tPlaylistLength >= 1 then
+  [205] getlocal 1 .............................. <tPlaylistInstance>
+  [207] pushsymb 804 ............................ <#loop>
+  [210] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [212] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [214] not ..................................... <not tPlaylistInstance[#loop]>
+  [215] getlocal 4 .............................. <tPlayTime>
+  [217] getlocal 3 .............................. <tPlaylistLength>
+  [219] gteq .................................... <tPlayTime >= tPlaylistLength>
+  [220] and ..................................... <not tPlaylistInstance[#loop] and (tPlayTime >= tPlaylistLength)>
+  [221] jmpifz [229] ............................ if not tPlaylistInstance[#loop] and (tPlayTime >= tPlaylistLength) then
+  [224] pushzero ................................ <0>
+  [225] pusharglistnoret 1 ...................... <0>
+  [227] extcall 87 .............................. return 0
+  [229] pushzero ................................ <0>
+  [230] setlocal 7 .............................. tPos = 0
+  [232] getlocal 4 .............................. <tPlayTime>
+  [234] getlocal 3 .............................. <tPlaylistLength>
+  [236] mod ..................................... <tPlayTime mod tPlaylistLength>
+  [237] setlocal 8 .............................. tOffset = tPlayTime mod tPlaylistLength
+  [239] pushint8 1 .............................. <1>
+  [241] setlocal 9
+  [243] getlocal 9
+  [245] getlocal 1 .............................. <tPlaylistInstance>
+  [247] pushsymb 803 ............................ <#songList>
+  [250] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [252] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [254] getobjprop 115 .......................... <tPlaylistInstance[#songList].count>
+  [256] lteq
+  [257] jmpifz [333] ............................ repeat with i = 1 to tPlaylistInstance[#songList].count
+  [260] getparam 0 .............................. <me>
+  [262] getlocal 0 .............................. <tStackIndex>
+  [264] getlocal 9 .............................. <i>
+  [266] pusharglist 3 ........................... <me, tStackIndex, i>
+  [268] objcall 185 ............................. <me.getPlaylistSongLength(tStackIndex, i)>
+  [270] pushint8 100 ............................ <100>
+  [272] div ..................................... <me.getPlaylistSongLength(tStackIndex, i) / 100>
+  [273] setlocal 10 ............................. tLength = me.getPlaylistSongLength(tStackIndex, i) / 100
+  [275] getlocal 7 .............................. <tPos>
+  [277] getlocal 10 ............................. <tLength>
+  [279] add ..................................... <tPos + tLength>
+  [280] setlocal 7 .............................. tPos = tPos + tLength
+  [282] getlocal 7 .............................. <tPos>
+  [284] getlocal 8 .............................. <tOffset>
+  [286] gt ...................................... <tPos > tOffset>
+  [287] jmpifz [324] ............................ if tPos > tOffset then
+  [290] getlocal 1 .............................. <tPlaylistInstance>
+  [292] pushsymb 814 ............................ <#listIndex>
+  [295] getlocal 9 .............................. <i>
+  [297] pusharglistnoret 3 ...................... <tPlaylistInstance, #listIndex, i>
+  [299] objcall 150 ............................. tPlaylistInstance[#listIndex] = i
+  [301] getlocal 1 .............................. <tPlaylistInstance>
+  [303] pushsymb 815 ............................ <#playOffset>
+  [306] getlocal 8 .............................. <tOffset>
+  [308] getlocal 7 .............................. <tPos>
+  [310] getlocal 10 ............................. <tLength>
+  [312] sub ..................................... <tPos - tLength>
+  [313] sub ..................................... <tOffset - (tPos - tLength)>
+  [314] pushint8 100 ............................ <100>
+  [316] mul ..................................... <(tOffset - (tPos - tLength)) * 100>
+  [317] pusharglistnoret 3 ...................... <tPlaylistInstance, #playOffset, (tOffset - (tPos - tLength)) * 100>
+  [319] objcall 150 ............................. tPlaylistInstance[#playOffset] = (tOffset - (tPos - tLength)) * 100
+  [321] jmp [333] ............................... exit repeat
+  [324] pushint8 1
+  [326] getlocal 9
+  [328] add
+  [329] setlocal 9
+  [331] endrepeat [243]
+  [333] getparam 0 .............................. <me>
+  [335] getlocal 0 .............................. <tStackIndex>
+  [337] pusharglist 2 ........................... <me, tStackIndex>
+  [339] objcall 541 ............................. <me.getSongData(tStackIndex)>
+  [342] pushzero ................................ <0>
+  [343] nteq .................................... <me.getSongData(tStackIndex) <> 0>
+  [344] jmpifz [390] ............................ if me.getSongData(tStackIndex) <> 0 then
+  [347] getparam 0 .............................. <me>
+  [349] getlocal 0 .............................. <tStackIndex>
+  [351] pusharglistnoret 2 ...................... <me, tStackIndex>
+  [353] objcall 785 ............................. me.solveSongChannels(tStackIndex)
+  [356] getparam 0 .............................. <me>
+  [358] pusharglistnoret 1 ...................... <me>
+  [360] objcall 786 ............................. me.reserveSongChannels()
+  [363] getprop 794 ............................. <pQueueTimeout>
+  [366] pushint8 50 ............................. <50>
+  [368] getlocal 6 .............................. <tExtraOffset>
+  [370] add ..................................... <50 + tExtraOffset>
+  [371] pushsymb 787 ............................ <#queueChannels>
+  [374] getparam 0 .............................. <me>
+  [376] pusharglist 1 ........................... <me>
+  [378] objcall 69 .............................. <me.getID()>
+  [380] pusharglist 0 ........................... <>
+  [382] extcall 111 ............................. <VOID>
+  [384] pushint8 1 .............................. <1>
+  [386] pusharglistnoret 6 ...................... <pQueueTimeout, 50 + tExtraOffset, #queueChannels, me.getID(), VOID, 1>
+  [388] extcall 136 ............................. createTimeout(pQueueTimeout, 50 + tExtraOffset, #queueChannels, me.getID(), VOID, 1)
+  [390] pushint8 1 .............................. <1>
+  [392] pusharglistnoret 1 ...................... <1>
+  [394] extcall 87 .............................. return 1
+  [396] ret
+end
+
+on solveSongChannels me, tStackIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tStackIndex>
+  [  4] pusharglist 2 ........................... <me, tStackIndex>
+  [  6] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [  9] setlocal 0 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 11] getlocal 0 .............................. <tPlaylistInstance>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tPlaylistInstance = 0>
+  [ 15] jmpifz [ 23] ............................ if tPlaylistInstance = 0 then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 87 .............................. return 0
+  [ 23] getlocal 0 .............................. <tPlaylistInstance>
+  [ 25] pushsymb 803 ............................ <#songList>
+  [ 28] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 30] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 32] setlocal 1 .............................. tSongList = tPlaylistInstance[#songList]
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] setlocal 2
+  [ 38] getlocal 2
+  [ 40] getlocal 1 .............................. <tSongList>
+  [ 42] getobjprop 115 .......................... <tSongList.count>
+  [ 44] lteq
+  [ 45] jmpifz [402] ............................ repeat with j = 1 to tSongList.count
+  [ 48] getparam 0 .............................. <me>
+  [ 50] getparam 1 .............................. <tStackIndex>
+  [ 52] getlocal 2 .............................. <j>
+  [ 54] pusharglist 3 ........................... <me, tStackIndex, j>
+  [ 56] objcall 541 ............................. <me.getSongData(tStackIndex, j)>
+  [ 59] setlocal 3 .............................. tSongData = me.getSongData(tStackIndex, j)
+  [ 61] getlocal 3 .............................. <tSongData>
+  [ 63] pushzero ................................ <0>
+  [ 64] nteq .................................... <tSongData <> 0>
+  [ 65] jmpifz [392] ............................ if tSongData <> 0 then
+  [ 68] getlocal 3 .............................. <tSongData>
+  [ 70] pushsymb 817 ............................ <#channelList>
+  [ 73] pusharglist 2 ........................... <tSongData, #channelList>
+  [ 75] objcall 116 ............................. <tSongData[#channelList]>
+  [ 77] pusharglist 1 ........................... <tSongData[#channelList]>
+  [ 79] extcall 161 ............................. <voidp(tSongData[#channelList])>
+  [ 81] jmpifz [392] ............................ if voidp(tSongData[#channelList]) then
+  [ 84] getlocal 3 .............................. <tSongData>
+  [ 86] pushsymb 664 ............................ <#sounds>
+  [ 89] pusharglist 2 ........................... <tSongData, #sounds>
+  [ 91] objcall 355 ............................. <tSongData.getaProp(#sounds)>
+  [ 94] setlocal 4 .............................. tSounds = tSongData.getaProp(#sounds)
+  [ 96] getlocal 4 .............................. <tSounds>
+  [ 98] pusharglist 1 ........................... <tSounds>
+  [100] extcall 161 ............................. <voidp(tSounds)>
+  [102] not ..................................... <not voidp(tSounds)>
+  [103] jmpifz [376] ............................ if not voidp(tSounds) then
+  [106] pusharglist 0 ........................... <[]>
+  [108] pushlist ................................ <[]>
+  [109] setlocal 5 .............................. tChannels = []
+  [111] pushint8 1 .............................. <1>
+  [113] setlocal 6
+  [115] getlocal 6
+  [117] getlocal 4 .............................. <tSounds>
+  [119] getobjprop 115 .......................... <tSounds.count>
+  [121] lteq
+  [122] jmpifz [172] ............................ repeat with i = 1 to tSounds.count
+  [125] getlocal 4 .............................. <tSounds>
+  [127] getlocal 6 .............................. <i>
+  [129] pusharglist 2 ........................... <tSounds, i>
+  [131] objcall 116 ............................. <tSounds[i]>
+  [133] setlocal 7 .............................. tSound = tSounds[i]
+  [135] getlocal 7 .............................. <tSound>
+  [137] getobjprop 666 .......................... <tSound.channel>
+  [140] setlocal 8 .............................. tChannel = tSound.channel
+  [142] getlocal 5 .............................. <tChannels>
+  [144] getlocal 8 .............................. <tChannel>
+  [146] pusharglist 2 ........................... <tChannels, tChannel>
+  [148] objcall 621 ............................. <tChannels.findPos(tChannel)>
+  [151] not ..................................... <not tChannels.findPos(tChannel)>
+  [152] jmpifz [163] ............................ if not tChannels.findPos(tChannel) then
+  [155] getlocal 5 .............................. <tChannels>
+  [157] getlocal 8 .............................. <tChannel>
+  [159] pusharglistnoret 2 ...................... <tChannels, tChannel>
+  [161] objcall 188 ............................. tChannels.add(tChannel)
+  [163] pushint8 1
+  [165] getlocal 6
+  [167] add
+  [168] setlocal 6
+  [170] endrepeat [115]
+  [172] getlocal 5 .............................. <tChannels>
+  [174] pusharglistnoret 1 ...................... <tChannels>
+  [176] objcall 816 ............................. tChannels.sort()
+  [179] getlocal 1 .............................. <tSongList>
+  [181] getobjprop 115 .......................... <tSongList.count>
+  [183] pushint8 1 .............................. <1>
+  [185] gt ...................................... <tSongList.count > 1>
+  [186] getlocal 0 .............................. <tPlaylistInstance>
+  [188] pushsymb 804 ............................ <#loop>
+  [191] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [193] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [195] not ..................................... <not tPlaylistInstance[#loop]>
+  [196] or ...................................... <(tSongList.count > 1) or not tPlaylistInstance[#loop]>
+  [197] jmpifz [237] ............................ if (tSongList.count > 1) or not tPlaylistInstance[#loop] then
+  [200] pusharglist 0 ........................... <[]>
+  [202] pushlist ................................ <[]>
+  [203] setlocal 5 .............................. tChannels = []
+  [205] pushint8 1 .............................. <1>
+  [207] setlocal 6
+  [209] getlocal 6
+  [211] getprop 797 ............................. <pSongChannels>
+  [214] getobjprop 115 .......................... <pSongChannels.count>
+  [216] lteq
+  [217] jmpifz [237] ............................ repeat with i = 1 to pSongChannels.count
+  [220] getlocal 5 .............................. <tChannels>
+  [222] getlocal 6 .............................. <i>
+  [224] pusharglistnoret 2 ...................... <tChannels, i>
+  [226] objcall 188 ............................. tChannels.add(i)
+  [228] pushint8 1
+  [230] getlocal 6
+  [232] add
+  [233] setlocal 6
+  [235] endrepeat [209]
+  [237] getlocal 4 .............................. <tSounds>
+  [239] getobjprop 115 .......................... <tSounds.count>
+  [241] setlocal 6
+  [243] getlocal 6
+  [245] pushint8 1 .............................. <1>
+  [247] gteq
+  [248] jmpifz [326] ............................ repeat with i = tSounds.count down to 1
+  [251] getlocal 4 .............................. <tSounds>
+  [253] getlocal 6 .............................. <i>
+  [255] pusharglist 2 ........................... <tSounds, i>
+  [257] objcall 116 ............................. <tSounds[i]>
+  [259] setlocal 7 .............................. tSound = tSounds[i]
+  [261] getlocal 7 .............................. <tSound>
+  [263] getobjprop 666 .......................... <tSound.channel>
+  [266] setlocal 8 .............................. tChannel = tSound.channel
+  [268] getlocal 7 .............................. <tSound>
+  [270] getlocal 5 .............................. <tChannels>
+  [272] getlocal 8 .............................. <tChannel>
+  [274] pusharglist 2 ........................... <tChannels, tChannel>
+  [276] objcall 621 ............................. <tChannels.findPos(tChannel)>
+  [279] setobjprop 666 .......................... tSound.channel = tChannels.findPos(tChannel)
+  [282] getlocal 7 .............................. <tSound>
+  [284] getobjprop 666 .......................... <tSound.channel>
+  [287] pushzero ................................ <0>
+  [288] eq ...................................... <tSound.channel = 0>
+  [289] jmpifz [317] ............................ if tSound.channel = 0 then
+  [292] getlocal 4 .............................. <tSounds>
+  [294] getlocal 6 .............................. <i>
+  [296] pusharglistnoret 2 ...................... <tSounds, i>
+  [298] objcall 514 ............................. tSounds.deleteAt(i)
+  [301] getparam 0 .............................. <me>
+  [303] pushcons 6 .............................. <"Invalid sound channel">
+  [305] getlocal 8 .............................. <tChannel>
+  [307] joinpadstr .............................. <"Invalid sound channel" && tChannel>
+  [308] pushsymb 785 ............................ <#solveSongChannels>
+  [311] pushsymb 96 ............................. <#major>
+  [313] pusharglistnoret 4 ...................... <me, "Invalid sound channel" && tChannel, #solveSongChannels, #major>
+  [315] extcall 95 .............................. error(me, "Invalid sound channel" && tChannel, #solveSongChannels, #major)
+  [317] pushint8 -1
+  [319] getlocal 6
+  [321] add
+  [322] setlocal 6
+  [324] endrepeat [243]
+  [326] pusharglist 0 ........................... <[]>
+  [328] pushlist ................................ <[]>
+  [329] setlocal 9 .............................. tChannelsFinal = []
+  [331] pushint8 1 .............................. <1>
+  [333] setlocal 6
+  [335] getlocal 6
+  [337] getlocal 5 .............................. <tChannels>
+  [339] getobjprop 115 .......................... <tChannels.count>
+  [341] lteq
+  [342] jmpifz [362] ............................ repeat with i = 1 to tChannels.count
+  [345] getlocal 9 .............................. <tChannelsFinal>
+  [347] getlocal 6 .............................. <i>
+  [349] pusharglistnoret 2 ...................... <tChannelsFinal, i>
+  [351] objcall 188 ............................. tChannelsFinal.add(i)
+  [353] pushint8 1
+  [355] getlocal 6
+  [357] add
+  [358] setlocal 6
+  [360] endrepeat [335]
+  [362] getlocal 3 .............................. <tSongData>
+  [364] pushsymb 817 ............................ <#channelList>
+  [367] getlocal 9 .............................. <tChannelsFinal>
+  [369] pusharglistnoret 3 ...................... <tSongData, #channelList, tChannelsFinal>
+  [371] objcall 150 ............................. tSongData[#channelList] = tChannelsFinal
+  [373] jmp [392] ............................... next repeat
+  [376] getparam 0 .............................. <me>
+  [378] pushcons 7 .............................. <"Song with no sounds">
+  [380] getlocal 8 .............................. <tChannel>
+  [382] joinpadstr .............................. <"Song with no sounds" && tChannel>
+  [383] pushsymb 785 ............................ <#solveSongChannels>
+  [386] pushsymb 96 ............................. <#major>
+  [388] pusharglistnoret 4 ...................... <me, "Song with no sounds" && tChannel, #solveSongChannels, #major>
+  [390] extcall 95 .............................. error(me, "Song with no sounds" && tChannel, #solveSongChannels, #major)
+  [392] pushint8 1
+  [394] getlocal 2
+  [396] add
+  [397] setlocal 2
+  [399] endrepeat [ 38]
+  [402] ret
+end
+
+on reserveSongChannels me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 779 ............................. <me.getTopInstanceIndex()>
+  [  7] setlocal 0 .............................. tStackIndex = me.getTopInstanceIndex()
+  [  9] getparam 0 .............................. <me>
+  [ 11] getlocal 0 .............................. <tStackIndex>
+  [ 13] pusharglist 2 ........................... <me, tStackIndex>
+  [ 15] objcall 783 ............................. <me.getSongChannelList(tStackIndex)>
+  [ 18] setlocal 1 .............................. tChannelList = me.getSongChannelList(tStackIndex)
+  [ 20] pusharglist 0 ........................... <[]>
+  [ 22] pushlist ................................ <[]>
+  [ 23] setprop 798 ............................. pSongChannelsInUse = []
+  [ 26] getlocal 1 .............................. <tChannelList>
+  [ 28] peek 0
+  [ 30] pusharglist 1
+  [ 32] extcall 115
+  [ 34] pushint8 1
+  [ 36] peek 0
+  [ 38] peek 2
+  [ 40] lteq
+  [ 41] jmpifz [116] ............................ repeat with tChannel in tChannelList
+  [ 44] peek 2
+  [ 46] peek 1
+  [ 48] pusharglist 2
+  [ 50] extcall 116
+  [ 52] setlocal 2
+  [ 54] getlocal 2 .............................. <tChannel>
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] gteq .................................... <tChannel >= 1>
+  [ 59] getlocal 2 .............................. <tChannel>
+  [ 61] getprop 797 ............................. <pSongChannels>
+  [ 64] getobjprop 115 .......................... <pSongChannels.count>
+  [ 66] lteq .................................... <tChannel <= pSongChannels.count>
+  [ 67] and ..................................... <(tChannel >= 1) and (tChannel <= pSongChannels.count)>
+  [ 68] jmpifz [111] ............................ if (tChannel >= 1) and (tChannel <= pSongChannels.count) then
+  [ 71] getprop 799 ............................. <pSilentSampleName>
+  [ 74] getprop 797 ............................. <pSongChannels>
+  [ 77] getlocal 2 .............................. <tChannel>
+  [ 79] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [ 81] objcall 116 ............................. <pSongChannels[tChannel]>
+  [ 83] pusharglistnoret 2 ...................... <pSilentSampleName, pSongChannels[tChannel]>
+  [ 85] extcall 827 ............................. queueSound(pSilentSampleName, pSongChannels[tChannel])
+  [ 88] getprop 797 ............................. <pSongChannels>
+  [ 91] getlocal 2 .............................. <tChannel>
+  [ 93] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [ 95] objcall 116 ............................. <pSongChannels[tChannel]>
+  [ 97] pusharglistnoret 1 ...................... <pSongChannels[tChannel]>
+  [ 99] extcall 828 ............................. startSoundChannel(pSongChannels[tChannel])
+  [102] getprop 798 ............................. <pSongChannelsInUse>
+  [105] getlocal 2 .............................. <tChannel>
+  [107] pusharglistnoret 2 ...................... <pSongChannelsInUse, tChannel>
+  [109] objcall 188 ............................. pSongChannelsInUse.add(tChannel)
+  [111] pushint8 1
+  [113] add
+  [114] endrepeat [ 36]
+  [116] pop 3
+  [118] ret
+end
+
+on queueChannels me
+  [  0] getprop 798 ............................. <pSongChannelsInUse>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 115
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 65] ............................ repeat with tChannel in pSongChannelsInUse
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 116
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tChannel>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] gteq .................................... <tChannel >= 1>
+  [ 34] getlocal 0 .............................. <tChannel>
+  [ 36] getprop 797 ............................. <pSongChannels>
+  [ 39] getobjprop 115 .......................... <pSongChannels.count>
+  [ 41] lteq .................................... <tChannel <= pSongChannels.count>
+  [ 42] and ..................................... <(tChannel >= 1) and (tChannel <= pSongChannels.count)>
+  [ 43] jmpifz [ 60] ............................ if (tChannel >= 1) and (tChannel <= pSongChannels.count) then
+  [ 46] getprop 797 ............................. <pSongChannels>
+  [ 49] getlocal 0 .............................. <tChannel>
+  [ 51] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [ 53] objcall 116 ............................. <pSongChannels[tChannel]>
+  [ 55] pusharglistnoret 1 ...................... <pSongChannels[tChannel]>
+  [ 57] extcall 801 ............................. stopSoundChannel(pSongChannels[tChannel])
+  [ 60] pushint8 1
+  [ 62] add
+  [ 63] endrepeat [ 11]
+  [ 65] pop 3
+  [ 67] pushint8 2 .............................. <2>
+  [ 69] setlocal 1 .............................. tPlayRoundsOnQueue = 2
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] setlocal 2
+  [ 75] getlocal 2
+  [ 77] getlocal 1 .............................. <tPlayRoundsOnQueue>
+  [ 79] lteq
+  [ 80] jmpifz [ 99] ............................ repeat with i = 1 to tPlayRoundsOnQueue
+  [ 83] getparam 0 .............................. <me>
+  [ 85] pusharglistnoret 1 ...................... <me>
+  [ 87] objcall 789 ............................. me.addPlayRound()
+  [ 90] pushint8 1
+  [ 92] getlocal 2
+  [ 94] add
+  [ 95] setlocal 2
+  [ 97] endrepeat [ 75]
+  [ 99] getprop 795 ............................. <pPlayTimeout>
+  [102] pusharglist 1 ........................... <pPlayTimeout>
+  [104] extcall 90 .............................. <timeoutExists(pPlayTimeout)>
+  [106] jmpifz [116] ............................ if timeoutExists(pPlayTimeout) then
+  [109] getprop 795 ............................. <pPlayTimeout>
+  [112] pusharglistnoret 1 ...................... <pPlayTimeout>
+  [114] extcall 91 .............................. removeTimeout(pPlayTimeout)
+  [116] getprop 795 ............................. <pPlayTimeout>
+  [119] pushint8 50 ............................. <50>
+  [121] pushsymb 788 ............................ <#startChannels>
+  [124] getparam 0 .............................. <me>
+  [126] pusharglist 1 ........................... <me>
+  [128] objcall 69 .............................. <me.getID()>
+  [130] pusharglist 0 ........................... <>
+  [132] extcall 111 ............................. <VOID>
+  [134] pushint8 1 .............................. <1>
+  [136] pusharglistnoret 6 ...................... <pPlayTimeout, 50, #startChannels, me.getID(), VOID, 1>
+  [138] extcall 136 ............................. createTimeout(pPlayTimeout, 50, #startChannels, me.getID(), VOID, 1)
+  [140] ret
+end
+
+on startChannels me
+  [  0] getprop 798 ............................. <pSongChannelsInUse>
+  [  3] getobjprop 115 .......................... <pSongChannelsInUse.count>
+  [  5] setlocal 0
+  [  7] getlocal 0
+  [  9] pushint8 1 .............................. <1>
+  [ 11] gteq
+  [ 12] jmpifz [ 66] ............................ repeat with i = pSongChannelsInUse.count down to 1
+  [ 15] getprop 798 ............................. <pSongChannelsInUse>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pSongChannelsInUse, i>
+  [ 22] objcall 116 ............................. <pSongChannelsInUse[i]>
+  [ 24] setlocal 1 .............................. tChannel = pSongChannelsInUse[i]
+  [ 26] getlocal 1 .............................. <tChannel>
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] gteq .................................... <tChannel >= 1>
+  [ 31] getlocal 1 .............................. <tChannel>
+  [ 33] getprop 797 ............................. <pSongChannels>
+  [ 36] getobjprop 115 .......................... <pSongChannels.count>
+  [ 38] lteq .................................... <tChannel <= pSongChannels.count>
+  [ 39] and ..................................... <(tChannel >= 1) and (tChannel <= pSongChannels.count)>
+  [ 40] jmpifz [ 57] ............................ if (tChannel >= 1) and (tChannel <= pSongChannels.count) then
+  [ 43] getprop 797 ............................. <pSongChannels>
+  [ 46] getlocal 1 .............................. <tChannel>
+  [ 48] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [ 50] objcall 116 ............................. <pSongChannels[tChannel]>
+  [ 52] pusharglistnoret 1 ...................... <pSongChannels[tChannel]>
+  [ 54] extcall 828 ............................. startSoundChannel(pSongChannels[tChannel])
+  [ 57] pushint8 -1
+  [ 59] getlocal 0
+  [ 61] add
+  [ 62] setlocal 0
+  [ 64] endrepeat [  7]
+  [ 66] getprop 793 ............................. <pUpdateTimeout>
+  [ 69] pusharglist 1 ........................... <pUpdateTimeout>
+  [ 71] extcall 90 .............................. <timeoutExists(pUpdateTimeout)>
+  [ 73] not ..................................... <not timeoutExists(pUpdateTimeout)>
+  [ 74] jmpifz [101] ............................ if not timeoutExists(pUpdateTimeout) then
+  [ 77] getprop 793 ............................. <pUpdateTimeout>
+  [ 80] pushint16 1500 .......................... <1500>
+  [ 83] pushsymb 791 ............................ <#checkLoopData>
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pusharglist 1 ........................... <me>
+  [ 90] objcall 69 .............................. <me.getID()>
+  [ 92] pusharglist 0 ........................... <>
+  [ 94] extcall 111 ............................. <VOID>
+  [ 96] pushzero ................................ <0>
+  [ 97] pusharglistnoret 6 ...................... <pUpdateTimeout, 1500, #checkLoopData, me.getID(), VOID, 0>
+  [ 99] extcall 136 ............................. createTimeout(pUpdateTimeout, 1500, #checkLoopData, me.getID(), VOID, 0)
+  [101] ret
+end
+
+on addPlayRound me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 779 ............................. <me.getTopInstanceIndex()>
+  [  7] setlocal 0 .............................. tStackIndex = me.getTopInstanceIndex()
+  [  9] getparam 0 .............................. <me>
+  [ 11] getlocal 0 .............................. <tStackIndex>
+  [ 13] pusharglist 2 ........................... <me, tStackIndex>
+  [ 15] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [ 18] setlocal 1 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 20] getlocal 1 .............................. <tPlaylistInstance>
+  [ 22] pushzero ................................ <0>
+  [ 23] eq ...................................... <tPlaylistInstance = 0>
+  [ 24] jmpifz [ 32] ............................ if tPlaylistInstance = 0 then
+  [ 27] pushzero ................................ <0>
+  [ 28] pusharglistnoret 1 ...................... <0>
+  [ 30] extcall 87 .............................. return 0
+  [ 32] getlocal 1 .............................. <tPlaylistInstance>
+  [ 34] pushsymb 803 ............................ <#songList>
+  [ 37] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 39] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 41] setlocal 2 .............................. tSongList = tPlaylistInstance[#songList]
+  [ 43] getlocal 1 .............................. <tPlaylistInstance>
+  [ 45] pushsymb 804 ............................ <#loop>
+  [ 48] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [ 50] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [ 52] not ..................................... <not tPlaylistInstance[#loop]>
+  [ 53] jmpifz [ 79] ............................ if not tPlaylistInstance[#loop] then
+  [ 56] getlocal 1 .............................. <tPlaylistInstance>
+  [ 58] pushsymb 814 ............................ <#listIndex>
+  [ 61] pusharglist 2 ........................... <tPlaylistInstance, #listIndex>
+  [ 63] objcall 116 ............................. <tPlaylistInstance[#listIndex]>
+  [ 65] getlocal 2 .............................. <tSongList>
+  [ 67] getobjprop 115 .......................... <tSongList.count>
+  [ 69] gt ...................................... <tPlaylistInstance[#listIndex] > tSongList.count>
+  [ 70] jmpifz [ 79] ............................ if tPlaylistInstance[#listIndex] > tSongList.count then
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] pusharglistnoret 1 ...................... <1>
+  [ 77] extcall 87 .............................. return 1
+  [ 79] getparam 0 .............................. <me>
+  [ 81] getlocal 0 .............................. <tStackIndex>
+  [ 83] pusharglist 2 ........................... <me, tStackIndex>
+  [ 85] objcall 541 ............................. <me.getSongData(tStackIndex)>
+  [ 88] setlocal 3 .............................. tSongData = me.getSongData(tStackIndex)
+  [ 90] getlocal 3 .............................. <tSongData>
+  [ 92] pushzero ................................ <0>
+  [ 93] eq ...................................... <tSongData = 0>
+  [ 94] getlocal 2 .............................. <tSongList>
+  [ 96] getobjprop 115 .......................... <tSongList.count>
+  [ 98] pushzero ................................ <0>
+  [ 99] eq ...................................... <tSongList.count = 0>
+  [100] or ...................................... <(tSongData = 0) or (tSongList.count = 0)>
+  [101] jmpifz [113] ............................ if (tSongData = 0) or (tSongList.count = 0) then / else
+  [104] pushint8 1 .............................. <1>
+  [106] pusharglistnoret 1 ...................... <1>
+  [108] extcall 87 .............................. return 1
+  [110] jmp [176]
+  [113] getlocal 1 .............................. <tPlaylistInstance>
+  [115] pushsymb 804 ............................ <#loop>
+  [118] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [120] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [122] not ..................................... <not tPlaylistInstance[#loop]>
+  [123] jmpifz [150] ............................ if not tPlaylistInstance[#loop] then / else
+  [126] getlocal 1 .............................. <tPlaylistInstance>
+  [128] pushsymb 814 ............................ <#listIndex>
+  [131] getlocal 1 .............................. <tPlaylistInstance>
+  [133] pushsymb 814 ............................ <#listIndex>
+  [136] pusharglist 2 ........................... <tPlaylistInstance, #listIndex>
+  [138] objcall 116 ............................. <tPlaylistInstance[#listIndex]>
+  [140] pushint8 1 .............................. <1>
+  [142] add ..................................... <tPlaylistInstance[#listIndex] + 1>
+  [143] pusharglistnoret 3 ...................... <tPlaylistInstance, #listIndex, tPlaylistInstance[#listIndex] + 1>
+  [145] objcall 150 ............................. tPlaylistInstance[#listIndex] = tPlaylistInstance[#listIndex] + 1
+  [147] jmp [176]
+  [150] getlocal 1 .............................. <tPlaylistInstance>
+  [152] pushsymb 814 ............................ <#listIndex>
+  [155] pushint8 1 .............................. <1>
+  [157] getlocal 1 .............................. <tPlaylistInstance>
+  [159] pushsymb 814 ............................ <#listIndex>
+  [162] pusharglist 2 ........................... <tPlaylistInstance, #listIndex>
+  [164] objcall 116 ............................. <tPlaylistInstance[#listIndex]>
+  [166] getlocal 2 .............................. <tSongList>
+  [168] getobjprop 115 .......................... <tSongList.count>
+  [170] mod ..................................... <tPlaylistInstance[#listIndex] mod tSongList.count>
+  [171] add ..................................... <1 + (tPlaylistInstance[#listIndex] mod tSongList.count)>
+  [172] pusharglistnoret 3 ...................... <tPlaylistInstance, #listIndex, 1 + (tPlaylistInstance[#listIndex] mod tSongList.count)>
+  [174] objcall 150 ............................. tPlaylistInstance[#listIndex] = 1 + (tPlaylistInstance[#listIndex] mod tSongList.count)
+  [176] getlocal 3 .............................. <tSongData>
+  [178] pushsymb 664 ............................ <#sounds>
+  [181] pusharglist 2 ........................... <tSongData, #sounds>
+  [183] objcall 355 ............................. <tSongData.getaProp(#sounds)>
+  [186] pusharglist 0 ........................... <>
+  [188] extcall 111 ............................. <VOID>
+  [190] eq ...................................... <tSongData.getaProp(#sounds) = VOID>
+  [191] jmpifz [200] ............................ if tSongData.getaProp(#sounds) = VOID then
+  [194] pushint8 1 .............................. <1>
+  [196] pusharglistnoret 1 ...................... <1>
+  [198] extcall 87 .............................. return 1
+  [200] getlocal 1 .............................. <tPlaylistInstance>
+  [202] pushsymb 815 ............................ <#playOffset>
+  [205] pusharglist 2 ........................... <tPlaylistInstance, #playOffset>
+  [207] objcall 116 ............................. <tPlaylistInstance[#playOffset]>
+  [209] setlocal 4 .............................. tOffset = tPlaylistInstance[#playOffset]
+  [211] pusharglist 0 ........................... <[]>
+  [213] pushlist ................................ <[]>
+  [214] setlocal 5 .............................. tPlayLengthList = []
+  [216] pusharglist 0 ........................... <[]>
+  [218] pushlist ................................ <[]>
+  [219] setlocal 6 .............................. tOffsetList = []
+  [221] pushint8 1 .............................. <1>
+  [223] setlocal 7
+  [225] getlocal 7
+  [227] getprop 797 ............................. <pSongChannels>
+  [230] getobjprop 115 .......................... <pSongChannels.count>
+  [232] lteq
+  [233] jmpifz [260] ............................ repeat with i = 1 to pSongChannels.count
+  [236] getlocal 6 .............................. <tOffsetList>
+  [238] getlocal 4 .............................. <tOffset>
+  [240] pusharglistnoret 2 ...................... <tOffsetList, tOffset>
+  [242] objcall 188 ............................. tOffsetList.add(tOffset)
+  [244] getlocal 5 .............................. <tPlayLengthList>
+  [246] pushzero ................................ <0>
+  [247] pusharglistnoret 2 ...................... <tPlayLengthList, 0>
+  [249] objcall 188 ............................. tPlayLengthList.add(0)
+  [251] pushint8 1
+  [253] getlocal 7
+  [255] add
+  [256] setlocal 7
+  [258] endrepeat [225]
+  [260] pushint8 1 .............................. <1>
+  [262] setlocal 7
+  [264] getlocal 7
+  [266] getlocal 3 .............................. <tSongData>
+  [268] pushsymb 664 ............................ <#sounds>
+  [271] pusharglist 2 ........................... <tSongData, #sounds>
+  [273] objcall 115 ............................. <tSongData.sounds.count>
+  [275] lteq
+  [276] jmpifz [542] ............................ repeat with i = 1 to tSongData.sounds.count
+  [279] getlocal 3 .............................. <tSongData>
+  [281] pushsymb 664 ............................ <#sounds>
+  [284] getlocal 7 .............................. <i>
+  [286] pusharglist 3 ........................... <tSongData, #sounds, i>
+  [288] objcall 268 ............................. <tSongData.sounds[i]>
+  [291] setlocal 8 .............................. tSound = tSongData.sounds[i]
+  [293] pushint8 1 .............................. <1>
+  [295] setlocal 9
+  [297] getlocal 9
+  [299] getlocal 8 .............................. <tSound>
+  [301] getobjprop 665 .......................... <tSound.loops>
+  [304] lteq
+  [305] jmpifz [532] ............................ repeat with j = 1 to tSound.loops
+  [308] getlocal 8 .............................. <tSound>
+  [310] getobjprop 666 .......................... <tSound.channel>
+  [313] setlocal 10 ............................. tChannel = tSound.channel
+  [315] getlocal 10 ............................. <tChannel>
+  [317] pushint8 1 .............................. <1>
+  [319] gteq .................................... <tChannel >= 1>
+  [320] getlocal 10 ............................. <tChannel>
+  [322] getprop 797 ............................. <pSongChannels>
+  [325] getobjprop 115 .......................... <pSongChannels.count>
+  [327] lteq .................................... <tChannel <= pSongChannels.count>
+  [328] and ..................................... <(tChannel >= 1) and (tChannel <= pSongChannels.count)>
+  [329] jmpifz [523] ............................ if (tChannel >= 1) and (tChannel <= pSongChannels.count) then
+  [332] getlocal 8 .............................. <tSound>
+  [334] getobjprop 509 .......................... <tSound.name>
+  [337] pusharglist 1 ........................... <tSound.name>
+  [339] extcall 469 ............................. <getMember(tSound.name)>
+  [342] setlocal 11 ............................. tmember = getMember(tSound.name)
+  [344] getlocal 11 ............................. <tmember>
+  [346] pushzero ................................ <0>
+  [347] nteq .................................... <tmember <> 0>
+  [348] jmpifz [523] ............................ if tmember <> 0 then
+  [351] getlocal 11 ............................. <tmember>
+  [353] getobjprop 212 .......................... <tmember.type>
+  [355] pushsymb 671 ............................ <#sound>
+  [358] eq ...................................... <tmember.type = #sound>
+  [359] jmpifz [523] ............................ if tmember.type = #sound then
+  [362] getlocal 11 ............................. <tmember>
+  [364] getobjprop 768 .......................... <tmember.duration>
+  [367] setlocal 12 ............................. tLength = tmember.duration
+  [369] getlocal 6 .............................. <tOffsetList>
+  [371] getlocal 10 ............................. <tChannel>
+  [373] pusharglist 2 ........................... <tOffsetList, tChannel>
+  [375] objcall 116 ............................. <tOffsetList[tChannel]>
+  [377] pushzero ................................ <0>
+  [378] gt ...................................... <tOffsetList[tChannel] > 0>
+  [379] jmpifz [485] ............................ if tOffsetList[tChannel] > 0 then
+  [382] getlocal 12 ............................. <tLength>
+  [384] getlocal 6 .............................. <tOffsetList>
+  [386] getlocal 10 ............................. <tChannel>
+  [388] pusharglist 2 ........................... <tOffsetList, tChannel>
+  [390] objcall 116 ............................. <tOffsetList[tChannel]>
+  [392] gt ...................................... <tLength > tOffsetList[tChannel]>
+  [393] jmpifz [457] ............................ if tLength > tOffsetList[tChannel] then
+  [396] getlocal 8 .............................. <tSound>
+  [398] getobjprop 509 .......................... <tSound.name>
+  [401] getprop 797 ............................. <pSongChannels>
+  [404] getlocal 10 ............................. <tChannel>
+  [406] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [408] objcall 116 ............................. <pSongChannels[tChannel]>
+  [410] pushsymb 831 ............................ <#startTime>
+  [413] getlocal 6 .............................. <tOffsetList>
+  [415] getlocal 10 ............................. <tChannel>
+  [417] pusharglist 2 ........................... <tOffsetList, tChannel>
+  [419] objcall 116 ............................. <tOffsetList[tChannel]>
+  [421] pusharglist 2 ........................... <[#startTime: tOffsetList[tChannel]]>
+  [423] pushproplist ............................ <[#startTime: tOffsetList[tChannel]]>
+  [424] pusharglistnoret 3 ...................... <tSound.name, pSongChannels[tChannel], [#startTime: tOffsetList[tChannel]]>
+  [426] extcall 827 ............................. queueSound(tSound.name, pSongChannels[tChannel], [#startTime: tOffsetList[tChannel]])
+  [429] getlocal 5 .............................. <tPlayLengthList>
+  [431] getlocal 10 ............................. <tChannel>
+  [433] getlocal 5 .............................. <tPlayLengthList>
+  [435] getlocal 10 ............................. <tChannel>
+  [437] pusharglist 2 ........................... <tPlayLengthList, tChannel>
+  [439] objcall 116 ............................. <tPlayLengthList[tChannel]>
+  [441] getlocal 12 ............................. <tLength>
+  [443] getlocal 6 .............................. <tOffsetList>
+  [445] getlocal 10 ............................. <tChannel>
+  [447] pusharglist 2 ........................... <tOffsetList, tChannel>
+  [449] objcall 116 ............................. <tOffsetList[tChannel]>
+  [451] sub ..................................... <tLength - tOffsetList[tChannel]>
+  [452] add ..................................... <tPlayLengthList[tChannel] + (tLength - tOffsetList[tChannel])>
+  [453] pusharglistnoret 3 ...................... <tPlayLengthList, tChannel, tPlayLengthList[tChannel] + (tLength - tOffsetList[tChannel])>
+  [455] objcall 150 ............................. tPlayLengthList[tChannel] = tPlayLengthList[tChannel] + (tLength - tOffsetList[tChannel])
+  [457] getlocal 6 .............................. <tOffsetList>
+  [459] getlocal 10 ............................. <tChannel>
+  [461] pushzero ................................ <0>
+  [462] getlocal 6 .............................. <tOffsetList>
+  [464] getlocal 10 ............................. <tChannel>
+  [466] pusharglist 2 ........................... <tOffsetList, tChannel>
+  [468] objcall 116 ............................. <tOffsetList[tChannel]>
+  [470] getlocal 12 ............................. <tLength>
+  [472] sub ..................................... <tOffsetList[tChannel] - tLength>
+  [473] pusharglist 2 ........................... <0, tOffsetList[tChannel] - tLength>
+  [475] extcall 435 ............................. <max(0, tOffsetList[tChannel] - tLength)>
+  [478] pusharglistnoret 3 ...................... <tOffsetList, tChannel, max(0, tOffsetList[tChannel] - tLength)>
+  [480] objcall 150 ............................. tOffsetList[tChannel] = max(0, tOffsetList[tChannel] - tLength)
+  [482] jmp [523] ............................... next repeat
+  [485] getlocal 8 .............................. <tSound>
+  [487] getobjprop 509 .......................... <tSound.name>
+  [490] getprop 797 ............................. <pSongChannels>
+  [493] getlocal 10 ............................. <tChannel>
+  [495] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [497] objcall 116 ............................. <pSongChannels[tChannel]>
+  [499] pusharglistnoret 2 ...................... <tSound.name, pSongChannels[tChannel]>
+  [501] extcall 827 ............................. queueSound(tSound.name, pSongChannels[tChannel])
+  [504] getlocal 5 .............................. <tPlayLengthList>
+  [506] getlocal 10 ............................. <tChannel>
+  [508] getlocal 5 .............................. <tPlayLengthList>
+  [510] getlocal 10 ............................. <tChannel>
+  [512] pusharglist 2 ........................... <tPlayLengthList, tChannel>
+  [514] objcall 116 ............................. <tPlayLengthList[tChannel]>
+  [516] getlocal 12 ............................. <tLength>
+  [518] add ..................................... <tPlayLengthList[tChannel] + tLength>
+  [519] pusharglistnoret 3 ...................... <tPlayLengthList, tChannel, tPlayLengthList[tChannel] + tLength>
+  [521] objcall 150 ............................. tPlayLengthList[tChannel] = tPlayLengthList[tChannel] + tLength
+  [523] pushint8 1
+  [525] getlocal 9
+  [527] add
+  [528] setlocal 9
+  [530] endrepeat [297]
+  [532] pushint8 1
+  [534] getlocal 7
+  [536] add
+  [537] setlocal 7
+  [539] endrepeat [264]
+  [542] getlocal 1 .............................. <tPlaylistInstance>
+  [544] pushsymb 815 ............................ <#playOffset>
+  [547] pushzero ................................ <0>
+  [548] pusharglistnoret 3 ...................... <tPlaylistInstance, #playOffset, 0>
+  [550] objcall 150 ............................. tPlaylistInstance[#playOffset] = 0
+  [552] getlocal 2 .............................. <tSongList>
+  [554] getobjprop 115 .......................... <tSongList.count>
+  [556] pushint8 2 .............................. <2>
+  [558] lt ...................................... <tSongList.count < 2>
+  [559] getlocal 1 .............................. <tPlaylistInstance>
+  [561] pushsymb 804 ............................ <#loop>
+  [564] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [566] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [568] and ..................................... <(tSongList.count < 2) and tPlaylistInstance[#loop]>
+  [569] jmpifz [578] ............................ if (tSongList.count < 2) and tPlaylistInstance[#loop] then
+  [572] pushint8 1 .............................. <1>
+  [574] pusharglistnoret 1 ...................... <1>
+  [576] extcall 87 .............................. return 1
+  [578] getlocal 5 .............................. <tPlayLengthList>
+  [580] pushint8 1 .............................. <1>
+  [582] pusharglist 2 ........................... <tPlayLengthList, 1>
+  [584] objcall 116 ............................. <tPlayLengthList[1]>
+  [586] setlocal 13 ............................. tPlayLength = tPlayLengthList[1]
+  [588] pushint8 2 .............................. <2>
+  [590] setlocal 7
+  [592] getlocal 7
+  [594] getlocal 5 .............................. <tPlayLengthList>
+  [596] getobjprop 115 .......................... <tPlayLengthList.count>
+  [598] lteq
+  [599] jmpifz [635] ............................ repeat with i = 2 to tPlayLengthList.count
+  [602] getlocal 5 .............................. <tPlayLengthList>
+  [604] getlocal 7 .............................. <i>
+  [606] pusharglist 2 ........................... <tPlayLengthList, i>
+  [608] objcall 116 ............................. <tPlayLengthList[i]>
+  [610] getlocal 13 ............................. <tPlayLength>
+  [612] gt ...................................... <tPlayLengthList[i] > tPlayLength>
+  [613] jmpifz [626] ............................ if tPlayLengthList[i] > tPlayLength then
+  [616] getlocal 5 .............................. <tPlayLengthList>
+  [618] getlocal 7 .............................. <i>
+  [620] pusharglist 2 ........................... <tPlayLengthList, i>
+  [622] objcall 116 ............................. <tPlayLengthList[i]>
+  [624] setlocal 13 ............................. tPlayLength = tPlayLengthList[i]
+  [626] pushint8 1
+  [628] getlocal 7
+  [630] add
+  [631] setlocal 7
+  [633] endrepeat [592]
+  [635] getprop 799 ............................. <pSilentSampleName>
+  [638] pusharglist 1 ........................... <pSilentSampleName>
+  [640] extcall 469 ............................. <getMember(pSilentSampleName)>
+  [643] setlocal 11 ............................. tmember = getMember(pSilentSampleName)
+  [645] getlocal 11 ............................. <tmember>
+  [647] pushzero ................................ <0>
+  [648] nteq .................................... <tmember <> 0>
+  [649] jmpifz [785] ............................ if tmember <> 0 then
+  [652] getlocal 11 ............................. <tmember>
+  [654] getobjprop 212 .......................... <tmember.type>
+  [656] pushsymb 671 ............................ <#sound>
+  [659] eq ...................................... <tmember.type = #sound>
+  [660] jmpifz [785] ............................ if tmember.type = #sound then
+  [663] getlocal 11 ............................. <tmember>
+  [665] getobjprop 768 .......................... <tmember.duration>
+  [668] setlocal 12 ............................. tLength = tmember.duration
+  [670] getlocal 12 ............................. <tLength>
+  [672] pushzero ................................ <0>
+  [673] gt ...................................... <tLength > 0>
+  [674] jmpifz [785] ............................ if tLength > 0 then
+  [677] pushint8 1 .............................. <1>
+  [679] setlocal 10
+  [681] getlocal 10
+  [683] getlocal 5 .............................. <tPlayLengthList>
+  [685] getobjprop 115 .......................... <tPlayLengthList.count>
+  [687] lteq
+  [688] jmpifz [785] ............................ repeat with tChannel = 1 to tPlayLengthList.count
+  [691] getlocal 13 ............................. <tPlayLength>
+  [693] getlocal 5 .............................. <tPlayLengthList>
+  [695] getlocal 10 ............................. <tChannel>
+  [697] pusharglist 2 ........................... <tPlayLengthList, tChannel>
+  [699] objcall 116 ............................. <tPlayLengthList[tChannel]>
+  [701] sub ..................................... <tPlayLength - tPlayLengthList[tChannel]>
+  [702] setlocal 14 ............................. tDelta = tPlayLength - tPlayLengthList[tChannel]
+  [704] getlocal 14 ............................. <tDelta>
+  [706] pushzero ................................ <0>
+  [707] gt ...................................... <tDelta > 0>
+  [708] jmpifz [776] ............................ repeat while tDelta > 0
+  [711] getlocal 14 ............................. <tDelta>
+  [713] getlocal 12 ............................. <tLength>
+  [715] gteq .................................... <tDelta >= tLength>
+  [716] jmpifz [739] ............................ if tDelta >= tLength then / else
+  [719] getprop 799 ............................. <pSilentSampleName>
+  [722] getprop 797 ............................. <pSongChannels>
+  [725] getlocal 10 ............................. <tChannel>
+  [727] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [729] objcall 116 ............................. <pSongChannels[tChannel]>
+  [731] pusharglistnoret 2 ...................... <pSilentSampleName, pSongChannels[tChannel]>
+  [733] extcall 827 ............................. queueSound(pSilentSampleName, pSongChannels[tChannel])
+  [736] jmp [767]
+  [739] getprop 799 ............................. <pSilentSampleName>
+  [742] getprop 797 ............................. <pSongChannels>
+  [745] getlocal 10 ............................. <tChannel>
+  [747] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [749] objcall 116 ............................. <pSongChannels[tChannel]>
+  [751] pushsymb 831 ............................ <#startTime>
+  [754] getlocal 12 ............................. <tLength>
+  [756] getlocal 14 ............................. <tDelta>
+  [758] sub ..................................... <tLength - tDelta>
+  [759] pusharglist 2 ........................... <[#startTime: tLength - tDelta]>
+  [761] pushproplist ............................ <[#startTime: tLength - tDelta]>
+  [762] pusharglistnoret 3 ...................... <pSilentSampleName, pSongChannels[tChannel], [#startTime: tLength - tDelta]>
+  [764] extcall 827 ............................. queueSound(pSilentSampleName, pSongChannels[tChannel], [#startTime: tLength - tDelta])
+  [767] getlocal 14 ............................. <tDelta>
+  [769] getlocal 12 ............................. <tLength>
+  [771] sub ..................................... <tDelta - tLength>
+  [772] setlocal 14 ............................. tDelta = tDelta - tLength
+  [774] endrepeat [704]
+  [776] pushint8 1
+  [778] getlocal 10
+  [780] add
+  [781] setlocal 10
+  [783] endrepeat [681]
+  [785] pushint8 1 .............................. <1>
+  [787] pusharglistnoret 1 ...................... <1>
+  [789] extcall 87 .............................. return 1
+  [791] ret
+end
+
+on getPlayBufferLength me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 779 ............................. <me.getTopInstanceIndex()>
+  [  7] setlocal 0 .............................. tStackIndex = me.getTopInstanceIndex()
+  [  9] getparam 0 .............................. <me>
+  [ 11] getlocal 0 .............................. <tStackIndex>
+  [ 13] pusharglist 2 ........................... <me, tStackIndex>
+  [ 15] objcall 783 ............................. <me.getSongChannelList(tStackIndex)>
+  [ 18] setlocal 1 .............................. tChannelList = me.getSongChannelList(tStackIndex)
+  [ 20] getlocal 1 .............................. <tChannelList>
+  [ 22] getobjprop 115 .......................... <tChannelList.count>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] lt ...................................... <tChannelList.count < 1>
+  [ 27] jmpifz [ 37] ............................ if tChannelList.count < 1 then
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] inv ..................................... <-1>
+  [ 33] pusharglistnoret 1 ...................... <-1>
+  [ 35] extcall 87 .............................. return -1
+  [ 37] getlocal 1 .............................. <tChannelList>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pusharglist 2 ........................... <tChannelList, 1>
+  [ 43] objcall 116 ............................. <tChannelList[1]>
+  [ 45] setlocal 2 .............................. tChannel = tChannelList[1]
+  [ 47] getlocal 2 .............................. <tChannel>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] lt ...................................... <tChannel < 1>
+  [ 52] getlocal 2 .............................. <tChannel>
+  [ 54] getprop 797 ............................. <pSongChannels>
+  [ 57] getobjprop 115 .......................... <pSongChannels.count>
+  [ 59] gt ...................................... <tChannel > pSongChannels.count>
+  [ 60] or ...................................... <(tChannel < 1) or (tChannel > pSongChannels.count)>
+  [ 61] jmpifz [ 71] ............................ if (tChannel < 1) or (tChannel > pSongChannels.count) then
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] inv ..................................... <-1>
+  [ 67] pusharglistnoret 1 ...................... <-1>
+  [ 69] extcall 87 .............................. return -1
+  [ 71] getprop 797 ............................. <pSongChannels>
+  [ 74] getlocal 2 .............................. <tChannel>
+  [ 76] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [ 78] objcall 116 ............................. <pSongChannels[tChannel]>
+  [ 80] pusharglist 1 ........................... <pSongChannels[tChannel]>
+  [ 82] extcall 671 ............................. <sound(pSongChannels[tChannel])>
+  [ 85] setlocal 3 .............................. tSoundChannel = sound(pSongChannels[tChannel])
+  [ 87] getlocal 3 .............................. <tSoundChannel>
+  [ 89] pusharglist 1 ........................... <tSoundChannel>
+  [ 91] extcall 119 ............................. <ilk(tSoundChannel)>
+  [ 93] pushsymb 833 ............................ <#instance>
+  [ 96] nteq .................................... <ilk(tSoundChannel) <> #instance>
+  [ 97] jmpifz [130] ............................ if ilk(tSoundChannel) <> #instance then
+  [100] getparam 0 .............................. <me>
+  [102] pushcons 8 .............................. <"Sound channel bug:">
+  [104] getprop 797 ............................. <pSongChannels>
+  [107] getlocal 2 .............................. <tChannel>
+  [109] pusharglist 2 ........................... <pSongChannels, tChannel>
+  [111] objcall 116 ............................. <pSongChannels[tChannel]>
+  [113] joinpadstr .............................. <"Sound channel bug:" && pSongChannels[tChannel]>
+  [114] pushsymb 790 ............................ <#getPlayBufferLength>
+  [117] pushsymb 96 ............................. <#major>
+  [119] pusharglistnoret 4 ...................... <me, "Sound channel bug:" && pSongChannels[tChannel], #getPlayBufferLength, #major>
+  [121] extcall 95 .............................. error(me, "Sound channel bug:" && pSongChannels[tChannel], #getPlayBufferLength, #major)
+  [123] pushint8 1 .............................. <1>
+  [125] inv ..................................... <-1>
+  [126] pusharglistnoret 1 ...................... <-1>
+  [128] extcall 87 .............................. return -1
+  [130] getlocal 3 .............................. <tSoundChannel>
+  [132] getobjprop 834 .......................... <tSoundChannel.endTime>
+  [135] getlocal 3 .............................. <tSoundChannel>
+  [137] getobjprop 831 .......................... <tSoundChannel.startTime>
+  [140] sub ..................................... <tSoundChannel.endTime - tSoundChannel.startTime>
+  [141] setlocal 4 .............................. tLength = tSoundChannel.endTime - tSoundChannel.startTime
+  [143] getlocal 3 .............................. <tSoundChannel>
+  [145] pusharglist 1 ........................... <tSoundChannel>
+  [147] objcall 835 ............................. <tSoundChannel.getPlaylist()>
+  [150] setlocal 5 .............................. tPlayList = tSoundChannel.getPlaylist()
+  [152] pushint8 1 .............................. <1>
+  [154] setlocal 6
+  [156] getlocal 6
+  [158] getlocal 5 .............................. <tPlayList>
+  [160] getobjprop 115 .......................... <tPlayList.count>
+  [162] lteq
+  [163] jmpifz [194] ............................ repeat with i = 1 to tPlayList.count
+  [166] getlocal 4 .............................. <tLength>
+  [168] getlocal 5 .............................. <tPlayList>
+  [170] getlocal 6 .............................. <i>
+  [172] pusharglist 2 ........................... <tPlayList, i>
+  [174] objcall 116 ............................. <tPlayList[i]>
+  [176] getchainedprop 836 ...................... <tPlayList[i].member>
+  [179] getobjprop 768 .......................... <tPlayList[i].member.duration>
+  [182] add ..................................... <tLength + tPlayList[i].member.duration>
+  [183] setlocal 4 .............................. tLength = tLength + tPlayList[i].member.duration
+  [185] pushint8 1
+  [187] getlocal 6
+  [189] add
+  [190] setlocal 6
+  [192] endrepeat [156]
+  [194] getlocal 4 .............................. <tLength>
+  [196] pusharglistnoret 1 ...................... <tLength>
+  [198] extcall 87 .............................. return tLength
+  [200] ret
+end
+
+on checkLoopData me
+  [  0] getprop 794 ............................. <pQueueTimeout>
+  [  3] pusharglist 1 ........................... <pQueueTimeout>
+  [  5] extcall 90 .............................. <timeoutExists(pQueueTimeout)>
+  [  7] getprop 795 ............................. <pPlayTimeout>
+  [ 10] pusharglist 1 ........................... <pPlayTimeout>
+  [ 12] extcall 90 .............................. <timeoutExists(pPlayTimeout)>
+  [ 14] or ...................................... <timeoutExists(pQueueTimeout) or timeoutExists(pPlayTimeout)>
+  [ 15] jmpifz [ 24] ............................ if timeoutExists(pQueueTimeout) or timeoutExists(pPlayTimeout) then
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 87 .............................. return 1
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 790 ............................. <me.getPlayBufferLength()>
+  [ 31] setlocal 0 .............................. tLength = me.getPlayBufferLength()
+  [ 33] getlocal 0 .............................. <tLength>
+  [ 35] pushzero ................................ <0>
+  [ 36] lteq .................................... <tLength <= 0>
+  [ 37] jmpifz [ 51] ............................ if tLength <= 0 then
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 784 ............................. <me.initializePlaying()>
+  [ 47] pusharglistnoret 1 ...................... <me.initializePlaying()>
+  [ 49] extcall 87 .............................. return me.initializePlaying()
+  [ 51] getlocal 0 .............................. <tLength>
+  [ 53] pushint32 60000 ......................... <60000>
+  [ 58] lt ...................................... <tLength < 60000>
+  [ 59] jmpifz [ 69] ............................ if tLength < 60000 then
+  [ 62] getparam 0 .............................. <me>
+  [ 64] pusharglistnoret 1 ...................... <me>
+  [ 66] objcall 789 ............................. me.addPlayRound()
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] pusharglistnoret 1 ...................... <1>
+  [ 73] extcall 87 .............................. return 1
+  [ 75] ret
+end
+
+on removePlayedSongs me, tStackIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tStackIndex>
+  [  4] pusharglist 2 ........................... <me, tStackIndex>
+  [  6] objcall 776 ............................. <me.getPlaylistInstance(tStackIndex)>
+  [  9] setlocal 0 .............................. tPlaylistInstance = me.getPlaylistInstance(tStackIndex)
+  [ 11] getlocal 0 .............................. <tPlaylistInstance>
+  [ 13] pushzero ................................ <0>
+  [ 14] nteq .................................... <tPlaylistInstance <> 0>
+  [ 15] jmpifz [182] ............................ if tPlaylistInstance <> 0 then
+  [ 18] getlocal 0 .............................. <tPlaylistInstance>
+  [ 20] pushsymb 803 ............................ <#songList>
+  [ 23] pusharglist 2 ........................... <tPlaylistInstance, #songList>
+  [ 25] objcall 116 ............................. <tPlaylistInstance[#songList]>
+  [ 27] setlocal 1 .............................. tSongList = tPlaylistInstance[#songList]
+  [ 29] getlocal 0 .............................. <tPlaylistInstance>
+  [ 31] pushsymb 804 ............................ <#loop>
+  [ 34] pusharglist 2 ........................... <tPlaylistInstance, #loop>
+  [ 36] objcall 116 ............................. <tPlaylistInstance[#loop]>
+  [ 38] not ..................................... <not tPlaylistInstance[#loop]>
+  [ 39] jmpifz [182] ............................ if not tPlaylistInstance[#loop] then
+  [ 42] getlocal 0 .............................. <tPlaylistInstance>
+  [ 44] pushsymb 814 ............................ <#listIndex>
+  [ 47] pusharglist 2 ........................... <tPlaylistInstance, #listIndex>
+  [ 49] objcall 116 ............................. <tPlaylistInstance[#listIndex]>
+  [ 51] getlocal 1 .............................. <tSongList>
+  [ 53] getobjprop 115 .......................... <tSongList.count>
+  [ 55] pusharglist 2 ........................... <tPlaylistInstance[#listIndex], tSongList.count>
+  [ 57] extcall 187 ............................. <min(tPlaylistInstance[#listIndex], tSongList.count)>
+  [ 59] setlocal 2 .............................. tCount = min(tPlaylistInstance[#listIndex], tSongList.count)
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] setlocal 3
+  [ 65] getlocal 3
+  [ 67] getlocal 2 .............................. <tCount>
+  [ 69] lteq
+  [ 70] jmpifz [182] ............................ repeat with i = 1 to tCount
+  [ 73] getparam 0 .............................. <me>
+  [ 75] getparam 1 .............................. <tStackIndex>
+  [ 77] pusharglist 2 ........................... <me, tStackIndex>
+  [ 79] objcall 184 ............................. <me.getPlayTime(tStackIndex)>
+  [ 81] getlocal 1 .............................. <tSongList>
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] pusharglist 2 ........................... <tSongList, 1>
+  [ 87] objcall 116 ............................. <tSongList[1]>
+  [ 89] pushsymb 267 ............................ <#length>
+  [ 92] pusharglist 2 ........................... <tSongList[1], #length>
+  [ 94] objcall 116 ............................. <tSongList[1][#length]>
+  [ 96] pushint8 100 ............................ <100>
+  [ 98] div ..................................... <tSongList[1][#length] / 100>
+  [ 99] lt ...................................... <me.getPlayTime(tStackIndex) < (tSongList[1][#length] / 100)>
+  [100] jmpifz [106] ............................ if me.getPlayTime(tStackIndex) < (tSongList[1][#length] / 100) then
+  [103] jmp [182] ............................... exit repeat
+  [106] getlocal 0 .............................. <tPlaylistInstance>
+  [108] pushsymb 805 ............................ <#playTime>
+  [111] getlocal 0 .............................. <tPlaylistInstance>
+  [113] pushsymb 805 ............................ <#playTime>
+  [116] pusharglist 2 ........................... <tPlaylistInstance, #playTime>
+  [118] objcall 116 ............................. <tPlaylistInstance[#playTime]>
+  [120] getlocal 1 .............................. <tSongList>
+  [122] pushint8 1 .............................. <1>
+  [124] pusharglist 2 ........................... <tSongList, 1>
+  [126] objcall 116 ............................. <tSongList[1]>
+  [128] pushsymb 267 ............................ <#length>
+  [131] pusharglist 2 ........................... <tSongList[1], #length>
+  [133] objcall 116 ............................. <tSongList[1][#length]>
+  [135] pushint8 100 ............................ <100>
+  [137] div ..................................... <tSongList[1][#length] / 100>
+  [138] sub ..................................... <tPlaylistInstance[#playTime] - (tSongList[1][#length] / 100)>
+  [139] pusharglistnoret 3 ...................... <tPlaylistInstance, #playTime, tPlaylistInstance[#playTime] - (tSongList[1][#length] / 100)>
+  [141] objcall 150 ............................. tPlaylistInstance[#playTime] = tPlaylistInstance[#playTime] - (tSongList[1][#length] / 100)
+  [143] getlocal 1 .............................. <tSongList>
+  [145] pushint8 1 .............................. <1>
+  [147] pusharglistnoret 2 ...................... <tSongList, 1>
+  [149] objcall 514 ............................. tSongList.deleteAt(1)
+  [152] getlocal 0 .............................. <tPlaylistInstance>
+  [154] pushsymb 814 ............................ <#listIndex>
+  [157] getlocal 0 .............................. <tPlaylistInstance>
+  [159] pushsymb 814 ............................ <#listIndex>
+  [162] pusharglist 2 ........................... <tPlaylistInstance, #listIndex>
+  [164] objcall 116 ............................. <tPlaylistInstance[#listIndex]>
+  [166] pushint8 1 .............................. <1>
+  [168] sub ..................................... <tPlaylistInstance[#listIndex] - 1>
+  [169] pusharglistnoret 3 ...................... <tPlaylistInstance, #listIndex, tPlaylistInstance[#listIndex] - 1>
+  [171] objcall 150 ............................. tPlaylistInstance[#listIndex] = tPlaylistInstance[#listIndex] - 1
+  [173] pushint8 1
+  [175] getlocal 3
+  [177] add
+  [178] setlocal 3
+  [180] endrepeat [ 65]
+  [182] ret
+end
+
+on startSamplePreview me, tParams
+  [  0] getparam 1 .............................. <tParams>
+  [  2] getobjprop 509 .......................... <tParams.name>
+  [  5] getprop 796 ............................. <pPreviewChannel>
+  [  8] pusharglist 2 ........................... <tParams.name, pPreviewChannel>
+  [ 10] extcall 839 ............................. <playSoundInChannel(tParams.name, pPreviewChannel)>
+  [ 13] setlocal 0 .............................. tSuccess = playSoundInChannel(tParams.name, pPreviewChannel)
+  [ 15] getlocal 0 .............................. <tSuccess>
+  [ 17] not ..................................... <not tSuccess>
+  [ 18] jmpifz [ 39] ............................ if not tSuccess then
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pushcons 9 .............................. <"Sound could not be started">
+  [ 25] pushsymb 535 ............................ <#startSamplePreview>
+  [ 28] pushsymb 631 ............................ <#minor>
+  [ 31] pusharglist 4 ........................... <me, "Sound could not be started", #startSamplePreview, #minor>
+  [ 33] extcall 95 .............................. <error(me, "Sound could not be started", #startSamplePreview, #minor)>
+  [ 35] pusharglistnoret 1 ...................... <error(me, "Sound could not be started", #startSamplePreview, #minor)>
+  [ 37] extcall 87 .............................. return error(me, "Sound could not be started", #startSamplePreview, #minor)
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pusharglistnoret 1 ...................... <1>
+  [ 43] extcall 87 .............................. return 1
+  [ 45] ret
+end
+
+on stopSamplePreview me
+  [  0] getprop 796 ............................. <pPreviewChannel>
+  [  3] pusharglist 1 ........................... <pPreviewChannel>
+  [  5] extcall 801 ............................. <stopSoundChannel(pPreviewChannel)>
+  [  8] setlocal 0 .............................. tSuccess = stopSoundChannel(pPreviewChannel)
+  [ 10] getlocal 0 .............................. <tSuccess>
+  [ 12] not ..................................... <not tSuccess>
+  [ 13] jmpifz [ 34] ............................ if not tSuccess then
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pushcons 10 ............................. <"Sound could not be stopped">
+  [ 20] pushsymb 538 ............................ <#stopSamplePreview>
+  [ 23] pushsymb 631 ............................ <#minor>
+  [ 26] pusharglist 4 ........................... <me, "Sound could not be stopped", #stopSamplePreview, #minor>
+  [ 28] extcall 95 .............................. <error(me, "Sound could not be stopped", #stopSamplePreview, #minor)>
+  [ 30] pusharglistnoret 1 ...................... <error(me, "Sound could not be stopped", #stopSamplePreview, #minor)>
+  [ 32] extcall 87 .............................. return error(me, "Sound could not be stopped", #stopSamplePreview, #minor)
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] pusharglistnoret 1 ...................... <1>
+  [ 38] extcall 87 .............................. return 1
+  [ 40] ret
+end

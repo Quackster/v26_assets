@@ -1,0 +1,134 @@
+property pUserId
+
+on construct me
+  [  0] pushsymb 320 ............................ <#partnerRegistrationRequired>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 45 .............................. <me.getID()>
+  [  9] pushsymb 320 ............................ <#partnerRegistrationRequired>
+  [ 12] pusharglistnoret 3 ...................... <#partnerRegistrationRequired, me.getID(), #partnerRegistrationRequired>
+  [ 14] extcall 43 .............................. registerMessage(#partnerRegistrationRequired, me.getID(), #partnerRegistrationRequired)
+  [ 16] pushsymb 321 ............................ <#partnerRegistration>
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglist 1 ........................... <me>
+  [ 23] objcall 45 .............................. <me.getID()>
+  [ 25] pushsymb 321 ............................ <#partnerRegistration>
+  [ 28] pusharglistnoret 3 ...................... <#partnerRegistration, me.getID(), #partnerRegistration>
+  [ 30] extcall 43 .............................. registerMessage(#partnerRegistration, me.getID(), #partnerRegistration)
+  [ 32] pushcons 0 .............................. <EMPTY>
+  [ 34] setprop 322 ............................. pUserId = EMPTY
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 20 .............................. return 1
+  [ 43] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 320 ............................ <#partnerRegistrationRequired>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 45 .............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#partnerRegistrationRequired, me.getID()>
+  [ 11] extcall 59 .............................. unregisterMessage(#partnerRegistrationRequired, me.getID())
+  [ 13] pushsymb 321 ............................ <#partnerRegistration>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 45 .............................. <me.getID()>
+  [ 22] pusharglistnoret 2 ...................... <#partnerRegistration, me.getID()>
+  [ 24] extcall 59 .............................. unregisterMessage(#partnerRegistration, me.getID())
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglistnoret 1 ...................... <1>
+  [ 30] extcall 20 .............................. return 1
+  [ 32] ret
+end
+
+on login me
+  [  0] pushcons 1 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 279 ............................. <getVariable("connection.info.id")>
+  [  7] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  9] extcall 323 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 12] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [ 13] jmpifz [ 27] ............................ if not connectionExists(getVariable("connection.info.id")) then / else
+  [ 16] pushsymb 325 ............................ <#openConnection>
+  [ 19] pusharglistnoret 1 ...................... <#openConnection>
+  [ 21] extcall 324 ............................. executeMessage(#openConnection)
+  [ 24] jmp [ 51]
+  [ 27] pushcons 1 .............................. <"connection.info.id">
+  [ 29] pusharglist 1 ........................... <"connection.info.id">
+  [ 31] extcall 279 ............................. <getVariable("connection.info.id")>
+  [ 34] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 36] extcall 326 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 39] setlocal 0 .............................. tConn = getConnection(getVariable("connection.info.id"))
+  [ 41] pushsymb 327 ............................ <#performLogin>
+  [ 44] getlocal 0 .............................. <tConn>
+  [ 46] pusharglistnoret 2 ...................... <#performLogin, tConn>
+  [ 48] extcall 324 ............................. executeMessage(#performLogin, tConn)
+  [ 51] ret
+end
+
+on handlePartnerRegistration me, tMsg
+  [  0] pushsymb 329 ............................ <#hideLogin>
+  [  3] pusharglistnoret 1 ...................... <#hideLogin>
+  [  5] extcall 324 ............................. executeMessage(#hideLogin)
+  [  8] getparam 0 .............................. <me>
+  [ 10] getparam 1 .............................. <tMsg>
+  [ 12] pusharglistnoret 2 ...................... <me, tMsg>
+  [ 14] objcall 321 ............................. me.partnerRegistration(tMsg)
+  [ 17] pushsymb 330 ............................ <#closeConnection>
+  [ 20] pusharglistnoret 1 ...................... <#closeConnection>
+  [ 22] extcall 324 ............................. executeMessage(#closeConnection)
+  [ 25] ret
+end
+
+on partnerRegistrationRequired me, tArg
+  [  0] pushsymb 333 ............................ <#session>
+  [  3] pusharglist 1 ........................... <#session>
+  [  5] extcall 332 ............................. <getObject(#session)>
+  [  8] setlocal 0 .............................. tSession = getObject(#session)
+  [ 10] getlocal 0 .............................. <tSession>
+  [ 12] pushcons 2 .............................. <"conf_partner_integration">
+  [ 14] pusharglist 2 ........................... <tSession, "conf_partner_integration">
+  [ 16] objcall 334 ............................. <tSession.GET("conf_partner_integration")>
+  [ 19] setlocal 1 .............................. tPartnerRegistration = tSession.GET("conf_partner_integration")
+  [ 21] getparam 1 .............................. <tArg>
+  [ 23] pusharglist 1 ........................... <tArg>
+  [ 25] extcall 188 ............................. <ilk(tArg)>
+  [ 27] pushsymb 335 ............................ <#propList>
+  [ 30] eq ...................................... <ilk(tArg) = #propList>
+  [ 31] jmpifz [ 44] ............................ if ilk(tArg) = #propList then
+  [ 34] getparam 1 .............................. <tArg>
+  [ 36] pushcons 3 .............................. <"retval">
+  [ 38] getlocal 1 .............................. <tPartnerRegistration>
+  [ 40] pusharglistnoret 3 ...................... <tArg, "retval", tPartnerRegistration>
+  [ 42] objcall 85 .............................. tArg["retval"] = tPartnerRegistration
+  [ 44] getlocal 1 .............................. <tPartnerRegistration>
+  [ 46] pusharglistnoret 1 ...................... <tPartnerRegistration>
+  [ 48] extcall 20 .............................. return tPartnerRegistration
+  [ 50] ret
+end
+
+on partnerRegistration me, tUserID
+  [  0] getparam 1 .............................. <tUserID>
+  [  2] setprop 322 ............................. pUserId = tUserID
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglistnoret 1 ...................... <me>
+  [  9] objcall 293 ............................. me.showDialog()
+  [ 12] ret
+end
+
+on showDialog me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 341 ............................. <me.getInterface()>
+  [  7] pusharglistnoret 1 ...................... <me.getInterface()>
+  [  9] objcall 293 ............................. me.getInterface().showDialog()
+  [ 12] ret
+end
+
+on userID me
+  [  0] getprop 322 ............................. <pUserId>
+  [  3] pusharglistnoret 1 ...................... <pUserId>
+  [  5] extcall 20 .............................. return pUserId
+  [  7] ret
+end

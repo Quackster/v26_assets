@@ -1,0 +1,302 @@
+property pClubStatus, pGiftCount, pGiftTimeOut, pAcceptedGifts
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 38 .............................. pClubStatus = [:]
+  [  5] pushzero ................................ <0>
+  [  6] setprop 148 ............................. pGiftCount = 0
+  [  8] pushzero ................................ <0>
+  [  9] setprop 146 ............................. pAcceptedGifts = 0
+  [ 11] pushcons 0 .............................. <"timeout_clubgift">
+  [ 13] setprop 39 .............................. pGiftTimeOut = "timeout_clubgift"
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 6 ............................... return 1
+  [ 21] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 38 .............................. pClubStatus = [:]
+  [  5] getprop 39 .............................. <pGiftTimeOut>
+  [  7] pusharglist 1 ........................... <pGiftTimeOut>
+  [  9] extcall 40 .............................. <timeoutExists(pGiftTimeOut)>
+  [ 11] jmpifz [ 20] ............................ if timeoutExists(pGiftTimeOut) then
+  [ 14] getprop 39 .............................. <pGiftTimeOut>
+  [ 16] pusharglistnoret 1 ...................... <pGiftTimeOut>
+  [ 18] extcall 41 .............................. removeTimeout(pGiftTimeOut)
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 1 ...................... <1>
+  [ 24] extcall 6 ............................... return 1
+  [ 26] ret
+end
+
+on showGifts me, tCount
+  [  0] getparam 1 .............................. <tCount>
+  [  2] setprop 148 ............................. pGiftCount = tCount
+  [  4] pushzero ................................ <0>
+  [  5] setprop 146 ............................. pAcceptedGifts = 0
+  [  7] getprop 148 ............................. <pGiftCount>
+  [  9] pushzero ................................ <0>
+  [ 10] gt ...................................... <pGiftCount > 0>
+  [ 11] jmpifz [ 24] ............................ if pGiftCount > 0 then
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 45 .............................. <me.getInterface()>
+  [ 20] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 22] objcall 46 .............................. me.getInterface().show_giftinfo()
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglistnoret 1 ...................... <1>
+  [ 28] extcall 6 ............................... return 1
+  [ 30] ret
+end
+
+on acceptGift me
+  [  0] getprop 148 ............................. <pGiftCount>
+  [  2] getprop 146 ............................. <pAcceptedGifts>
+  [  4] gt ...................................... <pGiftCount > pAcceptedGifts>
+  [  5] jmpifz [ 77] ............................ if pGiftCount > pAcceptedGifts then / else
+  [  8] getprop 146 ............................. <pAcceptedGifts>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] add ..................................... <pAcceptedGifts + 1>
+  [ 13] setprop 146 ............................. pAcceptedGifts = pAcceptedGifts + 1
+  [ 15] getprop 148 ............................. <pGiftCount>
+  [ 17] getprop 146 ............................. <pAcceptedGifts>
+  [ 19] gt ...................................... <pGiftCount > pAcceptedGifts>
+  [ 20] jmpifz [ 64] ............................ if pGiftCount > pAcceptedGifts then / else
+  [ 23] getprop 39 .............................. <pGiftTimeOut>
+  [ 25] pusharglist 1 ........................... <pGiftTimeOut>
+  [ 27] extcall 40 .............................. <timeoutExists(pGiftTimeOut)>
+  [ 29] jmpifz [ 38] ............................ if timeoutExists(pGiftTimeOut) then
+  [ 32] getprop 39 .............................. <pGiftTimeOut>
+  [ 34] pusharglistnoret 1 ...................... <pGiftTimeOut>
+  [ 36] extcall 41 .............................. removeTimeout(pGiftTimeOut)
+  [ 38] getprop 39 .............................. <pGiftTimeOut>
+  [ 40] pushint16 1000 .......................... <1000>
+  [ 43] pushsymb 36 ............................. <#showNextGift>
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 52 .............................. <me.getID()>
+  [ 51] pusharglist 0 ........................... <>
+  [ 53] extcall 53 .............................. <VOID>
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] pusharglistnoret 6 ...................... <pGiftTimeOut, 1000, #showNextGift, me.getID(), VOID, 1>
+  [ 59] extcall 51 .............................. createTimeout(pGiftTimeOut, 1000, #showNextGift, me.getID(), VOID, 1)
+  [ 61] jmp [ 74]
+  [ 64] getparam 0 .............................. <me>
+  [ 66] pusharglist 1 ........................... <me>
+  [ 68] objcall 147 ............................. <me.sendAcceptGift()>
+  [ 70] pusharglistnoret 1 ...................... <me.sendAcceptGift()>
+  [ 72] extcall 6 ............................... return me.sendAcceptGift()
+  [ 74] jmp [ 82]
+  [ 77] pushzero ................................ <0>
+  [ 78] pusharglistnoret 1 ...................... <0>
+  [ 80] extcall 6 ............................... return 0
+  [ 82] ret
+end
+
+on rejectGift me
+  [  0] getprop 148 ............................. <pGiftCount>
+  [  2] pushzero ................................ <0>
+  [  3] gt ...................................... <pGiftCount > 0>
+  [  4] jmpifz [ 39] ............................ if pGiftCount > 0 then / else
+  [  7] pushzero ................................ <0>
+  [  8] setprop 148 ............................. pGiftCount = 0
+  [ 10] getprop 146 ............................. <pAcceptedGifts>
+  [ 12] pushzero ................................ <0>
+  [ 13] gt ...................................... <pAcceptedGifts > 0>
+  [ 14] jmpifz [ 30] ............................ if pAcceptedGifts > 0 then / else
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglist 1 ........................... <me>
+  [ 21] objcall 147 ............................. <me.sendAcceptGift()>
+  [ 23] pusharglistnoret 1 ...................... <me.sendAcceptGift()>
+  [ 25] extcall 6 ............................... return me.sendAcceptGift()
+  [ 27] jmp [ 36]
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglistnoret 1 ...................... <1>
+  [ 34] extcall 6 ............................... return 1
+  [ 36] jmp [ 44]
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 1 ...................... <0>
+  [ 42] extcall 6 ............................... return 0
+  [ 44] ret
+end
+
+on sendAcceptGift me
+  [  0] getprop 146 ............................. <pAcceptedGifts>
+  [  2] setlocal 0 .............................. tAcceptedGifts = pAcceptedGifts
+  [  4] getparam 0 .............................. <me>
+  [  6] pusharglistnoret 1 ...................... <me>
+  [  8] objcall 32 .............................. me.resetGiftList()
+  [ 10] pushcons 1 .............................. <"connection.info.id">
+  [ 12] pusharglist 1 ........................... <"connection.info.id">
+  [ 14] extcall 49 .............................. <getVariable("connection.info.id")>
+  [ 16] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 18] extcall 65 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 20] setlocal 1 .............................. tConnection = getConnection(getVariable("connection.info.id"))
+  [ 22] getlocal 1 .............................. <tConnection>
+  [ 24] pushzero ................................ <0>
+  [ 25] eq ...................................... <tConnection = 0>
+  [ 26] jmpifz [ 52] ............................ if tConnection = 0 then
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pushcons 2 .............................. <"Couldn't find connection:">
+  [ 33] pushcons 1 .............................. <"connection.info.id">
+  [ 35] pusharglist 1 ........................... <"connection.info.id">
+  [ 37] extcall 49 .............................. <getVariable("connection.info.id")>
+  [ 39] joinpadstr .............................. <"Couldn't find connection:" && getVariable("connection.info.id")>
+  [ 40] pushsymb 147 ............................ <#sendAcceptGift>
+  [ 42] pushsymb 157 ............................ <#major>
+  [ 44] pusharglist 4 ........................... <me, "Couldn't find connection:" && getVariable("connection.info.id"), #sendAcceptGift, #major>
+  [ 46] extcall 54 .............................. <error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #sendAcceptGift, #major)>
+  [ 48] pusharglistnoret 1 ...................... <error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #sendAcceptGift, #major)>
+  [ 50] extcall 6 ............................... return error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #sendAcceptGift, #major)
+  [ 52] getlocal 1 .............................. <tConnection>
+  [ 54] pushcons 3 .............................. <"SCR_GIFT_APPROVAL">
+  [ 56] pushsymb 64 ............................. <#integer>
+  [ 58] getlocal 0 .............................. <tAcceptedGifts>
+  [ 60] pusharglist 2 ........................... <[#integer: tAcceptedGifts]>
+  [ 62] pushproplist ............................ <[#integer: tAcceptedGifts]>
+  [ 63] pusharglist 3 ........................... <tConnection, "SCR_GIFT_APPROVAL", [#integer: tAcceptedGifts]>
+  [ 65] objcall 11 .............................. <tConnection.send("SCR_GIFT_APPROVAL", [#integer: tAcceptedGifts])>
+  [ 67] pusharglistnoret 1 ...................... <tConnection.send("SCR_GIFT_APPROVAL", [#integer: tAcceptedGifts])>
+  [ 69] extcall 6 ............................... return tConnection.send("SCR_GIFT_APPROVAL", [#integer: tAcceptedGifts])
+  [ 71] ret
+end
+
+on resetGiftList me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 148 ............................. pGiftCount = 0
+  [  3] pushzero ................................ <0>
+  [  4] setprop 146 ............................. pAcceptedGifts = 0
+  [  6] ret
+end
+
+on setStatus me, tStatus, tResponseFlag
+  [  0] getprop 38 .............................. <pClubStatus>
+  [  2] setlocal 0 .............................. tOldClubStatus = pClubStatus
+  [  4] getparam 1 .............................. <tStatus>
+  [  6] setprop 38 .............................. pClubStatus = tStatus
+  [  8] pushsymb 57 ............................. <#session>
+  [ 10] pusharglist 1 ........................... <#session>
+  [ 12] extcall 56 .............................. <getObject(#session)>
+  [ 14] pushcons 4 .............................. <"club_status">
+  [ 16] getparam 1 .............................. <tStatus>
+  [ 18] pusharglistnoret 3 ...................... <getObject(#session), "club_status", tStatus>
+  [ 20] objcall 58 .............................. getObject(#session).set("club_status", tStatus)
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pusharglist 1 ........................... <me>
+  [ 26] objcall 45 .............................. <me.getInterface()>
+  [ 28] getparam 1 .............................. <tStatus>
+  [ 30] getparam 2 .............................. <tResponseFlag>
+  [ 32] getlocal 0 .............................. <tOldClubStatus>
+  [ 34] pusharglistnoret 4 ...................... <me.getInterface(), tStatus, tResponseFlag, tOldClubStatus>
+  [ 36] objcall 59 .............................. me.getInterface().updateClubStatus(tStatus, tResponseFlag, tOldClubStatus)
+  [ 38] pushsymb 59 ............................. <#updateClubStatus>
+  [ 40] getparam 1 .............................. <tStatus>
+  [ 42] pusharglistnoret 2 ...................... <#updateClubStatus, tStatus>
+  [ 44] extcall 60 .............................. executeMessage(#updateClubStatus, tStatus)
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] pusharglistnoret 1 ...................... <1>
+  [ 50] extcall 6 ............................... return 1
+  [ 52] ret
+end
+
+on getStatus me
+  [  0] getprop 38 .............................. <pClubStatus>
+  [  2] pusharglist 1 ........................... <pClubStatus>
+  [  4] extcall 63 .............................. <voidp(pClubStatus)>
+  [  6] jmpifz [ 17] ............................ if voidp(pClubStatus) then / else
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 6 ............................... return 0
+  [ 14] jmp [ 23]
+  [ 17] getprop 38 .............................. <pClubStatus>
+  [ 19] pusharglistnoret 1 ...................... <pClubStatus>
+  [ 21] extcall 6 ............................... return pClubStatus
+  [ 23] ret
+end
+
+on subscribe me, tChosenLength
+  [  0] pushcons 1 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 49 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 48 .............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 51] ............................ if connectionExists(getVariable("connection.info.id")) then / else
+  [ 13] pushsymb 10 ............................. <#string>
+  [ 15] pushcons 5 .............................. <"club_habbo">
+  [ 17] pushsymb 64 ............................. <#integer>
+  [ 19] getparam 1 .............................. <tChosenLength>
+  [ 21] pusharglist 4 ........................... <[#string: "club_habbo", #integer: tChosenLength]>
+  [ 23] pushproplist ............................ <[#string: "club_habbo", #integer: tChosenLength]>
+  [ 24] setlocal 0 .............................. tList = [#string: "club_habbo", #integer: tChosenLength]
+  [ 26] pushcons 1 .............................. <"connection.info.id">
+  [ 28] pusharglist 1 ........................... <"connection.info.id">
+  [ 30] extcall 49 .............................. <getVariable("connection.info.id")>
+  [ 32] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 34] extcall 65 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 36] pushcons 6 .............................. <"SCR_BUY">
+  [ 38] getlocal 0 .............................. <tList>
+  [ 40] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "SCR_BUY", tList>
+  [ 42] objcall 11 .............................. <getConnection(getVariable("connection.info.id")).send("SCR_BUY", tList)>
+  [ 44] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("SCR_BUY", tList)>
+  [ 46] extcall 6 ............................... return getConnection(getVariable("connection.info.id")).send("SCR_BUY", tList)
+  [ 48] jmp [ 74]
+  [ 51] getparam 0 .............................. <me>
+  [ 53] pushcons 2 .............................. <"Couldn't find connection:">
+  [ 55] pushcons 1 .............................. <"connection.info.id">
+  [ 57] pusharglist 1 ........................... <"connection.info.id">
+  [ 59] extcall 49 .............................. <getVariable("connection.info.id")>
+  [ 61] joinpadstr .............................. <"Couldn't find connection:" && getVariable("connection.info.id")>
+  [ 62] pushsymb 34 ............................. <#subscribe>
+  [ 64] pushsymb 157 ............................ <#major>
+  [ 66] pusharglist 4 ........................... <me, "Couldn't find connection:" && getVariable("connection.info.id"), #subscribe, #major>
+  [ 68] extcall 54 .............................. <error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #subscribe, #major)>
+  [ 70] pusharglistnoret 1 ...................... <error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #subscribe, #major)>
+  [ 72] extcall 6 ............................... return error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #subscribe, #major)
+  [ 74] ret
+end
+
+on askforBadgeUpdate me
+  [  0] pushcons 1 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 49 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 48 .............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 36] ............................ if connectionExists(getVariable("connection.info.id")) then / else
+  [ 13] pushcons 1 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 49 .............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 65 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 7 .............................. <"GETAVAILABLEBADGES">
+  [ 25] pusharglist 2 ........................... <getConnection(getVariable("connection.info.id")), "GETAVAILABLEBADGES">
+  [ 27] objcall 11 .............................. <getConnection(getVariable("connection.info.id")).send("GETAVAILABLEBADGES")>
+  [ 29] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("GETAVAILABLEBADGES")>
+  [ 31] extcall 6 ............................... return getConnection(getVariable("connection.info.id")).send("GETAVAILABLEBADGES")
+  [ 33] jmp [ 59]
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pushcons 2 .............................. <"Couldn't find connection:">
+  [ 40] pushcons 1 .............................. <"connection.info.id">
+  [ 42] pusharglist 1 ........................... <"connection.info.id">
+  [ 44] extcall 49 .............................. <getVariable("connection.info.id")>
+  [ 46] joinpadstr .............................. <"Couldn't find connection:" && getVariable("connection.info.id")>
+  [ 47] pushsymb 35 ............................. <#askforBadgeUpdate>
+  [ 49] pushsymb 157 ............................ <#major>
+  [ 51] pusharglist 4 ........................... <me, "Couldn't find connection:" && getVariable("connection.info.id"), #askforBadgeUpdate, #major>
+  [ 53] extcall 54 .............................. <error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #askforBadgeUpdate, #major)>
+  [ 55] pusharglistnoret 1 ...................... <error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #askforBadgeUpdate, #major)>
+  [ 57] extcall 6 ............................... return error(me, "Couldn't find connection:" && getVariable("connection.info.id"), #askforBadgeUpdate, #major)
+  [ 59] ret
+end
+
+on showNextGift me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 45 .............................. <me.getInterface()>
+  [  6] pusharglistnoret 1 ...................... <me.getInterface()>
+  [  8] objcall 46 .............................. me.getInterface().show_giftinfo()
+  [ 10] ret
+end

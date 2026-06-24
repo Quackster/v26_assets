@@ -1,0 +1,801 @@
+property pThreadList, pVarMngrObj, pIndexField, pObjBaseCls
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 829 ............................. pThreadList = [:]
+  [  6] pushsymb 66 ............................. <#temp>
+  [  8] pushcons 0 .............................. <"variable.manager.class">
+  [ 10] pusharglist 1 ........................... <"variable.manager.class">
+  [ 12] extcall 242 ............................. <getClassVariable("variable.manager.class")>
+  [ 14] pusharglist 2 ........................... <#temp, getClassVariable("variable.manager.class")>
+  [ 16] extcall 177 ............................. <createObject(#temp, getClassVariable("variable.manager.class"))>
+  [ 18] setprop 830 ............................. pVarMngrObj = createObject(#temp, getClassVariable("variable.manager.class"))
+  [ 21] pushcons 1 .............................. <"thread.index.field">
+  [ 23] pusharglist 1 ........................... <"thread.index.field">
+  [ 25] extcall 461 ............................. <getVariable("thread.index.field")>
+  [ 28] setprop 831 ............................. pIndexField = getVariable("thread.index.field")
+  [ 31] pushcons 2 .............................. <"Object Base Class">
+  [ 33] pusharglist 1 ........................... <"Object Base Class">
+  [ 35] extcall 136 ............................. <getmemnum("Object Base Class")>
+  [ 37] pusharglist 1 ........................... <getmemnum("Object Base Class")>
+  [ 39] extcall 197 ............................. <script(getmemnum("Object Base Class"))>
+  [ 41] setprop 832 ............................. pObjBaseCls = script(getmemnum("Object Base Class"))
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] pusharglistnoret 1 ...................... <1>
+  [ 48] extcall 11 .............................. return 1
+  [ 50] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 248 ............................. me.closeAll()
+  [  6] pushzero ................................ <0>
+  [  7] setprop 830 ............................. pVarMngrObj = 0
+  [ 10] pushzero ................................ <0>
+  [ 11] setprop 831 ............................. pIndexField = 0
+  [ 14] pushzero ................................ <0>
+  [ 15] setprop 832 ............................. pObjBaseCls = 0
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 11 .............................. return 1
+  [ 24] ret
+end
+
+on create me, tID, tInitField
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 2 .............................. <tInitField>
+  [  4] getparam 1 .............................. <tID>
+  [  6] pusharglist 3 ........................... <me, tInitField, tID>
+  [  8] objcall 236 ............................. <me.initThread(tInitField, tID)>
+  [ 10] pusharglistnoret 1 ...................... <me.initThread(tInitField, tID)>
+  [ 12] extcall 11 .............................. return me.initThread(tInitField, tID)
+  [ 14] ret
+end
+
+on Remove me, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglist 2 ........................... <me, tID>
+  [  6] objcall 238 ............................. <me.closeThread(tID)>
+  [  8] pusharglistnoret 1 ...................... <me.closeThread(tID)>
+  [ 10] extcall 11 .............................. return me.closeThread(tID)
+  [ 12] ret
+end
+
+on GET me, tID
+  [  0] getprop 829 ............................. <pThreadList>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pThreadList, tID>
+  [  7] objcall 29 .............................. <pThreadList[tID]>
+  [  9] setlocal 0 .............................. tThreadObj = pThreadList[tID]
+  [ 11] getlocal 0 .............................. <tThreadObj>
+  [ 13] pusharglist 1 ........................... <tThreadObj>
+  [ 15] extcall 14 .............................. <voidp(tThreadObj)>
+  [ 17] jmpifz [ 28] ............................ if voidp(tThreadObj) then / else
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 11 .............................. return 0
+  [ 25] jmp [ 34]
+  [ 28] getlocal 0 .............................. <tThreadObj>
+  [ 30] pusharglistnoret 1 ...................... <tThreadObj>
+  [ 32] extcall 11 .............................. return tThreadObj
+  [ 34] ret
+end
+
+on exists me, tID
+  [  0] getprop 829 ............................. <pThreadList>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pThreadList, tID>
+  [  7] objcall 29 .............................. <pThreadList[tID]>
+  [  9] pusharglist 1 ........................... <pThreadList[tID]>
+  [ 11] extcall 14 .............................. <voidp(pThreadList[tID])>
+  [ 13] not ..................................... <not voidp(pThreadList[tID])>
+  [ 14] pusharglistnoret 1 ...................... <not voidp(pThreadList[tID])>
+  [ 16] extcall 11 .............................. return not voidp(pThreadList[tID])
+  [ 18] ret
+end
+
+on initThread me, tCastNumOrMemName, tID
+  [  0] getparam 1 .............................. <tCastNumOrMemName>
+  [  2] pusharglist 1 ........................... <tCastNumOrMemName>
+  [  4] extcall 121 ............................. <stringp(tCastNumOrMemName)>
+  [  6] jmpifz [ 68] ............................ if stringp(tCastNumOrMemName) then / else
+  [  9] pusharglist 0 ........................... <>
+  [ 11] extcall 159 ............................. <getResourceManager()>
+  [ 13] getparam 1 .............................. <tCastNumOrMemName>
+  [ 15] pusharglist 2 ........................... <getResourceManager(), tCastNumOrMemName>
+  [ 17] objcall 136 ............................. <getResourceManager().getmemnum(tCastNumOrMemName)>
+  [ 19] setlocal 0 .............................. tMemNum = getResourceManager().getmemnum(tCastNumOrMemName)
+  [ 21] getlocal 0 .............................. <tMemNum>
+  [ 23] pushzero ................................ <0>
+  [ 24] eq ...................................... <tMemNum = 0>
+  [ 25] jmpifz [ 50] ............................ if tMemNum = 0 then / else
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pushcons 3 .............................. <"Thread index field not found:">
+  [ 32] getparam 1 .............................. <tCastNumOrMemName>
+  [ 34] joinpadstr .............................. <"Thread index field not found:" && tCastNumOrMemName>
+  [ 35] pushsymb 236 ............................ <#initThread>
+  [ 37] pushsymb 123 ............................ <#major>
+  [ 39] pusharglist 4 ........................... <me, "Thread index field not found:" && tCastNumOrMemName, #initThread, #major>
+  [ 41] extcall 122 ............................. <error(me, "Thread index field not found:" && tCastNumOrMemName, #initThread, #major)>
+  [ 43] pusharglistnoret 1 ...................... <error(me, "Thread index field not found:" && tCastNumOrMemName, #initThread, #major)>
+  [ 45] extcall 11 .............................. return error(me, "Thread index field not found:" && tCastNumOrMemName, #initThread, #major)
+  [ 47] jmp [ 65]
+  [ 50] getparam 1 .............................. <tCastNumOrMemName>
+  [ 52] setlocal 1 .............................. tThreadField = tCastNumOrMemName
+  [ 54] getlocal 0 .............................. <tMemNum>
+  [ 56] pusharglist 1 ........................... <tMemNum>
+  [ 58] extcall 125 ............................. <member(tMemNum)>
+  [ 60] getobjprop 834 .......................... <member(tMemNum).castLibNum>
+  [ 63] setlocal 2 .............................. tCastNum = member(tMemNum).castLibNum
+  [ 65] jmp [297]
+  [ 68] getparam 1 .............................. <tCastNumOrMemName>
+  [ 70] pusharglist 1 ........................... <tCastNumOrMemName>
+  [ 72] extcall 130 ............................. <symbolp(tCastNumOrMemName)>
+  [ 74] jmpifz [198] ............................ if symbolp(tCastNumOrMemName) then / else
+  [ 77] getprop 831 ............................. <pIndexField>
+  [ 80] setlocal 1 .............................. tThreadField = pIndexField
+  [ 82] pushint8 4 .............................. <4>
+  [ 84] get 8 ................................... <the number of castLibs>
+  [ 86] pushint8 1 .............................. <1>
+  [ 88] gt ...................................... <the number of castLibs > 1>
+  [ 89] jmpifz [195] ............................ if the number of castLibs > 1 then
+  [ 92] pushint8 2 .............................. <2>
+  [ 94] setlocal 3
+  [ 96] getlocal 3
+  [ 98] pushint8 4 .............................. <4>
+  [100] get 8 ................................... <the number of castLibs>
+  [102] lteq
+  [103] jmpifz [195] ............................ repeat with i = 2 to the number of castLibs
+  [106] getlocal 1 .............................. <tThreadField>
+  [108] getlocal 3 .............................. <i>
+  [110] pusharglist 2 ........................... <tThreadField, i>
+  [112] extcall 125 ............................. <member(tThreadField, i)>
+  [114] getobjprop 752 .......................... <member(tThreadField, i).number>
+  [117] pushzero ................................ <0>
+  [118] gt ...................................... <member(tThreadField, i).number > 0>
+  [119] jmpifz [186] ............................ if member(tThreadField, i).number > 0 then
+  [122] getprop 830 ............................. <pVarMngrObj>
+  [125] pusharglistnoret 1 ...................... <pVarMngrObj>
+  [127] objcall 835 ............................. pVarMngrObj.clear()
+  [130] getprop 830 ............................. <pVarMngrObj>
+  [133] getlocal 1 .............................. <tThreadField>
+  [135] getlocal 3 .............................. <i>
+  [137] pusharglist 2 ........................... <tThreadField, i>
+  [139] extcall 125 ............................. <member(tThreadField, i)>
+  [141] getobjprop 752 .......................... <member(tThreadField, i).number>
+  [144] pusharglistnoret 2 ...................... <pVarMngrObj, member(tThreadField, i).number>
+  [146] objcall 358 ............................. pVarMngrObj.dump(member(tThreadField, i).number)
+  [149] getprop 830 ............................. <pVarMngrObj>
+  [152] pushcons 4 .............................. <"thread.id">
+  [154] pusharglist 2 ........................... <pVarMngrObj, "thread.id">
+  [156] objcall 173 ............................. <pVarMngrObj.GET("thread.id")>
+  [158] pusharglist 1 ........................... <pVarMngrObj.GET("thread.id")>
+  [160] extcall 667 ............................. <symbol(pVarMngrObj.GET("thread.id"))>
+  [163] getparam 1 .............................. <tCastNumOrMemName>
+  [165] eq ...................................... <symbol(pVarMngrObj.GET("thread.id")) = tCastNumOrMemName>
+  [166] jmpifz [186] ............................ if symbol(pVarMngrObj.GET("thread.id")) = tCastNumOrMemName then
+  [169] getparam 0 .............................. <me>
+  [171] getlocal 3 .............................. <i>
+  [173] getparam 2 .............................. <tID>
+  [175] pusharglist 3 ........................... <me, i, tID>
+  [177] objcall 236 ............................. <me.initThread(i, tID)>
+  [179] pusharglistnoret 1 ...................... <me.initThread(i, tID)>
+  [181] extcall 11 .............................. return me.initThread(i, tID)
+  [183] jmp [195] ............................... exit repeat
+  [186] pushint8 1
+  [188] getlocal 3
+  [190] add
+  [191] setlocal 3
+  [193] endrepeat [ 96]
+  [195] jmp [297]
+  [198] getparam 1 .............................. <tCastNumOrMemName>
+  [200] pusharglist 1 ........................... <tCastNumOrMemName>
+  [202] extcall 792 ............................. <integerp(tCastNumOrMemName)>
+  [205] not ..................................... <not integerp(tCastNumOrMemName)>
+  [206] jmpifz [231] ............................ if not integerp(tCastNumOrMemName) then / else
+  [209] getparam 0 .............................. <me>
+  [211] pushcons 5 .............................. <"Cast number expected:">
+  [213] getparam 1 .............................. <tCastNumOrMemName>
+  [215] joinpadstr .............................. <"Cast number expected:" && tCastNumOrMemName>
+  [216] pushsymb 236 ............................ <#initThread>
+  [218] pushsymb 123 ............................ <#major>
+  [220] pusharglist 4 ........................... <me, "Cast number expected:" && tCastNumOrMemName, #initThread, #major>
+  [222] extcall 122 ............................. <error(me, "Cast number expected:" && tCastNumOrMemName, #initThread, #major)>
+  [224] pusharglistnoret 1 ...................... <error(me, "Cast number expected:" && tCastNumOrMemName, #initThread, #major)>
+  [226] extcall 11 .............................. return error(me, "Cast number expected:" && tCastNumOrMemName, #initThread, #major)
+  [228] jmp [266]
+  [231] getparam 1 .............................. <tCastNumOrMemName>
+  [233] pushint8 1 .............................. <1>
+  [235] lt ...................................... <tCastNumOrMemName < 1>
+  [236] getparam 1 .............................. <tCastNumOrMemName>
+  [238] pushint8 4 .............................. <4>
+  [240] get 8 ................................... <the number of castLibs>
+  [242] gt ...................................... <tCastNumOrMemName > the number of castLibs>
+  [243] or ...................................... <(tCastNumOrMemName < 1) or (tCastNumOrMemName > the number of castLibs)>
+  [244] jmpifz [266] ............................ if (tCastNumOrMemName < 1) or (tCastNumOrMemName > the number of castLibs) then
+  [247] getparam 0 .............................. <me>
+  [249] pushcons 6 .............................. <"Cast doesn't exist:">
+  [251] getparam 1 .............................. <tCastNumOrMemName>
+  [253] joinpadstr .............................. <"Cast doesn't exist:" && tCastNumOrMemName>
+  [254] pushsymb 236 ............................ <#initThread>
+  [256] pushsymb 123 ............................ <#major>
+  [258] pusharglist 4 ........................... <me, "Cast doesn't exist:" && tCastNumOrMemName, #initThread, #major>
+  [260] extcall 122 ............................. <error(me, "Cast doesn't exist:" && tCastNumOrMemName, #initThread, #major)>
+  [262] pusharglistnoret 1 ...................... <error(me, "Cast doesn't exist:" && tCastNumOrMemName, #initThread, #major)>
+  [264] extcall 11 .............................. return error(me, "Cast doesn't exist:" && tCastNumOrMemName, #initThread, #major)
+  [266] getprop 831 ............................. <pIndexField>
+  [269] setlocal 1 .............................. tThreadField = pIndexField
+  [271] getparam 1 .............................. <tCastNumOrMemName>
+  [273] setlocal 2 .............................. tCastNum = tCastNumOrMemName
+  [275] getlocal 1 .............................. <tThreadField>
+  [277] getlocal 2 .............................. <tCastNum>
+  [279] pusharglist 2 ........................... <tThreadField, tCastNum>
+  [281] extcall 125 ............................. <member(tThreadField, tCastNum)>
+  [283] getobjprop 752 .......................... <member(tThreadField, tCastNum).number>
+  [286] pushint8 1 .............................. <1>
+  [288] lt ...................................... <member(tThreadField, tCastNum).number < 1>
+  [289] jmpifz [297] ............................ if member(tThreadField, tCastNum).number < 1 then
+  [292] pushzero ................................ <0>
+  [293] pusharglistnoret 1 ...................... <0>
+  [295] extcall 11 .............................. return 0
+  [297] getprop 830 ............................. <pVarMngrObj>
+  [300] pusharglistnoret 1 ...................... <pVarMngrObj>
+  [302] objcall 835 ............................. pVarMngrObj.clear()
+  [305] getprop 830 ............................. <pVarMngrObj>
+  [308] getlocal 1 .............................. <tThreadField>
+  [310] getlocal 2 .............................. <tCastNum>
+  [312] pusharglist 2 ........................... <tThreadField, tCastNum>
+  [314] extcall 125 ............................. <member(tThreadField, tCastNum)>
+  [316] getobjprop 752 .......................... <member(tThreadField, tCastNum).number>
+  [319] pusharglistnoret 2 ...................... <pVarMngrObj, member(tThreadField, tCastNum).number>
+  [321] objcall 358 ............................. pVarMngrObj.dump(member(tThreadField, tCastNum).number)
+  [324] getparam 2 .............................. <tID>
+  [326] pusharglist 1 ........................... <tID>
+  [328] extcall 130 ............................. <symbolp(tID)>
+  [330] jmpifz [340] ............................ if symbolp(tID) then / else
+  [333] getparam 2 .............................. <tID>
+  [335] setlocal 4 .............................. tThreadID = tID
+  [337] jmp [356]
+  [340] getprop 830 ............................. <pVarMngrObj>
+  [343] pushcons 4 .............................. <"thread.id">
+  [345] pusharglist 2 ........................... <pVarMngrObj, "thread.id">
+  [347] objcall 173 ............................. <pVarMngrObj.GET("thread.id")>
+  [349] pusharglist 1 ........................... <pVarMngrObj.GET("thread.id")>
+  [351] extcall 667 ............................. <symbol(pVarMngrObj.GET("thread.id"))>
+  [354] setlocal 4 .............................. tThreadID = symbol(pVarMngrObj.GET("thread.id"))
+  [356] getlocal 4 .............................. <tThreadID>
+  [358] pusharglist 1 ........................... <tThreadID>
+  [360] extcall 130 ............................. <symbolp(tThreadID)>
+  [362] not ..................................... <not symbolp(tThreadID)>
+  [363] jmpifz [385] ............................ if not symbolp(tThreadID) then
+  [366] getparam 0 .............................. <me>
+  [368] pushcons 7 .............................. <"Invalid thread ID:">
+  [370] getlocal 4 .............................. <tThreadID>
+  [372] joinpadstr .............................. <"Invalid thread ID:" && tThreadID>
+  [373] pushsymb 236 ............................ <#initThread>
+  [375] pushsymb 123 ............................ <#major>
+  [377] pusharglist 4 ........................... <me, "Invalid thread ID:" && tThreadID, #initThread, #major>
+  [379] extcall 122 ............................. <error(me, "Invalid thread ID:" && tThreadID, #initThread, #major)>
+  [381] pusharglistnoret 1 ...................... <error(me, "Invalid thread ID:" && tThreadID, #initThread, #major)>
+  [383] extcall 11 .............................. return error(me, "Invalid thread ID:" && tThreadID, #initThread, #major)
+  [385] pushzero ................................ <0>
+  [386] setlocal 5 .............................. tMultipleDef = 0
+  [388] getprop 830 ............................. <pVarMngrObj>
+  [391] pushcons 4 .............................. <"thread.id">
+  [393] pusharglist 2 ........................... <pVarMngrObj, "thread.id">
+  [395] objcall 173 ............................. <pVarMngrObj.GET("thread.id")>
+  [397] pusharglist 1 ........................... <pVarMngrObj.GET("thread.id")>
+  [399] extcall 15 .............................. <value(pVarMngrObj.GET("thread.id"))>
+  [401] pusharglist 1 ........................... <value(pVarMngrObj.GET("thread.id"))>
+  [403] extcall 137 ............................. <listp(value(pVarMngrObj.GET("thread.id")))>
+  [405] jmpifz [427] ............................ if listp(value(pVarMngrObj.GET("thread.id"))) then / else
+  [408] getprop 830 ............................. <pVarMngrObj>
+  [411] pushcons 4 .............................. <"thread.id">
+  [413] pusharglist 2 ........................... <pVarMngrObj, "thread.id">
+  [415] objcall 469 ............................. <pVarMngrObj.GetValue("thread.id")>
+  [418] setlocal 6 .............................. tThreadKeys = pVarMngrObj.GetValue("thread.id")
+  [420] pushint8 1 .............................. <1>
+  [422] setlocal 5 .............................. tMultipleDef = 1
+  [424] jmp [441]
+  [427] getprop 830 ............................. <pVarMngrObj>
+  [430] pushcons 4 .............................. <"thread.id">
+  [432] pusharglist 2 ........................... <pVarMngrObj, "thread.id">
+  [434] objcall 173 ............................. <pVarMngrObj.GET("thread.id")>
+  [436] pusharglist 1 ........................... <[pVarMngrObj.GET("thread.id")]>
+  [438] pushlist ................................ <[pVarMngrObj.GET("thread.id")]>
+  [439] setlocal 6 .............................. tThreadKeys = [pVarMngrObj.GET("thread.id")]
+  [441] getlocal 6 .............................. <tThreadKeys>
+  [443] peek 0
+  [445] pusharglist 1
+  [447] extcall 28
+  [449] pushint8 1
+  [451] peek 0
+  [453] peek 2
+  [455] lteq
+  [456] jmpifz [704] ............................ repeat with tThreadKey in tThreadKeys
+  [459] peek 2
+  [461] peek 1
+  [463] pusharglist 2
+  [465] extcall 29
+  [467] setlocal 7
+  [469] getlocal 7 .............................. <tThreadKey>
+  [471] pusharglist 1 ........................... <tThreadKey>
+  [473] extcall 667 ............................. <symbol(tThreadKey)>
+  [476] setlocal 4 .............................. tThreadID = symbol(tThreadKey)
+  [478] getparam 0 .............................. <me>
+  [480] getlocal 4 .............................. <tThreadID>
+  [482] pusharglist 2 ........................... <me, tThreadID>
+  [484] objcall 171 ............................. <me.exists(tThreadID)>
+  [486] not ..................................... <not me.exists(tThreadID)>
+  [487] jmpifz [699] ............................ if not me.exists(tThreadID) then
+  [490] pushsymb 66 ............................. <#temp>
+  [492] pushcons 8 .............................. <"thread.instance.class">
+  [494] pusharglist 1 ........................... <"thread.instance.class">
+  [496] extcall 242 ............................. <getClassVariable("thread.instance.class")>
+  [498] pusharglist 2 ........................... <#temp, getClassVariable("thread.instance.class")>
+  [500] extcall 177 ............................. <createObject(#temp, getClassVariable("thread.instance.class"))>
+  [502] setlocal 8 .............................. tThreadObj = createObject(#temp, getClassVariable("thread.instance.class"))
+  [504] getlocal 8 .............................. <tThreadObj>
+  [506] getlocal 4 .............................. <tThreadID>
+  [508] pusharglistnoret 2 ...................... <tThreadObj, tThreadID>
+  [510] objcall 93 .............................. tThreadObj.setID(tThreadID)
+  [512] pushsymb 836 ............................ <#interface>
+  [515] pushsymb 837 ............................ <#component>
+  [518] pushsymb 7 .............................. <#handler>
+  [520] pusharglist 3 ........................... <[#interface, #component, #handler]>
+  [522] pushlist ................................ <[#interface, #component, #handler]>
+  [523] peek 0
+  [525] pusharglist 1
+  [527] extcall 28
+  [529] pushint8 1
+  [531] peek 0
+  [533] peek 2
+  [535] lteq
+  [536] jmpifz [686] ............................ repeat with tModule in [#interface, #component, #handler]
+  [539] peek 2
+  [541] peek 1
+  [543] pusharglist 2
+  [545] extcall 29
+  [547] setlocal 9
+  [549] getlocal 7 .............................. <tThreadKey>
+  [551] pushcons 9 .............................. <"_">
+  [553] joinstr ................................. <tThreadKey & "_">
+  [554] getlocal 9 .............................. <tModule>
+  [556] joinstr ................................. <tThreadKey & "_" & tModule>
+  [557] pusharglist 1 ........................... <tThreadKey & "_" & tModule>
+  [559] extcall 667 ............................. <symbol(tThreadKey & "_" & tModule)>
+  [562] setlocal 10 ............................. tSymbol = symbol(tThreadKey & "_" & tModule)
+  [564] pushcons 10 ............................. <EMPTY>
+  [566] setlocal 11 ............................. tPreIndex = EMPTY
+  [568] getlocal 5 .............................. <tMultipleDef>
+  [570] jmpifz [580] ............................ if tMultipleDef then
+  [573] getlocal 7 .............................. <tThreadKey>
+  [575] pushcons 11 ............................. <".">
+  [577] joinstr ................................. <tThreadKey & ".">
+  [578] setlocal 11 ............................. tPreIndex = tThreadKey & "."
+  [580] getprop 830 ............................. <pVarMngrObj>
+  [583] getlocal 11 ............................. <tPreIndex>
+  [585] getlocal 9 .............................. <tModule>
+  [587] joinstr ................................. <tPreIndex & tModule>
+  [588] pushcons 12 ............................. <".class">
+  [590] joinstr ................................. <tPreIndex & tModule & ".class">
+  [591] pusharglist 2 ........................... <pVarMngrObj, tPreIndex & tModule & ".class">
+  [593] objcall 171 ............................. <pVarMngrObj.exists(tPreIndex & tModule & ".class")>
+  [595] jmpifz [681] ............................ if pVarMngrObj.exists(tPreIndex & tModule & ".class") then
+  [598] getprop 830 ............................. <pVarMngrObj>
+  [601] getlocal 11 ............................. <tPreIndex>
+  [603] getlocal 9 .............................. <tModule>
+  [605] joinstr ................................. <tPreIndex & tModule>
+  [606] pushcons 12 ............................. <".class">
+  [608] joinstr ................................. <tPreIndex & tModule & ".class">
+  [609] pusharglist 2 ........................... <pVarMngrObj, tPreIndex & tModule & ".class">
+  [611] objcall 173 ............................. <pVarMngrObj.GET(tPreIndex & tModule & ".class")>
+  [613] setlocal 12 ............................. tClass = pVarMngrObj.GET(tPreIndex & tModule & ".class")
+  [615] getlocal 12 ............................. <tClass>
+  [617] pushsymb 20 ............................. <#char>
+  [619] pushint8 1 .............................. <1>
+  [621] pusharglist 3 ........................... <tClass, #char, 1>
+  [623] objcall 22 .............................. <tClass.char[1]>
+  [625] pushcons 13 ............................. <"[">
+  [627] eq ...................................... <tClass.char[1] = "[">
+  [628] jmpifz [639] ............................ if tClass.char[1] = "[" then
+  [631] getlocal 12 ............................. <tClass>
+  [633] pusharglist 1 ........................... <tClass>
+  [635] extcall 15 .............................. <value(tClass)>
+  [637] setlocal 12 ............................. tClass = value(tClass)
+  [639] getlocal 12 ............................. <tClass>
+  [641] pusharglist 1 ........................... <tClass>
+  [643] extcall 137 ............................. <listp(tClass)>
+  [645] not ..................................... <not listp(tClass)>
+  [646] jmpifz [656] ............................ if not listp(tClass) then
+  [649] getlocal 12 ............................. <tClass>
+  [651] pusharglist 1 ........................... <[tClass]>
+  [653] pushlist ................................ <[tClass]>
+  [654] setlocal 12 ............................. tClass = [tClass]
+  [656] getparam 0 .............................. <me>
+  [658] getlocal 10 ............................. <tSymbol>
+  [660] getlocal 12 ............................. <tClass>
+  [662] getlocal 8 .............................. <tThreadObj>
+  [664] pusharglist 4 ........................... <me, tSymbol, tClass, tThreadObj>
+  [666] objcall 828 ............................. <me.buildThreadObj(tSymbol, tClass, tThreadObj)>
+  [669] setlocal 13 ............................. tObject = me.buildThreadObj(tSymbol, tClass, tThreadObj)
+  [671] getlocal 8 .............................. <tThreadObj>
+  [673] getlocal 9 .............................. <tModule>
+  [675] getlocal 13 ............................. <tObject>
+  [677] pusharglistnoret 3 ...................... <tThreadObj, tModule, tObject>
+  [679] objcall 208 ............................. tThreadObj.setaProp(tModule, tObject)
+  [681] pushint8 1
+  [683] add
+  [684] endrepeat [531]
+  [686] pop 3
+  [688] getprop 829 ............................. <pThreadList>
+  [691] getlocal 4 .............................. <tThreadID>
+  [693] getlocal 8 .............................. <tThreadObj>
+  [695] pusharglistnoret 3 ...................... <pThreadList, tThreadID, tThreadObj>
+  [697] objcall 23 .............................. pThreadList[tThreadID] = tThreadObj
+  [699] pushint8 1
+  [701] add
+  [702] endrepeat [451]
+  [704] pop 3
+  [706] pushint8 1 .............................. <1>
+  [708] pusharglistnoret 1 ...................... <1>
+  [710] extcall 11 .............................. return 1
+  [712] ret
+end
+
+on initAll me
+  [  0] pushint8 4 .............................. <4>
+  [  2] get 8 ................................... <the number of castLibs>
+  [  4] setlocal 0
+  [  6] getlocal 0
+  [  8] pushint8 1 .............................. <1>
+  [ 10] gteq
+  [ 11] jmpifz [ 31] ............................ repeat with i = the number of castLibs down to 1
+  [ 14] getparam 0 .............................. <me>
+  [ 16] getlocal 0 .............................. <i>
+  [ 18] pusharglistnoret 2 ...................... <me, i>
+  [ 20] objcall 236 ............................. me.initThread(i)
+  [ 22] pushint8 -1
+  [ 24] getlocal 0
+  [ 26] add
+  [ 27] setlocal 0
+  [ 29] endrepeat [  6]
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] pusharglistnoret 1 ...................... <1>
+  [ 35] extcall 11 .............................. return 1
+  [ 37] ret
+end
+
+on closeThread me, tCastNumOrID
+  [  0] getprop 830 ............................. <pVarMngrObj>
+  [  3] pusharglistnoret 1 ...................... <pVarMngrObj>
+  [  5] objcall 835 ............................. pVarMngrObj.clear()
+  [  8] getparam 1 .............................. <tCastNumOrID>
+  [ 10] pusharglist 1 ........................... <tCastNumOrID>
+  [ 12] extcall 792 ............................. <integerp(tCastNumOrID)>
+  [ 15] jmpifz [115] ............................ if integerp(tCastNumOrID) then / else
+  [ 18] getprop 831 ............................. <pIndexField>
+  [ 21] getparam 1 .............................. <tCastNumOrID>
+  [ 23] pusharglist 2 ........................... <pIndexField, tCastNumOrID>
+  [ 25] extcall 125 ............................. <member(pIndexField, tCastNumOrID)>
+  [ 27] getobjprop 752 .......................... <member(pIndexField, tCastNumOrID).number>
+  [ 30] pushzero ................................ <0>
+  [ 31] gt ...................................... <member(pIndexField, tCastNumOrID).number > 0>
+  [ 32] jmpifz [107] ............................ if member(pIndexField, tCastNumOrID).number > 0 then / else
+  [ 35] getprop 830 ............................. <pVarMngrObj>
+  [ 38] getprop 831 ............................. <pIndexField>
+  [ 41] getparam 1 .............................. <tCastNumOrID>
+  [ 43] pusharglist 2 ........................... <pIndexField, tCastNumOrID>
+  [ 45] extcall 125 ............................. <member(pIndexField, tCastNumOrID)>
+  [ 47] getobjprop 752 .......................... <member(pIndexField, tCastNumOrID).number>
+  [ 50] pusharglistnoret 2 ...................... <pVarMngrObj, member(pIndexField, tCastNumOrID).number>
+  [ 52] objcall 358 ............................. pVarMngrObj.dump(member(pIndexField, tCastNumOrID).number)
+  [ 55] getprop 830 ............................. <pVarMngrObj>
+  [ 58] pushcons 4 .............................. <"thread.id">
+  [ 60] pusharglist 2 ........................... <pVarMngrObj, "thread.id">
+  [ 62] objcall 173 ............................. <pVarMngrObj.GET("thread.id")>
+  [ 64] pusharglist 1 ........................... <pVarMngrObj.GET("thread.id")>
+  [ 66] extcall 15 .............................. <value(pVarMngrObj.GET("thread.id"))>
+  [ 68] pusharglist 1 ........................... <value(pVarMngrObj.GET("thread.id"))>
+  [ 70] extcall 137 ............................. <listp(value(pVarMngrObj.GET("thread.id")))>
+  [ 72] jmpifz [ 90] ............................ if listp(value(pVarMngrObj.GET("thread.id"))) then / else
+  [ 75] getprop 830 ............................. <pVarMngrObj>
+  [ 78] pushcons 4 .............................. <"thread.id">
+  [ 80] pusharglist 2 ........................... <pVarMngrObj, "thread.id">
+  [ 82] objcall 469 ............................. <pVarMngrObj.GetValue("thread.id")>
+  [ 85] setlocal 0 .............................. tThreadKeys = pVarMngrObj.GetValue("thread.id")
+  [ 87] jmp [104]
+  [ 90] getprop 830 ............................. <pVarMngrObj>
+  [ 93] pushcons 4 .............................. <"thread.id">
+  [ 95] pusharglist 2 ........................... <pVarMngrObj, "thread.id">
+  [ 97] objcall 173 ............................. <pVarMngrObj.GET("thread.id")>
+  [ 99] pusharglist 1 ........................... <[pVarMngrObj.GET("thread.id")]>
+  [101] pushlist ................................ <[pVarMngrObj.GET("thread.id")]>
+  [102] setlocal 0 .............................. tThreadKeys = [pVarMngrObj.GET("thread.id")]
+  [104] jmp [112]
+  [107] pushzero ................................ <0>
+  [108] pusharglistnoret 1 ...................... <0>
+  [110] extcall 11 .............................. return 0
+  [112] jmp [153]
+  [115] getparam 1 .............................. <tCastNumOrID>
+  [117] pusharglist 1 ........................... <tCastNumOrID>
+  [119] extcall 130 ............................. <symbolp(tCastNumOrID)>
+  [121] jmpifz [134] ............................ if symbolp(tCastNumOrID) then / else
+  [124] getparam 1 .............................. <tCastNumOrID>
+  [126] pusharglist 1 ........................... <[tCastNumOrID]>
+  [128] pushlist ................................ <[tCastNumOrID]>
+  [129] setlocal 0 .............................. tThreadKeys = [tCastNumOrID]
+  [131] jmp [153]
+  [134] getparam 0 .............................. <me>
+  [136] pushcons 14 ............................. <"Invalid argument:">
+  [138] getparam 1 .............................. <tCastNumOrID>
+  [140] joinpadstr .............................. <"Invalid argument:" && tCastNumOrID>
+  [141] pushsymb 238 ............................ <#closeThread>
+  [143] pushsymb 123 ............................ <#major>
+  [145] pusharglist 4 ........................... <me, "Invalid argument:" && tCastNumOrID, #closeThread, #major>
+  [147] extcall 122 ............................. <error(me, "Invalid argument:" && tCastNumOrID, #closeThread, #major)>
+  [149] pusharglistnoret 1 ...................... <error(me, "Invalid argument:" && tCastNumOrID, #closeThread, #major)>
+  [151] extcall 11 .............................. return error(me, "Invalid argument:" && tCastNumOrID, #closeThread, #major)
+  [153] getlocal 0 .............................. <tThreadKeys>
+  [155] peek 0
+  [157] pusharglist 1
+  [159] extcall 28
+  [161] pushint8 1
+  [163] peek 0
+  [165] peek 2
+  [167] lteq
+  [168] jmpifz [321] ............................ repeat with tID in tThreadKeys
+  [171] peek 2
+  [173] peek 1
+  [175] pusharglist 2
+  [177] extcall 29
+  [179] setlocal 1
+  [181] getprop 829 ............................. <pThreadList>
+  [184] getlocal 1 .............................. <tID>
+  [186] pusharglist 2 ........................... <pThreadList, tID>
+  [188] objcall 29 .............................. <pThreadList[tID]>
+  [190] setlocal 2 .............................. tThread = pThreadList[tID]
+  [192] getlocal 2 .............................. <tThread>
+  [194] pusharglist 1 ........................... <tThread>
+  [196] extcall 14 .............................. <voidp(tThread)>
+  [198] jmpifz [221] ............................ if voidp(tThread) then
+  [201] getparam 0 .............................. <me>
+  [203] pushcons 15 ............................. <"Thread not found:">
+  [205] getlocal 1 .............................. <tID>
+  [207] joinpadstr .............................. <"Thread not found:" && tID>
+  [208] pushsymb 238 ............................ <#closeThread>
+  [210] pushsymb 764 ............................ <#minor>
+  [213] pusharglist 4 ........................... <me, "Thread not found:" && tID, #closeThread, #minor>
+  [215] extcall 122 ............................. <error(me, "Thread not found:" && tID, #closeThread, #minor)>
+  [217] pusharglistnoret 1 ...................... <error(me, "Thread not found:" && tID, #closeThread, #minor)>
+  [219] extcall 11 .............................. return error(me, "Thread not found:" && tID, #closeThread, #minor)
+  [221] pusharglist 0 ........................... <>
+  [223] extcall 176 ............................. <getObjectManager()>
+  [225] setlocal 3 .............................. tObjMgr = getObjectManager()
+  [227] getlocal 2 .............................. <tThread>
+  [229] getobjprop 836 .......................... <tThread.interface>
+  [232] pusharglist 1 ........................... <tThread.interface>
+  [234] extcall 195 ............................. <objectp(tThread.interface)>
+  [236] jmpifz [254] ............................ if objectp(tThread.interface) then
+  [239] getlocal 3 .............................. <tObjMgr>
+  [241] getlocal 2 .............................. <tThread>
+  [243] getchainedprop 836 ...................... <tThread.interface>
+  [246] pusharglist 1 ........................... <tThread.interface>
+  [248] objcall 92 .............................. <tThread.interface.getID()>
+  [250] pusharglistnoret 2 ...................... <tObjMgr, tThread.interface.getID()>
+  [252] objcall 205 ............................. tObjMgr.Remove(tThread.interface.getID())
+  [254] getlocal 2 .............................. <tThread>
+  [256] getobjprop 837 .......................... <tThread.component>
+  [259] pusharglist 1 ........................... <tThread.component>
+  [261] extcall 195 ............................. <objectp(tThread.component)>
+  [263] jmpifz [281] ............................ if objectp(tThread.component) then
+  [266] getlocal 3 .............................. <tObjMgr>
+  [268] getlocal 2 .............................. <tThread>
+  [270] getchainedprop 837 ...................... <tThread.component>
+  [273] pusharglist 1 ........................... <tThread.component>
+  [275] objcall 92 .............................. <tThread.component.getID()>
+  [277] pusharglistnoret 2 ...................... <tObjMgr, tThread.component.getID()>
+  [279] objcall 205 ............................. tObjMgr.Remove(tThread.component.getID())
+  [281] getlocal 2 .............................. <tThread>
+  [283] getobjprop 7 ............................ <tThread.handler>
+  [285] pusharglist 1 ........................... <tThread.handler>
+  [287] extcall 195 ............................. <objectp(tThread.handler)>
+  [289] jmpifz [306] ............................ if objectp(tThread.handler) then
+  [292] getlocal 3 .............................. <tObjMgr>
+  [294] getlocal 2 .............................. <tThread>
+  [296] getchainedprop 7 ........................ <tThread.handler>
+  [298] pusharglist 1 ........................... <tThread.handler>
+  [300] objcall 92 .............................. <tThread.handler.getID()>
+  [302] pusharglistnoret 2 ...................... <tObjMgr, tThread.handler.getID()>
+  [304] objcall 205 ............................. tObjMgr.Remove(tThread.handler.getID())
+  [306] getprop 829 ............................. <pThreadList>
+  [309] getlocal 1 .............................. <tID>
+  [311] pusharglistnoret 2 ...................... <pThreadList, tID>
+  [313] objcall 753 ............................. pThreadList.deleteProp(tID)
+  [316] pushint8 1
+  [318] add
+  [319] endrepeat [163]
+  [321] pop 3
+  [323] pushint8 1 .............................. <1>
+  [325] pusharglistnoret 1 ...................... <1>
+  [327] extcall 11 .............................. return 1
+  [329] ret
+end
+
+on closeAll me
+  [  0] getprop 829 ............................. <pThreadList>
+  [  3] getobjprop 28 ........................... <pThreadList.count>
+  [  5] setlocal 0
+  [  7] getlocal 0
+  [  9] pushint8 1 .............................. <1>
+  [ 11] gteq
+  [ 12] jmpifz [ 39] ............................ repeat with i = pThreadList.count down to 1
+  [ 15] getparam 0 .............................. <me>
+  [ 17] getprop 829 ............................. <pThreadList>
+  [ 20] getlocal 0 .............................. <i>
+  [ 22] pusharglist 2 ........................... <pThreadList, i>
+  [ 24] objcall 111 ............................. <pThreadList.getPropAt(i)>
+  [ 26] pusharglistnoret 2 ...................... <me, pThreadList.getPropAt(i)>
+  [ 28] objcall 238 ............................. me.closeThread(pThreadList.getPropAt(i))
+  [ 30] pushint8 -1
+  [ 32] getlocal 0
+  [ 34] add
+  [ 35] setlocal 0
+  [ 37] endrepeat [  7]
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pusharglistnoret 1 ...................... <1>
+  [ 43] extcall 11 .............................. return 1
+  [ 45] ret
+end
+
+on print me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 829 ............................. <pThreadList>
+  [  9] getobjprop 28 ........................... <pThreadList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 38] ............................ repeat with i = 1 to pThreadList.count
+  [ 15] getprop 829 ............................. <pThreadList>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pThreadList, i>
+  [ 22] objcall 111 ............................. <pThreadList.getPropAt(i)>
+  [ 24] pusharglistnoret 1 ...................... <pThreadList.getPropAt(i)>
+  [ 26] extcall 740 ............................. put pThreadList.getPropAt(i)
+  [ 29] pushint8 1
+  [ 31] getlocal 0
+  [ 33] add
+  [ 34] setlocal 0
+  [ 36] endrepeat [  4]
+  [ 38] ret
+end
+
+on buildThreadObj me, tID, tClassList, tThreadObj
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 9 ............................... <VOID>
+  [  4] setlocal 0 .............................. tObject = VOID
+  [  6] pusharglist 0 ........................... <>
+  [  8] extcall 9 ............................... <VOID>
+  [ 10] setlocal 1 .............................. tTemp = VOID
+  [ 12] getprop 832 ............................. <pObjBaseCls>
+  [ 15] pusharglist 1 ........................... <pObjBaseCls>
+  [ 17] objcall 31 .............................. <pObjBaseCls.new()>
+  [ 19] setlocal 2 .............................. tBase = pObjBaseCls.new()
+  [ 21] getlocal 2 .............................. <tBase>
+  [ 23] pusharglistnoret 1 ...................... <tBase>
+  [ 25] objcall 198 ............................. tBase.construct()
+  [ 27] getlocal 2 .............................. <tBase>
+  [ 29] pushsymb 755 ............................ <#ancestor>
+  [ 32] getparam 3 .............................. <tThreadObj>
+  [ 34] pusharglistnoret 3 ...................... <tBase, #ancestor, tThreadObj>
+  [ 36] objcall 23 .............................. tBase[#ancestor] = tThreadObj
+  [ 38] getlocal 2 .............................. <tBase>
+  [ 40] getparam 1 .............................. <tID>
+  [ 42] pusharglistnoret 2 ...................... <tBase, tID>
+  [ 44] objcall 93 .............................. tBase.setID(tID)
+  [ 46] pusharglist 0 ........................... <>
+  [ 48] extcall 159 ............................. <getResourceManager()>
+  [ 50] setlocal 3 .............................. tResMgr = getResourceManager()
+  [ 52] pusharglist 0 ........................... <>
+  [ 54] extcall 176 ............................. <getObjectManager()>
+  [ 56] setlocal 4 .............................. tObjMgr = getObjectManager()
+  [ 58] getlocal 4 .............................. <tObjMgr>
+  [ 60] getparam 1 .............................. <tID>
+  [ 62] getlocal 2 .............................. <tBase>
+  [ 64] pusharglistnoret 3 ...................... <tObjMgr, tID, tBase>
+  [ 66] objcall 180 ............................. tObjMgr.registerObject(tID, tBase)
+  [ 68] getparam 2 .............................. <tClassList>
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] getlocal 2 .............................. <tBase>
+  [ 74] pusharglistnoret 3 ...................... <tClassList, 1, tBase>
+  [ 76] objcall 625 ............................. tClassList.addAt(1, tBase)
+  [ 79] getparam 2 .............................. <tClassList>
+  [ 81] peek 0
+  [ 83] pusharglist 1
+  [ 85] extcall 28
+  [ 87] pushint8 1
+  [ 89] peek 0
+  [ 91] peek 2
+  [ 93] lteq
+  [ 94] jmpifz [243] ............................ repeat with tClass in tClassList
+  [ 97] peek 2
+  [ 99] peek 1
+  [101] pusharglist 2
+  [103] extcall 29
+  [105] setlocal 5
+  [107] getlocal 5 .............................. <tClass>
+  [109] pusharglist 1 ........................... <tClass>
+  [111] extcall 195 ............................. <objectp(tClass)>
+  [113] jmpifz [126] ............................ if objectp(tClass) then / else
+  [116] getlocal 5 .............................. <tClass>
+  [118] setlocal 0 .............................. tObject = tClass
+  [120] pushzero ................................ <0>
+  [121] setlocal 6 .............................. tInitFlag = 0
+  [123] jmp [194]
+  [126] getlocal 3 .............................. <tResMgr>
+  [128] getlocal 5 .............................. <tClass>
+  [130] pusharglist 2 ........................... <tResMgr, tClass>
+  [132] objcall 136 ............................. <tResMgr.getmemnum(tClass)>
+  [134] setlocal 7 .............................. tMemNum = tResMgr.getmemnum(tClass)
+  [136] getlocal 7 .............................. <tMemNum>
+  [138] pushint8 1 .............................. <1>
+  [140] lt ...................................... <tMemNum < 1>
+  [141] jmpifz [172] ............................ if tMemNum < 1 then
+  [144] getlocal 4 .............................. <tObjMgr>
+  [146] getparam 1 .............................. <tID>
+  [148] pusharglistnoret 2 ...................... <tObjMgr, tID>
+  [150] objcall 181 ............................. tObjMgr.unregisterObject(tID)
+  [152] getparam 0 .............................. <me>
+  [154] pushcons 16 ............................. <"Script not found:">
+  [156] getlocal 7 .............................. <tMemNum>
+  [158] joinpadstr .............................. <"Script not found:" && tMemNum>
+  [159] pushsymb 828 ............................ <#buildThreadObj>
+  [162] pushsymb 123 ............................ <#major>
+  [164] pusharglist 4 ........................... <me, "Script not found:" && tMemNum, #buildThreadObj, #major>
+  [166] extcall 122 ............................. <error(me, "Script not found:" && tMemNum, #buildThreadObj, #major)>
+  [168] pusharglistnoret 1 ...................... <error(me, "Script not found:" && tMemNum, #buildThreadObj, #major)>
+  [170] extcall 11 .............................. return error(me, "Script not found:" && tMemNum, #buildThreadObj, #major)
+  [172] getlocal 7 .............................. <tMemNum>
+  [174] pusharglist 1 ........................... <tMemNum>
+  [176] extcall 197 ............................. <script(tMemNum)>
+  [178] pusharglist 1 ........................... <script(tMemNum)>
+  [180] objcall 31 .............................. <script(tMemNum).new()>
+  [182] setlocal 0 .............................. tObject = script(tMemNum).new()
+  [184] getlocal 0 .............................. <tObject>
+  [186] pushsymb 198 ............................ <#construct>
+  [188] pusharglist 2 ........................... <tObject, #construct>
+  [190] objcall 7 ............................... <tObject.handler(#construct)>
+  [192] setlocal 6 .............................. tInitFlag = tObject.handler(#construct)
+  [194] getlocal 0 .............................. <tObject>
+  [196] pushsymb 755 ............................ <#ancestor>
+  [199] getlocal 1 .............................. <tTemp>
+  [201] pusharglistnoret 3 ...................... <tObject, #ancestor, tTemp>
+  [203] objcall 23 .............................. tObject[#ancestor] = tTemp
+  [205] getlocal 0 .............................. <tObject>
+  [207] setlocal 1 .............................. tTemp = tObject
+  [209] getlocal 4 .............................. <tObjMgr>
+  [211] getparam 1 .............................. <tID>
+  [213] pusharglistnoret 2 ...................... <tObjMgr, tID>
+  [215] objcall 181 ............................. tObjMgr.unregisterObject(tID)
+  [217] getlocal 4 .............................. <tObjMgr>
+  [219] getparam 1 .............................. <tID>
+  [221] getlocal 0 .............................. <tObject>
+  [223] pusharglistnoret 3 ...................... <tObjMgr, tID, tObject>
+  [225] objcall 180 ............................. tObjMgr.registerObject(tID, tObject)
+  [227] getlocal 6 .............................. <tInitFlag>
+  [229] jmpifz [238] ............................ if tInitFlag then
+  [232] getlocal 0 .............................. <tObject>
+  [234] pusharglistnoret 1 ...................... <tObject>
+  [236] objcall 198 ............................. tObject.construct()
+  [238] pushint8 1
+  [240] add
+  [241] endrepeat [ 89]
+  [243] pop 3
+  [245] getlocal 0 .............................. <tObject>
+  [247] pusharglistnoret 1 ...................... <tObject>
+  [249] extcall 11 .............................. return tObject
+  [251] ret
+end

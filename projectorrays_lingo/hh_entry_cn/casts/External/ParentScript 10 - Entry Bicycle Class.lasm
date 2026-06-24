@@ -1,0 +1,153 @@
+property pSprite, pDelayCounter, pDirection, pBicycleTypes, pBaseCastName, pStartPoint, pOffset, pAnimFrame
+
+on define me, tsprite
+  [  0] getparam 1 .............................. <tsprite>
+  [  2] setprop 3 ............................... pSprite = tsprite
+  [  4] getmovieprop 6 .......................... <the itemDelimiter>
+  [  6] setlocal 0 .............................. tItemDeLimiter = the itemDelimiter
+  [  8] pushcons 0 .............................. <"_">
+  [ 10] setmovieprop 6 .......................... the itemDelimiter = "_"
+  [ 12] getprop 3 ............................... <pSprite>
+  [ 14] getchainedprop 7 ........................ <pSprite.member>
+  [ 16] getchainedprop 8 ........................ <pSprite.member.name>
+  [ 18] pushsymb 9 .............................. <#item>
+  [ 20] pushint8 2 .............................. <2>
+  [ 22] pusharglist 3 ........................... <pSprite.member.name, #item, 2>
+  [ 24] objcall 10 .............................. <pSprite.member.name.item[2]>
+  [ 26] setprop 5 ............................... pDirection = pSprite.member.name.item[2]
+  [ 28] getlocal 0 .............................. <tItemDeLimiter>
+  [ 30] setmovieprop 6 .......................... the itemDelimiter = tItemDeLimiter
+  [ 32] pushcons 1 .............................. <"a">
+  [ 34] pushcons 2 .............................. <"b">
+  [ 36] pushcons 3 .............................. <"c">
+  [ 38] pusharglist 3 ........................... <["a", "b", "c"]>
+  [ 40] pushlist ................................ <["a", "b", "c"]>
+  [ 41] setprop 11 .............................. pBicycleTypes = ["a", "b", "c"]
+  [ 43] getprop 3 ............................... <pSprite>
+  [ 45] getobjprop 13 ........................... <pSprite.loc>
+  [ 47] setprop 12 .............................. pStartPoint = pSprite.loc
+  [ 49] pushint8 2 .............................. <2>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] inv ..................................... <-1>
+  [ 54] pusharglist 2 ........................... <[2, -1]>
+  [ 56] pushlist ................................ <[2, -1]>
+  [ 57] setprop 4 ............................... pOffset = [2, -1]
+  [ 59] getprop 5 ............................... <pDirection>
+  [ 61] pushcons 4 .............................. <"front">
+  [ 63] eq ...................................... <pDirection = "front">
+  [ 64] jmpifz [ 75] ............................ if pDirection = "front" then
+  [ 67] getprop 4 ............................... <pOffset>
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] inv ..................................... <-1>
+  [ 72] mul ..................................... <pOffset * -1>
+  [ 73] setprop 4 ............................... pOffset = pOffset * -1
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pusharglistnoret 1 ...................... <me>
+  [ 79] objcall 1 ............................... me.reset()
+  [ 81] pushint8 1 .............................. <1>
+  [ 83] pusharglistnoret 1 ...................... <1>
+  [ 85] extcall 14 .............................. return 1
+  [ 87] ret
+end
+
+on reset me
+  [  0] pushcons 5 .............................. <"bicycle_">
+  [  2] getprop 5 ............................... <pDirection>
+  [  4] joinstr ................................. <"bicycle_" & pDirection>
+  [  5] pushcons 0 .............................. <"_">
+  [  7] joinstr ................................. <"bicycle_" & pDirection & "_">
+  [  8] getprop 11 .............................. <pBicycleTypes>
+  [ 10] pushint8 3 .............................. <3>
+  [ 12] pusharglist 1 ........................... <3>
+  [ 14] extcall 19 .............................. <random(3)>
+  [ 16] pusharglist 2 ........................... <pBicycleTypes, random(3)>
+  [ 18] objcall 20 .............................. <pBicycleTypes[random(3)]>
+  [ 20] joinstr ................................. <"bicycle_" & pDirection & "_" & pBicycleTypes[random(3)]>
+  [ 21] pushcons 0 .............................. <"_">
+  [ 23] joinstr ................................. <"bicycle_" & pDirection & "_" & pBicycleTypes[random(3)] & "_">
+  [ 24] setprop 18 .............................. pBaseCastName = "bicycle_" & pDirection & "_" & pBicycleTypes[random(3)] & "_"
+  [ 26] pushint16 200 ........................... <200>
+  [ 29] pusharglist 1 ........................... <200>
+  [ 31] extcall 19 .............................. <random(200)>
+  [ 33] setprop 21 .............................. pDelayCounter = random(200)
+  [ 35] getprop 3 ............................... <pSprite>
+  [ 37] getprop 18 .............................. <pBaseCastName>
+  [ 39] pushcons 6 .............................. <"1">
+  [ 41] joinstr ................................. <pBaseCastName & "1">
+  [ 42] pusharglist 1 ........................... <pBaseCastName & "1">
+  [ 44] extcall 22 .............................. <getmemnum(pBaseCastName & "1")>
+  [ 46] setobjprop 23 ........................... pSprite.castNum = getmemnum(pBaseCastName & "1")
+  [ 48] getprop 3 ............................... <pSprite>
+  [ 50] getprop 12 .............................. <pStartPoint>
+  [ 52] setobjprop 13 ........................... pSprite.loc = pStartPoint
+  [ 54] pushint8 1 .............................. <1>
+  [ 56] pusharglistnoret 1 ...................... <1>
+  [ 58] extcall 14 .............................. return 1
+  [ 60] ret
+end
+
+on update me
+  [  0] getprop 21 .............................. <pDelayCounter>
+  [  2] pushzero ................................ <0>
+  [  3] gt ...................................... <pDelayCounter > 0>
+  [  4] jmpifz [ 20] ............................ if pDelayCounter > 0 then
+  [  7] getprop 21 .............................. <pDelayCounter>
+  [  9] pushint8 1 .............................. <1>
+  [ 11] sub ..................................... <pDelayCounter - 1>
+  [ 12] setprop 21 .............................. pDelayCounter = pDelayCounter - 1
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 14 .............................. return 1
+  [ 20] getprop 24 .............................. <pAnimFrame>
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] add ..................................... <pAnimFrame + 1>
+  [ 25] setprop 24 .............................. pAnimFrame = pAnimFrame + 1
+  [ 27] getprop 24 .............................. <pAnimFrame>
+  [ 29] pushint8 4 .............................. <4>
+  [ 31] eq ...................................... <pAnimFrame = 4>
+  [ 32] jmpifz [ 39] ............................ if pAnimFrame = 4 then
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setprop 24 .............................. pAnimFrame = 1
+  [ 39] getprop 3 ............................... <pSprite>
+  [ 41] getprop 18 .............................. <pBaseCastName>
+  [ 43] getprop 24 .............................. <pAnimFrame>
+  [ 45] joinstr ................................. <pBaseCastName & pAnimFrame>
+  [ 46] pusharglist 1 ........................... <pBaseCastName & pAnimFrame>
+  [ 48] extcall 22 .............................. <getmemnum(pBaseCastName & pAnimFrame)>
+  [ 50] setobjprop 23 ........................... pSprite.castNum = getmemnum(pBaseCastName & pAnimFrame)
+  [ 52] getprop 3 ............................... <pSprite>
+  [ 54] getprop 3 ............................... <pSprite>
+  [ 56] getobjprop 13 ........................... <pSprite.loc>
+  [ 58] getprop 4 ............................... <pOffset>
+  [ 60] add ..................................... <pSprite.loc + pOffset>
+  [ 61] setobjprop 13 ........................... pSprite.loc = pSprite.loc + pOffset
+  [ 63] getprop 5 ............................... <pDirection>
+  [ 65] pushcons 4 .............................. <"front">
+  [ 67] eq ...................................... <pDirection = "front">
+  [ 68] jmpifz [ 95] ............................ if pDirection = "front" then / else
+  [ 71] getprop 3 ............................... <pSprite>
+  [ 73] getobjprop 25 ........................... <pSprite.locV>
+  [ 75] pushint16 440 ........................... <440>
+  [ 78] gt ...................................... <pSprite.locV > 440>
+  [ 79] jmpifz [ 92] ............................ if pSprite.locV > 440 then
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pusharglist 1 ........................... <me>
+  [ 86] objcall 1 ............................... <me.reset()>
+  [ 88] pusharglistnoret 1 ...................... <me.reset()>
+  [ 90] extcall 14 .............................. return me.reset()
+  [ 92] jmp [116]
+  [ 95] getprop 3 ............................... <pSprite>
+  [ 97] getobjprop 25 ........................... <pSprite.locV>
+  [ 99] pushint16 390 ........................... <390>
+  [102] lt ...................................... <pSprite.locV < 390>
+  [103] jmpifz [116] ............................ if pSprite.locV < 390 then
+  [106] getparam 0 .............................. <me>
+  [108] pusharglist 1 ........................... <me>
+  [110] objcall 1 ............................... <me.reset()>
+  [112] pusharglistnoret 1 ...................... <me.reset()>
+  [114] extcall 14 .............................. return me.reset()
+  [116] pushint8 1 .............................. <1>
+  [118] pusharglistnoret 1 ...................... <1>
+  [120] extcall 14 .............................. return 1
+  [122] ret
+end

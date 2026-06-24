@@ -1,0 +1,1640 @@
+property pWindowID, pTabsObj, pChatRenderers, pActiveChatID, pNames, pScaleEventAgentID, pOrigLocH, pOrigHeight, pScale, pMinHeight, pCachedChatIDs, pCacheSize, pEntryBuffer, pRenderTimeoutID, pBatchSize, pBatchInterval, pState, pInvitationWindowID, pFollowFlashList, pFollowFlashState, pFollowFlashTimeoutID, pView
+
+on construct me
+  [  0] pushcons 0 .............................. <"Instant Messenger">
+  [  2] setprop 132 ............................. pWindowID = "Instant Messenger"
+  [  4] pushcons 1 .............................. <"Friend Invitation Window">
+  [  6] setprop 133 ............................. pInvitationWindowID = "Friend Invitation Window"
+  [  8] pushsymb 136 ............................ <#temp>
+  [ 10] pushcons 2 .............................. <"IM Tabs Class">
+  [ 12] pusharglist 2 ........................... <#temp, "IM Tabs Class">
+  [ 14] extcall 135 ............................. <createObject(#temp, "IM Tabs Class")>
+  [ 16] setprop 134 ............................. pTabsObj = createObject(#temp, "IM Tabs Class")
+  [ 18] pusharglist 0 ........................... <[:]>
+  [ 20] pushproplist ............................ <[:]>
+  [ 21] setprop 137 ............................. pChatRenderers = [:]
+  [ 23] pusharglist 0 ........................... <[:]>
+  [ 25] pushproplist ............................ <[:]>
+  [ 26] setprop 138 ............................. pNames = [:]
+  [ 28] pusharglist 0 ........................... <[]>
+  [ 30] pushlist ................................ <[]>
+  [ 31] setprop 139 ............................. pCachedChatIDs = []
+  [ 33] pusharglist 0 ........................... <[]>
+  [ 35] pushlist ................................ <[]>
+  [ 36] setprop 140 ............................. pFollowFlashList = []
+  [ 38] pushcons 3 .............................. <"Flash Follow Button Timeout">
+  [ 40] setprop 141 ............................. pFollowFlashTimeoutID = "Flash Follow Button Timeout"
+  [ 42] pushcons 4 .............................. <"im.window.height.min">
+  [ 44] pusharglist 1 ........................... <"im.window.height.min">
+  [ 46] extcall 143 ............................. <getIntVariable("im.window.height.min")>
+  [ 48] setprop 142 ............................. pMinHeight = getIntVariable("im.window.height.min")
+  [ 50] pushcons 5 .............................. <"im.batch.size">
+  [ 52] pusharglist 1 ........................... <"im.batch.size">
+  [ 54] extcall 143 ............................. <getIntVariable("im.batch.size")>
+  [ 56] setprop 144 ............................. pBatchSize = getIntVariable("im.batch.size")
+  [ 58] pushcons 6 .............................. <"im.batch.interval">
+  [ 60] pusharglist 1 ........................... <"im.batch.interval">
+  [ 62] extcall 143 ............................. <getIntVariable("im.batch.interval")>
+  [ 64] setprop 145 ............................. pBatchInterval = getIntVariable("im.batch.interval")
+  [ 66] pushcons 7 .............................. <"im.cached.chats">
+  [ 68] pusharglist 1 ........................... <"im.cached.chats">
+  [ 70] extcall 143 ............................. <getIntVariable("im.cached.chats")>
+  [ 72] setprop 146 ............................. pCacheSize = getIntVariable("im.cached.chats")
+  [ 74] pusharglist 0 ........................... <>
+  [ 76] extcall 148 ............................. <getUniqueID()>
+  [ 78] setprop 147 ............................. pScaleEventAgentID = getUniqueID()
+  [ 80] pushsymb 150 ............................ <#IMRenderTimeout>
+  [ 82] setprop 149 ............................. pRenderTimeoutID = #IMRenderTimeout
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pushsymb 151 ............................ <#Active>
+  [ 88] pusharglistnoret 2 ...................... <me, #Active>
+  [ 90] objcall 126 ............................. me.setState(#Active)
+  [ 92] getprop 147 ............................. <pScaleEventAgentID>
+  [ 94] pushcons 8 .............................. <"event.agent.class">
+  [ 96] pusharglist 1 ........................... <"event.agent.class">
+  [ 98] extcall 152 ............................. <getClassVariable("event.agent.class")>
+  [100] pusharglistnoret 2 ...................... <pScaleEventAgentID, getClassVariable("event.agent.class")>
+  [102] extcall 135 ............................. createObject(pScaleEventAgentID, getClassVariable("event.agent.class"))
+  [104] pushsymb 153 ............................ <#toggle_im>
+  [106] getparam 0 .............................. <me>
+  [108] pusharglist 1 ........................... <me>
+  [110] objcall 36 .............................. <me.getID()>
+  [112] pushsymb 116 ............................ <#toggleIMWindow>
+  [114] pusharglistnoret 3 ...................... <#toggle_im, me.getID(), #toggleIMWindow>
+  [116] extcall 34 .............................. registerMessage(#toggle_im, me.getID(), #toggleIMWindow)
+  [118] pushsymb 405 ............................ <#gamesystem_constructed>
+  [121] getparam 0 .............................. <me>
+  [123] pusharglist 1 ........................... <me>
+  [125] objcall 36 .............................. <me.getID()>
+  [127] pushsymb 115 ............................ <#closeIMWindow>
+  [129] pusharglistnoret 3 ...................... <#gamesystem_constructed, me.getID(), #closeIMWindow>
+  [131] extcall 34 .............................. registerMessage(#gamesystem_constructed, me.getID(), #closeIMWindow)
+  [133] pushint8 1 .............................. <1>
+  [135] pusharglistnoret 1 ...................... <1>
+  [137] extcall 30 .............................. return 1
+  [139] ret
+end
+
+on deconstruct me
+  [  0] getprop 147 ............................. <pScaleEventAgentID>
+  [  2] pusharglist 1 ........................... <pScaleEventAgentID>
+  [  4] extcall 109 ............................. <objectExists(pScaleEventAgentID)>
+  [  6] jmpifz [ 15] ............................ if objectExists(pScaleEventAgentID) then
+  [  9] getprop 147 ............................. <pScaleEventAgentID>
+  [ 11] pusharglistnoret 1 ...................... <pScaleEventAgentID>
+  [ 13] extcall 154 ............................. removeObject(pScaleEventAgentID)
+  [ 15] getprop 141 ............................. <pFollowFlashTimeoutID>
+  [ 17] pusharglist 1 ........................... <pFollowFlashTimeoutID>
+  [ 19] extcall 208 ............................. <timeoutExists(pFollowFlashTimeoutID)>
+  [ 21] jmpifz [ 30] ............................ if timeoutExists(pFollowFlashTimeoutID) then
+  [ 24] getprop 141 ............................. <pFollowFlashTimeoutID>
+  [ 26] pusharglistnoret 1 ...................... <pFollowFlashTimeoutID>
+  [ 28] extcall 212 ............................. removeTimeout(pFollowFlashTimeoutID)
+  [ 30] getprop 149 ............................. <pRenderTimeoutID>
+  [ 32] pusharglist 1 ........................... <pRenderTimeoutID>
+  [ 34] extcall 208 ............................. <timeoutExists(pRenderTimeoutID)>
+  [ 36] jmpifz [ 45] ............................ if timeoutExists(pRenderTimeoutID) then
+  [ 39] getprop 149 ............................. <pRenderTimeoutID>
+  [ 41] pusharglistnoret 1 ...................... <pRenderTimeoutID>
+  [ 43] extcall 212 ............................. removeTimeout(pRenderTimeoutID)
+  [ 45] pushsymb 153 ............................ <#toggle_im>
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglist 1 ........................... <me>
+  [ 51] objcall 36 .............................. <me.getID()>
+  [ 53] pusharglistnoret 2 ...................... <#toggle_im, me.getID()>
+  [ 55] extcall 46 .............................. unregisterMessage(#toggle_im, me.getID())
+  [ 57] pushsymb 405 ............................ <#gamesystem_constructed>
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pusharglist 1 ........................... <me>
+  [ 64] objcall 36 .............................. <me.getID()>
+  [ 66] pusharglistnoret 2 ...................... <#gamesystem_constructed, me.getID()>
+  [ 68] extcall 46 .............................. unregisterMessage(#gamesystem_constructed, me.getID())
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 1 ...................... <1>
+  [ 74] extcall 30 .............................. return 1
+  [ 76] ret
+end
+
+on createIMWindow me
+  [  0] getprop 132 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 155 ............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pWindowID) then
+  [  9] getprop 132 ............................. <pWindowID>
+  [ 11] pusharglistnoret 1 ...................... <pWindowID>
+  [ 13] extcall 156 ............................. removeWindow(pWindowID)
+  [ 15] getmovieprop 157 ........................ <the stage>
+  [ 17] getchainedprop 158 ...................... <(the stage).rect>
+  [ 19] getobjprop 159 .......................... <(the stage).rect.width>
+  [ 21] pushcons 9 .............................. <"im.window.margin.right">
+  [ 23] pusharglist 1 ........................... <"im.window.margin.right">
+  [ 25] extcall 143 ............................. <getIntVariable("im.window.margin.right")>
+  [ 27] sub ..................................... <(the stage).rect.width - getIntVariable("im.window.margin.right")>
+  [ 28] setlocal 0 .............................. tLocH = (the stage).rect.width - getIntVariable("im.window.margin.right")
+  [ 30] pushcons 10 ............................. <"im.window.margin.top">
+  [ 32] pusharglist 1 ........................... <"im.window.margin.top">
+  [ 34] extcall 143 ............................. <getIntVariable("im.window.margin.top")>
+  [ 36] setlocal 1 .............................. tLocV = getIntVariable("im.window.margin.top")
+  [ 38] getprop 132 ............................. <pWindowID>
+  [ 40] pushcons 11 ............................. <"instant_message.window">
+  [ 42] getlocal 0 .............................. <tLocH>
+  [ 44] getlocal 1 .............................. <tLocV>
+  [ 46] pusharglistnoret 4 ...................... <pWindowID, "instant_message.window", tLocH, tLocV>
+  [ 48] extcall 160 ............................. createWindow(pWindowID, "instant_message.window", tLocH, tLocV)
+  [ 50] pushsymb 162 ............................ <#normal>
+  [ 52] setprop 161 ............................. pView = #normal
+  [ 54] getprop 132 ............................. <pWindowID>
+  [ 56] pusharglist 1 ........................... <pWindowID>
+  [ 58] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 60] setlocal 2 .............................. tWnd = getWindow(pWindowID)
+  [ 62] getlocal 2 .............................. <tWnd>
+  [ 64] pushsymb 130 ............................ <#eventProcIM>
+  [ 66] getparam 0 .............................. <me>
+  [ 68] pusharglist 1 ........................... <me>
+  [ 70] objcall 36 .............................. <me.getID()>
+  [ 72] pushsymb 164 ............................ <#keyDown>
+  [ 74] pusharglistnoret 4 ...................... <tWnd, #eventProcIM, me.getID(), #keyDown>
+  [ 76] objcall 165 ............................. tWnd.registerProcedure(#eventProcIM, me.getID(), #keyDown)
+  [ 78] getlocal 2 .............................. <tWnd>
+  [ 80] pushsymb 130 ............................ <#eventProcIM>
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pusharglist 1 ........................... <me>
+  [ 86] objcall 36 .............................. <me.getID()>
+  [ 88] pushsymb 166 ............................ <#mouseUp>
+  [ 90] pusharglistnoret 4 ...................... <tWnd, #eventProcIM, me.getID(), #mouseUp>
+  [ 92] objcall 165 ............................. tWnd.registerProcedure(#eventProcIM, me.getID(), #mouseUp)
+  [ 94] getlocal 2 .............................. <tWnd>
+  [ 96] pushsymb 130 ............................ <#eventProcIM>
+  [ 98] getparam 0 .............................. <me>
+  [100] pusharglist 1 ........................... <me>
+  [102] objcall 36 .............................. <me.getID()>
+  [104] pushsymb 167 ............................ <#mouseDown>
+  [106] pusharglistnoret 4 ...................... <tWnd, #eventProcIM, me.getID(), #mouseDown>
+  [108] objcall 165 ............................. tWnd.registerProcedure(#eventProcIM, me.getID(), #mouseDown)
+  [110] ret
+end
+
+on openIMWindow me
+  [  0] getprop 132 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 155 ............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 19] ............................ if not windowExists(pWindowID) then / else
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 114 ............................. me.createIMWindow()
+  [ 16] jmp [ 40]
+  [ 19] getprop 132 ............................. <pWindowID>
+  [ 21] pusharglist 1 ........................... <pWindowID>
+  [ 23] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 25] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [ 27] getlocal 0 .............................. <tWnd>
+  [ 29] pusharglistnoret 1 ...................... <tWnd>
+  [ 31] objcall 171 ............................. tWnd.show()
+  [ 33] getprop 132 ............................. <pWindowID>
+  [ 35] pusharglistnoret 1 ...................... <pWindowID>
+  [ 37] extcall 406 ............................. activateWindowObj(pWindowID)
+  [ 40] getprop 137 ............................. <pChatRenderers>
+  [ 42] getobjprop 66 ........................... <pChatRenderers.count>
+  [ 44] pushzero ................................ <0>
+  [ 45] eq ...................................... <pChatRenderers.count = 0>
+  [ 46] jmpifz [ 57] ............................ if pChatRenderers.count = 0 then
+  [ 49] getparam 0 .............................. <me>
+  [ 51] pushsymb 173 ............................ <#empty>
+  [ 53] pusharglistnoret 2 ...................... <me, #empty>
+  [ 55] objcall 129 ............................. me.ChangeWindowView(#empty)
+  [ 57] getparam 0 .............................. <me>
+  [ 59] pusharglistnoret 1 ...................... <me>
+  [ 61] objcall 89 .............................. me.updateInterface()
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pushsymb 151 ............................ <#Active>
+  [ 67] pusharglistnoret 2 ...................... <me, #Active>
+  [ 69] objcall 126 ............................. me.setState(#Active)
+  [ 71] ret
+end
+
+on closeIMWindow me
+  [  0] getprop 132 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 155 ............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 47] ............................ if windowExists(pWindowID) then
+  [  9] getprop 132 ............................. <pWindowID>
+  [ 11] pusharglist 1 ........................... <pWindowID>
+  [ 13] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 15] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [ 17] getlocal 0 .............................. <tWnd>
+  [ 19] pushcons 12 ............................. <"chat.input">
+  [ 21] pusharglist 2 ........................... <tWnd, "chat.input">
+  [ 23] objcall 174 ............................. <tWnd.elementExists("chat.input")>
+  [ 25] jmpifz [ 41] ............................ if tWnd.elementExists("chat.input") then
+  [ 28] getlocal 0 .............................. <tWnd>
+  [ 30] pushcons 12 ............................. <"chat.input">
+  [ 32] pusharglist 2 ........................... <tWnd, "chat.input">
+  [ 34] objcall 175 ............................. <tWnd.getElement("chat.input")>
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 2 ...................... <tWnd.getElement("chat.input"), 0>
+  [ 39] objcall 176 ............................. tWnd.getElement("chat.input").setFocus(0)
+  [ 41] getlocal 0 .............................. <tWnd>
+  [ 43] pusharglistnoret 1 ...................... <tWnd>
+  [ 45] objcall 177 ............................. tWnd.hide()
+  [ 47] ret
+end
+
+on toggleIMWindow me
+  [  0] getprop 132 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 155 ............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 20] ............................ if not windowExists(pWindowID) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 60 .............................. <me.openIMWindow()>
+  [ 16] pusharglistnoret 1 ...................... <me.openIMWindow()>
+  [ 18] extcall 30 .............................. return me.openIMWindow()
+  [ 20] getprop 132 ............................. <pWindowID>
+  [ 22] pusharglist 1 ........................... <pWindowID>
+  [ 24] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 26] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [ 28] getlocal 0 .............................. <tWnd>
+  [ 30] pushsymb 178 ............................ <#visible>
+  [ 32] pusharglist 2 ........................... <tWnd, #visible>
+  [ 34] objcall 179 ............................. <tWnd.getProperty(#visible)>
+  [ 36] jmpifz [ 48] ............................ if tWnd.getProperty(#visible) then / else
+  [ 39] getparam 0 .............................. <me>
+  [ 41] pusharglistnoret 1 ...................... <me>
+  [ 43] objcall 115 ............................. me.closeIMWindow()
+  [ 45] jmp [ 54]
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglistnoret 1 ...................... <me>
+  [ 52] objcall 60 .............................. me.openIMWindow()
+  [ 54] ret
+end
+
+on addChat me, tChatID, tFriend, tDontPlaySound
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglistnoret 2 ...................... <me, tChatID>
+  [  6] objcall 121 ............................. me.getChatRenderer(tChatID)
+  [  8] getparam 2 .............................. <tFriend>
+  [ 10] pusharglist 1 ........................... <tFriend>
+  [ 12] extcall 79 .............................. <voidp(tFriend)>
+  [ 14] jmpifz [ 31] ............................ if voidp(tFriend) then
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglist 1 ........................... <me>
+  [ 21] objcall 54 .............................. <me.getComponent()>
+  [ 23] getparam 1 .............................. <tChatID>
+  [ 25] pusharglist 2 ........................... <me.getComponent(), tChatID>
+  [ 27] objcall 18 .............................. <me.getComponent().getFriend(tChatID)>
+  [ 29] setparam 2 .............................. tFriend = me.getComponent().getFriend(tChatID)
+  [ 31] getparam 2 .............................. <tFriend>
+  [ 33] pusharglist 1 ........................... <tFriend>
+  [ 35] extcall 79 .............................. <voidp(tFriend)>
+  [ 37] jmpifz [ 45] ............................ if voidp(tFriend) then
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglistnoret 1 ...................... <0>
+  [ 43] extcall 30 .............................. return 0
+  [ 45] getprop 134 ............................. <pTabsObj>
+  [ 47] getparam 1 .............................. <tChatID>
+  [ 49] pusharglistnoret 2 ...................... <pTabsObj, tChatID>
+  [ 51] objcall 180 ............................. pTabsObj.addTab(tChatID)
+  [ 53] getparam 3 .............................. <tDontPlaySound>
+  [ 55] not ..................................... <not tDontPlaySound>
+  [ 56] jmpifz [100] ............................ if not tDontPlaySound then
+  [ 59] pushcons 13 ............................. <"im.new.tab.sound">
+  [ 61] pusharglist 1 ........................... <"im.new.tab.sound">
+  [ 63] extcall 74 .............................. <getVariable("im.new.tab.sound")>
+  [ 65] setlocal 0 .............................. tSoundMemName = getVariable("im.new.tab.sound")
+  [ 67] pushcons 14 ............................. <"im.sound.volume">
+  [ 69] pushint16 255 ........................... <255>
+  [ 72] pusharglist 2 ........................... <"im.sound.volume", 255>
+  [ 74] extcall 143 ............................. <getIntVariable("im.sound.volume", 255)>
+  [ 76] setlocal 1 .............................. tVolume = getIntVariable("im.sound.volume", 255)
+  [ 78] getlocal 0 .............................. <tSoundMemName>
+  [ 80] pushsymb 182 ............................ <#cut>
+  [ 82] pushsymb 183 ............................ <#loopCount>
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] pushsymb 184 ............................ <#infiniteloop>
+  [ 88] pushzero ................................ <0>
+  [ 89] pushsymb 185 ............................ <#volume>
+  [ 91] getlocal 1 .............................. <tVolume>
+  [ 93] pusharglist 6 ........................... <[#loopCount: 1, #infiniteloop: 0, #volume: tVolume]>
+  [ 95] pushproplist ............................ <[#loopCount: 1, #infiniteloop: 0, #volume: tVolume]>
+  [ 96] pusharglistnoret 3 ...................... <tSoundMemName, #cut, [#loopCount: 1, #infiniteloop: 0, #volume: tVolume]>
+  [ 98] extcall 181 ............................. playSound(tSoundMemName, #cut, [#loopCount: 1, #infiniteloop: 0, #volume: tVolume])
+  [100] getparam 2 .............................. <tFriend>
+  [102] pushsymb 186 ............................ <#name>
+  [104] pusharglist 2 ........................... <tFriend, #name>
+  [106] objcall 57 .............................. <tFriend.getaProp(#name)>
+  [108] setlocal 2 .............................. tName = tFriend.getaProp(#name)
+  [110] getprop 138 ............................. <pNames>
+  [112] getparam 1 .............................. <tChatID>
+  [114] getlocal 2 .............................. <tName>
+  [116] pusharglistnoret 3 ...................... <pNames, tChatID, tName>
+  [118] objcall 80 .............................. pNames.setaProp(tChatID, tName)
+  [120] getprop 137 ............................. <pChatRenderers>
+  [122] getobjprop 66 ........................... <pChatRenderers.count>
+  [124] pushint8 1 .............................. <1>
+  [126] eq ...................................... <pChatRenderers.count = 1>
+  [127] jmpifz [146] ............................ if pChatRenderers.count = 1 then
+  [130] getparam 0 .............................. <me>
+  [132] getparam 1 .............................. <tChatID>
+  [134] pusharglistnoret 2 ...................... <me, tChatID>
+  [136] objcall 59 .............................. me.activateChat(tChatID)
+  [138] getprop 134 ............................. <pTabsObj>
+  [140] getparam 1 .............................. <tChatID>
+  [142] pusharglistnoret 2 ...................... <pTabsObj, tChatID>
+  [144] objcall 187 ............................. pTabsObj.showTab(tChatID)
+  [146] getparam 0 .............................. <me>
+  [148] pusharglistnoret 1 ...................... <me>
+  [150] objcall 89 .............................. me.updateInterface()
+  [152] pushint8 1 .............................. <1>
+  [154] pusharglistnoret 1 ...................... <1>
+  [156] extcall 30 .............................. return 1
+  [158] ret
+end
+
+on removeChat me, tChatID
+  [  0] getprop 137 ............................. <pChatRenderers>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglist 2 ........................... <pChatRenderers, tChatID>
+  [  6] objcall 86 .............................. <pChatRenderers.findPos(tChatID)>
+  [  8] setlocal 0 .............................. tPos = pChatRenderers.findPos(tChatID)
+  [ 10] getlocal 0 .............................. <tPos>
+  [ 12] pusharglist 1 ........................... <tPos>
+  [ 14] extcall 79 .............................. <voidp(tPos)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tPos) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 30 .............................. return 0
+  [ 24] pushzero ................................ <0>
+  [ 25] setprop 191 ............................. pActiveChatID = 0
+  [ 27] getprop 137 ............................. <pChatRenderers>
+  [ 29] getparam 1 .............................. <tChatID>
+  [ 31] pusharglistnoret 2 ...................... <pChatRenderers, tChatID>
+  [ 33] objcall 192 ............................. pChatRenderers.deleteProp(tChatID)
+  [ 35] getprop 134 ............................. <pTabsObj>
+  [ 37] getparam 1 .............................. <tChatID>
+  [ 39] pusharglistnoret 2 ...................... <pTabsObj, tChatID>
+  [ 41] objcall 193 ............................. pTabsObj.removeTab(tChatID)
+  [ 43] getprop 139 ............................. <pCachedChatIDs>
+  [ 45] getparam 1 .............................. <tChatID>
+  [ 47] pusharglist 2 ........................... <pCachedChatIDs, tChatID>
+  [ 49] objcall 194 ............................. <pCachedChatIDs.getPos(tChatID)>
+  [ 51] setlocal 1 .............................. tCachePos = pCachedChatIDs.getPos(tChatID)
+  [ 53] getlocal 1 .............................. <tCachePos>
+  [ 55] pushzero ................................ <0>
+  [ 56] gt ...................................... <tCachePos > 0>
+  [ 57] jmpifz [ 68] ............................ if tCachePos > 0 then
+  [ 60] getprop 139 ............................. <pCachedChatIDs>
+  [ 62] getlocal 1 .............................. <tCachePos>
+  [ 64] pusharglistnoret 2 ...................... <pCachedChatIDs, tCachePos>
+  [ 66] objcall 195 ............................. pCachedChatIDs.deleteAt(tCachePos)
+  [ 68] getprop 137 ............................. <pChatRenderers>
+  [ 70] getobjprop 66 ........................... <pChatRenderers.count>
+  [ 72] pushzero ................................ <0>
+  [ 73] eq ...................................... <pChatRenderers.count = 0>
+  [ 74] jmpifz [ 91] ............................ if pChatRenderers.count = 0 then
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pushsymb 173 ............................ <#empty>
+  [ 81] pusharglistnoret 2 ...................... <me, #empty>
+  [ 83] objcall 129 ............................. me.ChangeWindowView(#empty)
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] pusharglistnoret 1 ...................... <1>
+  [ 89] extcall 30 .............................. return 1
+  [ 91] getlocal 0 .............................. <tPos>
+  [ 93] getprop 137 ............................. <pChatRenderers>
+  [ 95] getobjprop 66 ........................... <pChatRenderers.count>
+  [ 97] gt ...................................... <tPos > pChatRenderers.count>
+  [ 98] jmpifz [107] ............................ if tPos > pChatRenderers.count then
+  [101] getprop 137 ............................. <pChatRenderers>
+  [103] getobjprop 66 ........................... <pChatRenderers.count>
+  [105] setlocal 0 .............................. tPos = pChatRenderers.count
+  [107] getparam 0 .............................. <me>
+  [109] getprop 137 ............................. <pChatRenderers>
+  [111] getlocal 0 .............................. <tPos>
+  [113] pusharglist 2 ........................... <pChatRenderers, tPos>
+  [115] objcall 196 ............................. <pChatRenderers.getPropAt(tPos)>
+  [117] pusharglistnoret 2 ...................... <me, pChatRenderers.getPropAt(tPos)>
+  [119] objcall 59 .............................. me.activateChat(pChatRenderers.getPropAt(tPos))
+  [121] pushint8 1 .............................. <1>
+  [123] pusharglistnoret 1 ...................... <1>
+  [125] extcall 30 .............................. return 1
+  [127] ret
+end
+
+on removeAllChats me
+  [  0] getprop 137 ............................. <pChatRenderers>
+  [  2] getobjprop 66 ........................... <pChatRenderers.count>
+  [  4] pushzero ................................ <0>
+  [  5] gt ...................................... <pChatRenderers.count > 0>
+  [  6] jmpifz [ 29] ............................ repeat while pChatRenderers.count > 0
+  [  9] getprop 137 ............................. <pChatRenderers>
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglist 2 ........................... <pChatRenderers, 1>
+  [ 15] objcall 196 ............................. <pChatRenderers.getPropAt(1)>
+  [ 17] setlocal 0 .............................. tChatID = pChatRenderers.getPropAt(1)
+  [ 19] getparam 0 .............................. <me>
+  [ 21] getlocal 0 .............................. <tChatID>
+  [ 23] pusharglistnoret 2 ...................... <me, tChatID>
+  [ 25] objcall 8 ............................... me.removeChat(tChatID)
+  [ 27] endrepeat [  0]
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pusharglistnoret 1 ...................... <me>
+  [ 33] objcall 115 ............................. me.closeIMWindow()
+  [ 35] ret
+end
+
+on activateChat me, tChatID
+  [  0] getparam 1 .............................. <tChatID>
+  [  2] not ..................................... <not tChatID>
+  [  3] jmpifz [ 11] ............................ if not tChatID then
+  [  6] pushzero ................................ <0>
+  [  7] pusharglistnoret 1 ...................... <0>
+  [  9] extcall 30 .............................. return 0
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushsymb 162 ............................ <#normal>
+  [ 15] pusharglistnoret 2 ...................... <me, #normal>
+  [ 17] objcall 129 ............................. me.ChangeWindowView(#normal)
+  [ 19] getparam 1 .............................. <tChatID>
+  [ 21] peek 0 .................................. case tChatID of
+  [ 23] pushsymb 199 ............................ <#left>
+  [ 25] eq
+  [ 26] jmpifz [ 38] ............................ (case) #left:
+  [ 29] getprop 134 ............................. <pTabsObj>
+  [ 31] pusharglistnoret 1 ...................... <pTabsObj>
+  [ 33] objcall 200 ............................. pTabsObj.scrollLeft()
+  [ 35] jmp [165]
+  [ 38] peek 0
+  [ 40] pushsymb 201 ............................ <#right>
+  [ 42] eq
+  [ 43] jmpifz [ 55] ............................ (case) #right:
+  [ 46] getprop 134 ............................. <pTabsObj>
+  [ 48] pusharglistnoret 1 ...................... <pTabsObj>
+  [ 50] objcall 202 ............................. pTabsObj.scrollRight()
+  [ 52] jmp [165] ............................... (case) otherwise:
+  [ 55] getparam 1 .............................. <tChatID>
+  [ 57] setprop 191 ............................. pActiveChatID = tChatID
+  [ 59] getprop 134 ............................. <pTabsObj>
+  [ 61] getparam 1 .............................. <tChatID>
+  [ 63] pusharglistnoret 2 ...................... <pTabsObj, tChatID>
+  [ 65] objcall 203 ............................. pTabsObj.activateTab(tChatID)
+  [ 67] getprop 139 ............................. <pCachedChatIDs>
+  [ 69] getparam 1 .............................. <tChatID>
+  [ 71] pusharglist 2 ........................... <pCachedChatIDs, tChatID>
+  [ 73] objcall 194 ............................. <pCachedChatIDs.getPos(tChatID)>
+  [ 75] pushzero ................................ <0>
+  [ 76] eq ...................................... <pCachedChatIDs.getPos(tChatID) = 0>
+  [ 77] jmpifz [139] ............................ if pCachedChatIDs.getPos(tChatID) = 0 then / else
+  [ 80] getparam 0 .............................. <me>
+  [ 82] getparam 1 .............................. <tChatID>
+  [ 84] pusharglistnoret 2 ...................... <me, tChatID>
+  [ 86] objcall 118 ............................. me.startRendering(tChatID)
+  [ 88] getprop 139 ............................. <pCachedChatIDs>
+  [ 90] getobjprop 66 ........................... <pCachedChatIDs.count>
+  [ 92] getprop 146 ............................. <pCacheSize>
+  [ 94] eq ...................................... <pCachedChatIDs.count = pCacheSize>
+  [ 95] jmpifz [128] ............................ if pCachedChatIDs.count = pCacheSize then
+  [ 98] getprop 139 ............................. <pCachedChatIDs>
+  [100] pushint8 1 .............................. <1>
+  [102] pusharglist 2 ........................... <pCachedChatIDs, 1>
+  [104] objcall 71 .............................. <pCachedChatIDs[1]>
+  [106] setlocal 0 .............................. tRemoveID = pCachedChatIDs[1]
+  [108] getprop 139 ............................. <pCachedChatIDs>
+  [110] pushint8 1 .............................. <1>
+  [112] pusharglistnoret 2 ...................... <pCachedChatIDs, 1>
+  [114] objcall 195 ............................. pCachedChatIDs.deleteAt(1)
+  [116] getparam 0 .............................. <me>
+  [118] getlocal 0 .............................. <tRemoveID>
+  [120] pusharglist 2 ........................... <me, tRemoveID>
+  [122] objcall 121 ............................. <me.getChatRenderer(tRemoveID)>
+  [124] pusharglistnoret 1 ...................... <me.getChatRenderer(tRemoveID)>
+  [126] objcall 204 ............................. me.getChatRenderer(tRemoveID).clearImage()
+  [128] getprop 139 ............................. <pCachedChatIDs>
+  [130] getparam 1 .............................. <tChatID>
+  [132] pusharglistnoret 2 ...................... <pCachedChatIDs, tChatID>
+  [134] objcall 108 ............................. pCachedChatIDs.add(tChatID)
+  [136] jmp [165]
+  [139] getprop 139 ............................. <pCachedChatIDs>
+  [141] getparam 1 .............................. <tChatID>
+  [143] pusharglist 2 ........................... <pCachedChatIDs, tChatID>
+  [145] objcall 194 ............................. <pCachedChatIDs.getPos(tChatID)>
+  [147] setlocal 1 .............................. tPos = pCachedChatIDs.getPos(tChatID)
+  [149] getprop 139 ............................. <pCachedChatIDs>
+  [151] getlocal 1 .............................. <tPos>
+  [153] pusharglistnoret 2 ...................... <pCachedChatIDs, tPos>
+  [155] objcall 195 ............................. pCachedChatIDs.deleteAt(tPos)
+  [157] getprop 139 ............................. <pCachedChatIDs>
+  [159] getparam 1 .............................. <tChatID>
+  [161] pusharglistnoret 2 ...................... <pCachedChatIDs, tChatID>
+  [163] objcall 108 ............................. pCachedChatIDs.add(tChatID)
+  [165] pop 1 ................................... end case
+  [167] getprop 140 ............................. <pFollowFlashList>
+  [169] getparam 1 .............................. <tChatID>
+  [171] pusharglist 2 ........................... <pFollowFlashList, tChatID>
+  [173] objcall 194 ............................. <pFollowFlashList.getPos(tChatID)>
+  [175] setlocal 1 .............................. tPos = pFollowFlashList.getPos(tChatID)
+  [177] getlocal 1 .............................. <tPos>
+  [179] pushzero ................................ <0>
+  [180] gt ...................................... <tPos > 0>
+  [181] jmpifz [203] ............................ if tPos > 0 then / else
+  [184] getparam 0 .............................. <me>
+  [186] pushsymb 205 ............................ <#start>
+  [188] pusharglistnoret 2 ...................... <me, #start>
+  [190] objcall 117 ............................. me.flashFollowButton(#start)
+  [192] getprop 140 ............................. <pFollowFlashList>
+  [194] getlocal 1 .............................. <tPos>
+  [196] pusharglistnoret 2 ...................... <pFollowFlashList, tPos>
+  [198] objcall 195 ............................. pFollowFlashList.deleteAt(tPos)
+  [200] jmp [211]
+  [203] getparam 0 .............................. <me>
+  [205] pushsymb 206 ............................ <#stop>
+  [207] pusharglistnoret 2 ...................... <me, #stop>
+  [209] objcall 117 ............................. me.flashFollowButton(#stop)
+  [211] getparam 0 .............................. <me>
+  [213] pusharglistnoret 1 ...................... <me>
+  [215] objcall 89 .............................. me.updateInterface()
+  [217] ret
+end
+
+on flashFollowButton me, tstate
+  [  0] getprop 132 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 163 ............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWnd>
+  [ 10] not ..................................... <not tWnd>
+  [ 11] jmpifz [ 19] ............................ if not tWnd then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 30 .............................. return 0
+  [ 19] getlocal 0 .............................. <tWnd>
+  [ 21] pushcons 15 ............................. <"button.follow">
+  [ 23] pusharglist 2 ........................... <tWnd, "button.follow">
+  [ 25] objcall 174 ............................. <tWnd.elementExists("button.follow")>
+  [ 27] not ..................................... <not tWnd.elementExists("button.follow")>
+  [ 28] jmpifz [ 51] ............................ if not tWnd.elementExists("button.follow") then
+  [ 31] getprop 141 ............................. <pFollowFlashTimeoutID>
+  [ 33] pusharglist 1 ........................... <pFollowFlashTimeoutID>
+  [ 35] extcall 208 ............................. <timeoutExists(pFollowFlashTimeoutID)>
+  [ 37] jmpifz [ 46] ............................ if timeoutExists(pFollowFlashTimeoutID) then
+  [ 40] getprop 141 ............................. <pFollowFlashTimeoutID>
+  [ 42] pusharglistnoret 1 ...................... <pFollowFlashTimeoutID>
+  [ 44] extcall 212 ............................. removeTimeout(pFollowFlashTimeoutID)
+  [ 46] pushzero ................................ <0>
+  [ 47] pusharglistnoret 1 ...................... <0>
+  [ 49] extcall 30 .............................. return 0
+  [ 51] getlocal 0 .............................. <tWnd>
+  [ 53] pushcons 15 ............................. <"button.follow">
+  [ 55] pusharglist 2 ........................... <tWnd, "button.follow">
+  [ 57] objcall 175 ............................. <tWnd.getElement("button.follow")>
+  [ 59] setlocal 1 .............................. tElem = tWnd.getElement("button.follow")
+  [ 61] getparam 1 .............................. <tstate>
+  [ 63] peek 0 .................................. case tstate of
+  [ 65] pushsymb 205 ............................ <#start>
+  [ 67] eq
+  [ 68] jmpifz [108] ............................ (case) #start:
+  [ 71] getprop 141 ............................. <pFollowFlashTimeoutID>
+  [ 73] pusharglist 1 ........................... <pFollowFlashTimeoutID>
+  [ 75] extcall 208 ............................. <timeoutExists(pFollowFlashTimeoutID)>
+  [ 77] not ..................................... <not timeoutExists(pFollowFlashTimeoutID)>
+  [ 78] jmpifz [102] ............................ if not timeoutExists(pFollowFlashTimeoutID) then
+  [ 81] getprop 141 ............................. <pFollowFlashTimeoutID>
+  [ 83] pushint16 500 ........................... <500>
+  [ 86] pushsymb 117 ............................ <#flashFollowButton>
+  [ 88] getparam 0 .............................. <me>
+  [ 90] pusharglist 1 ........................... <me>
+  [ 92] objcall 36 .............................. <me.getID()>
+  [ 94] pushsymb 210 ............................ <#flash>
+  [ 96] pushint8 20 ............................. <20>
+  [ 98] pusharglistnoret 6 ...................... <pFollowFlashTimeoutID, 500, #flashFollowButton, me.getID(), #flash, 20>
+  [100] extcall 209 ............................. createTimeout(pFollowFlashTimeoutID, 500, #flashFollowButton, me.getID(), #flash, 20)
+  [102] pushzero ................................ <0>
+  [103] setprop 211 ............................. pFollowFlashState = 0
+  [105] jmp [188]
+  [108] peek 0
+  [110] pushsymb 206 ............................ <#stop>
+  [112] eq
+  [113] jmpifz [144] ............................ (case) #stop:
+  [116] getprop 141 ............................. <pFollowFlashTimeoutID>
+  [118] pusharglist 1 ........................... <pFollowFlashTimeoutID>
+  [120] extcall 208 ............................. <timeoutExists(pFollowFlashTimeoutID)>
+  [122] jmpifz [131] ............................ if timeoutExists(pFollowFlashTimeoutID) then
+  [125] getprop 141 ............................. <pFollowFlashTimeoutID>
+  [127] pusharglistnoret 1 ...................... <pFollowFlashTimeoutID>
+  [129] extcall 212 ............................. removeTimeout(pFollowFlashTimeoutID)
+  [131] getlocal 1 .............................. <tElem>
+  [133] pushsymb 213 ............................ <#member>
+  [135] pushcons 15 ............................. <"button.follow">
+  [137] pusharglistnoret 3 ...................... <tElem, #member, "button.follow">
+  [139] objcall 214 ............................. tElem.setProperty(#member, "button.follow")
+  [141] jmp [188]
+  [144] peek 0
+  [146] pushsymb 210 ............................ <#flash>
+  [148] eq
+  [149] jmpifz [188] ............................ (case) #flash:
+  [152] getprop 211 ............................. <pFollowFlashState>
+  [154] pushint8 1 .............................. <1>
+  [156] eq ...................................... <pFollowFlashState = 1>
+  [157] jmpifz [173] ............................ if pFollowFlashState = 1 then / else
+  [160] getlocal 1 .............................. <tElem>
+  [162] pushsymb 213 ............................ <#member>
+  [164] pushcons 15 ............................. <"button.follow">
+  [166] pusharglistnoret 3 ...................... <tElem, #member, "button.follow">
+  [168] objcall 214 ............................. tElem.setProperty(#member, "button.follow")
+  [170] jmp [183]
+  [173] getlocal 1 .............................. <tElem>
+  [175] pushsymb 213 ............................ <#member>
+  [177] pushcons 16 ............................. <"button.follow.highlight">
+  [179] pusharglistnoret 3 ...................... <tElem, #member, "button.follow.highlight">
+  [181] objcall 214 ............................. tElem.setProperty(#member, "button.follow.highlight")
+  [183] getprop 211 ............................. <pFollowFlashState>
+  [185] not ..................................... <not pFollowFlashState>
+  [186] setprop 211 ............................. pFollowFlashState = not pFollowFlashState
+  [188] pop 1 ................................... end case
+  [190] ret
+end
+
+on startRendering me, tChatID
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 54 .............................. <me.getComponent()>
+  [  6] getparam 1 .............................. <tChatID>
+  [  8] pusharglist 2 ........................... <me.getComponent(), tChatID>
+  [ 10] objcall 10 .............................. <me.getComponent().getChat(tChatID)>
+  [ 12] setlocal 0 .............................. tChat = me.getComponent().getChat(tChatID)
+  [ 14] getlocal 0 .............................. <tChat>
+  [ 16] pusharglist 1 ........................... <tChat>
+  [ 18] extcall 65 .............................. <listp(tChat)>
+  [ 20] not ..................................... <not listp(tChat)>
+  [ 21] jmpifz [ 40] ............................ if not listp(tChat) then
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pushcons 17 ............................. <"Can't render empty chat">
+  [ 28] pushsymb 118 ............................ <#startRendering>
+  [ 30] pushsymb 111 ............................ <#major>
+  [ 32] pusharglist 4 ........................... <me, "Can't render empty chat", #startRendering, #major>
+  [ 34] extcall 27 .............................. <error(me, "Can't render empty chat", #startRendering, #major)>
+  [ 36] pusharglistnoret 1 ...................... <error(me, "Can't render empty chat", #startRendering, #major)>
+  [ 38] extcall 30 .............................. return error(me, "Can't render empty chat", #startRendering, #major)
+  [ 40] getlocal 0 .............................. <tChat>
+  [ 42] pusharglist 1 ........................... <tChat>
+  [ 44] objcall 218 ............................. <tChat.duplicate()>
+  [ 46] setprop 217 ............................. pEntryBuffer = tChat.duplicate()
+  [ 48] getprop 149 ............................. <pRenderTimeoutID>
+  [ 50] pusharglist 1 ........................... <pRenderTimeoutID>
+  [ 52] extcall 208 ............................. <timeoutExists(pRenderTimeoutID)>
+  [ 54] jmpifz [ 63] ............................ if timeoutExists(pRenderTimeoutID) then
+  [ 57] getprop 149 ............................. <pRenderTimeoutID>
+  [ 59] pusharglistnoret 1 ...................... <pRenderTimeoutID>
+  [ 61] extcall 212 ............................. removeTimeout(pRenderTimeoutID)
+  [ 63] getparam 0 .............................. <me>
+  [ 65] getparam 1 .............................. <tChatID>
+  [ 67] pusharglist 2 ........................... <me, tChatID>
+  [ 69] objcall 121 ............................. <me.getChatRenderer(tChatID)>
+  [ 71] setlocal 1 .............................. tChatRenderer = me.getChatRenderer(tChatID)
+  [ 73] getlocal 1 .............................. <tChatRenderer>
+  [ 75] pusharglistnoret 1 ...................... <tChatRenderer>
+  [ 77] objcall 204 ............................. tChatRenderer.clearImage()
+  [ 79] getprop 149 ............................. <pRenderTimeoutID>
+  [ 81] getprop 145 ............................. <pBatchInterval>
+  [ 83] pushsymb 119 ............................ <#startBatchRender>
+  [ 85] getparam 0 .............................. <me>
+  [ 87] pusharglist 1 ........................... <me>
+  [ 89] objcall 36 .............................. <me.getID()>
+  [ 91] getparam 1 .............................. <tChatID>
+  [ 93] pushzero ................................ <0>
+  [ 94] pusharglistnoret 6 ...................... <pRenderTimeoutID, pBatchInterval, #startBatchRender, me.getID(), tChatID, 0>
+  [ 96] extcall 209 ............................. createTimeout(pRenderTimeoutID, pBatchInterval, #startBatchRender, me.getID(), tChatID, 0)
+  [ 98] getparam 0 .............................. <me>
+  [100] getparam 1 .............................. <tChatID>
+  [102] pusharglistnoret 2 ...................... <me, tChatID>
+  [104] objcall 119 ............................. me.startBatchRender(tChatID)
+  [106] ret
+end
+
+on startBatchRender me, tChatID
+  [  0] getprop 217 ............................. <pEntryBuffer>
+  [  2] pusharglist 1 ........................... <pEntryBuffer>
+  [  4] extcall 65 .............................. <listp(pEntryBuffer)>
+  [  6] not ..................................... <not listp(pEntryBuffer)>
+  [  7] jmpifz [ 26] ............................ if not listp(pEntryBuffer) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 17 ............................. <"Can't render empty chat">
+  [ 14] pushsymb 119 ............................ <#startBatchRender>
+  [ 16] pushsymb 111 ............................ <#major>
+  [ 18] pusharglist 4 ........................... <me, "Can't render empty chat", #startBatchRender, #major>
+  [ 20] extcall 27 .............................. <error(me, "Can't render empty chat", #startBatchRender, #major)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Can't render empty chat", #startBatchRender, #major)>
+  [ 24] extcall 30 .............................. return error(me, "Can't render empty chat", #startBatchRender, #major)
+  [ 26] getprop 217 ............................. <pEntryBuffer>
+  [ 28] getobjprop 66 ........................... <pEntryBuffer.count>
+  [ 30] pushzero ................................ <0>
+  [ 31] eq ...................................... <pEntryBuffer.count = 0>
+  [ 32] jmpifz [ 47] ............................ if pEntryBuffer.count = 0 then
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglistnoret 1 ...................... <me>
+  [ 39] objcall 120 ............................. me.stopBatchRender()
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] pusharglistnoret 1 ...................... <1>
+  [ 45] extcall 30 .............................. return 1
+  [ 47] pushint8 1 .............................. <1>
+  [ 49] setlocal 0
+  [ 51] getlocal 0
+  [ 53] getprop 144 ............................. <pBatchSize>
+  [ 55] lteq
+  [ 56] jmpifz [135] ............................ repeat with i = 1 to pBatchSize
+  [ 59] getprop 217 ............................. <pEntryBuffer>
+  [ 61] getobjprop 66 ........................... <pEntryBuffer.count>
+  [ 63] setlocal 1 .............................. tBufferSize = pEntryBuffer.count
+  [ 65] getprop 217 ............................. <pEntryBuffer>
+  [ 67] getlocal 1 .............................. <tBufferSize>
+  [ 69] pusharglist 2 ........................... <pEntryBuffer, tBufferSize>
+  [ 71] objcall 71 .............................. <pEntryBuffer[tBufferSize]>
+  [ 73] setlocal 2 .............................. tEntry = pEntryBuffer[tBufferSize]
+  [ 75] getparam 0 .............................. <me>
+  [ 77] getparam 1 .............................. <tChatID>
+  [ 79] pusharglist 2 ........................... <me, tChatID>
+  [ 81] objcall 121 ............................. <me.getChatRenderer(tChatID)>
+  [ 83] setlocal 3 .............................. tChatRenderer = me.getChatRenderer(tChatID)
+  [ 85] getlocal 3 .............................. <tChatRenderer>
+  [ 87] getlocal 2 .............................. <tEntry>
+  [ 89] pushsymb 205 ............................ <#start>
+  [ 91] pusharglist 3 ........................... <tChatRenderer, tEntry, #start>
+  [ 93] objcall 220 ............................. <tChatRenderer.renderChatEntry(tEntry, #start)>
+  [ 95] setlocal 4 .............................. tSuccess = tChatRenderer.renderChatEntry(tEntry, #start)
+  [ 97] getprop 217 ............................. <pEntryBuffer>
+  [ 99] getlocal 1 .............................. <tBufferSize>
+  [101] pusharglistnoret 2 ...................... <pEntryBuffer, tBufferSize>
+  [103] objcall 195 ............................. pEntryBuffer.deleteAt(tBufferSize)
+  [105] getlocal 1 .............................. <tBufferSize>
+  [107] pushint8 1 .............................. <1>
+  [109] eq ...................................... <tBufferSize = 1>
+  [110] getlocal 4 .............................. <tSuccess>
+  [112] not ..................................... <not tSuccess>
+  [113] or ...................................... <(tBufferSize = 1) or not tSuccess>
+  [114] jmpifz [126] ............................ if (tBufferSize = 1) or not tSuccess then
+  [117] getparam 0 .............................. <me>
+  [119] pusharglistnoret 1 ...................... <me>
+  [121] objcall 120 ............................. me.stopBatchRender()
+  [123] jmp [135] ............................... exit repeat
+  [126] pushint8 1
+  [128] getlocal 0
+  [130] add
+  [131] setlocal 0
+  [133] endrepeat [ 51]
+  [135] getparam 0 .............................. <me>
+  [137] pusharglistnoret 1 ...................... <me>
+  [139] objcall 89 .............................. me.updateInterface()
+  [141] ret
+end
+
+on stopBatchRender me
+  [  0] getprop 149 ............................. <pRenderTimeoutID>
+  [  2] pusharglist 1 ........................... <pRenderTimeoutID>
+  [  4] extcall 208 ............................. <timeoutExists(pRenderTimeoutID)>
+  [  6] jmpifz [ 15] ............................ if timeoutExists(pRenderTimeoutID) then
+  [  9] getprop 149 ............................. <pRenderTimeoutID>
+  [ 11] pusharglistnoret 1 ...................... <pRenderTimeoutID>
+  [ 13] extcall 212 ............................. removeTimeout(pRenderTimeoutID)
+  [ 15] ret
+end
+
+on addMessage me, tChatID, tEntry
+  [  0] getprop 137 ............................. <pChatRenderers>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglist 2 ........................... <pChatRenderers, tChatID>
+  [  6] objcall 86 .............................. <pChatRenderers.findPos(tChatID)>
+  [  8] pusharglist 1 ........................... <pChatRenderers.findPos(tChatID)>
+  [ 10] extcall 79 .............................. <voidp(pChatRenderers.findPos(tChatID))>
+  [ 12] jmpifz [ 26] ............................ if voidp(pChatRenderers.findPos(tChatID)) then / else
+  [ 15] getparam 0 .............................. <me>
+  [ 17] getparam 1 .............................. <tChatID>
+  [ 19] pusharglistnoret 2 ...................... <me, tChatID>
+  [ 21] objcall 6 ............................... me.addChat(tChatID)
+  [ 23] jmp [ 57]
+  [ 26] getprop 139 ............................. <pCachedChatIDs>
+  [ 28] getparam 1 .............................. <tChatID>
+  [ 30] pusharglist 2 ........................... <pCachedChatIDs, tChatID>
+  [ 32] objcall 194 ............................. <pCachedChatIDs.getPos(tChatID)>
+  [ 34] pushzero ................................ <0>
+  [ 35] gt ...................................... <pCachedChatIDs.getPos(tChatID) > 0>
+  [ 36] jmpifz [ 57] ............................ if pCachedChatIDs.getPos(tChatID) > 0 then
+  [ 39] getparam 0 .............................. <me>
+  [ 41] getparam 1 .............................. <tChatID>
+  [ 43] pusharglist 2 ........................... <me, tChatID>
+  [ 45] objcall 121 ............................. <me.getChatRenderer(tChatID)>
+  [ 47] setlocal 0 .............................. tChatRenderer = me.getChatRenderer(tChatID)
+  [ 49] getlocal 0 .............................. <tChatRenderer>
+  [ 51] getparam 2 .............................. <tEntry>
+  [ 53] pusharglistnoret 2 ...................... <tChatRenderer, tEntry>
+  [ 55] objcall 220 ............................. tChatRenderer.renderChatEntry(tEntry)
+  [ 57] getparam 2 .............................. <tEntry>
+  [ 59] pushsymb 93 ............................. <#type>
+  [ 61] pusharglist 2 ........................... <tEntry, #type>
+  [ 63] objcall 57 .............................. <tEntry.getaProp(#type)>
+  [ 65] setlocal 1 .............................. ttype = tEntry.getaProp(#type)
+  [ 67] getlocal 1 .............................. <ttype>
+  [ 69] pushsymb 94 ............................. <#message>
+  [ 71] eq ...................................... <ttype = #message>
+  [ 72] getlocal 1 .............................. <ttype>
+  [ 74] pushsymb 104 ............................ <#invitation>
+  [ 76] eq ...................................... <ttype = #invitation>
+  [ 77] or ...................................... <(ttype = #message) or (ttype = #invitation)>
+  [ 78] jmpifz [142] ............................ if (ttype = #message) or (ttype = #invitation) then
+  [ 81] getprop 134 ............................. <pTabsObj>
+  [ 83] getparam 1 .............................. <tChatID>
+  [ 85] pusharglistnoret 2 ...................... <pTabsObj, tChatID>
+  [ 87] objcall 224 ............................. pTabsObj.highlightTab(tChatID)
+  [ 89] getprop 132 ............................. <pWindowID>
+  [ 91] pusharglist 1 ........................... <pWindowID>
+  [ 93] extcall 155 ............................. <windowExists(pWindowID)>
+  [ 95] not ..................................... <not windowExists(pWindowID)>
+  [ 96] jmpifz [110] ............................ if not windowExists(pWindowID) then / else
+  [ 99] getparam 0 .............................. <me>
+  [101] pushsymb 225 ............................ <#highlighted>
+  [103] pusharglistnoret 2 ...................... <me, #highlighted>
+  [105] objcall 126 ............................. me.setState(#highlighted)
+  [107] jmp [142]
+  [110] getprop 132 ............................. <pWindowID>
+  [112] pusharglist 1 ........................... <pWindowID>
+  [114] extcall 163 ............................. <getWindow(pWindowID)>
+  [116] setlocal 2 .............................. tWnd = getWindow(pWindowID)
+  [118] getlocal 2 .............................. <tWnd>
+  [120] pushsymb 178 ............................ <#visible>
+  [122] pusharglist 2 ........................... <tWnd, #visible>
+  [124] objcall 179 ............................. <tWnd.getProperty(#visible)>
+  [126] setlocal 3 .............................. tVisible = tWnd.getProperty(#visible)
+  [128] getlocal 3 .............................. <tVisible>
+  [130] not ..................................... <not tVisible>
+  [131] jmpifz [142] ............................ if not tVisible then
+  [134] getparam 0 .............................. <me>
+  [136] pushsymb 225 ............................ <#highlighted>
+  [138] pusharglistnoret 2 ...................... <me, #highlighted>
+  [140] objcall 126 ............................. me.setState(#highlighted)
+  [142] getlocal 1 .............................. <ttype>
+  [144] pushsymb 104 ............................ <#invitation>
+  [146] eq ...................................... <ttype = #invitation>
+  [147] jmpifz [190] ............................ if ttype = #invitation then
+  [150] getparam 1 .............................. <tChatID>
+  [152] getprop 191 ............................. <pActiveChatID>
+  [154] eq ...................................... <tChatID = pActiveChatID>
+  [155] jmpifz [169] ............................ if tChatID = pActiveChatID then / else
+  [158] getparam 0 .............................. <me>
+  [160] pushsymb 205 ............................ <#start>
+  [162] pusharglistnoret 2 ...................... <me, #start>
+  [164] objcall 117 ............................. me.flashFollowButton(#start)
+  [166] jmp [190]
+  [169] getprop 140 ............................. <pFollowFlashList>
+  [171] getparam 1 .............................. <tChatID>
+  [173] pusharglist 2 ........................... <pFollowFlashList, tChatID>
+  [175] objcall 194 ............................. <pFollowFlashList.getPos(tChatID)>
+  [177] pushzero ................................ <0>
+  [178] eq ...................................... <pFollowFlashList.getPos(tChatID) = 0>
+  [179] jmpifz [190] ............................ if pFollowFlashList.getPos(tChatID) = 0 then
+  [182] getprop 140 ............................. <pFollowFlashList>
+  [184] getparam 1 .............................. <tChatID>
+  [186] pusharglistnoret 2 ...................... <pFollowFlashList, tChatID>
+  [188] objcall 108 ............................. pFollowFlashList.add(tChatID)
+  [190] getparam 0 .............................. <me>
+  [192] pusharglistnoret 1 ...................... <me>
+  [194] objcall 89 .............................. me.updateInterface()
+  [196] ret
+end
+
+on getChatRenderer me, tChatID
+  [  0] getprop 137 ............................. <pChatRenderers>
+  [  2] getparam 1 .............................. <tChatID>
+  [  4] pusharglist 2 ........................... <pChatRenderers, tChatID>
+  [  6] objcall 57 .............................. <pChatRenderers.getaProp(tChatID)>
+  [  8] setlocal 0 .............................. tChatRenderer = pChatRenderers.getaProp(tChatID)
+  [ 10] getlocal 0 .............................. <tChatRenderer>
+  [ 12] pusharglist 1 ........................... <tChatRenderer>
+  [ 14] extcall 79 .............................. <voidp(tChatRenderer)>
+  [ 16] jmpifz [ 39] ............................ if voidp(tChatRenderer) then
+  [ 19] pushsymb 136 ............................ <#temp>
+  [ 21] pushcons 18 ............................. <"IM Chat Renderer Class">
+  [ 23] pusharglist 2 ........................... <#temp, "IM Chat Renderer Class">
+  [ 25] extcall 135 ............................. <createObject(#temp, "IM Chat Renderer Class")>
+  [ 27] setlocal 0 .............................. tChatRenderer = createObject(#temp, "IM Chat Renderer Class")
+  [ 29] getprop 137 ............................. <pChatRenderers>
+  [ 31] getparam 1 .............................. <tChatID>
+  [ 33] getlocal 0 .............................. <tChatRenderer>
+  [ 35] pusharglistnoret 3 ...................... <pChatRenderers, tChatID, tChatRenderer>
+  [ 37] objcall 80 .............................. pChatRenderers.setaProp(tChatID, tChatRenderer)
+  [ 39] getlocal 0 .............................. <tChatRenderer>
+  [ 41] pusharglistnoret 1 ...................... <tChatRenderer>
+  [ 43] extcall 30 .............................. return tChatRenderer
+  [ 45] ret
+end
+
+on updateInterface me
+  [  0] getprop 161 ............................. <pView>
+  [  2] pushsymb 173 ............................ <#empty>
+  [  4] eq ...................................... <pView = #empty>
+  [  5] jmpifz [ 14] ............................ if pView = #empty then
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 30 .............................. return 1
+  [ 14] getprop 191 ............................. <pActiveChatID>
+  [ 16] not ..................................... <not pActiveChatID>
+  [ 17] jmpifz [ 25] ............................ if not pActiveChatID then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 30 .............................. return 0
+  [ 25] getprop 132 ............................. <pWindowID>
+  [ 27] pusharglist 1 ........................... <pWindowID>
+  [ 29] extcall 155 ............................. <windowExists(pWindowID)>
+  [ 31] not ..................................... <not windowExists(pWindowID)>
+  [ 32] jmpifz [ 40] ............................ if not windowExists(pWindowID) then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 30 .............................. return 0
+  [ 40] getprop 132 ............................. <pWindowID>
+  [ 42] pusharglist 1 ........................... <pWindowID>
+  [ 44] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 46] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [ 48] getlocal 0 .............................. <tWnd>
+  [ 50] pushcons 19 ............................. <"chat.output">
+  [ 52] pusharglist 2 ........................... <tWnd, "chat.output">
+  [ 54] objcall 174 ............................. <tWnd.elementExists("chat.output")>
+  [ 56] not ..................................... <not tWnd.elementExists("chat.output")>
+  [ 57] jmpifz [ 65] ............................ if not tWnd.elementExists("chat.output") then
+  [ 60] pushzero ................................ <0>
+  [ 61] pusharglistnoret 1 ...................... <0>
+  [ 63] extcall 30 .............................. return 0
+  [ 65] getlocal 0 .............................. <tWnd>
+  [ 67] pushcons 20 ............................. <"tabs">
+  [ 69] pusharglist 2 ........................... <tWnd, "tabs">
+  [ 71] objcall 174 ............................. <tWnd.elementExists("tabs")>
+  [ 73] not ..................................... <not tWnd.elementExists("tabs")>
+  [ 74] jmpifz [ 82] ............................ if not tWnd.elementExists("tabs") then
+  [ 77] pushzero ................................ <0>
+  [ 78] pusharglistnoret 1 ...................... <0>
+  [ 80] extcall 30 .............................. return 0
+  [ 82] getlocal 0 .............................. <tWnd>
+  [ 84] pushcons 21 ............................. <"tab.title">
+  [ 86] pusharglist 2 ........................... <tWnd, "tab.title">
+  [ 88] objcall 174 ............................. <tWnd.elementExists("tab.title")>
+  [ 90] not ..................................... <not tWnd.elementExists("tab.title")>
+  [ 91] jmpifz [ 99] ............................ if not tWnd.elementExists("tab.title") then
+  [ 94] pushzero ................................ <0>
+  [ 95] pusharglistnoret 1 ...................... <0>
+  [ 97] extcall 30 .............................. return 0
+  [ 99] getlocal 0 .............................. <tWnd>
+  [101] pushcons 15 ............................. <"button.follow">
+  [103] pusharglist 2 ........................... <tWnd, "button.follow">
+  [105] objcall 174 ............................. <tWnd.elementExists("button.follow")>
+  [107] not ..................................... <not tWnd.elementExists("button.follow")>
+  [108] jmpifz [116] ............................ if not tWnd.elementExists("button.follow") then
+  [111] pushzero ................................ <0>
+  [112] pusharglistnoret 1 ...................... <0>
+  [114] extcall 30 .............................. return 0
+  [116] getparam 0 .............................. <me>
+  [118] getprop 191 ............................. <pActiveChatID>
+  [120] pusharglist 2 ........................... <me, pActiveChatID>
+  [122] objcall 121 ............................. <me.getChatRenderer(pActiveChatID)>
+  [124] setlocal 1 .............................. tChatRenderer = me.getChatRenderer(pActiveChatID)
+  [126] getlocal 1 .............................. <tChatRenderer>
+  [128] pusharglist 1 ........................... <tChatRenderer>
+  [130] objcall 227 ............................. <tChatRenderer.getChatImage()>
+  [132] setlocal 2 .............................. tChatImage = tChatRenderer.getChatImage()
+  [134] getlocal 0 .............................. <tWnd>
+  [136] pushcons 19 ............................. <"chat.output">
+  [138] pusharglist 2 ........................... <tWnd, "chat.output">
+  [140] objcall 175 ............................. <tWnd.getElement("chat.output")>
+  [142] setlocal 3 .............................. tChatOutput = tWnd.getElement("chat.output")
+  [144] getlocal 3 .............................. <tChatOutput>
+  [146] getlocal 2 .............................. <tChatImage>
+  [148] pusharglistnoret 2 ...................... <tChatOutput, tChatImage>
+  [150] objcall 228 ............................. tChatOutput.feedImage(tChatImage)
+  [152] getprop 134 ............................. <pTabsObj>
+  [154] pusharglist 1 ........................... <pTabsObj>
+  [156] objcall 229 ............................. <pTabsObj.getImage()>
+  [158] setlocal 4 .............................. tTabImage = pTabsObj.getImage()
+  [160] getlocal 0 .............................. <tWnd>
+  [162] pushcons 20 ............................. <"tabs">
+  [164] pusharglist 2 ........................... <tWnd, "tabs">
+  [166] objcall 175 ............................. <tWnd.getElement("tabs")>
+  [168] setlocal 5 .............................. tTabElement = tWnd.getElement("tabs")
+  [170] getlocal 5 .............................. <tTabElement>
+  [172] getlocal 4 .............................. <tTabImage>
+  [174] pusharglistnoret 2 ...................... <tTabElement, tTabImage>
+  [176] objcall 228 ............................. tTabElement.feedImage(tTabImage)
+  [178] getlocal 0 .............................. <tWnd>
+  [180] pushcons 21 ............................. <"tab.title">
+  [182] pusharglist 2 ........................... <tWnd, "tab.title">
+  [184] objcall 175 ............................. <tWnd.getElement("tab.title")>
+  [186] setlocal 6 .............................. tTitleElem = tWnd.getElement("tab.title")
+  [188] getprop 138 ............................. <pNames>
+  [190] getprop 191 ............................. <pActiveChatID>
+  [192] pusharglist 2 ........................... <pNames, pActiveChatID>
+  [194] objcall 57 .............................. <pNames.getaProp(pActiveChatID)>
+  [196] setlocal 7 .............................. tName = pNames.getaProp(pActiveChatID)
+  [198] getlocal 6 .............................. <tTitleElem>
+  [200] getlocal 7 .............................. <tName>
+  [202] pusharglist 1 ........................... <tName>
+  [204] extcall 72 .............................. <string(tName)>
+  [206] pusharglistnoret 2 ...................... <tTitleElem, string(tName)>
+  [208] objcall 230 ............................. tTitleElem.setText(string(tName))
+  [210] getparam 0 .............................. <me>
+  [212] pusharglist 1 ........................... <me>
+  [214] objcall 54 .............................. <me.getComponent()>
+  [216] getprop 191 ............................. <pActiveChatID>
+  [218] pusharglist 2 ........................... <me.getComponent(), pActiveChatID>
+  [220] objcall 18 .............................. <me.getComponent().getFriend(pActiveChatID)>
+  [222] setlocal 8 .............................. tFriend = me.getComponent().getFriend(pActiveChatID)
+  [224] getlocal 8 .............................. <tFriend>
+  [226] pushsymb 231 ............................ <#canfollow>
+  [228] pusharglist 2 ........................... <tFriend, #canfollow>
+  [230] objcall 57 .............................. <tFriend.getaProp(#canfollow)>
+  [232] setlocal 9 .............................. tCanFollow = tFriend.getaProp(#canfollow)
+  [234] getlocal 9 .............................. <tCanFollow>
+  [236] jmpifz [254] ............................ if tCanFollow then / else
+  [239] getlocal 0 .............................. <tWnd>
+  [241] pushcons 15 ............................. <"button.follow">
+  [243] pusharglist 2 ........................... <tWnd, "button.follow">
+  [245] objcall 175 ............................. <tWnd.getElement("button.follow")>
+  [247] pusharglistnoret 1 ...................... <tWnd.getElement("button.follow")>
+  [249] objcall 171 ............................. tWnd.getElement("button.follow").show()
+  [251] jmp [266]
+  [254] getlocal 0 .............................. <tWnd>
+  [256] pushcons 15 ............................. <"button.follow">
+  [258] pusharglist 2 ........................... <tWnd, "button.follow">
+  [260] objcall 175 ............................. <tWnd.getElement("button.follow")>
+  [262] pusharglistnoret 1 ...................... <tWnd.getElement("button.follow")>
+  [264] objcall 177 ............................. tWnd.getElement("button.follow").hide()
+  [266] getlocal 8 .............................. <tFriend>
+  [268] pushsymb 232 ............................ <#figure>
+  [270] pusharglist 2 ........................... <tFriend, #figure>
+  [272] objcall 57 .............................. <tFriend.getaProp(#figure)>
+  [274] setlocal 10 ............................. tFigure = tFriend.getaProp(#figure)
+  [276] getlocal 8 .............................. <tFriend>
+  [278] pushsymb 233 ............................ <#sex>
+  [280] pusharglist 2 ........................... <tFriend, #sex>
+  [282] objcall 57 .............................. <tFriend.getaProp(#sex)>
+  [284] setlocal 11 ............................. tGender = tFriend.getaProp(#sex)
+  [286] getprop 134 ............................. <pTabsObj>
+  [288] getprop 191 ............................. <pActiveChatID>
+  [290] getlocal 10 ............................. <tFigure>
+  [292] getlocal 11 ............................. <tGender>
+  [294] pusharglistnoret 4 ...................... <pTabsObj, pActiveChatID, tFigure, tGender>
+  [296] objcall 234 ............................. pTabsObj.updateHeadImage(pActiveChatID, tFigure, tGender)
+  [298] getparam 0 .............................. <me>
+  [300] pusharglistnoret 1 ...................... <me>
+  [302] objcall 125 ............................. me.scrollBottom()
+  [304] ret
+end
+
+on startScaling me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 243 ............................. pScale = 1
+  [  4] pusharglist 0 ........................... <>
+  [  6] thebuiltin 245 .......................... <the mouseV>
+  [  8] setprop 244 ............................. pOrigLocH = the mouseV
+  [ 10] getprop 132 ............................. <pWindowID>
+  [ 12] pusharglist 1 ........................... <pWindowID>
+  [ 14] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 16] pushsymb 247 ............................ <#height>
+  [ 18] pusharglist 2 ........................... <getWindow(pWindowID), #height>
+  [ 20] objcall 179 ............................. <getWindow(pWindowID).getProperty(#height)>
+  [ 22] setprop 246 ............................. pOrigHeight = getWindow(pWindowID).getProperty(#height)
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 36 .............................. <me.getID()>
+  [ 30] pusharglistnoret 1 ...................... <me.getID()>
+  [ 32] extcall 248 ............................. receiveUpdate(me.getID())
+  [ 34] getprop 147 ............................. <pScaleEventAgentID>
+  [ 36] pusharglist 1 ........................... <pScaleEventAgentID>
+  [ 38] extcall 48 .............................. <getObject(pScaleEventAgentID)>
+  [ 40] setlocal 0 .............................. tAgent = getObject(pScaleEventAgentID)
+  [ 42] getlocal 0 .............................. <tAgent>
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pushsymb 166 ............................ <#mouseUp>
+  [ 48] pushsymb 123 ............................ <#stopScaling>
+  [ 50] pusharglistnoret 4 ...................... <tAgent, me, #mouseUp, #stopScaling>
+  [ 52] objcall 249 ............................. tAgent.registerEvent(me, #mouseUp, #stopScaling)
+  [ 54] ret
+end
+
+on stopScaling me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 243 ............................. pScale = 0
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 36 .............................. <me.getID()>
+  [  9] pusharglistnoret 1 ...................... <me.getID()>
+  [ 11] extcall 251 ............................. removeUpdate(me.getID())
+  [ 13] getprop 147 ............................. <pScaleEventAgentID>
+  [ 15] pusharglist 1 ........................... <pScaleEventAgentID>
+  [ 17] extcall 48 .............................. <getObject(pScaleEventAgentID)>
+  [ 19] setlocal 0 .............................. tAgent = getObject(pScaleEventAgentID)
+  [ 21] getlocal 0 .............................. <tAgent>
+  [ 23] pushsymb 166 ............................ <#mouseUp>
+  [ 25] pusharglistnoret 2 ...................... <tAgent, #mouseUp>
+  [ 27] objcall 252 ............................. tAgent.unregisterEvent(#mouseUp)
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pusharglistnoret 1 ...................... <me>
+  [ 33] objcall 125 ............................. me.scrollBottom()
+  [ 35] ret
+end
+
+on update me
+  [  0] getprop 243 ............................. <pScale>
+  [  2] not ..................................... <not pScale>
+  [  3] jmpifz [ 12] ............................ if not pScale then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 30 .............................. return 1
+  [ 12] getprop 132 ............................. <pWindowID>
+  [ 14] pusharglist 1 ........................... <pWindowID>
+  [ 16] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 18] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [ 20] pusharglist 0 ........................... <>
+  [ 22] thebuiltin 245 .......................... <the mouseV>
+  [ 24] getprop 244 ............................. <pOrigLocH>
+  [ 26] sub ..................................... <the mouseV - pOrigLocH>
+  [ 27] setlocal 1 .............................. tLocOffset = the mouseV - pOrigLocH
+  [ 29] getlocal 1 .............................. <tLocOffset>
+  [ 31] getprop 246 ............................. <pOrigHeight>
+  [ 33] add ..................................... <tLocOffset + pOrigHeight>
+  [ 34] getprop 142 ............................. <pMinHeight>
+  [ 36] lt ...................................... <(tLocOffset + pOrigHeight) < pMinHeight>
+  [ 37] jmpifz [ 47] ............................ if (tLocOffset + pOrigHeight) < pMinHeight then
+  [ 40] getprop 142 ............................. <pMinHeight>
+  [ 42] getprop 246 ............................. <pOrigHeight>
+  [ 44] sub ..................................... <pMinHeight - pOrigHeight>
+  [ 45] setlocal 1 .............................. tLocOffset = pMinHeight - pOrigHeight
+  [ 47] getlocal 0 .............................. <tWnd>
+  [ 49] pushsymb 247 ............................ <#height>
+  [ 51] pusharglist 2 ........................... <tWnd, #height>
+  [ 53] objcall 179 ............................. <tWnd.getProperty(#height)>
+  [ 55] getprop 246 ............................. <pOrigHeight>
+  [ 57] sub ..................................... <tWnd.getProperty(#height) - pOrigHeight>
+  [ 58] setlocal 2 .............................. tHeightOffset = tWnd.getProperty(#height) - pOrigHeight
+  [ 60] getlocal 0 .............................. <tWnd>
+  [ 62] pushzero ................................ <0>
+  [ 63] getlocal 1 .............................. <tLocOffset>
+  [ 65] getlocal 2 .............................. <tHeightOffset>
+  [ 67] sub ..................................... <tLocOffset - tHeightOffset>
+  [ 68] pusharglistnoret 3 ...................... <tWnd, 0, tLocOffset - tHeightOffset>
+  [ 70] objcall 253 ............................. tWnd.resizeBy(0, tLocOffset - tHeightOffset)
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglistnoret 1 ...................... <me>
+  [ 76] objcall 125 ............................. me.scrollBottom()
+  [ 78] ret
+end
+
+on scrollBottom me
+  [  0] getprop 132 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 163 ............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWnd>
+  [ 10] pushcons 22 ............................. <"chat.scroll">
+  [ 12] pusharglist 2 ........................... <tWnd, "chat.scroll">
+  [ 14] objcall 174 ............................. <tWnd.elementExists("chat.scroll")>
+  [ 16] not ..................................... <not tWnd.elementExists("chat.scroll")>
+  [ 17] jmpifz [ 25] ............................ if not tWnd.elementExists("chat.scroll") then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 30 .............................. return 0
+  [ 25] getlocal 0 .............................. <tWnd>
+  [ 27] pushcons 22 ............................. <"chat.scroll">
+  [ 29] pusharglist 2 ........................... <tWnd, "chat.scroll">
+  [ 31] objcall 175 ............................. <tWnd.getElement("chat.scroll")>
+  [ 33] setlocal 1 .............................. tScroll = tWnd.getElement("chat.scroll")
+  [ 35] getlocal 1 .............................. <tScroll>
+  [ 37] pusharglist 0 ........................... <>
+  [ 39] thebuiltin 256 .......................... <the maxinteger>
+  [ 42] pusharglistnoret 2 ...................... <tScroll, the maxinteger>
+  [ 44] objcall 257 ............................. tScroll.setScrollOffset(the maxinteger)
+  [ 47] ret
+end
+
+on setState me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] setprop 259 ............................. pState = tstate
+  [  5] pushsymb 261 ............................ <#IMStateChanged>
+  [  8] pusharglistnoret 1 ...................... <#IMStateChanged>
+  [ 10] extcall 260 ............................. executeMessage(#IMStateChanged)
+  [ 13] ret
+end
+
+on getState me
+  [  0] getprop 259 ............................. <pState>
+  [  3] pusharglistnoret 1 ...................... <pState>
+  [  5] extcall 30 .............................. return pState
+  [  7] ret
+end
+
+on showInvitationWindow me, tCount
+  [  0] getprop 133 ............................. <pInvitationWindowID>
+  [  2] pusharglist 1 ........................... <pInvitationWindowID>
+  [  4] extcall 155 ............................. <windowExists(pInvitationWindowID)>
+  [  6] not ..................................... <not windowExists(pInvitationWindowID)>
+  [  7] jmpifz [ 42] ............................ if not windowExists(pInvitationWindowID) then
+  [ 10] getprop 133 ............................. <pInvitationWindowID>
+  [ 12] pushcons 23 ............................. <"friend_invitation.window">
+  [ 14] pusharglistnoret 2 ...................... <pInvitationWindowID, "friend_invitation.window">
+  [ 16] extcall 160 ............................. createWindow(pInvitationWindowID, "friend_invitation.window")
+  [ 18] getprop 133 ............................. <pInvitationWindowID>
+  [ 20] pusharglist 1 ........................... <pInvitationWindowID>
+  [ 22] extcall 163 ............................. <getWindow(pInvitationWindowID)>
+  [ 24] setlocal 0 .............................. tWnd = getWindow(pInvitationWindowID)
+  [ 26] getlocal 0 .............................. <tWnd>
+  [ 28] pushsymb 131 ............................ <#eventProcInvitation>
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglist 1 ........................... <me>
+  [ 34] objcall 36 .............................. <me.getID()>
+  [ 36] pushsymb 166 ............................ <#mouseUp>
+  [ 38] pusharglistnoret 4 ...................... <tWnd, #eventProcInvitation, me.getID(), #mouseUp>
+  [ 40] objcall 165 ............................. tWnd.registerProcedure(#eventProcInvitation, me.getID(), #mouseUp)
+  [ 42] getprop 133 ............................. <pInvitationWindowID>
+  [ 44] pusharglistnoret 1 ...................... <pInvitationWindowID>
+  [ 46] extcall 406 ............................. activateWindowObj(pInvitationWindowID)
+  [ 49] pushcons 24 ............................. <"friend_invitation_summary">
+  [ 51] pusharglist 1 ........................... <"friend_invitation_summary">
+  [ 53] extcall 100 ............................. <getText("friend_invitation_summary")>
+  [ 55] pushcons 25 ............................. <"%count%">
+  [ 57] getparam 1 .............................. <tCount>
+  [ 59] pusharglist 3 ........................... <getText("friend_invitation_summary"), "%count%", tCount>
+  [ 61] extcall 262 ............................. <replaceChunks(getText("friend_invitation_summary"), "%count%", tCount)>
+  [ 64] setlocal 1 .............................. tSummaryText = replaceChunks(getText("friend_invitation_summary"), "%count%", tCount)
+  [ 66] getprop 133 ............................. <pInvitationWindowID>
+  [ 68] pusharglist 1 ........................... <pInvitationWindowID>
+  [ 70] extcall 163 ............................. <getWindow(pInvitationWindowID)>
+  [ 72] setlocal 0 .............................. tWnd = getWindow(pInvitationWindowID)
+  [ 74] getlocal 0 .............................. <tWnd>
+  [ 76] pushcons 26 ............................. <"invitation.summary">
+  [ 78] pusharglist 2 ........................... <tWnd, "invitation.summary">
+  [ 80] objcall 174 ............................. <tWnd.elementExists("invitation.summary")>
+  [ 82] not ..................................... <not tWnd.elementExists("invitation.summary")>
+  [ 83] jmpifz [ 91] ............................ if not tWnd.elementExists("invitation.summary") then
+  [ 86] pushzero ................................ <0>
+  [ 87] pusharglistnoret 1 ...................... <0>
+  [ 89] extcall 30 .............................. return 0
+  [ 91] getlocal 0 .............................. <tWnd>
+  [ 93] pushcons 26 ............................. <"invitation.summary">
+  [ 95] pusharglist 2 ........................... <tWnd, "invitation.summary">
+  [ 97] objcall 175 ............................. <tWnd.getElement("invitation.summary")>
+  [ 99] getlocal 1 .............................. <tSummaryText>
+  [101] pusharglistnoret 2 ...................... <tWnd.getElement("invitation.summary"), tSummaryText>
+  [103] objcall 230 ............................. tWnd.getElement("invitation.summary").setText(tSummaryText)
+  [105] ret
+end
+
+on closeInvitationWindow me
+  [  0] getprop 133 ............................. <pInvitationWindowID>
+  [  2] pusharglist 1 ........................... <pInvitationWindowID>
+  [  4] extcall 155 ............................. <windowExists(pInvitationWindowID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pInvitationWindowID) then
+  [  9] getprop 133 ............................. <pInvitationWindowID>
+  [ 11] pusharglistnoret 1 ...................... <pInvitationWindowID>
+  [ 13] extcall 156 ............................. removeWindow(pInvitationWindowID)
+  [ 15] ret
+end
+
+on sendInvitation me
+  [  0] pushsymb 49 ............................. <#session>
+  [  2] pusharglist 1 ........................... <#session>
+  [  4] extcall 48 .............................. <getObject(#session)>
+  [  6] setlocal 0 .............................. tSession = getObject(#session)
+  [  8] getlocal 0 .............................. <tSession>
+  [ 10] pushcons 27 ............................. <"lastroom">
+  [ 12] pusharglist 2 ........................... <tSession, "lastroom">
+  [ 14] objcall 50 .............................. <tSession.GET("lastroom")>
+  [ 16] pushcons 28 ............................. <"Entry">
+  [ 18] eq ...................................... <tSession.GET("lastroom") = "Entry">
+  [ 19] jmpifz [ 42] ............................ if tSession.GET("lastroom") = "Entry" then
+  [ 22] pushsymb 265 ............................ <#alert>
+  [ 25] pushcons 29 ............................. <"friend_invitation_cannot_send">
+  [ 27] pusharglist 1 ........................... <"friend_invitation_cannot_send">
+  [ 29] extcall 100 ............................. <getText("friend_invitation_cannot_send")>
+  [ 31] pusharglistnoret 2 ...................... <#alert, getText("friend_invitation_cannot_send")>
+  [ 33] extcall 260 ............................. executeMessage(#alert, getText("friend_invitation_cannot_send"))
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 1 ...................... <1>
+  [ 40] extcall 30 .............................. return 1
+  [ 42] getprop 133 ............................. <pInvitationWindowID>
+  [ 44] pusharglist 1 ........................... <pInvitationWindowID>
+  [ 46] extcall 163 ............................. <getWindow(pInvitationWindowID)>
+  [ 48] setlocal 1 .............................. tWnd = getWindow(pInvitationWindowID)
+  [ 50] getlocal 1 .............................. <tWnd>
+  [ 52] pushcons 30 ............................. <"invitation.text">
+  [ 54] pusharglist 2 ........................... <tWnd, "invitation.text">
+  [ 56] objcall 174 ............................. <tWnd.elementExists("invitation.text")>
+  [ 58] not ..................................... <not tWnd.elementExists("invitation.text")>
+  [ 59] jmpifz [ 67] ............................ if not tWnd.elementExists("invitation.text") then
+  [ 62] pushzero ................................ <0>
+  [ 63] pusharglistnoret 1 ...................... <0>
+  [ 65] extcall 30 .............................. return 0
+  [ 67] getlocal 1 .............................. <tWnd>
+  [ 69] pushcons 30 ............................. <"invitation.text">
+  [ 71] pusharglist 2 ........................... <tWnd, "invitation.text">
+  [ 73] objcall 175 ............................. <tWnd.getElement("invitation.text")>
+  [ 75] setlocal 2 .............................. tElem = tWnd.getElement("invitation.text")
+  [ 77] getlocal 2 .............................. <tElem>
+  [ 79] pusharglist 1 ........................... <tElem>
+  [ 81] objcall 100 ............................. <tElem.getText()>
+  [ 83] setlocal 3 .............................. tText = tElem.getText()
+  [ 85] getlocal 3 .............................. <tText>
+  [ 87] pushcons 31 ............................. <EMPTY>
+  [ 89] eq ...................................... <tText = EMPTY>
+  [ 90] jmpifz [112] ............................ if tText = EMPTY then
+  [ 93] pushsymb 265 ............................ <#alert>
+  [ 96] pushcons 32 ............................. <"friend_invitation_empty_alert">
+  [ 98] pusharglist 1 ........................... <"friend_invitation_empty_alert">
+  [100] extcall 100 ............................. <getText("friend_invitation_empty_alert")>
+  [102] pusharglistnoret 2 ...................... <#alert, getText("friend_invitation_empty_alert")>
+  [104] extcall 260 ............................. executeMessage(#alert, getText("friend_invitation_empty_alert"))
+  [107] pushzero ................................ <0>
+  [108] pusharglistnoret 1 ...................... <0>
+  [110] extcall 30 .............................. return 0
+  [112] getparam 0 .............................. <me>
+  [114] pusharglist 1 ........................... <me>
+  [116] objcall 54 .............................. <me.getComponent()>
+  [118] getlocal 3 .............................. <tText>
+  [120] pusharglistnoret 2 ...................... <me.getComponent(), tText>
+  [122] objcall 5 ............................... me.getComponent().sendInvitation(tText)
+  [124] getparam 0 .............................. <me>
+  [126] pusharglistnoret 1 ...................... <me>
+  [128] objcall 128 ............................. me.closeInvitationWindow()
+  [130] ret
+end
+
+on ChangeWindowView me, tView
+  [  0] getparam 1 .............................. <tView>
+  [  2] getprop 161 ............................. <pView>
+  [  4] eq ...................................... <tView = pView>
+  [  5] jmpifz [ 14] ............................ if tView = pView then
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 30 .............................. return 1
+  [ 14] getprop 132 ............................. <pWindowID>
+  [ 16] pusharglist 1 ........................... <pWindowID>
+  [ 18] extcall 155 ............................. <windowExists(pWindowID)>
+  [ 20] not ..................................... <not windowExists(pWindowID)>
+  [ 21] jmpifz [ 29] ............................ if not windowExists(pWindowID) then
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 1 ...................... <0>
+  [ 27] extcall 30 .............................. return 0
+  [ 29] getprop 132 ............................. <pWindowID>
+  [ 31] pusharglist 1 ........................... <pWindowID>
+  [ 33] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 35] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [ 37] getlocal 0 .............................. <tWnd>
+  [ 39] pushcons 33 ............................. <"button.close.window">
+  [ 41] pusharglist 2 ........................... <tWnd, "button.close.window">
+  [ 43] objcall 174 ............................. <tWnd.elementExists("button.close.window")>
+  [ 45] not ..................................... <not tWnd.elementExists("button.close.window")>
+  [ 46] jmpifz [ 54] ............................ if not tWnd.elementExists("button.close.window") then
+  [ 49] pushzero ................................ <0>
+  [ 50] pusharglistnoret 1 ...................... <0>
+  [ 52] extcall 30 .............................. return 0
+  [ 54] getlocal 0 .............................. <tWnd>
+  [ 56] pushsymb 178 ............................ <#visible>
+  [ 58] pusharglist 2 ........................... <tWnd, #visible>
+  [ 60] objcall 179 ............................. <tWnd.getProperty(#visible)>
+  [ 62] setlocal 1 .............................. tVisible = tWnd.getProperty(#visible)
+  [ 64] getlocal 1 .............................. <tVisible>
+  [ 66] not ..................................... <not tVisible>
+  [ 67] jmpifz [ 76] ............................ if not tVisible then
+  [ 70] getlocal 0 .............................. <tWnd>
+  [ 72] pusharglistnoret 1 ...................... <tWnd>
+  [ 74] objcall 171 ............................. tWnd.show()
+  [ 76] getparam 1 .............................. <tView>
+  [ 78] peek 0 .................................. case tView of
+  [ 80] pushsymb 162 ............................ <#normal>
+  [ 82] eq
+  [ 83] jmpifz [105] ............................ (case) #normal:
+  [ 86] getlocal 0 .............................. <tWnd>
+  [ 88] pusharglistnoret 1 ...................... <tWnd>
+  [ 90] objcall 267 ............................. tWnd.unmerge()
+  [ 93] getlocal 0 .............................. <tWnd>
+  [ 95] pushcons 11 ............................. <"instant_message.window">
+  [ 97] pusharglistnoret 2 ...................... <tWnd, "instant_message.window">
+  [ 99] objcall 268 ............................. tWnd.merge("instant_message.window")
+  [102] jmp [142]
+  [105] peek 0
+  [107] pushsymb 173 ............................ <#empty>
+  [109] eq
+  [110] jmpifz [132] ............................ (case) #empty:
+  [113] getlocal 0 .............................. <tWnd>
+  [115] pusharglistnoret 1 ...................... <tWnd>
+  [117] objcall 267 ............................. tWnd.unmerge()
+  [120] getlocal 0 .............................. <tWnd>
+  [122] pushcons 34 ............................. <"empty_im.window">
+  [124] pusharglistnoret 2 ...................... <tWnd, "empty_im.window">
+  [126] objcall 268 ............................. tWnd.merge("empty_im.window")
+  [129] jmp [142] ............................... (case) otherwise:
+  [132] pushzero ................................ <0>
+  [133] setprop 161 ............................. pView = 0
+  [135] pop 1
+  [137] pushzero ................................ <0>
+  [138] pusharglistnoret 1 ...................... <0>
+  [140] extcall 30 .............................. return 0
+  [142] pop 1 ................................... end case
+  [144] getlocal 1 .............................. <tVisible>
+  [146] not ..................................... <not tVisible>
+  [147] jmpifz [156] ............................ if not tVisible then
+  [150] getlocal 0 .............................. <tWnd>
+  [152] pusharglistnoret 1 ...................... <tWnd>
+  [154] objcall 177 ............................. tWnd.hide()
+  [156] getparam 1 .............................. <tView>
+  [158] setprop 161 ............................. pView = tView
+  [160] getparam 0 .............................. <me>
+  [162] pusharglistnoret 1 ...................... <me>
+  [164] objcall 89 .............................. me.updateInterface()
+  [166] pushint8 1 .............................. <1>
+  [168] pusharglistnoret 1 ...................... <1>
+  [170] extcall 30 .............................. return 1
+  [172] ret
+end
+
+on eventProcIM me, tEvent, tElemID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 164 ............................ <#keyDown>
+  [  4] eq ...................................... <tEvent = #keyDown>
+  [  5] getparam 2 .............................. <tElemID>
+  [  7] pushcons 12 ............................. <"chat.input">
+  [  9] eq ...................................... <tElemID = "chat.input">
+  [ 10] and ..................................... <(tEvent = #keyDown) and (tElemID = "chat.input")>
+  [ 11] jmpifz [101] ............................ if (tEvent = #keyDown) and (tElemID = "chat.input") then
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] thebuiltin 270 .......................... <the keyCode>
+  [ 19] pushint8 36 ............................. <36>
+  [ 21] eq ...................................... <the keyCode = 36>
+  [ 22] pusharglist 0 ........................... <>
+  [ 24] thebuiltin 270 .......................... <the keyCode>
+  [ 27] pushint8 76 ............................. <76>
+  [ 29] eq ...................................... <the keyCode = 76>
+  [ 30] or ...................................... <(the keyCode = 36) or (the keyCode = 76)>
+  [ 31] jmpifz [ 96] ............................ if (the keyCode = 36) or (the keyCode = 76) then
+  [ 34] getprop 132 ............................. <pWindowID>
+  [ 36] pusharglist 1 ........................... <pWindowID>
+  [ 38] extcall 163 ............................. <getWindow(pWindowID)>
+  [ 40] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [ 42] getlocal 0 .............................. <tWnd>
+  [ 44] pushcons 12 ............................. <"chat.input">
+  [ 46] pusharglist 2 ........................... <tWnd, "chat.input">
+  [ 48] objcall 175 ............................. <tWnd.getElement("chat.input")>
+  [ 50] setlocal 1 .............................. tInput = tWnd.getElement("chat.input")
+  [ 52] getlocal 1 .............................. <tInput>
+  [ 54] pusharglist 1 ........................... <tInput>
+  [ 56] objcall 100 ............................. <tInput.getText()>
+  [ 58] setlocal 2 .............................. tText = tInput.getText()
+  [ 60] getlocal 2 .............................. <tText>
+  [ 62] pushcons 31 ............................. <EMPTY>
+  [ 64] nteq .................................... <tText <> EMPTY>
+  [ 65] jmpifz [ 82] ............................ if tText <> EMPTY then
+  [ 68] getparam 0 .............................. <me>
+  [ 70] pusharglist 1 ........................... <me>
+  [ 72] objcall 54 .............................. <me.getComponent()>
+  [ 74] getprop 191 ............................. <pActiveChatID>
+  [ 76] getlocal 2 .............................. <tText>
+  [ 78] pusharglistnoret 3 ...................... <me.getComponent(), pActiveChatID, tText>
+  [ 80] objcall 15 .............................. me.getComponent().sendMessage(pActiveChatID, tText)
+  [ 82] getlocal 1 .............................. <tInput>
+  [ 84] pushcons 31 ............................. <EMPTY>
+  [ 86] pusharglistnoret 2 ...................... <tInput, EMPTY>
+  [ 88] objcall 230 ............................. tInput.setText(EMPTY)
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] pusharglistnoret 1 ...................... <1>
+  [ 94] extcall 30 .............................. return 1
+  [ 96] pushzero ................................ <0>
+  [ 97] pusharglistnoret 1 ...................... <0>
+  [ 99] extcall 30 .............................. return 0
+  [101] getparam 1 .............................. <tEvent>
+  [103] pushsymb 167 ............................ <#mouseDown>
+  [105] eq ...................................... <tEvent = #mouseDown>
+  [106] getparam 2 .............................. <tElemID>
+  [108] pushcons 35 ............................. <"button.scale">
+  [110] eq ...................................... <tElemID = "button.scale">
+  [111] and ..................................... <(tEvent = #mouseDown) and (tElemID = "button.scale")>
+  [112] jmpifz [127] ............................ if (tEvent = #mouseDown) and (tElemID = "button.scale") then
+  [115] getparam 0 .............................. <me>
+  [117] pusharglistnoret 1 ...................... <me>
+  [119] objcall 122 ............................. me.startScaling()
+  [121] pushint8 1 .............................. <1>
+  [123] pusharglistnoret 1 ...................... <1>
+  [125] extcall 30 .............................. return 1
+  [127] getparam 1 .............................. <tEvent>
+  [129] pushsymb 166 ............................ <#mouseUp>
+  [131] nteq .................................... <tEvent <> #mouseUp>
+  [132] jmpifz [141] ............................ if tEvent <> #mouseUp then
+  [135] pushint8 1 .............................. <1>
+  [137] pusharglistnoret 1 ...................... <1>
+  [139] extcall 30 .............................. return 1
+  [141] getparam 2 .............................. <tElemID>
+  [143] peek 0 .................................. case tElemID of
+  [145] pushcons 33 ............................. <"button.close.window">
+  [147] eq
+  [148] jmpifz [160] ............................ (case) "button.close.window":
+  [151] getparam 0 .............................. <me>
+  [153] pusharglistnoret 1 ...................... <me>
+  [155] objcall 115 ............................. me.closeIMWindow()
+  [157] jmp [316]
+  [160] peek 0
+  [162] pushcons 36 ............................. <"button.close.chat">
+  [164] eq
+  [165] jmpifz [183] ............................ (case) "button.close.chat":
+  [168] getparam 0 .............................. <me>
+  [170] pusharglist 1 ........................... <me>
+  [172] objcall 54 .............................. <me.getComponent()>
+  [174] getprop 191 ............................. <pActiveChatID>
+  [176] pusharglistnoret 2 ...................... <me.getComponent(), pActiveChatID>
+  [178] objcall 8 ............................... me.getComponent().removeChat(pActiveChatID)
+  [180] jmp [316]
+  [183] peek 0
+  [185] pushcons 20 ............................. <"tabs">
+  [187] eq
+  [188] jmpifz [213] ............................ (case) "tabs":
+  [191] getprop 134 ............................. <pTabsObj>
+  [193] getparam 3 .............................. <tParam>
+  [195] pusharglist 2 ........................... <pTabsObj, tParam>
+  [197] objcall 271 ............................. <pTabsObj.getIdAt(tParam)>
+  [200] setlocal 3 .............................. tChatID = pTabsObj.getIdAt(tParam)
+  [202] getparam 0 .............................. <me>
+  [204] getlocal 3 .............................. <tChatID>
+  [206] pusharglistnoret 2 ...................... <me, tChatID>
+  [208] objcall 59 .............................. me.activateChat(tChatID)
+  [210] jmp [316]
+  [213] peek 0
+  [215] pushcons 15 ............................. <"button.follow">
+  [217] eq
+  [218] jmpifz [255] ............................ (case) "button.follow":
+  [221] pushcons 37 ............................. <"connection.info.id">
+  [223] pusharglist 1 ........................... <"connection.info.id">
+  [225] extcall 74 .............................. <getVariable("connection.info.id")>
+  [227] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [229] extcall 73 .............................. <getConnection(getVariable("connection.info.id"))>
+  [231] setlocal 4 .............................. tConn = getConnection(getVariable("connection.info.id"))
+  [233] getlocal 4 .............................. <tConn>
+  [235] pushcons 38 ............................. <"FOLLOW_FRIEND">
+  [237] pushsymb 69 ............................. <#integer>
+  [239] getprop 191 ............................. <pActiveChatID>
+  [241] pusharglist 1 ........................... <pActiveChatID>
+  [243] extcall 69 .............................. <integer(pActiveChatID)>
+  [245] pusharglist 2 ........................... <[#integer: integer(pActiveChatID)]>
+  [247] pushproplist ............................ <[#integer: integer(pActiveChatID)]>
+  [248] pusharglistnoret 3 ...................... <tConn, "FOLLOW_FRIEND", [#integer: integer(pActiveChatID)]>
+  [250] objcall 75 .............................. tConn.send("FOLLOW_FRIEND", [#integer: integer(pActiveChatID)])
+  [252] jmp [316]
+  [255] peek 0
+  [257] pushcons 39 ............................. <"button.minimail">
+  [259] eq
+  [260] jmpifz [316] ............................ (case) "button.minimail":
+  [263] pushcons 40 ............................. <"link.format.mail.compose">
+  [265] pusharglist 1 ........................... <"link.format.mail.compose">
+  [267] extcall 272 ............................. <variableExists("link.format.mail.compose")>
+  [270] jmpifz [316] ............................ if variableExists("link.format.mail.compose") then
+  [273] getprop 191 ............................. <pActiveChatID>
+  [275] pusharglist 1 ........................... <pActiveChatID>
+  [277] extcall 72 .............................. <string(pActiveChatID)>
+  [279] setlocal 5 .............................. tID = string(pActiveChatID)
+  [281] pushcons 40 ............................. <"link.format.mail.compose">
+  [283] pusharglist 1 ........................... <"link.format.mail.compose">
+  [285] extcall 74 .............................. <getVariable("link.format.mail.compose")>
+  [287] pushcons 41 ............................. <"%recipientid%">
+  [289] getlocal 5 .............................. <tID>
+  [291] pusharglist 3 ........................... <getVariable("link.format.mail.compose"), "%recipientid%", tID>
+  [293] extcall 262 ............................. <replaceChunks(getVariable("link.format.mail.compose"), "%recipientid%", tID)>
+  [296] setlocal 6 .............................. tDestURL = replaceChunks(getVariable("link.format.mail.compose"), "%recipientid%", tID)
+  [298] pushsymb 403 ............................ <#externalLinkClick>
+  [301] getmovieprop 404 ........................ <the mouseLoc>
+  [304] pusharglistnoret 2 ...................... <#externalLinkClick, the mouseLoc>
+  [306] extcall 260 ............................. executeMessage(#externalLinkClick, the mouseLoc)
+  [309] getlocal 6 .............................. <tDestURL>
+  [311] pusharglistnoret 1 ...................... <tDestURL>
+  [313] extcall 273 ............................. openNetPage(tDestURL)
+  [316] pop 1 ................................... end case
+  [318] ret
+end
+
+on eventProcInvitation me, tEvent, tElemID, tParam
+  [  0] getparam 2 .............................. <tElemID>
+  [  2] peek 0 .................................. case tElemID of
+  [  4] pushcons 42 ............................. <"button.send">
+  [  6] eq
+  [  7] jmpifz [ 19] ............................ (case) "button.send":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 5 ............................... me.sendInvitation()
+  [ 16] jmp [ 50]
+  [ 19] peek 0
+  [ 21] pushcons 43 ............................. <"button.cancel">
+  [ 23] eq
+  [ 24] jmpifz [ 36] ............................ (case) "button.cancel":
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglistnoret 1 ...................... <me>
+  [ 31] objcall 128 ............................. me.closeInvitationWindow()
+  [ 33] jmp [ 50]
+  [ 36] peek 0
+  [ 38] pushcons 33 ............................. <"button.close.window">
+  [ 40] eq
+  [ 41] jmpifz [ 50] ............................ (case) "button.close.window":
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglistnoret 1 ...................... <me>
+  [ 48] objcall 128 ............................. me.closeInvitationWindow()
+  [ 50] pop 1 ................................... end case
+  [ 52] ret
+end

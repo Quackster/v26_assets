@@ -1,0 +1,372 @@
+property pWindowID, pElemIdList, pBounceOn, pOrigXList, pOrigYList, pOffset, pSpeed, pTimeOutID
+
+on construct me
+  [  0] pushcons 0 .............................. <"bouncer_timeout_">
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 12 .............................. <getUniqueID()>
+  [  6] joinstr ................................. <"bouncer_timeout_" & getUniqueID()>
+  [  7] setprop 13 .............................. pTimeOutID = "bouncer_timeout_" & getUniqueID()
+  [  9] pusharglist 0 ........................... <[:]>
+  [ 11] pushproplist ............................ <[:]>
+  [ 12] setprop 320 ............................. pOrigXList = [:]
+  [ 15] pusharglist 0 ........................... <[:]>
+  [ 17] pushproplist ............................ <[:]>
+  [ 18] setprop 321 ............................. pOrigYList = [:]
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] pusharglistnoret 1 ...................... <1>
+  [ 25] extcall 18 .............................. return 1
+  [ 27] ret
+end
+
+on deconstruct me
+  [  0] getprop 13 .............................. <pTimeOutID>
+  [  2] pusharglist 1 ........................... <pTimeOutID>
+  [  4] extcall 23 .............................. <timeoutExists(pTimeOutID)>
+  [  6] jmpifz [ 15] ............................ if timeoutExists(pTimeOutID) then
+  [  9] getprop 13 .............................. <pTimeOutID>
+  [ 11] pusharglistnoret 1 ...................... <pTimeOutID>
+  [ 13] extcall 24 .............................. removeTimeout(pTimeOutID)
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 18 .............................. return 1
+  [ 21] ret
+end
+
+on registerElement me, tWindowID, tElemIdList
+  [  0] getparam 2 .............................. <tElemIdList>
+  [  2] pusharglist 1 ........................... <tElemIdList>
+  [  4] extcall 115 ............................. <listp(tElemIdList)>
+  [  6] not ..................................... <not listp(tElemIdList)>
+  [  7] jmpifz [ 17] ............................ if not listp(tElemIdList) then
+  [ 10] getparam 2 .............................. <tElemIdList>
+  [ 12] pusharglist 1 ........................... <[tElemIdList]>
+  [ 14] pushlist ................................ <[tElemIdList]>
+  [ 15] setparam 2 .............................. tElemIdList = [tElemIdList]
+  [ 17] getparam 0 .............................. <me>
+  [ 19] getparam 1 .............................. <tWindowID>
+  [ 21] getparam 2 .............................. <tElemIdList>
+  [ 23] pusharglist 3 ........................... <me, tWindowID, tElemIdList>
+  [ 25] objcall 315 ............................. <me.checkWindowAndElemExistence(tWindowID, tElemIdList)>
+  [ 28] not ..................................... <not me.checkWindowAndElemExistence(tWindowID, tElemIdList)>
+  [ 29] jmpifz [ 37] ............................ if not me.checkWindowAndElemExistence(tWindowID, tElemIdList) then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 18 .............................. return 0
+  [ 37] getparam 1 .............................. <tWindowID>
+  [ 39] setprop 11 .............................. pWindowID = tWindowID
+  [ 41] getparam 2 .............................. <tElemIdList>
+  [ 43] setprop 322 ............................. pElemIdList = tElemIdList
+  [ 46] getparam 1 .............................. <tWindowID>
+  [ 48] pusharglist 1 ........................... <tWindowID>
+  [ 50] extcall 30 .............................. <getWindow(tWindowID)>
+  [ 52] setlocal 0 .............................. tWindowObj = getWindow(tWindowID)
+  [ 54] getparam 2 .............................. <tElemIdList>
+  [ 56] peek 0
+  [ 58] pusharglist 1
+  [ 60] extcall 125
+  [ 62] pushint8 1
+  [ 64] peek 0
+  [ 66] peek 2
+  [ 68] lteq
+  [ 69] jmpifz [135] ............................ repeat with tElemID in tElemIdList
+  [ 72] peek 2
+  [ 74] peek 1
+  [ 76] pusharglist 2
+  [ 78] extcall 42
+  [ 80] setlocal 1
+  [ 82] getlocal 0 .............................. <tWindowObj>
+  [ 84] getlocal 1 .............................. <tElemID>
+  [ 86] pusharglist 2 ........................... <tWindowObj, tElemID>
+  [ 88] objcall 129 ............................. <tWindowObj.getElement(tElemID)>
+  [ 90] setlocal 2 .............................. tElem = tWindowObj.getElement(tElemID)
+  [ 92] getprop 320 ............................. <pOrigXList>
+  [ 95] getlocal 1 .............................. <tElemID>
+  [ 97] getlocal 2 .............................. <tElem>
+  [ 99] pushsymb 323 ............................ <#locX>
+  [102] pusharglist 2 ........................... <tElem, #locX>
+  [104] objcall 38 .............................. <tElem.getProperty(#locX)>
+  [106] pusharglistnoret 3 ...................... <pOrigXList, tElemID, tElem.getProperty(#locX)>
+  [108] objcall 293 ............................. pOrigXList.setaProp(tElemID, tElem.getProperty(#locX))
+  [111] getprop 321 ............................. <pOrigYList>
+  [114] getlocal 1 .............................. <tElemID>
+  [116] getlocal 2 .............................. <tElem>
+  [118] pushsymb 324 ............................ <#locY>
+  [121] pusharglist 2 ........................... <tElem, #locY>
+  [123] objcall 38 .............................. <tElem.getProperty(#locY)>
+  [125] pusharglistnoret 3 ...................... <pOrigYList, tElemID, tElem.getProperty(#locY)>
+  [127] objcall 293 ............................. pOrigYList.setaProp(tElemID, tElem.getProperty(#locY))
+  [130] pushint8 1
+  [132] add
+  [133] endrepeat [ 64]
+  [135] pop 3
+  [137] pushint8 1 .............................. <1>
+  [139] pusharglistnoret 1 ...................... <1>
+  [141] extcall 18 .............................. return 1
+  [143] ret
+end
+
+on checkWindowAndElemExistence me, tWindowID, tElemIdList
+  [  0] getparam 1 .............................. <tWindowID>
+  [  2] pusharglist 1 ........................... <tWindowID>
+  [  4] extcall 34 .............................. <voidp(tWindowID)>
+  [  6] getparam 2 .............................. <tElemIdList>
+  [  8] pusharglist 1 ........................... <tElemIdList>
+  [ 10] extcall 34 .............................. <voidp(tElemIdList)>
+  [ 12] and ..................................... <voidp(tWindowID) and voidp(tElemIdList)>
+  [ 13] jmpifz [ 25] ............................ if voidp(tWindowID) and voidp(tElemIdList) then
+  [ 16] getprop 11 .............................. <pWindowID>
+  [ 18] setparam 1 .............................. tWindowID = pWindowID
+  [ 20] getprop 322 ............................. <pElemIdList>
+  [ 23] setparam 2 .............................. tElemIdList = pElemIdList
+  [ 25] getparam 1 .............................. <tWindowID>
+  [ 27] pusharglist 1 ........................... <tWindowID>
+  [ 29] extcall 21 .............................. <windowExists(tWindowID)>
+  [ 31] not ..................................... <not windowExists(tWindowID)>
+  [ 32] jmpifz [ 40] ............................ if not windowExists(tWindowID) then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 18 .............................. return 0
+  [ 40] getparam 1 .............................. <tWindowID>
+  [ 42] pusharglist 1 ........................... <tWindowID>
+  [ 44] extcall 30 .............................. <getWindow(tWindowID)>
+  [ 46] setlocal 0 .............................. tWndObj = getWindow(tWindowID)
+  [ 48] getparam 2 .............................. <tElemIdList>
+  [ 50] peek 0
+  [ 52] pusharglist 1
+  [ 54] extcall 125
+  [ 56] pushint8 1
+  [ 58] peek 0
+  [ 60] peek 2
+  [ 62] lteq
+  [ 63] jmpifz [ 98] ............................ repeat with tElemID in tElemIdList
+  [ 66] peek 2
+  [ 68] peek 1
+  [ 70] pusharglist 2
+  [ 72] extcall 42
+  [ 74] setlocal 1
+  [ 76] getlocal 0 .............................. <tWndObj>
+  [ 78] getlocal 1 .............................. <tElemID>
+  [ 80] pusharglist 2 ........................... <tWndObj, tElemID>
+  [ 82] objcall 134 ............................. <tWndObj.elementExists(tElemID)>
+  [ 84] not ..................................... <not tWndObj.elementExists(tElemID)>
+  [ 85] jmpifz [ 93] ............................ if not tWndObj.elementExists(tElemID) then
+  [ 88] pushzero ................................ <0>
+  [ 89] pusharglistnoret 1 ...................... <0>
+  [ 91] extcall 18 .............................. return 0
+  [ 93] pushint8 1
+  [ 95] add
+  [ 96] endrepeat [ 58]
+  [ 98] pop 3
+  [100] pushint8 1 .............................. <1>
+  [102] pusharglistnoret 1 ...................... <1>
+  [104] extcall 18 .............................. return 1
+  [106] ret
+end
+
+on getState me
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 328 .......................... <me.pBounceOn>
+  [  5] getprop 13 .............................. <pTimeOutID>
+  [  7] pusharglist 1 ........................... <pTimeOutID>
+  [  9] extcall 23 .............................. <timeoutExists(pTimeOutID)>
+  [ 11] or ...................................... <me.pBounceOn or timeoutExists(pTimeOutID)>
+  [ 12] pusharglistnoret 1 ...................... <me.pBounceOn or timeoutExists(pTimeOutID)>
+  [ 14] extcall 18 .............................. return me.pBounceOn or timeoutExists(pTimeOutID)
+  [ 16] ret
+end
+
+on setBounce me, tBounceOn
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 315 ............................. <me.checkWindowAndElemExistence()>
+  [  7] not ..................................... <not me.checkWindowAndElemExistence()>
+  [  8] jmpifz [ 20] ............................ if not me.checkWindowAndElemExistence() then
+  [ 11] pushzero ................................ <0>
+  [ 12] setprop 328 ............................. pBounceOn = 0
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 18 .............................. return 0
+  [ 20] getparam 1 .............................. <tBounceOn>
+  [ 22] jmpifz [ 50] ............................ if tBounceOn then / else
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] setprop 328 ............................. pBounceOn = 1
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglistnoret 1 ...................... <me>
+  [ 34] objcall 318 ............................. me.resetBounce()
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pusharglist 1 ........................... <me>
+  [ 41] objcall 17 .............................. <me.getID()>
+  [ 43] pusharglistnoret 1 ...................... <me.getID()>
+  [ 45] extcall 114 ............................. receiveUpdate(me.getID())
+  [ 47] jmp [ 86]
+  [ 50] getprop 13 .............................. <pTimeOutID>
+  [ 52] pusharglist 1 ........................... <pTimeOutID>
+  [ 54] extcall 23 .............................. <timeoutExists(pTimeOutID)>
+  [ 56] jmpifz [ 65] ............................ if timeoutExists(pTimeOutID) then
+  [ 59] getprop 13 .............................. <pTimeOutID>
+  [ 61] pusharglistnoret 1 ...................... <pTimeOutID>
+  [ 63] extcall 24 .............................. removeTimeout(pTimeOutID)
+  [ 65] pushzero ................................ <0>
+  [ 66] setprop 328 ............................. pBounceOn = 0
+  [ 69] getparam 0 .............................. <me>
+  [ 71] pusharglistnoret 1 ...................... <me>
+  [ 73] objcall 319 ............................. me.resetPosition()
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pusharglist 1 ........................... <me>
+  [ 80] objcall 17 .............................. <me.getID()>
+  [ 82] pusharglistnoret 1 ...................... <me.getID()>
+  [ 84] extcall 99 .............................. removeUpdate(me.getID())
+  [ 86] pushint8 1 .............................. <1>
+  [ 88] pusharglistnoret 1 ...................... <1>
+  [ 90] extcall 18 .............................. return 1
+  [ 92] ret
+end
+
+on resetBounce me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 328 ............................. pBounceOn = 1
+  [  5] pushzero ................................ <0>
+  [  6] setprop 330 ............................. pOffset = 0
+  [  9] pushint8 6 .............................. <6>
+  [ 11] setprop 331 ............................. pSpeed = 6
+  [ 14] ret
+end
+
+on resetPosition me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 315 ............................. <me.checkWindowAndElemExistence()>
+  [  7] not ..................................... <not me.checkWindowAndElemExistence()>
+  [  8] jmpifz [ 16] ............................ if not me.checkWindowAndElemExistence() then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 18 .............................. return 0
+  [ 16] getprop 11 .............................. <pWindowID>
+  [ 18] pusharglist 1 ........................... <pWindowID>
+  [ 20] extcall 30 .............................. <getWindow(pWindowID)>
+  [ 22] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 24] getprop 322 ............................. <pElemIdList>
+  [ 27] peek 0
+  [ 29] pusharglist 1
+  [ 31] extcall 125
+  [ 33] pushint8 1
+  [ 35] peek 0
+  [ 37] peek 2
+  [ 39] lteq
+  [ 40] jmpifz [ 96] ............................ repeat with tElemID in pElemIdList
+  [ 43] peek 2
+  [ 45] peek 1
+  [ 47] pusharglist 2
+  [ 49] extcall 42
+  [ 51] setlocal 1
+  [ 53] getprop 320 ............................. <pOrigXList>
+  [ 56] getlocal 1 .............................. <tElemID>
+  [ 58] pusharglist 2 ........................... <pOrigXList, tElemID>
+  [ 60] objcall 42 .............................. <pOrigXList[tElemID]>
+  [ 62] setlocal 2 .............................. tOrigX = pOrigXList[tElemID]
+  [ 64] getprop 321 ............................. <pOrigYList>
+  [ 67] getlocal 1 .............................. <tElemID>
+  [ 69] pusharglist 2 ........................... <pOrigYList, tElemID>
+  [ 71] objcall 42 .............................. <pOrigYList[tElemID]>
+  [ 73] setlocal 3 .............................. tOrigY = pOrigYList[tElemID]
+  [ 75] getlocal 0 .............................. <tWndObj>
+  [ 77] getlocal 1 .............................. <tElemID>
+  [ 79] pusharglist 2 ........................... <tWndObj, tElemID>
+  [ 81] objcall 129 ............................. <tWndObj.getElement(tElemID)>
+  [ 83] getlocal 2 .............................. <tOrigX>
+  [ 85] getlocal 3 .............................. <tOrigY>
+  [ 87] pusharglistnoret 3 ...................... <tWndObj.getElement(tElemID), tOrigX, tOrigY>
+  [ 89] objcall 43 .............................. tWndObj.getElement(tElemID).moveTo(tOrigX, tOrigY)
+  [ 91] pushint8 1
+  [ 93] add
+  [ 94] endrepeat [ 35]
+  [ 96] pop 3
+  [ 98] ret
+end
+
+on update me
+  [  0] getprop 328 ............................. <pBounceOn>
+  [  3] not ..................................... <not pBounceOn>
+  [  4] jmpifz [ 12] ............................ if not pBounceOn then
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 18 .............................. return 0
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 315 ............................. <me.checkWindowAndElemExistence()>
+  [ 19] not ..................................... <not me.checkWindowAndElemExistence()>
+  [ 20] jmpifz [ 28] ............................ if not me.checkWindowAndElemExistence() then
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 18 .............................. return 0
+  [ 28] getprop 331 ............................. <pSpeed>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] sub ..................................... <pSpeed - 1>
+  [ 34] setprop 331 ............................. pSpeed = pSpeed - 1
+  [ 37] getprop 330 ............................. <pOffset>
+  [ 40] getprop 331 ............................. <pSpeed>
+  [ 43] add ..................................... <pOffset + pSpeed>
+  [ 44] setprop 330 ............................. pOffset = pOffset + pSpeed
+  [ 47] getprop 330 ............................. <pOffset>
+  [ 50] pushzero ................................ <0>
+  [ 51] lteq .................................... <pOffset <= 0>
+  [ 52] jmpifz [ 90] ............................ if pOffset <= 0 then
+  [ 55] pushzero ................................ <0>
+  [ 56] setprop 330 ............................. pOffset = 0
+  [ 59] getprop 331 ............................. <pSpeed>
+  [ 62] pusharglist 1 ........................... <pSpeed>
+  [ 64] extcall 334 ............................. <abs(pSpeed)>
+  [ 67] setprop 331 ............................. pSpeed = abs(pSpeed)
+  [ 70] getprop 331 ............................. <pSpeed>
+  [ 73] pusharglist 1 ........................... <pSpeed>
+  [ 75] extcall 25 .............................. <integer(pSpeed)>
+  [ 77] pushzero ................................ <0>
+  [ 78] eq ...................................... <integer(pSpeed) = 0>
+  [ 79] jmpifz [ 90] ............................ if integer(pSpeed) = 0 then
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pushzero ................................ <0>
+  [ 85] pusharglistnoret 2 ...................... <me, 0>
+  [ 87] objcall 317 ............................. me.setBounce(0)
+  [ 90] getprop 322 ............................. <pElemIdList>
+  [ 93] peek 0
+  [ 95] pusharglist 1
+  [ 97] extcall 125
+  [ 99] pushint8 1
+  [101] peek 0
+  [103] peek 2
+  [105] lteq
+  [106] jmpifz [166] ............................ repeat with tElemID in pElemIdList
+  [109] peek 2
+  [111] peek 1
+  [113] pusharglist 2
+  [115] extcall 42
+  [117] setlocal 0
+  [119] getprop 11 .............................. <pWindowID>
+  [121] pusharglist 1 ........................... <pWindowID>
+  [123] extcall 30 .............................. <getWindow(pWindowID)>
+  [125] getlocal 0 .............................. <tElemID>
+  [127] pusharglist 2 ........................... <getWindow(pWindowID), tElemID>
+  [129] objcall 129 ............................. <getWindow(pWindowID).getElement(tElemID)>
+  [131] setlocal 1 .............................. tElem = getWindow(pWindowID).getElement(tElemID)
+  [133] getlocal 1 .............................. <tElem>
+  [135] getprop 320 ............................. <pOrigXList>
+  [138] getlocal 0 .............................. <tElemID>
+  [140] pusharglist 2 ........................... <pOrigXList, tElemID>
+  [142] objcall 42 .............................. <pOrigXList[tElemID]>
+  [144] getprop 321 ............................. <pOrigYList>
+  [147] getlocal 0 .............................. <tElemID>
+  [149] pusharglist 2 ........................... <pOrigYList, tElemID>
+  [151] objcall 42 .............................. <pOrigYList[tElemID]>
+  [153] getprop 330 ............................. <pOffset>
+  [156] sub ..................................... <pOrigYList[tElemID] - pOffset>
+  [157] pusharglistnoret 3 ...................... <tElem, pOrigXList[tElemID], pOrigYList[tElemID] - pOffset>
+  [159] objcall 43 .............................. tElem.moveTo(pOrigXList[tElemID], pOrigYList[tElemID] - pOffset)
+  [161] pushint8 1
+  [163] add
+  [164] endrepeat [101]
+  [166] pop 3
+  [168] pushint8 1 .............................. <1>
+  [170] pusharglistnoret 1 ...................... <1>
+  [172] extcall 18 .............................. return 1
+  [174] ret
+end

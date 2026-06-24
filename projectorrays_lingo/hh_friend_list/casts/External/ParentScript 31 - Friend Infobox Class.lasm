@@ -1,0 +1,474 @@
+property pBubbleObjectId, pBubbleWindowId, pPopupTimeoutId, pCurrentFriendId, pFriendInfo, pTargetRect
+
+on construct me
+  [  0] pushcons 0 .............................. <"fr_popup_bubble_obj">
+  [  2] setprop 621 ............................. pBubbleObjectId = "fr_popup_bubble_obj"
+  [  5] pushcons 1 .............................. <"fr_popup_bubble_win">
+  [  7] setprop 622 ............................. pBubbleWindowId = "fr_popup_bubble_win"
+  [ 10] pushcons 2 .............................. <"fr_popup_timer">
+  [ 12] setprop 623 ............................. pPopupTimeoutId = "fr_popup_timer"
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 44 .............................. return 1
+  [ 21] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 616 ............................. me.removePopupTimeout()
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglistnoret 1 ...................... <me>
+  [ 11] objcall 618 ............................. me.removeBubbleObject()
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] extcall 69 .............................. <VOID>
+  [ 18] setprop 624 ............................. pFriendInfo = VOID
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] pusharglistnoret 1 ...................... <1>
+  [ 25] extcall 44 .............................. return 1
+  [ 27] ret
+end
+
+on showInfoPopup me, tEventData, tWndX, tWndY, tContentElem
+  [  0] getparam 1 .............................. <tEventData>
+  [  2] pusharglist 1 ........................... <tEventData>
+  [  4] extcall 595 ............................. <listp(tEventData)>
+  [  7] not ..................................... <not listp(tEventData)>
+  [  8] jmpifz [ 22] ............................ if not listp(tEventData) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglist 1 ........................... <me>
+  [ 15] objcall 616 ............................. <me.removePopupTimeout()>
+  [ 18] pusharglistnoret 1 ...................... <me.removePopupTimeout()>
+  [ 20] extcall 44 .............................. return me.removePopupTimeout()
+  [ 22] getparam 1 .............................. <tEventData>
+  [ 24] pushsymb 335 ............................ <#friend>
+  [ 27] pusharglist 2 ........................... <tEventData, #friend>
+  [ 29] objcall 127 ............................. <tEventData.getaProp(#friend)>
+  [ 31] setlocal 0 .............................. tFriend = tEventData.getaProp(#friend)
+  [ 33] getlocal 0 .............................. <tFriend>
+  [ 35] pusharglist 1 ........................... <tFriend>
+  [ 37] extcall 595 ............................. <listp(tFriend)>
+  [ 40] not ..................................... <not listp(tFriend)>
+  [ 41] jmpifz [ 55] ............................ if not listp(tFriend) then
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglist 1 ........................... <me>
+  [ 48] objcall 616 ............................. <me.removePopupTimeout()>
+  [ 51] pusharglistnoret 1 ...................... <me.removePopupTimeout()>
+  [ 53] extcall 44 .............................. return me.removePopupTimeout()
+  [ 55] getparam 4 .............................. <tContentElem>
+  [ 57] pushzero ................................ <0>
+  [ 58] eq ...................................... <tContentElem = 0>
+  [ 59] jmpifz [ 73] ............................ if tContentElem = 0 then
+  [ 62] getparam 0 .............................. <me>
+  [ 64] pusharglist 1 ........................... <me>
+  [ 66] objcall 616 ............................. <me.removePopupTimeout()>
+  [ 69] pusharglistnoret 1 ...................... <me.removePopupTimeout()>
+  [ 71] extcall 44 .............................. return me.removePopupTimeout()
+  [ 73] getlocal 0 .............................. <tFriend>
+  [ 75] pushsymb 79 ............................. <#id>
+  [ 77] pusharglist 2 ........................... <tFriend, #id>
+  [ 79] objcall 127 ............................. <tFriend.getaProp(#id)>
+  [ 81] setlocal 1 .............................. tFriendID = tFriend.getaProp(#id)
+  [ 83] getlocal 1 .............................. <tFriendID>
+  [ 85] getprop 625 ............................. <pCurrentFriendId>
+  [ 88] eq ...................................... <tFriendID = pCurrentFriendId>
+  [ 89] jmpifz [ 98] ............................ if tFriendID = pCurrentFriendId then
+  [ 92] pushint8 1 .............................. <1>
+  [ 94] pusharglistnoret 1 ...................... <1>
+  [ 96] extcall 44 .............................. return 1
+  [ 98] getparam 1 .............................. <tEventData>
+  [100] pushsymb 561 ............................ <#item_height>
+  [103] pusharglist 2 ........................... <tEventData, #item_height>
+  [105] objcall 127 ............................. <tEventData.getaProp(#item_height)>
+  [107] setlocal 2 .............................. tItemHeight = tEventData.getaProp(#item_height)
+  [109] getparam 4 .............................. <tContentElem>
+  [111] pushsymb 245 ............................ <#width>
+  [113] pusharglist 2 ........................... <tContentElem, #width>
+  [115] objcall 218 ............................. <tContentElem.getProperty(#width)>
+  [117] setlocal 3 .............................. tWidth = tContentElem.getProperty(#width)
+  [119] getparam 2 .............................. <tWndX>
+  [121] getparam 4 .............................. <tContentElem>
+  [123] pushsymb 339 ............................ <#locX>
+  [126] pusharglist 2 ........................... <tContentElem, #locX>
+  [128] objcall 218 ............................. <tContentElem.getProperty(#locX)>
+  [130] add ..................................... <tWndX + tContentElem.getProperty(#locX)>
+  [131] setlocal 4 .............................. tElementLocX = tWndX + tContentElem.getProperty(#locX)
+  [133] getparam 4 .............................. <tContentElem>
+  [135] pushsymb 626 ............................ <#sprite>
+  [138] pusharglist 2 ........................... <tContentElem, #sprite>
+  [140] objcall 218 ............................. <tContentElem.getProperty(#sprite)>
+  [142] setlocal 5 .............................. tsprite = tContentElem.getProperty(#sprite)
+  [144] getlocal 5 .............................. <tsprite>
+  [146] getobjprop 77 ........................... <tsprite.ilk>
+  [148] pushsymb 626 ............................ <#sprite>
+  [151] nteq .................................... <tsprite.ilk <> #sprite>
+  [152] jmpifz [160] ............................ if tsprite.ilk <> #sprite then
+  [155] pushzero ................................ <0>
+  [156] pusharglistnoret 1 ...................... <0>
+  [158] extcall 44 .............................. return 0
+  [160] getlocal 5 .............................. <tsprite>
+  [162] getobjprop 285 .......................... <tsprite.locV>
+  [165] getparam 1 .............................. <tEventData>
+  [167] pushsymb 342 ............................ <#item_y>
+  [170] pusharglist 2 ........................... <tEventData, #item_y>
+  [172] objcall 127 ............................. <tEventData.getaProp(#item_y)>
+  [174] add ..................................... <tsprite.locV + tEventData.getaProp(#item_y)>
+  [175] setlocal 6 .............................. tItemY = tsprite.locV + tEventData.getaProp(#item_y)
+  [177] getlocal 4 .............................. <tElementLocX>
+  [179] getlocal 6 .............................. <tItemY>
+  [181] getlocal 4 .............................. <tElementLocX>
+  [183] getlocal 3 .............................. <tWidth>
+  [185] add ..................................... <tElementLocX + tWidth>
+  [186] getlocal 6 .............................. <tItemY>
+  [188] getlocal 2 .............................. <tItemHeight>
+  [190] add ..................................... <tItemY + tItemHeight>
+  [191] pusharglist 4 ........................... <tElementLocX, tItemY, tElementLocX + tWidth, tItemY + tItemHeight>
+  [193] extcall 286 ............................. <rect(tElementLocX, tItemY, tElementLocX + tWidth, tItemY + tItemHeight)>
+  [196] setprop 627 ............................. pTargetRect = rect(tElementLocX, tItemY, tElementLocX + tWidth, tItemY + tItemHeight)
+  [199] getlocal 1 .............................. <tFriendID>
+  [201] setprop 625 ............................. pCurrentFriendId = tFriendID
+  [204] getlocal 0 .............................. <tFriend>
+  [206] pusharglist 1 ........................... <tFriend>
+  [208] objcall 134 ............................. <tFriend.duplicate()>
+  [210] setprop 624 ............................. pFriendInfo = tFriend.duplicate()
+  [213] getparam 0 .............................. <me>
+  [215] pusharglistnoret 1 ...................... <me>
+  [217] objcall 618 ............................. me.removeBubbleObject()
+  [220] getparam 0 .............................. <me>
+  [222] getprop 627 ............................. <pTargetRect>
+  [225] pusharglistnoret 2 ...................... <me, pTargetRect>
+  [227] objcall 615 ............................. me.createDetailsBubble(pTargetRect)
+  [230] ret
+end
+
+on removeInfoPopup me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 616 ............................. me.removePopupTimeout()
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglistnoret 1 ...................... <me>
+  [ 11] objcall 618 ............................. me.removeBubbleObject()
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] extcall 69 .............................. <VOID>
+  [ 18] setprop 624 ............................. pFriendInfo = VOID
+  [ 21] pusharglist 0 ........................... <>
+  [ 23] extcall 69 .............................. <VOID>
+  [ 25] setprop 625 ............................. pCurrentFriendId = VOID
+  [ 28] ret
+end
+
+on createDetailsBubble me, tTargetRect
+  [  0] getprop 624 ............................. <pFriendInfo>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 69 .............................. <VOID>
+  [  7] eq ...................................... <pFriendInfo = VOID>
+  [  8] jmpifz [ 16] ............................ if pFriendInfo = VOID then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 44 .............................. return 0
+  [ 16] getprop 621 ............................. <pBubbleObjectId>
+  [ 19] pushcons 3 .............................. <"Details Bubble Class">
+  [ 21] pusharglistnoret 2 ...................... <pBubbleObjectId, "Details Bubble Class">
+  [ 23] extcall 48 .............................. createObject(pBubbleObjectId, "Details Bubble Class")
+  [ 25] getprop 621 ............................. <pBubbleObjectId>
+  [ 28] pusharglist 1 ........................... <pBubbleObjectId>
+  [ 30] extcall 309 ............................. <getObject(pBubbleObjectId)>
+  [ 33] setlocal 0 .............................. tDetailsBubble = getObject(pBubbleObjectId)
+  [ 35] getlocal 0 .............................. <tDetailsBubble>
+  [ 37] pushzero ................................ <0>
+  [ 38] eq ...................................... <tDetailsBubble = 0>
+  [ 39] jmpifz [ 47] ............................ if tDetailsBubble = 0 then
+  [ 42] pushzero ................................ <0>
+  [ 43] pusharglistnoret 1 ...................... <0>
+  [ 45] extcall 44 .............................. return 0
+  [ 47] getlocal 0 .............................. <tDetailsBubble>
+  [ 49] pushcons 4 .............................. <"friendlist_userinfo.window">
+  [ 51] getparam 1 .............................. <tTargetRect>
+  [ 53] pushsymb 631 ............................ <#right>
+  [ 56] pusharglistnoret 4 ...................... <tDetailsBubble, "friendlist_userinfo.window", tTargetRect, #right>
+  [ 58] objcall 632 ............................. tDetailsBubble.createWithContent("friendlist_userinfo.window", tTargetRect, #right)
+  [ 61] getlocal 0 .............................. <tDetailsBubble>
+  [ 63] pusharglist 1 ........................... <tDetailsBubble>
+  [ 65] objcall 633 ............................. <tDetailsBubble.getWindowObj()>
+  [ 68] setlocal 1 .............................. tDetailsWindow = tDetailsBubble.getWindowObj()
+  [ 70] getlocal 1 .............................. <tDetailsWindow>
+  [ 72] pushzero ................................ <0>
+  [ 73] eq ...................................... <tDetailsWindow = 0>
+  [ 74] jmpifz [ 82] ............................ if tDetailsWindow = 0 then
+  [ 77] pushzero ................................ <0>
+  [ 78] pusharglistnoret 1 ...................... <0>
+  [ 80] extcall 44 .............................. return 0
+  [ 82] getprop 624 ............................. <pFriendInfo>
+  [ 85] pushsymb 243 ............................ <#name>
+  [ 87] pusharglist 2 ........................... <pFriendInfo, #name>
+  [ 89] objcall 127 ............................. <pFriendInfo.getaProp(#name)>
+  [ 91] setlocal 2 .............................. tName = pFriendInfo.getaProp(#name)
+  [ 93] getprop 624 ............................. <pFriendInfo>
+  [ 96] pushsymb 425 ............................ <#figure>
+  [ 99] pusharglist 2 ........................... <pFriendInfo, #figure>
+  [101] objcall 127 ............................. <pFriendInfo.getaProp(#figure)>
+  [103] setlocal 3 .............................. tFigure = pFriendInfo.getaProp(#figure)
+  [105] getprop 624 ............................. <pFriendInfo>
+  [108] pushsymb 422 ............................ <#sex>
+  [111] pusharglist 2 ........................... <pFriendInfo, #sex>
+  [113] objcall 127 ............................. <pFriendInfo.getaProp(#sex)>
+  [115] setlocal 4 .............................. tsex = pFriendInfo.getaProp(#sex)
+  [117] getprop 624 ............................. <pFriendInfo>
+  [120] pushsymb 423 ............................ <#online>
+  [123] pusharglist 2 ........................... <pFriendInfo, #online>
+  [125] objcall 127 ............................. <pFriendInfo.getaProp(#online)>
+  [127] setlocal 5 .............................. tOnline = pFriendInfo.getaProp(#online)
+  [129] getlocal 1 .............................. <tDetailsWindow>
+  [131] pushcons 5 .............................. <"user.info.image">
+  [133] pusharglist 2 ........................... <tDetailsWindow, "user.info.image">
+  [135] objcall 239 ............................. <tDetailsWindow.getElement("user.info.image")>
+  [137] setlocal 6 .............................. tElem = tDetailsWindow.getElement("user.info.image")
+  [139] getlocal 6 .............................. <tElem>
+  [141] pushzero ................................ <0>
+  [142] nteq .................................... <tElem <> 0>
+  [143] getlocal 3 .............................. <tFigure>
+  [145] pusharglist 1 ........................... <tFigure>
+  [147] extcall 144 ............................. <stringp(tFigure)>
+  [149] and ..................................... <(tElem <> 0) and stringp(tFigure)>
+  [150] jmpifz [210] ............................ if (tElem <> 0) and stringp(tFigure) then
+  [153] getlocal 6 .............................. <tElem>
+  [155] pushsymb 245 ............................ <#width>
+  [157] pusharglist 2 ........................... <tElem, #width>
+  [159] objcall 218 ............................. <tElem.getProperty(#width)>
+  [161] setlocal 7 .............................. tElemWidth = tElem.getProperty(#width)
+  [163] getlocal 6 .............................. <tElem>
+  [165] pushsymb 217 ............................ <#height>
+  [167] pusharglist 2 ........................... <tElem, #height>
+  [169] objcall 218 ............................. <tElem.getProperty(#height)>
+  [171] setlocal 8 .............................. tElemHeight = tElem.getProperty(#height)
+  [173] getparam 0 .............................. <me>
+  [175] getlocal 3 .............................. <tFigure>
+  [177] getlocal 4 .............................. <tsex>
+  [179] getlocal 7 .............................. <tElemWidth>
+  [181] getlocal 8 .............................. <tElemHeight>
+  [183] pusharglist 5 ........................... <me, tFigure, tsex, tElemWidth, tElemHeight>
+  [185] objcall 619 ............................. <me.getHumanImage(tFigure, tsex, tElemWidth, tElemHeight)>
+  [188] setlocal 9 .............................. tHeadImage = me.getHumanImage(tFigure, tsex, tElemWidth, tElemHeight)
+  [190] getlocal 9 .............................. <tHeadImage>
+  [192] getobjprop 77 ........................... <tHeadImage.ilk>
+  [194] pushsymb 495 ............................ <#image>
+  [197] eq ...................................... <tHeadImage.ilk = #image>
+  [198] jmpifz [210] ............................ if tHeadImage.ilk = #image then
+  [201] getlocal 6 .............................. <tElem>
+  [203] getlocal 9 .............................. <tHeadImage>
+  [205] pusharglistnoret 2 ...................... <tElem, tHeadImage>
+  [207] objcall 261 ............................. tElem.feedImage(tHeadImage)
+  [210] getlocal 1 .............................. <tDetailsWindow>
+  [212] pushcons 6 .............................. <"user.info.name">
+  [214] pusharglist 2 ........................... <tDetailsWindow, "user.info.name">
+  [216] objcall 239 ............................. <tDetailsWindow.getElement("user.info.name")>
+  [218] setlocal 6 .............................. tElem = tDetailsWindow.getElement("user.info.name")
+  [220] getlocal 6 .............................. <tElem>
+  [222] pushzero ................................ <0>
+  [223] nteq .................................... <tElem <> 0>
+  [224] jmpifz [243] ............................ if tElem <> 0 then
+  [227] getlocal 6 .............................. <tElem>
+  [229] getprop 624 ............................. <pFriendInfo>
+  [232] pushsymb 243 ............................ <#name>
+  [234] pusharglist 2 ........................... <pFriendInfo, #name>
+  [236] objcall 127 ............................. <pFriendInfo.getaProp(#name)>
+  [238] pusharglistnoret 2 ...................... <tElem, pFriendInfo.getaProp(#name)>
+  [240] objcall 266 ............................. tElem.setText(pFriendInfo.getaProp(#name))
+  [243] getlocal 1 .............................. <tDetailsWindow>
+  [245] pushcons 7 .............................. <"user.info.motto">
+  [247] pusharglist 2 ........................... <tDetailsWindow, "user.info.motto">
+  [249] objcall 239 ............................. <tDetailsWindow.getElement("user.info.motto")>
+  [251] setlocal 6 .............................. tElem = tDetailsWindow.getElement("user.info.motto")
+  [253] getlocal 6 .............................. <tElem>
+  [255] pushzero ................................ <0>
+  [256] nteq .................................... <tElem <> 0>
+  [257] jmpifz [277] ............................ if tElem <> 0 then
+  [260] getlocal 6 .............................. <tElem>
+  [262] getprop 624 ............................. <pFriendInfo>
+  [265] pushsymb 426 ............................ <#mission>
+  [268] pusharglist 2 ........................... <pFriendInfo, #mission>
+  [270] objcall 127 ............................. <pFriendInfo.getaProp(#mission)>
+  [272] pusharglistnoret 2 ...................... <tElem, pFriendInfo.getaProp(#mission)>
+  [274] objcall 266 ............................. tElem.setText(pFriendInfo.getaProp(#mission))
+  [277] getlocal 1 .............................. <tDetailsWindow>
+  [279] pushcons 8 .............................. <"user.info.loc">
+  [281] pusharglist 2 ........................... <tDetailsWindow, "user.info.loc">
+  [283] objcall 239 ............................. <tDetailsWindow.getElement("user.info.loc")>
+  [285] setlocal 6 .............................. tElem = tDetailsWindow.getElement("user.info.loc")
+  [287] getlocal 6 .............................. <tElem>
+  [289] pushzero ................................ <0>
+  [290] nteq .................................... <tElem <> 0>
+  [291] jmpifz [339] ............................ if tElem <> 0 then
+  [294] getlocal 5 .............................. <tOnline>
+  [296] jmpifz [315] ............................ if tOnline then / else
+  [299] getlocal 6 .............................. <tElem>
+  [301] pushcons 9 .............................. <"friend_info_online">
+  [303] pusharglist 1 ........................... <"friend_info_online">
+  [305] extcall 139 ............................. <getText("friend_info_online")>
+  [307] pusharglistnoret 2 ...................... <tElem, getText("friend_info_online")>
+  [309] objcall 266 ............................. tElem.setText(getText("friend_info_online"))
+  [312] jmp [339]
+  [315] getlocal 6 .............................. <tElem>
+  [317] pushcons 10 ............................. <"friend_info_lastvisit">
+  [319] pusharglist 1 ........................... <"friend_info_lastvisit">
+  [321] extcall 139 ............................. <getText("friend_info_lastvisit")>
+  [323] getprop 624 ............................. <pFriendInfo>
+  [326] pushsymb 427 ............................ <#lastAccess>
+  [329] pusharglist 2 ........................... <pFriendInfo, #lastAccess>
+  [331] objcall 127 ............................. <pFriendInfo.getaProp(#lastAccess)>
+  [333] joinpadstr .............................. <getText("friend_info_lastvisit") && pFriendInfo.getaProp(#lastAccess)>
+  [334] pusharglistnoret 2 ...................... <tElem, getText("friend_info_lastvisit") && pFriendInfo.getaProp(#lastAccess)>
+  [336] objcall 266 ............................. tElem.setText(getText("friend_info_lastvisit") && pFriendInfo.getaProp(#lastAccess))
+  [339] ret
+end
+
+on removePopupTimeout me
+  [  0] getprop 623 ............................. <pPopupTimeoutId>
+  [  3] pusharglist 1 ........................... <pPopupTimeoutId>
+  [  5] extcall 64 .............................. <timeoutExists(pPopupTimeoutId)>
+  [  7] jmpifz [ 17] ............................ if timeoutExists(pPopupTimeoutId) then
+  [ 10] getprop 623 ............................. <pPopupTimeoutId>
+  [ 13] pusharglistnoret 1 ...................... <pPopupTimeoutId>
+  [ 15] extcall 65 .............................. removeTimeout(pPopupTimeoutId)
+  [ 17] ret
+end
+
+on getBubbleObject me
+  [  0] getprop 621 ............................. <pBubbleObjectId>
+  [  3] pusharglist 1 ........................... <pBubbleObjectId>
+  [  5] extcall 205 ............................. <objectExists(pBubbleObjectId)>
+  [  7] not ..................................... <not objectExists(pBubbleObjectId)>
+  [  8] jmpifz [ 20] ............................ if not objectExists(pBubbleObjectId) then
+  [ 11] getprop 621 ............................. <pBubbleObjectId>
+  [ 14] pushcons 3 .............................. <"Details Bubble Class">
+  [ 16] pusharglistnoret 2 ...................... <pBubbleObjectId, "Details Bubble Class">
+  [ 18] extcall 48 .............................. createObject(pBubbleObjectId, "Details Bubble Class")
+  [ 20] getprop 621 ............................. <pBubbleObjectId>
+  [ 23] pusharglist 1 ........................... <pBubbleObjectId>
+  [ 25] extcall 309 ............................. <getObject(pBubbleObjectId)>
+  [ 28] pusharglistnoret 1 ...................... <getObject(pBubbleObjectId)>
+  [ 30] extcall 44 .............................. return getObject(pBubbleObjectId)
+  [ 32] ret
+end
+
+on removeBubbleObject me
+  [  0] getprop 621 ............................. <pBubbleObjectId>
+  [  3] pusharglist 1 ........................... <pBubbleObjectId>
+  [  5] extcall 205 ............................. <objectExists(pBubbleObjectId)>
+  [  7] jmpifz [ 17] ............................ if objectExists(pBubbleObjectId) then
+  [ 10] getprop 621 ............................. <pBubbleObjectId>
+  [ 13] pusharglistnoret 1 ...................... <pBubbleObjectId>
+  [ 15] extcall 206 ............................. removeObject(pBubbleObjectId)
+  [ 17] getprop 622 ............................. <pBubbleWindowId>
+  [ 20] pusharglist 1 ........................... <pBubbleWindowId>
+  [ 22] extcall 203 ............................. <windowExists(pBubbleWindowId)>
+  [ 24] jmpifz [ 34] ............................ if windowExists(pBubbleWindowId) then
+  [ 27] getprop 622 ............................. <pBubbleWindowId>
+  [ 30] pusharglistnoret 1 ...................... <pBubbleWindowId>
+  [ 32] extcall 204 ............................. removeWindow(pBubbleWindowId)
+  [ 34] ret
+end
+
+on getHumanImage me, tFigure, tsex, tWidth, tHeight
+  [  0] pushcons 11 ............................. <"Figure_System">
+  [  2] pusharglist 1 ........................... <"Figure_System">
+  [  4] extcall 309 ............................. <getObject("Figure_System")>
+  [  7] setlocal 0 .............................. tParserObj = getObject("Figure_System")
+  [  9] getlocal 0 .............................. <tParserObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tParserObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tParserObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 44 .............................. return 0
+  [ 21] pushcons 12 ............................. <"Figure_Preview">
+  [ 23] pusharglist 1 ........................... <"Figure_Preview">
+  [ 25] extcall 309 ............................. <getObject("Figure_Preview")>
+  [ 28] setlocal 1 .............................. tPreviewObj = getObject("Figure_Preview")
+  [ 30] getlocal 1 .............................. <tPreviewObj>
+  [ 32] pushzero ................................ <0>
+  [ 33] eq ...................................... <tPreviewObj = 0>
+  [ 34] jmpifz [ 42] ............................ if tPreviewObj = 0 then
+  [ 37] pushzero ................................ <0>
+  [ 38] pusharglistnoret 1 ...................... <0>
+  [ 40] extcall 44 .............................. return 0
+  [ 42] getlocal 0 .............................. <tParserObj>
+  [ 44] getparam 1 .............................. <tFigure>
+  [ 46] getparam 2 .............................. <tsex>
+  [ 48] pushcons 13 ............................. <"user">
+  [ 50] pusharglist 4 ........................... <tParserObj, tFigure, tsex, "user">
+  [ 52] objcall 531 ............................. <tParserObj.parseFigure(tFigure, tsex, "user")>
+  [ 55] setlocal 2 .............................. tParsedFigure = tParserObj.parseFigure(tFigure, tsex, "user")
+  [ 57] getlocal 1 .............................. <tPreviewObj>
+  [ 59] pushsymb 532 ............................ <#head>
+  [ 62] getlocal 2 .............................. <tParsedFigure>
+  [ 64] pushint8 2 .............................. <2>
+  [ 66] pushcons 14 ............................. <"sh">
+  [ 68] pusharglist 5 ........................... <tPreviewObj, #head, tParsedFigure, 2, "sh">
+  [ 70] objcall 533 ............................. <tPreviewObj.getHumanPartImg(#head, tParsedFigure, 2, "sh")>
+  [ 73] setlocal 3 .............................. tImage = tPreviewObj.getHumanPartImg(#head, tParsedFigure, 2, "sh")
+  [ 75] getparam 0 .............................. <me>
+  [ 77] getlocal 3 .............................. <tImage>
+  [ 79] getparam 3 .............................. <tWidth>
+  [ 81] getparam 4 .............................. <tHeight>
+  [ 83] pusharglist 4 ........................... <me, tImage, tWidth, tHeight>
+  [ 85] objcall 620 ............................. <me.alignIconImage(tImage, tWidth, tHeight)>
+  [ 88] setlocal 3 .............................. tImage = me.alignIconImage(tImage, tWidth, tHeight)
+  [ 90] getparam 0 .............................. <me>
+  [ 92] getlocal 3 .............................. <tImage>
+  [ 94] getparam 3 .............................. <tWidth>
+  [ 96] getparam 4 .............................. <tHeight>
+  [ 98] pusharglist 4 ........................... <me, tImage, tWidth, tHeight>
+  [100] objcall 620 ............................. <me.alignIconImage(tImage, tWidth, tHeight)>
+  [103] setlocal 3 .............................. tImage = me.alignIconImage(tImage, tWidth, tHeight)
+  [105] getlocal 3 .............................. <tImage>
+  [107] pusharglistnoret 1 ...................... <tImage>
+  [109] extcall 44 .............................. return tImage
+  [111] ret
+end
+
+on alignIconImage me, tImage, tWidth, tHeight
+  [  0] getparam 1 .............................. <tImage>
+  [  2] getobjprop 77 ........................... <tImage.ilk>
+  [  4] pushsymb 495 ............................ <#image>
+  [  7] nteq .................................... <tImage.ilk <> #image>
+  [  8] jmpifz [ 16] ............................ if tImage.ilk <> #image then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 44 .............................. return 0
+  [ 16] getparam 2 .............................. <tWidth>
+  [ 18] getparam 3 .............................. <tHeight>
+  [ 20] getparam 1 .............................. <tImage>
+  [ 22] getobjprop 643 .......................... <tImage.depth>
+  [ 25] pusharglist 3 ........................... <tWidth, tHeight, tImage.depth>
+  [ 27] extcall 495 ............................. <image(tWidth, tHeight, tImage.depth)>
+  [ 30] setlocal 0 .............................. tNewImage = image(tWidth, tHeight, tImage.depth)
+  [ 32] getparam 2 .............................. <tWidth>
+  [ 34] getparam 1 .............................. <tImage>
+  [ 36] getobjprop 245 .......................... <tImage.width>
+  [ 38] sub ..................................... <tWidth - tImage.width>
+  [ 39] pushint8 2 .............................. <2>
+  [ 41] div ..................................... <(tWidth - tImage.width) / 2>
+  [ 42] setlocal 1 .............................. tOffsetX = (tWidth - tImage.width) / 2
+  [ 44] pushzero ................................ <0>
+  [ 45] setlocal 2 .............................. tOffsetY = 0
+  [ 47] getlocal 0 .............................. <tNewImage>
+  [ 49] getparam 1 .............................. <tImage>
+  [ 51] getparam 1 .............................. <tImage>
+  [ 53] getobjprop 286 .......................... <tImage.rect>
+  [ 56] getlocal 1 .............................. <tOffsetX>
+  [ 58] getlocal 2 .............................. <tOffsetY>
+  [ 60] getlocal 1 .............................. <tOffsetX>
+  [ 62] getlocal 2 .............................. <tOffsetY>
+  [ 64] pusharglist 4 ........................... <tOffsetX, tOffsetY, tOffsetX, tOffsetY>
+  [ 66] extcall 286 ............................. <rect(tOffsetX, tOffsetY, tOffsetX, tOffsetY)>
+  [ 69] add ..................................... <tImage.rect + rect(tOffsetX, tOffsetY, tOffsetX, tOffsetY)>
+  [ 70] getparam 1 .............................. <tImage>
+  [ 72] getobjprop 286 .......................... <tImage.rect>
+  [ 75] pusharglistnoret 4 ...................... <tNewImage, tImage, tImage.rect + rect(tOffsetX, tOffsetY, tOffsetX, tOffsetY), tImage.rect>
+  [ 77] objcall 496 ............................. tNewImage.copyPixels(tImage, tImage.rect + rect(tOffsetX, tOffsetY, tOffsetX, tOffsetY), tImage.rect)
+  [ 80] getlocal 0 .............................. <tNewImage>
+  [ 82] pusharglistnoret 1 ...................... <tNewImage>
+  [ 84] extcall 44 .............................. return tNewImage
+  [ 86] ret
+end

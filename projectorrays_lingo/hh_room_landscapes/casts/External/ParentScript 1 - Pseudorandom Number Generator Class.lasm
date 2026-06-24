@@ -1,0 +1,275 @@
+property pSeed, pModulus, pMult, pIncrement
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 329 ............................. pSeed = 1
+  [  5] pushfloat32 16777216.0 .................. <16777216.0>
+  [ 10] setprop 330 ............................. pModulus = 16777216.0
+  [ 13] pushfloat32 69069.0 ..................... <69069.0>
+  [ 18] setprop 331 ............................. pMult = 69069.0
+  [ 21] pushfloat32 5.0 ......................... <5.0>
+  [ 26] setprop 332 ............................. pIncrement = 5.0
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] pusharglistnoret 1 ...................... <1>
+  [ 33] extcall 36 .............................. return 1
+  [ 35] ret
+end
+
+on setSeed me, tSeed
+  [  0] getparam 1 .............................. <tSeed>
+  [  2] setprop 329 ............................. pSeed = tSeed
+  [  5] ret
+end
+
+on setModulus me, tModulus
+  [  0] getparam 1 .............................. <tModulus>
+  [  2] setprop 330 ............................. pModulus = tModulus
+  [  5] ret
+end
+
+on iterate me
+  [  0] getprop 331 ............................. <pMult>
+  [  3] pusharglist 1 ........................... <pMult>
+  [  5] extcall 26 .............................. <integer(pMult)>
+  [  7] getprop 329 ............................. <pSeed>
+  [ 10] pusharglist 1 ........................... <pSeed>
+  [ 12] extcall 26 .............................. <integer(pSeed)>
+  [ 14] mul ..................................... <integer(pMult) * integer(pSeed)>
+  [ 15] getprop 332 ............................. <pIncrement>
+  [ 18] pusharglist 1 ........................... <pIncrement>
+  [ 20] extcall 26 .............................. <integer(pIncrement)>
+  [ 22] add ..................................... <(integer(pMult) * integer(pSeed)) + integer(pIncrement)>
+  [ 23] pusharglist 1 ........................... <(integer(pMult) * integer(pSeed)) + integer(pIncrement)>
+  [ 25] extcall 267 ............................. <abs((integer(pMult) * integer(pSeed)) + integer(pIncrement))>
+  [ 28] getprop 330 ............................. <pModulus>
+  [ 31] pusharglist 1 ........................... <pModulus>
+  [ 33] extcall 26 .............................. <integer(pModulus)>
+  [ 35] mod ..................................... <abs((integer(pMult) * integer(pSeed)) + integer(pIncrement)) mod integer(pModulus)>
+  [ 36] setlocal 0 .............................. tX = abs((integer(pMult) * integer(pSeed)) + integer(pIncrement)) mod integer(pModulus)
+  [ 38] getlocal 0 .............................. <tX>
+  [ 40] setprop 329 ............................. pSeed = tX
+  [ 43] getlocal 0 .............................. <tX>
+  [ 45] pusharglistnoret 1 ...................... <tX>
+  [ 47] extcall 36 .............................. return tX
+  [ 49] ret
+end
+
+on getScaled me, tMin, tMax
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 325 ............................. <me.iterate()>
+  [  7] setlocal 0 .............................. tX = me.iterate()
+  [  9] getparam 1 .............................. <tMin>
+  [ 11] pusharglist 1 ........................... <tMin>
+  [ 13] extcall 336 ............................. <voidp(tMin)>
+  [ 16] getparam 2 .............................. <tMax>
+  [ 18] pusharglist 1 ........................... <tMax>
+  [ 20] extcall 336 ............................. <voidp(tMax)>
+  [ 23] and ..................................... <voidp(tMin) and voidp(tMax)>
+  [ 24] jmpifz [ 33] ............................ if voidp(tMin) and voidp(tMax) then
+  [ 27] getlocal 0 .............................. <tX>
+  [ 29] pusharglistnoret 1 ...................... <tX>
+  [ 31] extcall 36 .............................. return tX
+  [ 33] getparam 2 .............................. <tMax>
+  [ 35] getparam 1 .............................. <tMin>
+  [ 37] sub ..................................... <tMax - tMin>
+  [ 38] pusharglist 1 ........................... <tMax - tMin>
+  [ 40] extcall 337 ............................. <float(tMax - tMin)>
+  [ 43] setlocal 1 .............................. tRange = float(tMax - tMin)
+  [ 45] getlocal 1 .............................. <tRange>
+  [ 47] pushzero ................................ <0>
+  [ 48] eq ...................................... <tRange = 0>
+  [ 49] jmpifz [ 58] ............................ if tRange = 0 then
+  [ 52] getparam 1 .............................. <tMin>
+  [ 54] pusharglistnoret 1 ...................... <tMin>
+  [ 56] extcall 36 .............................. return tMin
+  [ 58] getprop 330 ............................. <pModulus>
+  [ 61] getlocal 1 .............................. <tRange>
+  [ 63] div ..................................... <pModulus / tRange>
+  [ 64] setlocal 2 .............................. tScale = pModulus / tRange
+  [ 66] getlocal 0 .............................. <tX>
+  [ 68] getlocal 2 .............................. <tScale>
+  [ 70] div ..................................... <tX / tScale>
+  [ 71] getparam 1 .............................. <tMin>
+  [ 73] add ..................................... <(tX / tScale) + tMin>
+  [ 74] pusharglist 1 ........................... <(tX / tScale) + tMin>
+  [ 76] extcall 26 .............................. <integer((tX / tScale) + tMin)>
+  [ 78] pusharglistnoret 1 ...................... <integer((tX / tScale) + tMin)>
+  [ 80] extcall 36 .............................. return integer((tX / tScale) + tMin)
+  [ 82] ret
+end
+
+on getArray me, tCount, tMin, tMax
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. tArray = []
+  [  5] pushint8 1 .............................. <1>
+  [  7] setlocal 1
+  [  9] getlocal 1
+  [ 11] getparam 1 .............................. <tCount>
+  [ 13] lteq
+  [ 14] jmpifz [ 43] ............................ repeat with i = 1 to tCount
+  [ 17] getlocal 0 .............................. <tArray>
+  [ 19] getparam 0 .............................. <me>
+  [ 21] getparam 2 .............................. <tMin>
+  [ 23] getparam 3 .............................. <tMax>
+  [ 25] pusharglist 3 ........................... <me, tMin, tMax>
+  [ 27] objcall 326 ............................. <me.getScaled(tMin, tMax)>
+  [ 30] pusharglistnoret 2 ...................... <tArray, me.getScaled(tMin, tMax)>
+  [ 32] objcall 197 ............................. tArray.add(me.getScaled(tMin, tMax))
+  [ 34] pushint8 1
+  [ 36] getlocal 1
+  [ 38] add
+  [ 39] setlocal 1
+  [ 41] endrepeat [  9]
+  [ 43] getlocal 0 .............................. <tArray>
+  [ 45] pusharglistnoret 1 ...................... <tArray>
+  [ 47] extcall 36 .............................. return tArray
+  [ 49] ret
+end
+
+on getArrayWithCountLimits me, tCount, tMin, tMax, tLimitList
+  [  0] getparam 4 .............................. <tLimitList>
+  [  2] pusharglist 1 ........................... <tLimitList>
+  [  4] extcall 342 ............................. <listp(tLimitList)>
+  [  7] not ..................................... <not listp(tLimitList)>
+  [  8] jmpifz [ 25] ............................ if not listp(tLimitList) then
+  [ 11] getparam 1 .............................. <tCount>
+  [ 13] getparam 2 .............................. <tMin>
+  [ 15] getparam 3 .............................. <tMax>
+  [ 17] pusharglist 3 ........................... <tCount, tMin, tMax>
+  [ 19] localcall 5 ............................. <getArray(tCount, tMin, tMax)>
+  [ 21] pusharglistnoret 1 ...................... <getArray(tCount, tMin, tMax)>
+  [ 23] extcall 36 .............................. return getArray(tCount, tMin, tMax)
+  [ 25] pusharglist 0 ........................... <[]>
+  [ 27] pushlist ................................ <[]>
+  [ 28] setlocal 0 .............................. tArray = []
+  [ 30] pusharglist 0 ........................... <[]>
+  [ 32] pushlist ................................ <[]>
+  [ 33] setlocal 1 .............................. tOrderList = []
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setlocal 2
+  [ 39] getlocal 2
+  [ 41] getparam 1 .............................. <tCount>
+  [ 43] lteq
+  [ 44] jmpifz [ 66] ............................ repeat with i = 1 to tCount
+  [ 47] getlocal 1 .............................. <tOrderList>
+  [ 49] getlocal 2 .............................. <i>
+  [ 51] getlocal 2 .............................. <i>
+  [ 53] pusharglistnoret 3 ...................... <tOrderList, i, i>
+  [ 55] objcall 72 .............................. tOrderList[i] = i
+  [ 57] pushint8 1
+  [ 59] getlocal 2
+  [ 61] add
+  [ 62] setlocal 2
+  [ 64] endrepeat [ 39]
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] setlocal 2
+  [ 70] getlocal 2
+  [ 72] getparam 1 .............................. <tCount>
+  [ 74] lteq
+  [ 75] jmpifz [159] ............................ repeat with i = 1 to tCount
+  [ 78] getparam 0 .............................. <me>
+  [ 80] pushint8 1 .............................. <1>
+  [ 82] getparam 1 .............................. <tCount>
+  [ 84] pusharglist 3 ........................... <me, 1, tCount>
+  [ 86] objcall 326 ............................. <me.getScaled(1, tCount)>
+  [ 89] setlocal 3 .............................. tTarget = me.getScaled(1, tCount)
+  [ 91] getlocal 3 .............................. <tTarget>
+  [ 93] getlocal 2 .............................. <i>
+  [ 95] eq ...................................... <tTarget = i>
+  [ 96] jmpifz [114] ............................ repeat while tTarget = i
+  [ 99] getparam 0 .............................. <me>
+  [101] pushint8 1 .............................. <1>
+  [103] getparam 1 .............................. <tCount>
+  [105] pusharglist 3 ........................... <me, 1, tCount>
+  [107] objcall 326 ............................. <me.getScaled(1, tCount)>
+  [110] setlocal 3 .............................. tTarget = me.getScaled(1, tCount)
+  [112] endrepeat [ 91]
+  [114] getlocal 1 .............................. <tOrderList>
+  [116] getlocal 2 .............................. <i>
+  [118] pusharglist 2 ........................... <tOrderList, i>
+  [120] objcall 151 ............................. <tOrderList[i]>
+  [122] setlocal 4 .............................. tTemp = tOrderList[i]
+  [124] getlocal 1 .............................. <tOrderList>
+  [126] getlocal 2 .............................. <i>
+  [128] getlocal 1 .............................. <tOrderList>
+  [130] getlocal 3 .............................. <tTarget>
+  [132] pusharglist 2 ........................... <tOrderList, tTarget>
+  [134] objcall 151 ............................. <tOrderList[tTarget]>
+  [136] pusharglistnoret 3 ...................... <tOrderList, i, tOrderList[tTarget]>
+  [138] objcall 72 .............................. tOrderList[i] = tOrderList[tTarget]
+  [140] getlocal 1 .............................. <tOrderList>
+  [142] getlocal 3 .............................. <tTarget>
+  [144] getlocal 4 .............................. <tTemp>
+  [146] pusharglistnoret 3 ...................... <tOrderList, tTarget, tTemp>
+  [148] objcall 72 .............................. tOrderList[tTarget] = tTemp
+  [150] pushint8 1
+  [152] getlocal 2
+  [154] add
+  [155] setlocal 2
+  [157] endrepeat [ 70]
+  [159] getparam 4 .............................. <tLimitList>
+  [161] pusharglist 1 ........................... <tLimitList>
+  [163] objcall 219 ............................. <tLimitList.duplicate()>
+  [165] setlocal 5 .............................. tLims = tLimitList.duplicate()
+  [167] pushint8 1 .............................. <1>
+  [169] setlocal 6 .............................. c = 1
+  [171] getlocal 6 .............................. <c>
+  [173] getparam 1 .............................. <tCount>
+  [175] pushint8 1 .............................. <1>
+  [177] add ..................................... <tCount + 1>
+  [178] lt ...................................... <c < (tCount + 1)>
+  [179] jmpifz [275] ............................ repeat while c < (tCount + 1)
+  [182] getparam 0 .............................. <me>
+  [184] getparam 2 .............................. <tMin>
+  [186] getparam 3 .............................. <tMax>
+  [188] pusharglist 3 ........................... <me, tMin, tMax>
+  [190] objcall 326 ............................. <me.getScaled(tMin, tMax)>
+  [193] setlocal 7 .............................. t = me.getScaled(tMin, tMax)
+  [195] getlocal 5 .............................. <tLims>
+  [197] getlocal 7 .............................. <t>
+  [199] pusharglist 2 ........................... <tLims, t>
+  [201] objcall 282 ............................. <tLims.getaProp(t)>
+  [204] setlocal 8 .............................. tCountLeft = tLims.getaProp(t)
+  [206] getlocal 8 .............................. <tCountLeft>
+  [208] pushzero ................................ <0>
+  [209] gt ...................................... <tCountLeft > 0>
+  [210] jmpifz [229] ............................ if tCountLeft > 0 then / else
+  [213] getlocal 5 .............................. <tLims>
+  [215] getlocal 7 .............................. <t>
+  [217] getlocal 8 .............................. <tCountLeft>
+  [219] pushint8 1 .............................. <1>
+  [221] sub ..................................... <tCountLeft - 1>
+  [222] pusharglistnoret 3 ...................... <tLims, t, tCountLeft - 1>
+  [224] objcall 239 ............................. tLims.setaProp(t, tCountLeft - 1)
+  [226] jmp [250]
+  [229] getlocal 8 .............................. <tCountLeft>
+  [231] pusharglist 1 ........................... <tCountLeft>
+  [233] extcall 336 ............................. <voidp(tCountLeft)>
+  [236] not ..................................... <not voidp(tCountLeft)>
+  [237] getlocal 8 .............................. <tCountLeft>
+  [239] pushint8 1 .............................. <1>
+  [241] inv ..................................... <-1>
+  [242] gt ...................................... <tCountLeft > -1>
+  [243] and ..................................... <not voidp(tCountLeft) and (tCountLeft > -1)>
+  [244] jmpifz [250] ............................ if not voidp(tCountLeft) and (tCountLeft > -1) then
+  [247] jmp [273] ............................... next repeat
+  [250] getlocal 0 .............................. <tArray>
+  [252] getlocal 1 .............................. <tOrderList>
+  [254] getlocal 6 .............................. <c>
+  [256] pusharglist 2 ........................... <tOrderList, c>
+  [258] objcall 151 ............................. <tOrderList[c]>
+  [260] getlocal 7 .............................. <t>
+  [262] pusharglistnoret 3 ...................... <tArray, tOrderList[c], t>
+  [264] objcall 72 .............................. tArray[tOrderList[c]] = t
+  [266] getlocal 6 .............................. <c>
+  [268] pushint8 1 .............................. <1>
+  [270] add ..................................... <c + 1>
+  [271] setlocal 6 .............................. c = c + 1
+  [273] endrepeat [171]
+  [275] getlocal 0 .............................. <tArray>
+  [277] pusharglistnoret 1 ...................... <tArray>
+  [279] extcall 36 .............................. return tArray
+  [281] ret
+end

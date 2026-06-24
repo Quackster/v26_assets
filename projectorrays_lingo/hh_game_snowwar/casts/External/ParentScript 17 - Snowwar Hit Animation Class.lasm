@@ -1,0 +1,145 @@
+property pActive, pSprite, pStep, pAnimFrame
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 580 ............................. pActive = 1
+  [  5] pushint8 1 .............................. <1>
+  [  7] pusharglistnoret 1 ...................... <1>
+  [  9] extcall 35 .............................. return 1
+  [ 11] ret
+end
+
+on deconstruct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 580 ............................. pActive = 0
+  [  4] getparam 0 .............................. <me>
+  [  6] pusharglistnoret 1 ...................... <me>
+  [  8] objcall 668 ............................. me.removeSprites()
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 35 .............................. return 1
+  [ 17] ret
+end
+
+on define me, tScreenLoc, tlocz
+  [  0] pushzero ................................ <0>
+  [  1] setprop 713 ............................. pStep = 0
+  [  4] pushint8 1 .............................. <1>
+  [  6] setprop 714 ............................. pAnimFrame = 1
+  [  9] getparam 0 .............................. <me>
+  [ 11] getparam 1 .............................. <tScreenLoc>
+  [ 13] getparam 2 .............................. <tlocz>
+  [ 15] pusharglistnoret 3 ...................... <me, tScreenLoc, tlocz>
+  [ 17] objcall 667 ............................. me.createSprites(tScreenLoc, tlocz)
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 1 ...................... <1>
+  [ 24] extcall 35 .............................. return 1
+  [ 26] ret
+end
+
+on update me
+  [  0] getprop 580 ............................. <pActive>
+  [  3] not ..................................... <not pActive>
+  [  4] jmpifz [ 12] ............................ if not pActive then
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 35 .............................. return 0
+  [ 12] getprop 713 ............................. <pStep>
+  [ 15] not ..................................... <not pStep>
+  [ 16] setprop 713 ............................. pStep = not pStep
+  [ 19] getprop 713 ............................. <pStep>
+  [ 22] jmpifz [ 31] ............................ if pStep then
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] pusharglistnoret 1 ...................... <1>
+  [ 29] extcall 35 .............................. return 1
+  [ 31] getprop 714 ............................. <pAnimFrame>
+  [ 34] pushint8 4 .............................. <4>
+  [ 36] eq ...................................... <pAnimFrame = 4>
+  [ 37] jmpifz [ 50] ............................ if pAnimFrame = 4 then
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 1 ............................... <me.deconstruct()>
+  [ 46] pusharglistnoret 1 ...................... <me.deconstruct()>
+  [ 48] extcall 35 .............................. return me.deconstruct()
+  [ 50] getprop 116 ............................. <pSprite>
+  [ 52] pushcons 0 .............................. <"hit">
+  [ 54] getprop 714 ............................. <pAnimFrame>
+  [ 57] joinstr ................................. <"hit" & pAnimFrame>
+  [ 58] pusharglist 1 ........................... <"hit" & pAnimFrame>
+  [ 60] extcall 141 ............................. <getmemnum("hit" & pAnimFrame)>
+  [ 62] pusharglist 1 ........................... <getmemnum("hit" & pAnimFrame)>
+  [ 64] extcall 122 ............................. <member(getmemnum("hit" & pAnimFrame))>
+  [ 66] setobjprop 122 .......................... pSprite.member = member(getmemnum("hit" & pAnimFrame))
+  [ 68] getprop 714 ............................. <pAnimFrame>
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] add ..................................... <pAnimFrame + 1>
+  [ 74] setprop 714 ............................. pAnimFrame = pAnimFrame + 1
+  [ 77] pushint8 1 .............................. <1>
+  [ 79] pusharglistnoret 1 ...................... <1>
+  [ 81] extcall 35 .............................. return 1
+  [ 83] ret
+end
+
+on createSprites me, tScreenLoc, tlocz
+  [  0] pushcons 1 .............................. <"snowball_hit_">
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 715 ............................. <getUniqueID()>
+  [  7] joinstr ................................. <"snowball_hit_" & getUniqueID()>
+  [  8] pusharglist 1 ........................... <"snowball_hit_" & getUniqueID()>
+  [ 10] extcall 198 ............................. <reserveSprite("snowball_hit_" & getUniqueID())>
+  [ 12] pusharglist 1 ........................... <reserveSprite("snowball_hit_" & getUniqueID())>
+  [ 14] extcall 76 .............................. <sprite(reserveSprite("snowball_hit_" & getUniqueID()))>
+  [ 16] setprop 116 ............................. pSprite = sprite(reserveSprite("snowball_hit_" & getUniqueID()))
+  [ 18] getprop 116 ............................. <pSprite>
+  [ 20] pushcons 2 .............................. <"hit1">
+  [ 22] pusharglist 1 ........................... <"hit1">
+  [ 24] extcall 141 ............................. <getmemnum("hit1")>
+  [ 26] pusharglist 1 ........................... <getmemnum("hit1")>
+  [ 28] extcall 122 ............................. <member(getmemnum("hit1"))>
+  [ 30] setobjprop 122 .......................... pSprite.member = member(getmemnum("hit1"))
+  [ 32] getprop 116 ............................. <pSprite>
+  [ 34] getparam 2 .............................. <tlocz>
+  [ 36] setobjprop 163 .......................... pSprite.locZ = tlocz
+  [ 38] getprop 116 ............................. <pSprite>
+  [ 40] pushint8 8 .............................. <8>
+  [ 42] setobjprop 202 .......................... pSprite.ink = 8
+  [ 44] getprop 116 ............................. <pSprite>
+  [ 46] getparam 1 .............................. <tScreenLoc>
+  [ 48] pushint8 1 .............................. <1>
+  [ 50] pusharglist 2 ........................... <tScreenLoc, 1>
+  [ 52] objcall 44 .............................. <tScreenLoc[1]>
+  [ 54] getparam 1 .............................. <tScreenLoc>
+  [ 56] pushint8 2 .............................. <2>
+  [ 58] pusharglist 2 ........................... <tScreenLoc, 2>
+  [ 60] objcall 44 .............................. <tScreenLoc[2]>
+  [ 62] pusharglist 2 ........................... <tScreenLoc[1], tScreenLoc[2]>
+  [ 64] extcall 148 ............................. <point(tScreenLoc[1], tScreenLoc[2])>
+  [ 66] setobjprop 161 .......................... pSprite.loc = point(tScreenLoc[1], tScreenLoc[2])
+  [ 68] pushint8 1 .............................. <1>
+  [ 70] pusharglistnoret 1 ...................... <1>
+  [ 72] extcall 35 .............................. return 1
+  [ 74] ret
+end
+
+on removeSprites me
+  [  0] getprop 116 ............................. <pSprite>
+  [  2] pusharglist 1 ........................... <pSprite>
+  [  4] extcall 75 .............................. <ilk(pSprite)>
+  [  6] pushsymb 76 ............................. <#sprite>
+  [  8] nteq .................................... <ilk(pSprite) <> #sprite>
+  [  9] jmpifz [ 17] ............................ if ilk(pSprite) <> #sprite then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 35 .............................. return 0
+  [ 17] getprop 116 ............................. <pSprite>
+  [ 19] getobjprop 703 .......................... <pSprite.spriteNum>
+  [ 22] pusharglistnoret 1 ...................... <pSprite.spriteNum>
+  [ 24] extcall 38 .............................. releaseSprite(pSprite.spriteNum)
+  [ 26] pusharglist 0 ........................... <>
+  [ 28] extcall 55 .............................. <VOID>
+  [ 30] setprop 116 ............................. pSprite = VOID
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] pusharglistnoret 1 ...................... <1>
+  [ 36] extcall 35 .............................. return 1
+  [ 38] ret
+end

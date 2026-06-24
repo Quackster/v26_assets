@@ -1,0 +1,374 @@
+property pWindowID, pCurrentErrorIndex, pErrorLock
+
+on construct me
+  [  0] pushcons 0 .............................. <"error_report">
+  [  2] pusharglist 1 ........................... <"error_report">
+  [  4] extcall 84 .............................. <getText("error_report")>
+  [  6] setprop 11 .............................. pWindowID = getText("error_report")
+  [  8] pushint8 1 .............................. <1>
+  [ 10] setprop 580 ............................. pCurrentErrorIndex = 1
+  [ 13] pushzero ................................ <0>
+  [ 14] setprop 581 ............................. pErrorLock = 0
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] pusharglistnoret 1 ...................... <1>
+  [ 21] extcall 18 .............................. return 1
+  [ 23] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 18 .............................. return 1
+  [  6] ret
+end
+
+on showErrors me
+  [  0] getprop 581 ............................. <pErrorLock>
+  [  3] jmpifz [ 12] ............................ if pErrorLock then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 18 .............................. return 1
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] setprop 581 ............................. pErrorLock = 1
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglist 1 ........................... <me>
+  [ 21] objcall 123 ............................. <me.getComponent()>
+  [ 23] pusharglist 1 ........................... <me.getComponent()>
+  [ 25] objcall 582 ............................. <me.getComponent().getErrorLists()>
+  [ 28] setlocal 0 .............................. tReportLists = me.getComponent().getErrorLists()
+  [ 30] getlocal 0 .............................. <tReportLists>
+  [ 32] getobjprop 125 .......................... <tReportLists.count>
+  [ 34] pushzero ................................ <0>
+  [ 35] eq ...................................... <tReportLists.count = 0>
+  [ 36] jmpifz [ 48] ............................ if tReportLists.count = 0 then
+  [ 39] pushzero ................................ <0>
+  [ 40] setprop 581 ............................. pErrorLock = 0
+  [ 43] pushzero ................................ <0>
+  [ 44] pusharglistnoret 1 ...................... <0>
+  [ 46] extcall 18 .............................. return 0
+  [ 48] getprop 11 .............................. <pWindowID>
+  [ 50] pusharglist 1 ........................... <pWindowID>
+  [ 52] extcall 21 .............................. <windowExists(pWindowID)>
+  [ 54] not ..................................... <not windowExists(pWindowID)>
+  [ 55] jmpifz [146] ............................ if not windowExists(pWindowID) then
+  [ 58] getprop 11 .............................. <pWindowID>
+  [ 60] pushcons 1 .............................. <"habbo_full.window">
+  [ 62] pusharglistnoret 2 ...................... <pWindowID, "habbo_full.window">
+  [ 64] extcall 33 .............................. createWindow(pWindowID, "habbo_full.window")
+  [ 66] getprop 11 .............................. <pWindowID>
+  [ 68] pusharglist 1 ........................... <pWindowID>
+  [ 70] extcall 30 .............................. <getWindow(pWindowID)>
+  [ 72] setlocal 1 .............................. tWndObj = getWindow(pWindowID)
+  [ 74] getlocal 1 .............................. <tWndObj>
+  [ 76] pushcons 2 .............................. <"error_report_details.window">
+  [ 78] pusharglistnoret 2 ...................... <tWndObj, "error_report_details.window">
+  [ 80] objcall 126 ............................. tWndObj.merge("error_report_details.window")
+  [ 82] getlocal 1 .............................. <tWndObj>
+  [ 84] pusharglistnoret 1 ...................... <tWndObj>
+  [ 86] objcall 313 ............................. tWndObj.center()
+  [ 89] getlocal 1 .............................. <tWndObj>
+  [ 91] getparam 0 .............................. <me>
+  [ 93] pusharglist 1 ........................... <me>
+  [ 95] objcall 17 .............................. <me.getID()>
+  [ 97] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [ 99] objcall 127 ............................. tWndObj.registerClient(me.getID())
+  [101] getlocal 1 .............................. <tWndObj>
+  [103] pushsymb 579 ............................ <#eventProcErrorReport>
+  [106] getparam 0 .............................. <me>
+  [108] pusharglist 1 ........................... <me>
+  [110] objcall 17 .............................. <me.getID()>
+  [112] pushsymb 52 ............................. <#mouseUp>
+  [114] pusharglistnoret 4 ...................... <tWndObj, #eventProcErrorReport, me.getID(), #mouseUp>
+  [116] objcall 53 .............................. tWndObj.registerProcedure(#eventProcErrorReport, me.getID(), #mouseUp)
+  [118] getlocal 1 .............................. <tWndObj>
+  [120] pushcons 3 .............................. <"error_report_prev">
+  [122] pusharglist 2 ........................... <tWndObj, "error_report_prev">
+  [124] objcall 129 ............................. <tWndObj.getElement("error_report_prev")>
+  [126] pushcons 4 .............................. <"<<<">
+  [128] pusharglistnoret 2 ...................... <tWndObj.getElement("error_report_prev"), "<<<">
+  [130] objcall 135 ............................. tWndObj.getElement("error_report_prev").setText("<<<")
+  [132] getlocal 1 .............................. <tWndObj>
+  [134] pushcons 5 .............................. <"error_report_next">
+  [136] pusharglist 2 ........................... <tWndObj, "error_report_next">
+  [138] objcall 129 ............................. <tWndObj.getElement("error_report_next")>
+  [140] pushcons 6 .............................. <">>>">
+  [142] pusharglistnoret 2 ...................... <tWndObj.getElement("error_report_next"), ">>>">
+  [144] objcall 135 ............................. tWndObj.getElement("error_report_next").setText(">>>")
+  [146] getparam 0 .............................. <me>
+  [148] pusharglistnoret 1 ...................... <me>
+  [150] objcall 577 ............................. me.updateErrorView()
+  [153] pushzero ................................ <0>
+  [154] setprop 581 ............................. pErrorLock = 0
+  [157] ret
+end
+
+on showPreviousError me
+  [  0] getprop 580 ............................. <pCurrentErrorIndex>
+  [  3] pushint8 1 .............................. <1>
+  [  5] sub ..................................... <pCurrentErrorIndex - 1>
+  [  6] setlocal 0 .............................. tTriedErrorIndex = pCurrentErrorIndex - 1
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglist 1 ........................... <me>
+  [ 12] objcall 123 ............................. <me.getComponent()>
+  [ 14] pusharglist 1 ........................... <me.getComponent()>
+  [ 16] objcall 582 ............................. <me.getComponent().getErrorLists()>
+  [ 19] setlocal 1 .............................. tReportList = me.getComponent().getErrorLists()
+  [ 21] getlocal 0 .............................. <tTriedErrorIndex>
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] lt ...................................... <tTriedErrorIndex < 1>
+  [ 26] getlocal 1 .............................. <tReportList>
+  [ 28] getobjprop 125 .......................... <tReportList.count>
+  [ 30] pushzero ................................ <0>
+  [ 31] eq ...................................... <tReportList.count = 0>
+  [ 32] or ...................................... <(tTriedErrorIndex < 1) or (tReportList.count = 0)>
+  [ 33] jmpifz [ 41] ............................ if (tTriedErrorIndex < 1) or (tReportList.count = 0) then
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 1 ...................... <0>
+  [ 39] extcall 18 .............................. return 0
+  [ 41] getlocal 0 .............................. <tTriedErrorIndex>
+  [ 43] setprop 580 ............................. pCurrentErrorIndex = tTriedErrorIndex
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pusharglistnoret 1 ...................... <me>
+  [ 50] objcall 577 ............................. me.updateErrorView()
+  [ 53] ret
+end
+
+on showNextError me
+  [  0] getprop 580 ............................. <pCurrentErrorIndex>
+  [  3] pushint8 1 .............................. <1>
+  [  5] add ..................................... <pCurrentErrorIndex + 1>
+  [  6] setlocal 0 .............................. tTriedErrorIndex = pCurrentErrorIndex + 1
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglist 1 ........................... <me>
+  [ 12] objcall 123 ............................. <me.getComponent()>
+  [ 14] pusharglist 1 ........................... <me.getComponent()>
+  [ 16] objcall 582 ............................. <me.getComponent().getErrorLists()>
+  [ 19] setlocal 1 .............................. tReportList = me.getComponent().getErrorLists()
+  [ 21] getlocal 0 .............................. <tTriedErrorIndex>
+  [ 23] getlocal 1 .............................. <tReportList>
+  [ 25] getobjprop 125 .......................... <tReportList.count>
+  [ 27] gt ...................................... <tTriedErrorIndex > tReportList.count>
+  [ 28] jmpifz [ 36] ............................ if tTriedErrorIndex > tReportList.count then
+  [ 31] pushzero ................................ <0>
+  [ 32] pusharglistnoret 1 ...................... <0>
+  [ 34] extcall 18 .............................. return 0
+  [ 36] getlocal 0 .............................. <tTriedErrorIndex>
+  [ 38] setprop 580 ............................. pCurrentErrorIndex = tTriedErrorIndex
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglistnoret 1 ...................... <me>
+  [ 45] objcall 577 ............................. me.updateErrorView()
+  [ 48] ret
+end
+
+on updateErrorView me
+  [  0] getprop 11 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 30 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getprop 580 ............................. <pCurrentErrorIndex>
+  [ 11] setlocal 1 .............................. tIndexOfCurrentReport = pCurrentErrorIndex
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pusharglist 1 ........................... <me>
+  [ 17] objcall 123 ............................. <me.getComponent()>
+  [ 19] pusharglist 1 ........................... <me.getComponent()>
+  [ 21] objcall 582 ............................. <me.getComponent().getErrorLists()>
+  [ 24] setlocal 2 .............................. tReportList = me.getComponent().getErrorLists()
+  [ 26] getlocal 2 .............................. <tReportList>
+  [ 28] getlocal 1 .............................. <tIndexOfCurrentReport>
+  [ 30] pusharglist 2 ........................... <tReportList, tIndexOfCurrentReport>
+  [ 32] objcall 42 .............................. <tReportList[tIndexOfCurrentReport]>
+  [ 34] setlocal 3 .............................. tErrorReport = tReportList[tIndexOfCurrentReport]
+  [ 36] getprop 580 ............................. <pCurrentErrorIndex>
+  [ 39] pushcons 7 .............................. <"/">
+  [ 41] joinstr ................................. <pCurrentErrorIndex & "/">
+  [ 42] getlocal 2 .............................. <tReportList>
+  [ 44] getobjprop 125 .......................... <tReportList.count>
+  [ 46] joinstr ................................. <pCurrentErrorIndex & "/" & tReportList.count>
+  [ 47] setlocal 4 .............................. tCounts = pCurrentErrorIndex & "/" & tReportList.count
+  [ 49] getlocal 0 .............................. <tWndObj>
+  [ 51] pushcons 8 .............................. <"error_report_count">
+  [ 53] pusharglist 2 ........................... <tWndObj, "error_report_count">
+  [ 55] objcall 129 ............................. <tWndObj.getElement("error_report_count")>
+  [ 57] setlocal 5 .............................. tElement = tWndObj.getElement("error_report_count")
+  [ 59] getlocal 5 .............................. <tElement>
+  [ 61] pushzero ................................ <0>
+  [ 62] nteq .................................... <tElement <> 0>
+  [ 63] jmpifz [ 74] ............................ if tElement <> 0 then
+  [ 66] getlocal 5 .............................. <tElement>
+  [ 68] getlocal 4 .............................. <tCounts>
+  [ 70] pusharglistnoret 2 ...................... <tElement, tCounts>
+  [ 72] objcall 135 ............................. tElement.setText(tCounts)
+  [ 74] pusharglist 0 ........................... <[:]>
+  [ 76] pushproplist ............................ <[:]>
+  [ 77] setlocal 6 .............................. tTexts = [:]
+  [ 79] getlocal 6 .............................. <tTexts>
+  [ 81] pushcons 9 .............................. <"error_report_errorid">
+  [ 83] pushcons 10 ............................. <"ID:">
+  [ 85] getlocal 3 .............................. <tErrorReport>
+  [ 87] pushsymb 586 ............................ <#errorId>
+  [ 90] pusharglist 2 ........................... <tErrorReport, #errorId>
+  [ 92] objcall 42 .............................. <tErrorReport[#errorId]>
+  [ 94] joinpadstr .............................. <"ID:" && tErrorReport[#errorId]>
+  [ 95] pusharglistnoret 3 ...................... <tTexts, "error_report_errorid", "ID:" && tErrorReport[#errorId]>
+  [ 97] objcall 194 ............................. tTexts["error_report_errorid"] = "ID:" && tErrorReport[#errorId]
+  [ 99] pushcons 11 ............................. <EMPTY>
+  [101] setlocal 7 .............................. tExplainText = EMPTY
+  [103] getlocal 3 .............................. <tErrorReport>
+  [105] pushsymb 163 ............................ <#time>
+  [107] pusharglist 2 ........................... <tErrorReport, #time>
+  [109] objcall 42 .............................. <tErrorReport[#time]>
+  [111] pusharglist 1 ........................... <tErrorReport[#time]>
+  [113] extcall 34 .............................. <voidp(tErrorReport[#time])>
+  [115] not ..................................... <not voidp(tErrorReport[#time])>
+  [116] jmpifz [132] ............................ if not voidp(tErrorReport[#time]) then
+  [119] getlocal 3 .............................. <tErrorReport>
+  [121] pushsymb 163 ............................ <#time>
+  [123] pusharglist 2 ........................... <tErrorReport, #time>
+  [125] objcall 42 .............................. <tErrorReport[#time]>
+  [127] pushcons 12 ............................. <RETURN>
+  [129] joinstr ................................. <tErrorReport[#time] & RETURN>
+  [130] setlocal 7 .............................. tExplainText = tErrorReport[#time] & RETURN
+  [132] getlocal 3 .............................. <tErrorReport>
+  [134] pushsymb 587 ............................ <#errorMsgId>
+  [137] pusharglist 2 ........................... <tErrorReport, #errorMsgId>
+  [139] objcall 42 .............................. <tErrorReport[#errorMsgId]>
+  [141] pusharglist 1 ........................... <tErrorReport[#errorMsgId]>
+  [143] extcall 34 .............................. <voidp(tErrorReport[#errorMsgId])>
+  [145] not ..................................... <not voidp(tErrorReport[#errorMsgId])>
+  [146] jmpifz [176] ............................ if not voidp(tErrorReport[#errorMsgId]) then / else
+  [149] getlocal 7 .............................. <tExplainText>
+  [151] pushcons 13 ............................. <"error_report_trigger_message">
+  [153] pusharglist 1 ........................... <"error_report_trigger_message">
+  [155] extcall 84 .............................. <getText("error_report_trigger_message")>
+  [157] joinstr ................................. <tExplainText & getText("error_report_trigger_message")>
+  [158] pushcons 14 ............................. <":">
+  [160] joinstr ................................. <tExplainText & getText("error_report_trigger_message") & ":">
+  [161] getlocal 3 .............................. <tErrorReport>
+  [163] pushsymb 587 ............................ <#errorMsgId>
+  [166] pusharglist 2 ........................... <tErrorReport, #errorMsgId>
+  [168] objcall 42 .............................. <tErrorReport[#errorMsgId]>
+  [170] joinpadstr .............................. <tExplainText & getText("error_report_trigger_message") & ":" && tErrorReport[#errorMsgId]>
+  [171] setlocal 7 .............................. tExplainText = tExplainText & getText("error_report_trigger_message") & ":" && tErrorReport[#errorMsgId]
+  [173] jmp [207]
+  [176] getlocal 3 .............................. <tErrorReport>
+  [178] pushsymb 588 ............................ <#errorMsg>
+  [181] pusharglist 2 ........................... <tErrorReport, #errorMsg>
+  [183] objcall 42 .............................. <tErrorReport[#errorMsg]>
+  [185] pusharglist 1 ........................... <tErrorReport[#errorMsg]>
+  [187] extcall 34 .............................. <voidp(tErrorReport[#errorMsg])>
+  [189] not ..................................... <not voidp(tErrorReport[#errorMsg])>
+  [190] jmpifz [207] ............................ if not voidp(tErrorReport[#errorMsg]) then
+  [193] getlocal 7 .............................. <tExplainText>
+  [195] getlocal 3 .............................. <tErrorReport>
+  [197] pushsymb 588 ............................ <#errorMsg>
+  [200] pusharglist 2 ........................... <tErrorReport, #errorMsg>
+  [202] objcall 42 .............................. <tErrorReport[#errorMsg]>
+  [204] joinstr ................................. <tExplainText & tErrorReport[#errorMsg]>
+  [205] setlocal 7 .............................. tExplainText = tExplainText & tErrorReport[#errorMsg]
+  [207] getlocal 6 .............................. <tTexts>
+  [209] pushcons 15 ............................. <"error_report_details">
+  [211] getlocal 7 .............................. <tExplainText>
+  [213] pusharglistnoret 3 ...................... <tTexts, "error_report_details", tExplainText>
+  [215] objcall 194 ............................. tTexts["error_report_details"] = tExplainText
+  [217] pushint8 1 .............................. <1>
+  [219] setlocal 8
+  [221] getlocal 8
+  [223] getlocal 6 .............................. <tTexts>
+  [225] getobjprop 125 .......................... <tTexts.count>
+  [227] lteq
+  [228] jmpifz [289] ............................ repeat with tIndex = 1 to tTexts.count
+  [231] getlocal 6 .............................. <tTexts>
+  [233] getlocal 8 .............................. <tIndex>
+  [235] pusharglist 2 ........................... <tTexts, tIndex>
+  [237] objcall 151 ............................. <tTexts.getPropAt(tIndex)>
+  [239] setlocal 9 .............................. tElementName = tTexts.getPropAt(tIndex)
+  [241] getlocal 6 .............................. <tTexts>
+  [243] getlocal 8 .............................. <tIndex>
+  [245] pusharglist 2 ........................... <tTexts, tIndex>
+  [247] objcall 42 .............................. <tTexts[tIndex]>
+  [249] setlocal 10 ............................. tText = tTexts[tIndex]
+  [251] getlocal 0 .............................. <tWndObj>
+  [253] getlocal 9 .............................. <tElementName>
+  [255] pusharglist 2 ........................... <tWndObj, tElementName>
+  [257] objcall 134 ............................. <tWndObj.elementExists(tElementName)>
+  [259] jmpifz [280] ............................ if tWndObj.elementExists(tElementName) then
+  [262] getlocal 0 .............................. <tWndObj>
+  [264] getlocal 9 .............................. <tElementName>
+  [266] pusharglist 2 ........................... <tWndObj, tElementName>
+  [268] objcall 129 ............................. <tWndObj.getElement(tElementName)>
+  [270] setlocal 5 .............................. tElement = tWndObj.getElement(tElementName)
+  [272] getlocal 5 .............................. <tElement>
+  [274] getlocal 10 ............................. <tText>
+  [276] pusharglistnoret 2 ...................... <tElement, tText>
+  [278] objcall 135 ............................. tElement.setText(tText)
+  [280] pushint8 1
+  [282] getlocal 8
+  [284] add
+  [285] setlocal 8
+  [287] endrepeat [221]
+  [289] ret
+end
+
+on hideErrorReportWindow me
+  [  0] getprop 11 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 21 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowID) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 18 .............................. return 0
+  [ 15] getparam 0 .............................. <me>
+  [ 17] pusharglist 1 ........................... <me>
+  [ 19] objcall 123 ............................. <me.getComponent()>
+  [ 21] getprop 580 ............................. <pCurrentErrorIndex>
+  [ 24] pusharglistnoret 2 ...................... <me.getComponent(), pCurrentErrorIndex>
+  [ 26] objcall 597 ............................. me.getComponent().clearErrorLists(pCurrentErrorIndex)
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] setprop 580 ............................. pCurrentErrorIndex = 1
+  [ 34] getprop 11 .............................. <pWindowID>
+  [ 36] pusharglist 1 ........................... <pWindowID>
+  [ 38] extcall 30 .............................. <getWindow(pWindowID)>
+  [ 40] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 42] getlocal 0 .............................. <tWndObj>
+  [ 44] pusharglistnoret 1 ...................... <tWndObj>
+  [ 46] objcall 598 ............................. tWndObj.close()
+  [ 49] ret
+end
+
+on eventProcErrorReport me, tEvent, tElemID, tParams
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 52 ............................. <#mouseUp>
+  [  4] eq ...................................... <tEvent = #mouseUp>
+  [  5] jmpifz [ 71] ............................ if tEvent = #mouseUp then
+  [  8] getparam 2 .............................. <tElemID>
+  [ 10] peek 0 .................................. case tElemID of
+  [ 12] pushcons 16 ............................. <"error_report_ok">
+  [ 14] nteq
+  [ 15] jmpifz [ 26] ............................ (case) "error_report_ok", ...
+  [ 18] peek 0
+  [ 20] pushcons 17 ............................. <"close">
+  [ 22] eq
+  [ 23] jmpifz [ 36] ............................ (case) ..., "close":
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglistnoret 1 ...................... <me>
+  [ 30] objcall 578 ............................. me.hideErrorReportWindow()
+  [ 33] jmp [ 69]
+  [ 36] peek 0
+  [ 38] pushcons 3 .............................. <"error_report_prev">
+  [ 40] eq
+  [ 41] jmpifz [ 54] ............................ (case) "error_report_prev":
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglistnoret 1 ...................... <me>
+  [ 48] objcall 575 ............................. me.showPreviousError()
+  [ 51] jmp [ 69]
+  [ 54] peek 0
+  [ 56] pushcons 5 .............................. <"error_report_next">
+  [ 58] eq
+  [ 59] jmpifz [ 69] ............................ (case) "error_report_next":
+  [ 62] getparam 0 .............................. <me>
+  [ 64] pusharglistnoret 1 ...................... <me>
+  [ 66] objcall 576 ............................. me.showNextError()
+  [ 69] pop 1 ................................... end case
+  [ 71] ret
+end

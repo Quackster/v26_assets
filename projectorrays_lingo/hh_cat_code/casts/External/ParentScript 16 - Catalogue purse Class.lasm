@@ -1,0 +1,227 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 184 ............................. me.updatePurseSaldo()
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglistnoret 1 ...................... <me>
+  [ 10] objcall 739 ............................. me.updatePurseTickets()
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pusharglistnoret 1 ...................... <me>
+  [ 17] objcall 740 ............................. me.updatePurseFilm()
+  [ 20] pushsymb 517 ............................ <#updateCreditCount>
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglist 1 ........................... <me>
+  [ 27] objcall 208 ............................. <me.getID()>
+  [ 29] pushsymb 184 ............................ <#updatePurseSaldo>
+  [ 31] pusharglistnoret 3 ...................... <#updateCreditCount, me.getID(), #updatePurseSaldo>
+  [ 33] extcall 206 ............................. registerMessage(#updateCreditCount, me.getID(), #updatePurseSaldo)
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] pusharglistnoret 1 ...................... <1>
+  [ 39] extcall 27 .............................. return 1
+  [ 41] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 517 ............................ <#updateCreditCount>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 208 ............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#updateCreditCount, me.getID()>
+  [ 11] extcall 223 ............................. unregisterMessage(#updateCreditCount, me.getID())
+  [ 13] ret
+end
+
+on updatePurseSaldo me
+  [  0] pushsymb 37 ............................. <#catalogue>
+  [  2] pusharglist 1 ........................... <#catalogue>
+  [  4] extcall 263 ............................. <threadExists(#catalogue)>
+  [  7] not ..................................... <not threadExists(#catalogue)>
+  [  8] jmpifz [ 16] ............................ if not threadExists(#catalogue) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 27 .............................. return 0
+  [ 16] pushsymb 37 ............................. <#catalogue>
+  [ 18] pusharglist 1 ........................... <#catalogue>
+  [ 20] extcall 36 .............................. <getThread(#catalogue)>
+  [ 22] pusharglist 1 ........................... <getThread(#catalogue)>
+  [ 24] objcall 38 .............................. <getThread(#catalogue).getInterface()>
+  [ 26] pusharglist 1 ........................... <getThread(#catalogue).getInterface()>
+  [ 28] objcall 39 .............................. <getThread(#catalogue).getInterface().getCatalogWindow()>
+  [ 30] setlocal 0 .............................. tWndObj = getThread(#catalogue).getInterface().getCatalogWindow()
+  [ 32] getlocal 0 .............................. <tWndObj>
+  [ 34] pusharglist 1 ........................... <tWndObj>
+  [ 36] extcall 282 ............................. <objectp(tWndObj)>
+  [ 39] jmpifz [104] ............................ if objectp(tWndObj) then
+  [ 42] getlocal 0 .............................. <tWndObj>
+  [ 44] pushcons 0 .............................. <"purse_amount">
+  [ 46] pusharglist 2 ........................... <tWndObj, "purse_amount">
+  [ 48] objcall 42 .............................. <tWndObj.elementExists("purse_amount")>
+  [ 50] jmpifz [104] ............................ if tWndObj.elementExists("purse_amount") then
+  [ 53] pushsymb 237 ............................ <#session>
+  [ 55] pusharglist 1 ........................... <#session>
+  [ 57] extcall 228 ............................. <getObject(#session)>
+  [ 59] pushcons 1 .............................. <"user_walletbalance">
+  [ 61] pusharglist 2 ........................... <getObject(#session), "user_walletbalance">
+  [ 63] objcall 400 ............................. <getObject(#session).exists("user_walletbalance")>
+  [ 66] jmpifz [ 86] ............................ if getObject(#session).exists("user_walletbalance") then / else
+  [ 69] pushsymb 237 ............................ <#session>
+  [ 71] pusharglist 1 ........................... <#session>
+  [ 73] extcall 228 ............................. <getObject(#session)>
+  [ 75] pushcons 1 .............................. <"user_walletbalance">
+  [ 77] pusharglist 2 ........................... <getObject(#session), "user_walletbalance">
+  [ 79] objcall 238 ............................. <getObject(#session).GET("user_walletbalance")>
+  [ 81] setlocal 1 .............................. tSaldo = getObject(#session).GET("user_walletbalance")
+  [ 83] jmp [ 90]
+  [ 86] pushcons 2 .............................. <"-">
+  [ 88] setlocal 1 .............................. tSaldo = "-"
+  [ 90] getlocal 0 .............................. <tWndObj>
+  [ 92] pushcons 0 .............................. <"purse_amount">
+  [ 94] pusharglist 2 ........................... <tWndObj, "purse_amount">
+  [ 96] objcall 43 .............................. <tWndObj.getElement("purse_amount")>
+  [ 98] getlocal 1 .............................. <tSaldo>
+  [100] pusharglistnoret 2 ...................... <tWndObj.getElement("purse_amount"), tSaldo>
+  [102] objcall 101 ............................. tWndObj.getElement("purse_amount").setText(tSaldo)
+  [104] ret
+end
+
+on updatePurseTickets me
+  [  0] pushsymb 37 ............................. <#catalogue>
+  [  2] pusharglist 1 ........................... <#catalogue>
+  [  4] extcall 36 .............................. <getThread(#catalogue)>
+  [  6] pusharglist 1 ........................... <getThread(#catalogue)>
+  [  8] objcall 38 .............................. <getThread(#catalogue).getInterface()>
+  [ 10] pusharglist 1 ........................... <getThread(#catalogue).getInterface()>
+  [ 12] objcall 39 .............................. <getThread(#catalogue).getInterface().getCatalogWindow()>
+  [ 14] setlocal 0 .............................. tWndObj = getThread(#catalogue).getInterface().getCatalogWindow()
+  [ 16] getlocal 0 .............................. <tWndObj>
+  [ 18] pusharglist 1 ........................... <tWndObj>
+  [ 20] extcall 282 ............................. <objectp(tWndObj)>
+  [ 23] jmpifz [ 78] ............................ if objectp(tWndObj) then
+  [ 26] getlocal 0 .............................. <tWndObj>
+  [ 28] pushcons 3 .............................. <"purse_info_tickets">
+  [ 30] pusharglist 2 ........................... <tWndObj, "purse_info_tickets">
+  [ 32] objcall 42 .............................. <tWndObj.elementExists("purse_info_tickets")>
+  [ 34] jmpifz [ 72] ............................ if tWndObj.elementExists("purse_info_tickets") then
+  [ 37] pushsymb 237 ............................ <#session>
+  [ 39] pusharglist 1 ........................... <#session>
+  [ 41] extcall 228 ............................. <getObject(#session)>
+  [ 43] pushcons 4 .............................. <"user_ph_tickets">
+  [ 45] pusharglist 2 ........................... <getObject(#session), "user_ph_tickets">
+  [ 47] objcall 238 ............................. <getObject(#session).GET("user_ph_tickets")>
+  [ 49] pushcons 3 .............................. <"purse_info_tickets">
+  [ 51] pusharglist 1 ........................... <"purse_info_tickets">
+  [ 53] extcall 100 ............................. <getText("purse_info_tickets")>
+  [ 55] joinpadstr .............................. <getObject(#session).GET("user_ph_tickets") && getText("purse_info_tickets")>
+  [ 56] setlocal 1 .............................. tFieldTxt = getObject(#session).GET("user_ph_tickets") && getText("purse_info_tickets")
+  [ 58] getlocal 0 .............................. <tWndObj>
+  [ 60] pushcons 3 .............................. <"purse_info_tickets">
+  [ 62] pusharglist 2 ........................... <tWndObj, "purse_info_tickets">
+  [ 64] objcall 43 .............................. <tWndObj.getElement("purse_info_tickets")>
+  [ 66] getlocal 1 .............................. <tFieldTxt>
+  [ 68] pusharglistnoret 2 ...................... <tWndObj.getElement("purse_info_tickets"), tFieldTxt>
+  [ 70] objcall 101 ............................. tWndObj.getElement("purse_info_tickets").setText(tFieldTxt)
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 1 ...................... <1>
+  [ 76] extcall 27 .............................. return 1
+  [ 78] ret
+end
+
+on updatePurseFilm me
+  [  0] pushsymb 37 ............................. <#catalogue>
+  [  2] pusharglist 1 ........................... <#catalogue>
+  [  4] extcall 36 .............................. <getThread(#catalogue)>
+  [  6] pusharglist 1 ........................... <getThread(#catalogue)>
+  [  8] objcall 38 .............................. <getThread(#catalogue).getInterface()>
+  [ 10] pusharglist 1 ........................... <getThread(#catalogue).getInterface()>
+  [ 12] objcall 39 .............................. <getThread(#catalogue).getInterface().getCatalogWindow()>
+  [ 14] setlocal 0 .............................. tWndObj = getThread(#catalogue).getInterface().getCatalogWindow()
+  [ 16] getlocal 0 .............................. <tWndObj>
+  [ 18] pusharglist 1 ........................... <tWndObj>
+  [ 20] extcall 282 ............................. <objectp(tWndObj)>
+  [ 23] jmpifz [ 78] ............................ if objectp(tWndObj) then
+  [ 26] getlocal 0 .............................. <tWndObj>
+  [ 28] pushcons 5 .............................. <"purse_info_film">
+  [ 30] pusharglist 2 ........................... <tWndObj, "purse_info_film">
+  [ 32] objcall 42 .............................. <tWndObj.elementExists("purse_info_film")>
+  [ 34] jmpifz [ 72] ............................ if tWndObj.elementExists("purse_info_film") then
+  [ 37] pushsymb 237 ............................ <#session>
+  [ 39] pusharglist 1 ........................... <#session>
+  [ 41] extcall 228 ............................. <getObject(#session)>
+  [ 43] pushcons 6 .............................. <"user_photo_film">
+  [ 45] pusharglist 2 ........................... <getObject(#session), "user_photo_film">
+  [ 47] objcall 238 ............................. <getObject(#session).GET("user_photo_film")>
+  [ 49] pushcons 5 .............................. <"purse_info_film">
+  [ 51] pusharglist 1 ........................... <"purse_info_film">
+  [ 53] extcall 100 ............................. <getText("purse_info_film")>
+  [ 55] joinpadstr .............................. <getObject(#session).GET("user_photo_film") && getText("purse_info_film")>
+  [ 56] setlocal 1 .............................. tFieldTxt = getObject(#session).GET("user_photo_film") && getText("purse_info_film")
+  [ 58] getlocal 0 .............................. <tWndObj>
+  [ 60] pushcons 5 .............................. <"purse_info_film">
+  [ 62] pusharglist 2 ........................... <tWndObj, "purse_info_film">
+  [ 64] objcall 43 .............................. <tWndObj.getElement("purse_info_film")>
+  [ 66] getlocal 1 .............................. <tFieldTxt>
+  [ 68] pusharglistnoret 2 ...................... <tWndObj.getElement("purse_info_film"), tFieldTxt>
+  [ 70] objcall 101 ............................. tWndObj.getElement("purse_info_film").setText(tFieldTxt)
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 1 ...................... <1>
+  [ 76] extcall 27 .............................. return 1
+  [ 78] ret
+end
+
+on eventProc me, tEvent, tSprID, tProp
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 148 ............................ <#mouseUp>
+  [  4] eq ...................................... <tEvent = #mouseUp>
+  [  5] jmpifz [ 21] ............................ if tEvent = #mouseUp then
+  [  8] getparam 2 .............................. <tSprID>
+  [ 10] pushcons 7 .............................. <"close">
+  [ 12] eq ...................................... <tSprID = "close">
+  [ 13] jmpifz [ 21] ............................ if tSprID = "close" then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 27 .............................. return 0
+  [ 21] getparam 1 .............................. <tEvent>
+  [ 23] pushsymb 149 ............................ <#mouseDown>
+  [ 25] eq ...................................... <tEvent = #mouseDown>
+  [ 26] jmpifz [107] ............................ if tEvent = #mouseDown then
+  [ 29] getmovieprop 402 ........................ <the mouseLoc>
+  [ 32] setlocal 0 .............................. tloc = the mouseLoc
+  [ 34] getparam 2 .............................. <tSprID>
+  [ 36] peek 0 .................................. case tSprID of
+  [ 38] pushcons 8 .............................. <"coins_btn">
+  [ 40] eq
+  [ 41] jmpifz [ 67] ............................ (case) "coins_btn":
+  [ 44] pushsymb 406 ............................ <#externalLinkClick>
+  [ 47] getlocal 0 .............................. <tloc>
+  [ 49] pusharglistnoret 2 ...................... <#externalLinkClick, tloc>
+  [ 51] extcall 225 ............................. executeMessage(#externalLinkClick, tloc)
+  [ 53] pushcons 9 .............................. <"url_purselink">
+  [ 55] pusharglist 1 ........................... <"url_purselink">
+  [ 57] extcall 100 ............................. <getText("url_purselink")>
+  [ 59] pusharglistnoret 1 ...................... <getText("url_purselink")>
+  [ 61] extcall 405 ............................. openNetPage(getText("url_purselink"))
+  [ 64] jmp [105]
+  [ 67] peek 0
+  [ 69] pushcons 10 ............................. <"vouchers_btn">
+  [ 71] eq
+  [ 72] jmpifz [ 98] ............................ (case) "vouchers_btn":
+  [ 75] pushsymb 406 ............................ <#externalLinkClick>
+  [ 78] getlocal 0 .............................. <tloc>
+  [ 80] pusharglistnoret 2 ...................... <#externalLinkClick, tloc>
+  [ 82] extcall 225 ............................. executeMessage(#externalLinkClick, tloc)
+  [ 84] pushcons 11 ............................. <"purse_vouchers_helpurl">
+  [ 86] pusharglist 1 ........................... <"purse_vouchers_helpurl">
+  [ 88] extcall 100 ............................. <getText("purse_vouchers_helpurl")>
+  [ 90] pusharglistnoret 1 ...................... <getText("purse_vouchers_helpurl")>
+  [ 92] extcall 405 ............................. openNetPage(getText("purse_vouchers_helpurl"))
+  [ 95] jmp [105] ............................... (case) otherwise:
+  [ 98] pop 1
+  [100] pushzero ................................ <0>
+  [101] pusharglistnoret 1 ...................... <0>
+  [103] extcall 27 .............................. return 0
+  [105] pop 1 ................................... end case
+  [107] pushint8 1 .............................. <1>
+  [109] pusharglistnoret 1 ...................... <1>
+  [111] extcall 27 .............................. return 1
+  [113] ret
+end

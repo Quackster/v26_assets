@@ -1,0 +1,829 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 581 ............................. <me.regMsgList(1)>
+  [  9] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 11] extcall 87 .............................. return me.regMsgList(1)
+  [ 13] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 581 ............................. <me.regMsgList(0)>
+  [  8] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [ 10] extcall 87 .............................. return me.regMsgList(0)
+  [ 12] ret
+end
+
+on handle_song_info me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 505 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tSongID = tMsg.connection.GetIntFrom()
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] getchainedprop 505 ...................... <tMsg.connection>
+  [ 17] pusharglist 1 ........................... <tMsg.connection>
+  [ 19] objcall 507 ............................. <tMsg.connection.GetStrFrom()>
+  [ 22] setlocal 1 .............................. tName = tMsg.connection.GetStrFrom()
+  [ 24] getlocal 1 .............................. <tName>
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglist 2 ........................... <tName, 0>
+  [ 29] extcall 508 ............................. <convertSpecialChars(tName, 0)>
+  [ 32] setlocal 1 .............................. tName = convertSpecialChars(tName, 0)
+  [ 34] pusharglist 0 ........................... <[]>
+  [ 36] pushlist ................................ <[]>
+  [ 37] setlocal 2 .............................. tdata = []
+  [ 39] getparam 1 .............................. <tMsg>
+  [ 41] getchainedprop 505 ...................... <tMsg.connection>
+  [ 44] pusharglist 1 ........................... <tMsg.connection>
+  [ 46] objcall 507 ............................. <tMsg.connection.GetStrFrom()>
+  [ 49] setlocal 3 .............................. tStr = tMsg.connection.GetStrFrom()
+  [ 51] getmovieprop 553 ........................ <the itemDelimiter>
+  [ 54] setlocal 4 .............................. tDelim = the itemDelimiter
+  [ 56] pushcons 0 .............................. <":">
+  [ 58] setmovieprop 553 ........................ the itemDelimiter = ":"
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] setlocal 5
+  [ 65] getlocal 5
+  [ 67] getlocal 3 .............................. <tStr>
+  [ 69] pushsymb 555 ............................ <#item>
+  [ 72] pusharglist 2 ........................... <tStr, #item>
+  [ 74] objcall 115 ............................. <tStr.item.count>
+  [ 76] pushint8 2 .............................. <2>
+  [ 78] div ..................................... <tStr.item.count / 2>
+  [ 79] lteq
+  [ 80] jmpifz [343] ............................ repeat with i = 1 to tStr.item.count / 2
+  [ 83] getlocal 3 .............................. <tStr>
+  [ 85] pushsymb 555 ............................ <#item>
+  [ 88] pushint8 1 .............................. <1>
+  [ 90] getlocal 5 .............................. <i>
+  [ 92] pushint8 1 .............................. <1>
+  [ 94] sub ..................................... <i - 1>
+  [ 95] pushint8 2 .............................. <2>
+  [ 97] mul ..................................... <(i - 1) * 2>
+  [ 98] add ..................................... <1 + ((i - 1) * 2)>
+  [ 99] pusharglist 3 ........................... <tStr, #item, 1 + ((i - 1) * 2)>
+  [101] objcall 268 ............................. <tStr.item[1 + ((i - 1) * 2)]>
+  [104] setlocal 6 .............................. tChannelNumber = tStr.item[1 + ((i - 1) * 2)]
+  [106] getlocal 3 .............................. <tStr>
+  [108] pushsymb 555 ............................ <#item>
+  [111] pushint8 2 .............................. <2>
+  [113] getlocal 5 .............................. <i>
+  [115] pushint8 1 .............................. <1>
+  [117] sub ..................................... <i - 1>
+  [118] pushint8 2 .............................. <2>
+  [120] mul ..................................... <(i - 1) * 2>
+  [121] add ..................................... <2 + ((i - 1) * 2)>
+  [122] pusharglist 3 ........................... <tStr, #item, 2 + ((i - 1) * 2)>
+  [124] objcall 268 ............................. <tStr.item[2 + ((i - 1) * 2)]>
+  [127] setlocal 7 .............................. tChannelData = tStr.item[2 + ((i - 1) * 2)]
+  [129] getlocal 6 .............................. <tChannelNumber>
+  [131] pusharglist 1 ........................... <tChannelNumber>
+  [133] extcall 265 ............................. <value(tChannelNumber)>
+  [136] pusharglist 1 ........................... <value(tChannelNumber)>
+  [138] extcall 119 ............................. <ilk(value(tChannelNumber))>
+  [140] pushsymb 522 ............................ <#integer>
+  [143] eq ...................................... <ilk(value(tChannelNumber)) = #integer>
+  [144] jmpifz [328] ............................ if ilk(value(tChannelNumber)) = #integer then
+  [147] getlocal 6 .............................. <tChannelNumber>
+  [149] pusharglist 1 ........................... <tChannelNumber>
+  [151] extcall 265 ............................. <value(tChannelNumber)>
+  [154] setlocal 6 .............................. tChannelNumber = value(tChannelNumber)
+  [156] getlocal 6 .............................. <tChannelNumber>
+  [158] getlocal 2 .............................. <tdata>
+  [160] getobjprop 115 .......................... <tdata.count>
+  [162] pushint8 1 .............................. <1>
+  [164] add ..................................... <tdata.count + 1>
+  [165] eq ...................................... <tChannelNumber = (tdata.count + 1)>
+  [166] jmpifz [328] ............................ if tChannelNumber = (tdata.count + 1) then
+  [169] getlocal 2 .............................. <tdata>
+  [171] getlocal 6 .............................. <tChannelNumber>
+  [173] pusharglist 0 ........................... <[]>
+  [175] pushlist ................................ <[]>
+  [176] pusharglistnoret 3 ...................... <tdata, tChannelNumber, []>
+  [178] objcall 150 ............................. tdata[tChannelNumber] = []
+  [180] pushcons 1 .............................. <";">
+  [182] setmovieprop 553 ........................ the itemDelimiter = ";"
+  [185] pushint8 1 .............................. <1>
+  [187] setlocal 8
+  [189] getlocal 8
+  [191] getlocal 7 .............................. <tChannelData>
+  [193] pushsymb 555 ............................ <#item>
+  [196] pusharglist 2 ........................... <tChannelData, #item>
+  [198] objcall 115 ............................. <tChannelData.item.count>
+  [200] lteq
+  [201] jmpifz [328] ............................ repeat with j = 1 to tChannelData.item.count
+  [204] getlocal 7 .............................. <tChannelData>
+  [206] pushsymb 555 ............................ <#item>
+  [209] getlocal 8 .............................. <j>
+  [211] pusharglist 3 ........................... <tChannelData, #item, j>
+  [213] objcall 268 ............................. <tChannelData.item[j]>
+  [216] setlocal 9 .............................. tSample = tChannelData.item[j]
+  [218] pushcons 2 .............................. <",">
+  [220] setmovieprop 553 ........................ the itemDelimiter = ","
+  [223] getlocal 9 .............................. <tSample>
+  [225] pushsymb 555 ............................ <#item>
+  [228] pusharglist 2 ........................... <tSample, #item>
+  [230] objcall 115 ............................. <tSample.item.count>
+  [232] pushint8 2 .............................. <2>
+  [234] gteq .................................... <tSample.item.count >= 2>
+  [235] jmpifz [314] ............................ if tSample.item.count >= 2 then
+  [238] getlocal 9 .............................. <tSample>
+  [240] pushsymb 555 ............................ <#item>
+  [243] pushint8 1 .............................. <1>
+  [245] pusharglist 3 ........................... <tSample, #item, 1>
+  [247] objcall 268 ............................. <tSample.item[1]>
+  [250] pusharglist 1 ........................... <tSample.item[1]>
+  [252] extcall 265 ............................. <value(tSample.item[1])>
+  [255] setlocal 10 ............................. tID = value(tSample.item[1])
+  [257] getlocal 9 .............................. <tSample>
+  [259] pushsymb 555 ............................ <#item>
+  [262] pushint8 2 .............................. <2>
+  [264] pusharglist 3 ........................... <tSample, #item, 2>
+  [266] objcall 268 ............................. <tSample.item[2]>
+  [269] pusharglist 1 ........................... <tSample.item[2]>
+  [271] extcall 265 ............................. <value(tSample.item[2])>
+  [274] setlocal 11 ............................. tCount = value(tSample.item[2])
+  [276] getlocal 2 .............................. <tdata>
+  [278] getlocal 6 .............................. <tChannelNumber>
+  [280] pusharglist 2 ........................... <tdata, tChannelNumber>
+  [282] objcall 116 ............................. <tdata[tChannelNumber]>
+  [284] getlocal 2 .............................. <tdata>
+  [286] getlocal 6 .............................. <tChannelNumber>
+  [288] pusharglist 2 ........................... <tdata, tChannelNumber>
+  [290] objcall 116 ............................. <tdata[tChannelNumber]>
+  [292] getobjprop 115 .......................... <tdata[tChannelNumber].count>
+  [294] pushint8 1 .............................. <1>
+  [296] add ..................................... <tdata[tChannelNumber].count + 1>
+  [297] pushsymb 425 ............................ <#id>
+  [300] getlocal 10 ............................. <tID>
+  [302] pushsymb 267 ............................ <#length>
+  [305] getlocal 11 ............................. <tCount>
+  [307] pusharglist 4 ........................... <[#id: tID, #length: tCount]>
+  [309] pushproplist ............................ <[#id: tID, #length: tCount]>
+  [310] pusharglistnoret 3 ...................... <tdata[tChannelNumber], tdata[tChannelNumber].count + 1, [#id: tID, #length: tCount]>
+  [312] objcall 150 ............................. tdata[tChannelNumber][tdata[tChannelNumber].count + 1] = [#id: tID, #length: tCount]
+  [314] pushcons 1 .............................. <";">
+  [316] setmovieprop 553 ........................ the itemDelimiter = ";"
+  [319] pushint8 1
+  [321] getlocal 8
+  [323] add
+  [324] setlocal 8
+  [326] endrepeat [189]
+  [328] pushcons 0 .............................. <":">
+  [330] setmovieprop 553 ........................ the itemDelimiter = ":"
+  [333] pushint8 1
+  [335] getlocal 5
+  [337] add
+  [338] setlocal 5
+  [340] endrepeat [ 65]
+  [343] getlocal 4 .............................. <tDelim>
+  [345] setmovieprop 553 ........................ the itemDelimiter = tDelim
+  [348] getparam 0 .............................. <me>
+  [350] pusharglist 1 ........................... <me>
+  [352] objcall 122 ............................. <me.getComponent()>
+  [354] getlocal 2 .............................. <tdata>
+  [356] getlocal 0 .............................. <tSongID>
+  [358] getlocal 1 .............................. <tName>
+  [360] pusharglistnoret 4 ...................... <me.getComponent(), tdata, tSongID, tName>
+  [362] objcall 337 ............................. me.getComponent().parseSongData(tdata, tSongID, tName)
+  [365] ret
+end
+
+on handle_machine_sound_packages me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 505 .......................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] extcall 161 ............................. <voidp(tMsg.connection)>
+  [  9] jmpifz [ 17] ............................ if voidp(tMsg.connection) then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 87 .............................. return 0
+  [ 17] getparam 1 .............................. <tMsg>
+  [ 19] getchainedprop 505 ...................... <tMsg.connection>
+  [ 22] pusharglist 1 ........................... <tMsg.connection>
+  [ 24] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 27] setlocal 0 .............................. tSlotCount = tMsg.connection.GetIntFrom()
+  [ 29] getparam 1 .............................. <tMsg>
+  [ 31] getchainedprop 505 ...................... <tMsg.connection>
+  [ 34] pusharglist 1 ........................... <tMsg.connection>
+  [ 36] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 39] setlocal 1 .............................. tFilledSlots = tMsg.connection.GetIntFrom()
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglist 1 ........................... <me>
+  [ 45] objcall 122 ............................. <me.getComponent()>
+  [ 47] pusharglistnoret 1 ...................... <me.getComponent()>
+  [ 49] objcall 318 ............................. me.getComponent().clearSoundSets()
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] setlocal 2
+  [ 56] getlocal 2
+  [ 58] getlocal 1 .............................. <tFilledSlots>
+  [ 60] lteq
+  [ 61] jmpifz [172] ............................ repeat with i = 1 to tFilledSlots
+  [ 64] getparam 1 .............................. <tMsg>
+  [ 66] getchainedprop 505 ...................... <tMsg.connection>
+  [ 69] pusharglist 1 ........................... <tMsg.connection>
+  [ 71] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 74] setlocal 3 .............................. tSlotIndex = tMsg.connection.GetIntFrom()
+  [ 76] getparam 1 .............................. <tMsg>
+  [ 78] getchainedprop 505 ...................... <tMsg.connection>
+  [ 81] pusharglist 1 ........................... <tMsg.connection>
+  [ 83] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 86] setlocal 4 .............................. tID = tMsg.connection.GetIntFrom()
+  [ 88] pusharglist 0 ........................... <[]>
+  [ 90] pushlist ................................ <[]>
+  [ 91] setlocal 5 .............................. tSampleList = []
+  [ 93] getparam 1 .............................. <tMsg>
+  [ 95] getchainedprop 505 ...................... <tMsg.connection>
+  [ 98] pusharglist 1 ........................... <tMsg.connection>
+  [100] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [103] setlocal 6 .............................. tSampleCount = tMsg.connection.GetIntFrom()
+  [105] pushint8 1 .............................. <1>
+  [107] setlocal 7
+  [109] getlocal 7
+  [111] getlocal 6 .............................. <tSampleCount>
+  [113] lteq
+  [114] jmpifz [146] ............................ repeat with j = 1 to tSampleCount
+  [117] getparam 1 .............................. <tMsg>
+  [119] getchainedprop 505 ...................... <tMsg.connection>
+  [122] pusharglist 1 ........................... <tMsg.connection>
+  [124] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [127] setlocal 8 .............................. tSampleID = tMsg.connection.GetIntFrom()
+  [129] getlocal 5 .............................. <tSampleList>
+  [131] getlocal 8 .............................. <tSampleID>
+  [133] pusharglistnoret 2 ...................... <tSampleList, tSampleID>
+  [135] objcall 188 ............................. tSampleList.add(tSampleID)
+  [137] pushint8 1
+  [139] getlocal 7
+  [141] add
+  [142] setlocal 7
+  [144] endrepeat [109]
+  [146] getparam 0 .............................. <me>
+  [148] pusharglist 1 ........................... <me>
+  [150] objcall 122 ............................. <me.getComponent()>
+  [152] getlocal 3 .............................. <tSlotIndex>
+  [154] getlocal 4 .............................. <tID>
+  [156] getlocal 5 .............................. <tSampleList>
+  [158] pusharglistnoret 4 ...................... <me.getComponent(), tSlotIndex, tID, tSampleList>
+  [160] objcall 317 ............................. me.getComponent().updateSoundSet(tSlotIndex, tID, tSampleList)
+  [163] pushint8 1
+  [165] getlocal 2
+  [167] add
+  [168] setlocal 2
+  [170] endrepeat [ 56]
+  [172] getparam 0 .............................. <me>
+  [174] pusharglist 1 ........................... <me>
+  [176] objcall 122 ............................. <me.getComponent()>
+  [178] getlocal 1 .............................. <tFilledSlots>
+  [180] pusharglistnoret 2 ...................... <me.getComponent(), tFilledSlots>
+  [182] objcall 319 ............................. me.getComponent().setSoundSetCount(tFilledSlots)
+  [185] getparam 0 .............................. <me>
+  [187] pusharglist 1 ........................... <me>
+  [189] objcall 122 ............................. <me.getComponent()>
+  [191] pusharglistnoret 1 ...................... <me.getComponent()>
+  [193] objcall 320 ............................. me.getComponent().removeSoundSetInsertLock()
+  [196] pushint8 1 .............................. <1>
+  [198] pusharglistnoret 1 ...................... <1>
+  [200] extcall 87 .............................. return 1
+  [202] ret
+end
+
+on handle_user_sound_packages me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 505 .......................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] extcall 161 ............................. <voidp(tMsg.connection)>
+  [  9] jmpifz [ 17] ............................ if voidp(tMsg.connection) then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 87 .............................. return 0
+  [ 17] getparam 1 .............................. <tMsg>
+  [ 19] getchainedprop 505 ...................... <tMsg.connection>
+  [ 22] pusharglist 1 ........................... <tMsg.connection>
+  [ 24] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 27] setlocal 0 .............................. tCount = tMsg.connection.GetIntFrom()
+  [ 29] pusharglist 0 ........................... <[]>
+  [ 31] pushlist ................................ <[]>
+  [ 32] setlocal 1 .............................. tList = []
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] setlocal 2
+  [ 38] getlocal 2
+  [ 40] getlocal 0 .............................. <tCount>
+  [ 42] lteq
+  [ 43] jmpifz [ 76] ............................ repeat with i = 1 to tCount
+  [ 46] getparam 1 .............................. <tMsg>
+  [ 48] getchainedprop 505 ...................... <tMsg.connection>
+  [ 51] pusharglist 1 ........................... <tMsg.connection>
+  [ 53] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 56] setlocal 3 .............................. tID = tMsg.connection.GetIntFrom()
+  [ 58] getlocal 1 .............................. <tList>
+  [ 60] getlocal 3 .............................. <tID>
+  [ 62] pusharglistnoret 2 ...................... <tList, tID>
+  [ 64] objcall 587 ............................. tList.append(tID)
+  [ 67] pushint8 1
+  [ 69] getlocal 2
+  [ 71] add
+  [ 72] setlocal 2
+  [ 74] endrepeat [ 38]
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pusharglist 1 ........................... <me>
+  [ 80] objcall 122 ............................. <me.getComponent()>
+  [ 82] getlocal 1 .............................. <tList>
+  [ 84] pusharglist 2 ........................... <me.getComponent(), tList>
+  [ 86] objcall 315 ............................. <me.getComponent().updateSetList(tList)>
+  [ 89] pusharglistnoret 1 ...................... <me.getComponent().updateSetList(tList)>
+  [ 91] extcall 87 .............................. return me.getComponent().updateSetList(tList)
+  [ 93] ret
+end
+
+on handle_invalid_song_name me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 311 ............................. <me.getComponent().handleInvalidSongName()>
+  [ 11] pusharglistnoret 1 ...................... <me.getComponent().handleInvalidSongName()>
+  [ 13] extcall 87 .............................. return me.getComponent().handleInvalidSongName()
+  [ 15] ret
+end
+
+on handle_song_list me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] getparam 1 .............................. <tMsg>
+  [  8] pusharglist 2 ........................... <me.getComponent(), tMsg>
+  [ 10] objcall 304 ............................. <me.getComponent().parseSongList(tMsg)>
+  [ 13] pusharglistnoret 1 ...................... <me.getComponent().parseSongList(tMsg)>
+  [ 15] extcall 87 .............................. return me.getComponent().parseSongList(tMsg)
+  [ 17] ret
+end
+
+on handle_play_list me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] getparam 1 .............................. <tMsg>
+  [  8] pusharglist 2 ........................... <me.getComponent(), tMsg>
+  [ 10] objcall 305 ............................. <me.getComponent().parsePlaylist(tMsg)>
+  [ 13] pusharglistnoret 1 ...................... <me.getComponent().parsePlaylist(tMsg)>
+  [ 15] extcall 87 .............................. return me.getComponent().parsePlaylist(tMsg)
+  [ 17] ret
+end
+
+on handle_song_missing_packages me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 505 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tCount = tMsg.connection.GetIntFrom()
+  [ 12] pusharglist 0 ........................... <[]>
+  [ 14] pushlist ................................ <[]>
+  [ 15] setlocal 1 .............................. tList = []
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] setlocal 2
+  [ 21] getlocal 2
+  [ 23] getlocal 0 .............................. <tCount>
+  [ 25] lteq
+  [ 26] jmpifz [ 59] ............................ repeat with i = 1 to tCount
+  [ 29] getparam 1 .............................. <tMsg>
+  [ 31] getchainedprop 505 ...................... <tMsg.connection>
+  [ 34] pusharglist 1 ........................... <tMsg.connection>
+  [ 36] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 39] setlocal 3 .............................. tID = tMsg.connection.GetIntFrom()
+  [ 41] getlocal 1 .............................. <tList>
+  [ 43] getlocal 3 .............................. <tID>
+  [ 45] pusharglistnoret 2 ...................... <tList, tID>
+  [ 47] objcall 587 ............................. tList.append(tID)
+  [ 50] pushint8 1
+  [ 52] getlocal 2
+  [ 54] add
+  [ 55] setlocal 2
+  [ 57] endrepeat [ 21]
+  [ 59] getparam 0 .............................. <me>
+  [ 61] pusharglist 1 ........................... <me>
+  [ 63] objcall 122 ............................. <me.getComponent()>
+  [ 65] getlocal 1 .............................. <tList>
+  [ 67] pusharglist 2 ........................... <me.getComponent(), tList>
+  [ 69] objcall 309 ............................. <me.getComponent().handleMissingPackages(tList)>
+  [ 72] pusharglistnoret 1 ...................... <me.getComponent().handleMissingPackages(tList)>
+  [ 74] extcall 87 .............................. return me.getComponent().handleMissingPackages(tList)
+  [ 76] ret
+end
+
+on handle_play_list_invalid me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 505 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tCount = tMsg.connection.GetIntFrom()
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 122 ............................. <me.getComponent()>
+  [ 18] getlocal 0 .............................. <tCount>
+  [ 20] pushcons 3 .............................. <"playlist">
+  [ 22] pusharglist 3 ........................... <me.getComponent(), tCount, "playlist">
+  [ 24] objcall 310 ............................. <me.getComponent().handleListFull(tCount, "playlist")>
+  [ 27] pusharglistnoret 1 ...................... <me.getComponent().handleListFull(tCount, "playlist")>
+  [ 29] extcall 87 .............................. return me.getComponent().handleListFull(tCount, "playlist")
+  [ 31] ret
+end
+
+on handle_song_list_full me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 505 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tCount = tMsg.connection.GetIntFrom()
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 122 ............................. <me.getComponent()>
+  [ 18] getlocal 0 .............................. <tCount>
+  [ 20] pushcons 4 .............................. <"songlist">
+  [ 22] pusharglist 3 ........................... <me.getComponent(), tCount, "songlist">
+  [ 24] objcall 310 ............................. <me.getComponent().handleListFull(tCount, "songlist")>
+  [ 27] pusharglistnoret 1 ...................... <me.getComponent().handleListFull(tCount, "songlist")>
+  [ 29] extcall 87 .............................. return me.getComponent().handleListFull(tCount, "songlist")
+  [ 31] ret
+end
+
+on handle_new_song me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 505 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tID = tMsg.connection.GetIntFrom()
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] getchainedprop 505 ...................... <tMsg.connection>
+  [ 17] pusharglist 1 ........................... <tMsg.connection>
+  [ 19] objcall 507 ............................. <tMsg.connection.GetStrFrom()>
+  [ 22] setlocal 1 .............................. tName = tMsg.connection.GetStrFrom()
+  [ 24] getlocal 1 .............................. <tName>
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglist 2 ........................... <tName, 0>
+  [ 29] extcall 508 ............................. <convertSpecialChars(tName, 0)>
+  [ 32] setlocal 1 .............................. tName = convertSpecialChars(tName, 0)
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pusharglist 1 ........................... <me>
+  [ 38] objcall 122 ............................. <me.getComponent()>
+  [ 40] getlocal 0 .............................. <tID>
+  [ 42] getlocal 1 .............................. <tName>
+  [ 44] pusharglist 3 ........................... <me.getComponent(), tID, tName>
+  [ 46] objcall 327 ............................. <me.getComponent().updateEditorSong(tID, tName)>
+  [ 49] pusharglistnoret 1 ...................... <me.getComponent().updateEditorSong(tID, tName)>
+  [ 51] extcall 87 .............................. return me.getComponent().updateEditorSong(tID, tName)
+  [ 53] ret
+end
+
+on handle_user_song_disks me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] getparam 1 .............................. <tMsg>
+  [  8] pusharglist 2 ........................... <me.getComponent(), tMsg>
+  [ 10] objcall 306 ............................. <me.getComponent().parseUserDisks(tMsg)>
+  [ 13] pusharglistnoret 1 ...................... <me.getComponent().parseUserDisks(tMsg)>
+  [ 15] extcall 87 .............................. return me.getComponent().parseUserDisks(tMsg)
+  [ 17] ret
+end
+
+on handle_jukebox_disks me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] getparam 1 .............................. <tMsg>
+  [  8] pusharglist 2 ........................... <me.getComponent(), tMsg>
+  [ 10] objcall 307 ............................. <me.getComponent().parseJukeboxDisks(tMsg)>
+  [ 13] pusharglistnoret 1 ...................... <me.getComponent().parseJukeboxDisks(tMsg)>
+  [ 15] extcall 87 .............................. return me.getComponent().parseJukeboxDisks(tMsg)
+  [ 17] ret
+end
+
+on handle_jukebox_song_added me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 505 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tID = tMsg.connection.GetIntFrom()
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] getchainedprop 505 ...................... <tMsg.connection>
+  [ 17] pusharglist 1 ........................... <tMsg.connection>
+  [ 19] objcall 506 ............................. <tMsg.connection.GetIntFrom()>
+  [ 22] setlocal 1 .............................. tLength = tMsg.connection.GetIntFrom()
+  [ 24] getparam 1 .............................. <tMsg>
+  [ 26] getchainedprop 505 ...................... <tMsg.connection>
+  [ 29] pusharglist 1 ........................... <tMsg.connection>
+  [ 31] objcall 507 ............................. <tMsg.connection.GetStrFrom()>
+  [ 34] setlocal 2 .............................. tName = tMsg.connection.GetStrFrom()
+  [ 36] getparam 1 .............................. <tMsg>
+  [ 38] getchainedprop 505 ...................... <tMsg.connection>
+  [ 41] pusharglist 1 ........................... <tMsg.connection>
+  [ 43] objcall 507 ............................. <tMsg.connection.GetStrFrom()>
+  [ 46] setlocal 3 .............................. tAuthor = tMsg.connection.GetStrFrom()
+  [ 48] getlocal 2 .............................. <tName>
+  [ 50] pushzero ................................ <0>
+  [ 51] pusharglist 2 ........................... <tName, 0>
+  [ 53] extcall 508 ............................. <convertSpecialChars(tName, 0)>
+  [ 56] setlocal 2 .............................. tName = convertSpecialChars(tName, 0)
+  [ 58] getlocal 3 .............................. <tAuthor>
+  [ 60] pushzero ................................ <0>
+  [ 61] pusharglist 2 ........................... <tAuthor, 0>
+  [ 63] extcall 508 ............................. <convertSpecialChars(tAuthor, 0)>
+  [ 66] setlocal 3 .............................. tAuthor = convertSpecialChars(tAuthor, 0)
+  [ 68] getparam 0 .............................. <me>
+  [ 70] pusharglist 1 ........................... <me>
+  [ 72] objcall 122 ............................. <me.getComponent()>
+  [ 74] getlocal 0 .............................. <tID>
+  [ 76] getlocal 1 .............................. <tLength>
+  [ 78] getlocal 2 .............................. <tName>
+  [ 80] getlocal 3 .............................. <tAuthor>
+  [ 82] pusharglist 5 ........................... <me.getComponent(), tID, tLength, tName, tAuthor>
+  [ 84] objcall 308 ............................. <me.getComponent().insertPlaylistSong(tID, tLength, tName, tAuthor)>
+  [ 87] pusharglistnoret 1 ...................... <me.getComponent().insertPlaylistSong(tID, tLength, tName, tAuthor)>
+  [ 89] extcall 87 .............................. return me.getComponent().insertPlaylistSong(tID, tLength, tName, tAuthor)
+  [ 91] ret
+end
+
+on handle_song_locked me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 312 ............................. <me.getComponent().handleSongLocked()>
+  [ 11] pusharglistnoret 1 ...................... <me.getComponent().handleSongLocked()>
+  [ 13] extcall 87 .............................. return me.getComponent().handleSongLocked()
+  [ 15] ret
+end
+
+on handle_jukebox_playlist_full me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 313 ............................. <me.getComponent().handleJukeBoxPlaylistFull()>
+  [ 11] pusharglistnoret 1 ...................... <me.getComponent().handleJukeBoxPlaylistFull()>
+  [ 13] extcall 87 .............................. return me.getComponent().handleJukeBoxPlaylistFull()
+  [ 15] ret
+end
+
+on handle_invalid_song_length me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 314 ............................. <me.getComponent().handleInvalidSongLength()>
+  [ 11] pusharglistnoret 1 ...................... <me.getComponent().handleInvalidSongLength()>
+  [ 13] extcall 87 .............................. return me.getComponent().handleInvalidSongLength()
+  [ 15] ret
+end
+
+on handle_song_saved me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 122 ............................. <me.getComponent()>
+  [  6] pusharglist 0 ........................... <>
+  [  8] extcall 111 ............................. <VOID>
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 111 ............................. <VOID>
+  [ 14] pusharglist 3 ........................... <me.getComponent(), VOID, VOID>
+  [ 16] objcall 327 ............................. <me.getComponent().updateEditorSong(VOID, VOID)>
+  [ 19] pusharglistnoret 1 ...................... <me.getComponent().updateEditorSong(VOID, VOID)>
+  [ 21] extcall 87 .............................. return me.getComponent().updateEditorSong(VOID, VOID)
+  [ 23] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 300 ........................... <300>
+  [ 10] pushsymb 564 ............................ <#handle_song_info>
+  [ 13] pusharglistnoret 3 ...................... <tMsgs, 300, #handle_song_info>
+  [ 15] objcall 588 ............................. tMsgs.setaProp(300, #handle_song_info)
+  [ 18] getlocal 0 .............................. <tMsgs>
+  [ 20] pushint16 301 ........................... <301>
+  [ 23] pushsymb 565 ............................ <#handle_machine_sound_packages>
+  [ 26] pusharglistnoret 3 ...................... <tMsgs, 301, #handle_machine_sound_packages>
+  [ 28] objcall 588 ............................. tMsgs.setaProp(301, #handle_machine_sound_packages)
+  [ 31] getlocal 0 .............................. <tMsgs>
+  [ 33] pushint16 302 ........................... <302>
+  [ 36] pushsymb 566 ............................ <#handle_user_sound_packages>
+  [ 39] pusharglistnoret 3 ...................... <tMsgs, 302, #handle_user_sound_packages>
+  [ 41] objcall 588 ............................. tMsgs.setaProp(302, #handle_user_sound_packages)
+  [ 44] getlocal 0 .............................. <tMsgs>
+  [ 46] pushint16 332 ........................... <332>
+  [ 49] pushsymb 567 ............................ <#handle_invalid_song_name>
+  [ 52] pusharglistnoret 3 ...................... <tMsgs, 332, #handle_invalid_song_name>
+  [ 54] objcall 588 ............................. tMsgs.setaProp(332, #handle_invalid_song_name)
+  [ 57] getlocal 0 .............................. <tMsgs>
+  [ 59] pushint16 322 ........................... <322>
+  [ 62] pushsymb 568 ............................ <#handle_song_list>
+  [ 65] pusharglistnoret 3 ...................... <tMsgs, 322, #handle_song_list>
+  [ 67] objcall 588 ............................. tMsgs.setaProp(322, #handle_song_list)
+  [ 70] getlocal 0 .............................. <tMsgs>
+  [ 72] pushint16 323 ........................... <323>
+  [ 75] pushsymb 569 ............................ <#handle_play_list>
+  [ 78] pusharglistnoret 3 ...................... <tMsgs, 323, #handle_play_list>
+  [ 80] objcall 588 ............................. tMsgs.setaProp(323, #handle_play_list)
+  [ 83] getlocal 0 .............................. <tMsgs>
+  [ 85] pushint16 324 ........................... <324>
+  [ 88] pushsymb 570 ............................ <#handle_song_missing_packages>
+  [ 91] pusharglistnoret 3 ...................... <tMsgs, 324, #handle_song_missing_packages>
+  [ 93] objcall 588 ............................. tMsgs.setaProp(324, #handle_song_missing_packages)
+  [ 96] getlocal 0 .............................. <tMsgs>
+  [ 98] pushint16 325 ........................... <325>
+  [101] pushsymb 571 ............................ <#handle_play_list_invalid>
+  [104] pusharglistnoret 3 ...................... <tMsgs, 325, #handle_play_list_invalid>
+  [106] objcall 588 ............................. tMsgs.setaProp(325, #handle_play_list_invalid)
+  [109] getlocal 0 .............................. <tMsgs>
+  [111] pushint16 326 ........................... <326>
+  [114] pushsymb 572 ............................ <#handle_song_list_full>
+  [117] pusharglistnoret 3 ...................... <tMsgs, 326, #handle_song_list_full>
+  [119] objcall 588 ............................. tMsgs.setaProp(326, #handle_song_list_full)
+  [122] getlocal 0 .............................. <tMsgs>
+  [124] pushint16 331 ........................... <331>
+  [127] pushsymb 573 ............................ <#handle_new_song>
+  [130] pusharglistnoret 3 ...................... <tMsgs, 331, #handle_new_song>
+  [132] objcall 588 ............................. tMsgs.setaProp(331, #handle_new_song)
+  [135] getlocal 0 .............................. <tMsgs>
+  [137] pushint16 333 ........................... <333>
+  [140] pushsymb 574 ............................ <#handle_user_song_disks>
+  [143] pusharglistnoret 3 ...................... <tMsgs, 333, #handle_user_song_disks>
+  [145] objcall 588 ............................. tMsgs.setaProp(333, #handle_user_song_disks)
+  [148] getlocal 0 .............................. <tMsgs>
+  [150] pushint16 334 ........................... <334>
+  [153] pushsymb 575 ............................ <#handle_jukebox_disks>
+  [156] pusharglistnoret 3 ...................... <tMsgs, 334, #handle_jukebox_disks>
+  [158] objcall 588 ............................. tMsgs.setaProp(334, #handle_jukebox_disks)
+  [161] getlocal 0 .............................. <tMsgs>
+  [163] pushint16 335 ........................... <335>
+  [166] pushsymb 576 ............................ <#handle_jukebox_song_added>
+  [169] pusharglistnoret 3 ...................... <tMsgs, 335, #handle_jukebox_song_added>
+  [171] objcall 588 ............................. tMsgs.setaProp(335, #handle_jukebox_song_added)
+  [174] getlocal 0 .............................. <tMsgs>
+  [176] pushint16 336 ........................... <336>
+  [179] pushsymb 577 ............................ <#handle_song_locked>
+  [182] pusharglistnoret 3 ...................... <tMsgs, 336, #handle_song_locked>
+  [184] objcall 588 ............................. tMsgs.setaProp(336, #handle_song_locked)
+  [187] getlocal 0 .............................. <tMsgs>
+  [189] pushint16 337 ........................... <337>
+  [192] pushsymb 578 ............................ <#handle_jukebox_playlist_full>
+  [195] pusharglistnoret 3 ...................... <tMsgs, 337, #handle_jukebox_playlist_full>
+  [197] objcall 588 ............................. tMsgs.setaProp(337, #handle_jukebox_playlist_full)
+  [200] getlocal 0 .............................. <tMsgs>
+  [202] pushint16 338 ........................... <338>
+  [205] pushsymb 579 ............................ <#handle_invalid_song_length>
+  [208] pusharglistnoret 3 ...................... <tMsgs, 338, #handle_invalid_song_length>
+  [210] objcall 588 ............................. tMsgs.setaProp(338, #handle_invalid_song_length)
+  [213] getlocal 0 .............................. <tMsgs>
+  [215] pushint16 339 ........................... <339>
+  [218] pushsymb 580 ............................ <#handle_song_saved>
+  [221] pusharglistnoret 3 ...................... <tMsgs, 339, #handle_song_saved>
+  [223] objcall 588 ............................. tMsgs.setaProp(339, #handle_song_saved)
+  [226] pusharglist 0 ........................... <[:]>
+  [228] pushproplist ............................ <[:]>
+  [229] setlocal 1 .............................. tCmds = [:]
+  [231] getlocal 1 .............................. <tCmds>
+  [233] pushcons 5 .............................. <"INSERT_SOUND_PACKAGE">
+  [235] pushint16 219 ........................... <219>
+  [238] pusharglistnoret 3 ...................... <tCmds, "INSERT_SOUND_PACKAGE", 219>
+  [240] objcall 588 ............................. tCmds.setaProp("INSERT_SOUND_PACKAGE", 219)
+  [243] getlocal 1 .............................. <tCmds>
+  [245] pushcons 6 .............................. <"EJECT_SOUND_PACKAGE">
+  [247] pushint16 220 ........................... <220>
+  [250] pusharglistnoret 3 ...................... <tCmds, "EJECT_SOUND_PACKAGE", 220>
+  [252] objcall 588 ............................. tCmds.setaProp("EJECT_SOUND_PACKAGE", 220)
+  [255] getlocal 1 .............................. <tCmds>
+  [257] pushcons 7 .............................. <"GET_SONG_INFO">
+  [259] pushint16 221 ........................... <221>
+  [262] pusharglistnoret 3 ...................... <tCmds, "GET_SONG_INFO", 221>
+  [264] objcall 588 ............................. tCmds.setaProp("GET_SONG_INFO", 221)
+  [267] getlocal 1 .............................. <tCmds>
+  [269] pushcons 8 .............................. <"NEW_SONG">
+  [271] pushint16 239 ........................... <239>
+  [274] pusharglistnoret 3 ...................... <tCmds, "NEW_SONG", 239>
+  [276] objcall 588 ............................. tCmds.setaProp("NEW_SONG", 239)
+  [279] getlocal 1 .............................. <tCmds>
+  [281] pushcons 9 .............................. <"SAVE_SONG_NEW">
+  [283] pushint16 240 ........................... <240>
+  [286] pusharglistnoret 3 ...................... <tCmds, "SAVE_SONG_NEW", 240>
+  [288] objcall 588 ............................. tCmds.setaProp("SAVE_SONG_NEW", 240)
+  [291] getlocal 1 .............................. <tCmds>
+  [293] pushcons 10 ............................. <"EDIT_SONG">
+  [295] pushint16 241 ........................... <241>
+  [298] pusharglistnoret 3 ...................... <tCmds, "EDIT_SONG", 241>
+  [300] objcall 588 ............................. tCmds.setaProp("EDIT_SONG", 241)
+  [303] getlocal 1 .............................. <tCmds>
+  [305] pushcons 11 ............................. <"SAVE_SONG_EDIT">
+  [307] pushint16 242 ........................... <242>
+  [310] pusharglistnoret 3 ...................... <tCmds, "SAVE_SONG_EDIT", 242>
+  [312] objcall 588 ............................. tCmds.setaProp("SAVE_SONG_EDIT", 242)
+  [315] getlocal 1 .............................. <tCmds>
+  [317] pushcons 12 ............................. <"BURN_SONG">
+  [319] pushint16 254 ........................... <254>
+  [322] pusharglistnoret 3 ...................... <tCmds, "BURN_SONG", 254>
+  [324] objcall 588 ............................. tCmds.setaProp("BURN_SONG", 254)
+  [327] getlocal 1 .............................. <tCmds>
+  [329] pushcons 13 ............................. <"SONG_EDIT_CLOSE">
+  [331] pushint16 246 ........................... <246>
+  [334] pusharglistnoret 3 ...................... <tCmds, "SONG_EDIT_CLOSE", 246>
+  [336] objcall 588 ............................. tCmds.setaProp("SONG_EDIT_CLOSE", 246)
+  [339] getlocal 1 .............................. <tCmds>
+  [341] pushcons 14 ............................. <"UPDATE_PLAY_LIST">
+  [343] pushint16 243 ........................... <243>
+  [346] pusharglistnoret 3 ...................... <tCmds, "UPDATE_PLAY_LIST", 243>
+  [348] objcall 588 ............................. tCmds.setaProp("UPDATE_PLAY_LIST", 243)
+  [351] getlocal 1 .............................. <tCmds>
+  [353] pushcons 15 ............................. <"GET_SONG_LIST">
+  [355] pushint16 244 ........................... <244>
+  [358] pusharglistnoret 3 ...................... <tCmds, "GET_SONG_LIST", 244>
+  [360] objcall 588 ............................. tCmds.setaProp("GET_SONG_LIST", 244)
+  [363] getlocal 1 .............................. <tCmds>
+  [365] pushcons 16 ............................. <"GET_PLAY_LIST">
+  [367] pushint16 245 ........................... <245>
+  [370] pusharglistnoret 3 ...................... <tCmds, "GET_PLAY_LIST", 245>
+  [372] objcall 588 ............................. tCmds.setaProp("GET_PLAY_LIST", 245)
+  [375] getlocal 1 .............................. <tCmds>
+  [377] pushcons 17 ............................. <"DELETE_SONG">
+  [379] pushint16 248 ........................... <248>
+  [382] pusharglistnoret 3 ...................... <tCmds, "DELETE_SONG", 248>
+  [384] objcall 588 ............................. tCmds.setaProp("DELETE_SONG", 248)
+  [387] getlocal 1 .............................. <tCmds>
+  [389] pushcons 18 ............................. <"ADD_JUKEBOX_DISC">
+  [391] pushint16 255 ........................... <255>
+  [394] pusharglistnoret 3 ...................... <tCmds, "ADD_JUKEBOX_DISC", 255>
+  [396] objcall 588 ............................. tCmds.setaProp("ADD_JUKEBOX_DISC", 255)
+  [399] getlocal 1 .............................. <tCmds>
+  [401] pushcons 19 ............................. <"REMOVE_JUKEBOX_DISC">
+  [403] pushint16 256 ........................... <256>
+  [406] pusharglistnoret 3 ...................... <tCmds, "REMOVE_JUKEBOX_DISC", 256>
+  [408] objcall 588 ............................. tCmds.setaProp("REMOVE_JUKEBOX_DISC", 256)
+  [411] getlocal 1 .............................. <tCmds>
+  [413] pushcons 20 ............................. <"JUKEBOX_PLAYLIST_ADD">
+  [415] pushint16 257 ........................... <257>
+  [418] pusharglistnoret 3 ...................... <tCmds, "JUKEBOX_PLAYLIST_ADD", 257>
+  [420] objcall 588 ............................. tCmds.setaProp("JUKEBOX_PLAYLIST_ADD", 257)
+  [423] getlocal 1 .............................. <tCmds>
+  [425] pushcons 21 ............................. <"GET_JUKEBOX_DISCS">
+  [427] pushint16 258 ........................... <258>
+  [430] pusharglistnoret 3 ...................... <tCmds, "GET_JUKEBOX_DISCS", 258>
+  [432] objcall 588 ............................. tCmds.setaProp("GET_JUKEBOX_DISCS", 258)
+  [435] getlocal 1 .............................. <tCmds>
+  [437] pushcons 22 ............................. <"GET_USER_SONG_DISCS">
+  [439] pushint16 259 ........................... <259>
+  [442] pusharglistnoret 3 ...................... <tCmds, "GET_USER_SONG_DISCS", 259>
+  [444] objcall 588 ............................. tCmds.setaProp("GET_USER_SONG_DISCS", 259)
+  [447] getlocal 1 .............................. <tCmds>
+  [449] pushcons 23 ............................. <"RESET_JUKEBOX">
+  [451] pushint16 260 ........................... <260>
+  [454] pusharglistnoret 3 ...................... <tCmds, "RESET_JUKEBOX", 260>
+  [456] objcall 588 ............................. tCmds.setaProp("RESET_JUKEBOX", 260)
+  [459] getparam 1 .............................. <tBool>
+  [461] jmpifz [507] ............................ if tBool then / else
+  [464] pushcons 24 ............................. <"connection.info.id">
+  [466] pusharglist 1 ........................... <"connection.info.id">
+  [468] extcall 590 ............................. <getVariable("connection.info.id")>
+  [471] getparam 0 .............................. <me>
+  [473] pusharglist 1 ........................... <me>
+  [475] objcall 69 .............................. <me.getID()>
+  [477] getlocal 0 .............................. <tMsgs>
+  [479] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [481] extcall 589 ............................. registerListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [484] pushcons 24 ............................. <"connection.info.id">
+  [486] pusharglist 1 ........................... <"connection.info.id">
+  [488] extcall 590 ............................. <getVariable("connection.info.id")>
+  [491] getparam 0 .............................. <me>
+  [493] pusharglist 1 ........................... <me>
+  [495] objcall 69 .............................. <me.getID()>
+  [497] getlocal 1 .............................. <tCmds>
+  [499] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [501] extcall 591 ............................. registerCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [504] jmp [547]
+  [507] pushcons 24 ............................. <"connection.info.id">
+  [509] pusharglist 1 ........................... <"connection.info.id">
+  [511] extcall 590 ............................. <getVariable("connection.info.id")>
+  [514] getparam 0 .............................. <me>
+  [516] pusharglist 1 ........................... <me>
+  [518] objcall 69 .............................. <me.getID()>
+  [520] getlocal 0 .............................. <tMsgs>
+  [522] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [524] extcall 592 ............................. unregisterListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [527] pushcons 24 ............................. <"connection.info.id">
+  [529] pusharglist 1 ........................... <"connection.info.id">
+  [531] extcall 590 ............................. <getVariable("connection.info.id")>
+  [534] getparam 0 .............................. <me>
+  [536] pusharglist 1 ........................... <me>
+  [538] objcall 69 .............................. <me.getID()>
+  [540] getlocal 1 .............................. <tCmds>
+  [542] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [544] extcall 593 ............................. unregisterCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [547] pushint8 1 .............................. <1>
+  [549] pusharglistnoret 1 ...................... <1>
+  [551] extcall 87 .............................. return 1
+  [553] ret
+end

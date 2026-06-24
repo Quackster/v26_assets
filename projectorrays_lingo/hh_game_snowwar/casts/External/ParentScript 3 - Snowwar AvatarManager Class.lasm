@@ -1,0 +1,568 @@
+property pNumTeams, pRoomComponentObj, pFigureSystemObj, pHiliterObj
+
+on construct me
+  [  0] pushsymb 219 ............................ <#room_component>
+  [  2] pusharglist 1 ........................... <#room_component>
+  [  4] extcall 56 .............................. <getObject(#room_component)>
+  [  6] setprop 218 ............................. pRoomComponentObj = getObject(#room_component)
+  [  8] getprop 218 ............................. <pRoomComponentObj>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <pRoomComponentObj = 0>
+  [ 12] jmpifz [ 29] ............................ if pRoomComponentObj = 0 then
+  [ 15] getparam 0 .............................. <me>
+  [ 17] pushcons 0 .............................. <"Avatar manager failed to initialize">
+  [ 19] pushsymb 0 .............................. <#construct>
+  [ 21] pusharglist 3 ........................... <me, "Avatar manager failed to initialize", #construct>
+  [ 23] extcall 64 .............................. <error(me, "Avatar manager failed to initialize", #construct)>
+  [ 25] pusharglistnoret 1 ...................... <error(me, "Avatar manager failed to initialize", #construct)>
+  [ 27] extcall 35 .............................. return error(me, "Avatar manager failed to initialize", #construct)
+  [ 29] pushsymb 221 ............................ <#create_user>
+  [ 31] getparam 0 .............................. <me>
+  [ 33] pusharglist 1 ........................... <me>
+  [ 35] objcall 197 ............................. <me.getID()>
+  [ 37] pushsymb 4 .............................. <#setAvatarEventListener>
+  [ 39] pusharglistnoret 3 ...................... <#create_user, me.getID(), #setAvatarEventListener>
+  [ 41] extcall 220 ............................. registerMessage(#create_user, me.getID(), #setAvatarEventListener)
+  [ 43] pushint8 1 .............................. <1>
+  [ 45] pusharglistnoret 1 ...................... <1>
+  [ 47] extcall 35 .............................. return 1
+  [ 49] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 217 ............................. me.displayAvatarInfo(0)
+  [  7] pushsymb 221 ............................ <#create_user>
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglist 1 ........................... <me>
+  [ 13] objcall 197 ............................. <me.getID()>
+  [ 15] pusharglistnoret 2 ...................... <#create_user, me.getID()>
+  [ 17] extcall 222 ............................. unregisterMessage(#create_user, me.getID())
+  [ 19] pushsymb 61 ............................. <#session>
+  [ 21] pusharglist 1 ........................... <#session>
+  [ 23] extcall 56 .............................. <getObject(#session)>
+  [ 25] pushcons 1 .............................. <"game_number_of_teams">
+  [ 27] pusharglistnoret 2 ...................... <getObject(#session), "game_number_of_teams">
+  [ 29] objcall 223 ............................. getObject(#session).Remove("game_number_of_teams")
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] pusharglistnoret 1 ...................... <1>
+  [ 35] extcall 35 .............................. return 1
+  [ 37] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 224 ............................ <#set_number_of_teams>
+  [  6] eq
+  [  7] jmpifz [ 31] ............................ (case) #set_number_of_teams:
+  [ 10] getparam 2 .............................. <tdata>
+  [ 12] setprop 225 ............................. pNumTeams = tdata
+  [ 14] pushsymb 61 ............................. <#session>
+  [ 16] pusharglist 1 ........................... <#session>
+  [ 18] extcall 56 .............................. <getObject(#session)>
+  [ 20] pushcons 1 .............................. <"game_number_of_teams">
+  [ 22] getparam 2 .............................. <tdata>
+  [ 24] pusharglistnoret 3 ...................... <getObject(#session), "game_number_of_teams", tdata>
+  [ 26] objcall 226 ............................. getObject(#session).set("game_number_of_teams", tdata)
+  [ 28] jmp [544]
+  [ 31] peek 0
+  [ 33] pushsymb 227 ............................ <#snowwar_event_2>
+  [ 35] eq
+  [ 36] jmpifz [ 64] ............................ (case) #snowwar_event_2:
+  [ 39] getparam 0 .............................. <me>
+  [ 41] pusharglist 1 ........................... <me>
+  [ 43] objcall 228 ............................. <me.getGameSystem()>
+  [ 45] getparam 2 .............................. <tdata>
+  [ 47] pushsymb 229 ............................ <#id>
+  [ 49] pusharglist 2 ........................... <tdata, #id>
+  [ 51] objcall 44 .............................. <tdata[#id]>
+  [ 53] pushsymb 230 ............................ <#set_target>
+  [ 55] getparam 2 .............................. <tdata>
+  [ 57] pusharglistnoret 4 ...................... <me.getGameSystem(), tdata[#id], #set_target, tdata>
+  [ 59] objcall 66 .............................. me.getGameSystem().executeGameObjectEvent(tdata[#id], #set_target, tdata)
+  [ 61] jmp [544]
+  [ 64] peek 0
+  [ 66] pushsymb 231 ............................ <#snowwar_event_3>
+  [ 68] eq
+  [ 69] jmpifz [117] ............................ (case) #snowwar_event_3:
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglist 1 ........................... <me>
+  [ 76] objcall 228 ............................. <me.getGameSystem()>
+  [ 78] getparam 2 .............................. <tdata>
+  [ 80] pushsymb 229 ............................ <#id>
+  [ 82] pusharglist 2 ........................... <tdata, #id>
+  [ 84] objcall 44 .............................. <tdata[#id]>
+  [ 86] pushsymb 232 ............................ <#start_throw_snowball>
+  [ 88] getparam 2 .............................. <tdata>
+  [ 90] pusharglistnoret 4 ...................... <me.getGameSystem(), tdata[#id], #start_throw_snowball, tdata>
+  [ 92] objcall 66 .............................. me.getGameSystem().executeGameObjectEvent(tdata[#id], #start_throw_snowball, tdata)
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pusharglist 1 ........................... <me>
+  [ 98] objcall 228 ............................. <me.getGameSystem()>
+  [100] getparam 2 .............................. <tdata>
+  [102] pushsymb 229 ............................ <#id>
+  [104] pusharglist 2 ........................... <tdata, #id>
+  [106] objcall 44 .............................. <tdata[#id]>
+  [108] pushsymb 233 ............................ <#substract_ball_count>
+  [110] pusharglistnoret 3 ...................... <me.getGameSystem(), tdata[#id], #substract_ball_count>
+  [112] objcall 66 .............................. me.getGameSystem().executeGameObjectEvent(tdata[#id], #substract_ball_count)
+  [114] jmp [544]
+  [117] peek 0
+  [119] pushsymb 234 ............................ <#snowwar_event_4>
+  [121] eq
+  [122] jmpifz [170] ............................ (case) #snowwar_event_4:
+  [125] getparam 0 .............................. <me>
+  [127] pusharglist 1 ........................... <me>
+  [129] objcall 228 ............................. <me.getGameSystem()>
+  [131] getparam 2 .............................. <tdata>
+  [133] pushsymb 229 ............................ <#id>
+  [135] pusharglist 2 ........................... <tdata, #id>
+  [137] objcall 44 .............................. <tdata[#id]>
+  [139] pushsymb 232 ............................ <#start_throw_snowball>
+  [141] getparam 2 .............................. <tdata>
+  [143] pusharglistnoret 4 ...................... <me.getGameSystem(), tdata[#id], #start_throw_snowball, tdata>
+  [145] objcall 66 .............................. me.getGameSystem().executeGameObjectEvent(tdata[#id], #start_throw_snowball, tdata)
+  [147] getparam 0 .............................. <me>
+  [149] pusharglist 1 ........................... <me>
+  [151] objcall 228 ............................. <me.getGameSystem()>
+  [153] getparam 2 .............................. <tdata>
+  [155] pushsymb 229 ............................ <#id>
+  [157] pusharglist 2 ........................... <tdata, #id>
+  [159] objcall 44 .............................. <tdata[#id]>
+  [161] pushsymb 233 ............................ <#substract_ball_count>
+  [163] pusharglistnoret 3 ...................... <me.getGameSystem(), tdata[#id], #substract_ball_count>
+  [165] objcall 66 .............................. me.getGameSystem().executeGameObjectEvent(tdata[#id], #substract_ball_count)
+  [167] jmp [544]
+  [170] peek 0
+  [172] pushsymb 235 ............................ <#snowwar_event_5>
+  [174] eq
+  [175] jmpifz [310] ............................ (case) #snowwar_event_5:
+  [178] pushcons 2 .............................. <"LS-hit-">
+  [180] pushint8 2 .............................. <2>
+  [182] pusharglist 1 ........................... <2>
+  [184] extcall 237 ............................. <random(2)>
+  [186] joinstr ................................. <"LS-hit-" & random(2)>
+  [187] pusharglistnoret 1 ...................... <"LS-hit-" & random(2)>
+  [189] extcall 236 ............................. playSound("LS-hit-" & random(2))
+  [191] getparam 0 .............................. <me>
+  [193] pusharglist 1 ........................... <me>
+  [195] objcall 228 ............................. <me.getGameSystem()>
+  [197] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [199] getlocal 0 .............................. <tGameSystem>
+  [201] getparam 2 .............................. <tdata>
+  [203] pushsymb 229 ............................ <#id>
+  [205] pusharglist 2 ........................... <tdata, #id>
+  [207] objcall 44 .............................. <tdata[#id]>
+  [209] pushsymb 238 ............................ <#substract_hit_points>
+  [211] pusharglistnoret 3 ...................... <tGameSystem, tdata[#id], #substract_hit_points>
+  [213] objcall 66 .............................. tGameSystem.executeGameObjectEvent(tdata[#id], #substract_hit_points)
+  [215] getprop 225 ............................. <pNumTeams>
+  [217] pushint8 1 .............................. <1>
+  [219] eq ...................................... <pNumTeams = 1>
+  [220] jmpifz [230] ............................ if pNumTeams = 1 then / else
+  [223] pushint8 1 .............................. <1>
+  [225] setlocal 1 .............................. tAwardScore = 1
+  [227] jmp [282]
+  [230] getlocal 0 .............................. <tGameSystem>
+  [232] getparam 2 .............................. <tdata>
+  [234] pushsymb 229 ............................ <#id>
+  [236] pusharglist 2 ........................... <tdata, #id>
+  [238] objcall 44 .............................. <tdata[#id]>
+  [240] pushsymb 43 ............................. <#team_id>
+  [242] pusharglist 3 ........................... <tGameSystem, tdata[#id], #team_id>
+  [244] objcall 239 ............................. <tGameSystem.getGameObjectProperty(tdata[#id], #team_id)>
+  [246] setlocal 2 .............................. tThisTeam = tGameSystem.getGameObjectProperty(tdata[#id], #team_id)
+  [248] getlocal 0 .............................. <tGameSystem>
+  [250] getparam 2 .............................. <tdata>
+  [252] pushsymb 240 ............................ <#int_thrower_id>
+  [254] pusharglist 2 ........................... <tdata, #int_thrower_id>
+  [256] objcall 44 .............................. <tdata[#int_thrower_id]>
+  [258] pusharglist 1 ........................... <tdata[#int_thrower_id]>
+  [260] extcall 42 .............................. <string(tdata[#int_thrower_id])>
+  [262] pushsymb 43 ............................. <#team_id>
+  [264] pusharglist 3 ........................... <tGameSystem, string(tdata[#int_thrower_id]), #team_id>
+  [266] objcall 239 ............................. <tGameSystem.getGameObjectProperty(string(tdata[#int_thrower_id]), #team_id)>
+  [268] setlocal 3 .............................. tThatTeam = tGameSystem.getGameObjectProperty(string(tdata[#int_thrower_id]), #team_id)
+  [270] getlocal 2 .............................. <tThisTeam>
+  [272] getlocal 3 .............................. <tThatTeam>
+  [274] nteq .................................... <tThisTeam <> tThatTeam>
+  [275] jmpifz [282] ............................ if tThisTeam <> tThatTeam then
+  [278] pushint8 1 .............................. <1>
+  [280] setlocal 1 .............................. tAwardScore = 1
+  [282] getlocal 1 .............................. <tAwardScore>
+  [284] jmpifz [307] ............................ if tAwardScore then
+  [287] getlocal 0 .............................. <tGameSystem>
+  [289] getparam 2 .............................. <tdata>
+  [291] pushsymb 240 ............................ <#int_thrower_id>
+  [293] pusharglist 2 ........................... <tdata, #int_thrower_id>
+  [295] objcall 44 .............................. <tdata[#int_thrower_id]>
+  [297] pusharglist 1 ........................... <tdata[#int_thrower_id]>
+  [299] extcall 42 .............................. <string(tdata[#int_thrower_id])>
+  [301] pushsymb 241 ............................ <#award_hit_score>
+  [303] pusharglistnoret 3 ...................... <tGameSystem, string(tdata[#int_thrower_id]), #award_hit_score>
+  [305] objcall 66 .............................. tGameSystem.executeGameObjectEvent(string(tdata[#int_thrower_id]), #award_hit_score)
+  [307] jmp [544]
+  [310] peek 0
+  [312] pushsymb 242 ............................ <#snowwar_event_7>
+  [314] eq
+  [315] jmpifz [341] ............................ (case) #snowwar_event_7:
+  [318] getparam 0 .............................. <me>
+  [320] pusharglist 1 ........................... <me>
+  [322] objcall 228 ............................. <me.getGameSystem()>
+  [324] getparam 2 .............................. <tdata>
+  [326] pushsymb 229 ............................ <#id>
+  [328] pusharglist 2 ........................... <tdata, #id>
+  [330] objcall 44 .............................. <tdata[#id]>
+  [332] pushsymb 243 ............................ <#start_create_snowball>
+  [334] pusharglistnoret 3 ...................... <me.getGameSystem(), tdata[#id], #start_create_snowball>
+  [336] objcall 66 .............................. me.getGameSystem().executeGameObjectEvent(tdata[#id], #start_create_snowball)
+  [338] jmp [544]
+  [341] peek 0
+  [343] pushsymb 244 ............................ <#snowwar_event_9>
+  [345] eq
+  [346] jmpifz [517] ............................ (case) #snowwar_event_9:
+  [349] getparam 0 .............................. <me>
+  [351] pusharglist 1 ........................... <me>
+  [353] objcall 228 ............................. <me.getGameSystem()>
+  [355] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [357] getlocal 0 .............................. <tGameSystem>
+  [359] pusharglist 1 ........................... <tGameSystem>
+  [361] objcall 245 ............................. <tGameSystem.getGeometry()>
+  [363] getparam 2 .............................. <tdata>
+  [365] pushsymb 49 ............................. <#hit_direction>
+  [367] pusharglist 2 ........................... <tdata, #hit_direction>
+  [369] objcall 44 .............................. <tdata[#hit_direction]>
+  [371] pusharglist 2 ........................... <tGameSystem.getGeometry(), tdata[#hit_direction]>
+  [373] objcall 246 ............................. <tGameSystem.getGeometry().direction360to8(tdata[#hit_direction])>
+  [375] setlocal 4 .............................. tHitDirection8 = tGameSystem.getGeometry().direction360to8(tdata[#hit_direction])
+  [377] pushcons 3 .............................. <"LS-hit-3">
+  [379] pusharglistnoret 1 ...................... <"LS-hit-3">
+  [381] extcall 236 ............................. playSound("LS-hit-3")
+  [383] getlocal 0 .............................. <tGameSystem>
+  [385] getparam 2 .............................. <tdata>
+  [387] pushsymb 229 ............................ <#id>
+  [389] pusharglist 2 ........................... <tdata, #id>
+  [391] objcall 44 .............................. <tdata[#id]>
+  [393] pushsymb 247 ............................ <#start_stunned>
+  [395] pushsymb 49 ............................. <#hit_direction>
+  [397] getlocal 4 .............................. <tHitDirection8>
+  [399] pusharglist 2 ........................... <[#hit_direction: tHitDirection8]>
+  [401] pushproplist ............................ <[#hit_direction: tHitDirection8]>
+  [402] pusharglistnoret 4 ...................... <tGameSystem, tdata[#id], #start_stunned, [#hit_direction: tHitDirection8]>
+  [404] objcall 66 .............................. tGameSystem.executeGameObjectEvent(tdata[#id], #start_stunned, [#hit_direction: tHitDirection8])
+  [406] getlocal 0 .............................. <tGameSystem>
+  [408] getparam 2 .............................. <tdata>
+  [410] pushsymb 229 ............................ <#id>
+  [412] pusharglist 2 ........................... <tdata, #id>
+  [414] objcall 44 .............................. <tdata[#id]>
+  [416] pushsymb 248 ............................ <#zero_ball_count>
+  [418] pusharglistnoret 3 ...................... <tGameSystem, tdata[#id], #zero_ball_count>
+  [420] objcall 66 .............................. tGameSystem.executeGameObjectEvent(tdata[#id], #zero_ball_count)
+  [422] getprop 225 ............................. <pNumTeams>
+  [424] pushint8 1 .............................. <1>
+  [426] eq ...................................... <pNumTeams = 1>
+  [427] jmpifz [437] ............................ if pNumTeams = 1 then / else
+  [430] pushint8 1 .............................. <1>
+  [432] setlocal 1 .............................. tAwardScore = 1
+  [434] jmp [489]
+  [437] getlocal 0 .............................. <tGameSystem>
+  [439] getparam 2 .............................. <tdata>
+  [441] pushsymb 229 ............................ <#id>
+  [443] pusharglist 2 ........................... <tdata, #id>
+  [445] objcall 44 .............................. <tdata[#id]>
+  [447] pushsymb 43 ............................. <#team_id>
+  [449] pusharglist 3 ........................... <tGameSystem, tdata[#id], #team_id>
+  [451] objcall 239 ............................. <tGameSystem.getGameObjectProperty(tdata[#id], #team_id)>
+  [453] setlocal 2 .............................. tThisTeam = tGameSystem.getGameObjectProperty(tdata[#id], #team_id)
+  [455] getlocal 0 .............................. <tGameSystem>
+  [457] getparam 2 .............................. <tdata>
+  [459] pushsymb 240 ............................ <#int_thrower_id>
+  [461] pusharglist 2 ........................... <tdata, #int_thrower_id>
+  [463] objcall 44 .............................. <tdata[#int_thrower_id]>
+  [465] pusharglist 1 ........................... <tdata[#int_thrower_id]>
+  [467] extcall 42 .............................. <string(tdata[#int_thrower_id])>
+  [469] pushsymb 43 ............................. <#team_id>
+  [471] pusharglist 3 ........................... <tGameSystem, string(tdata[#int_thrower_id]), #team_id>
+  [473] objcall 239 ............................. <tGameSystem.getGameObjectProperty(string(tdata[#int_thrower_id]), #team_id)>
+  [475] setlocal 3 .............................. tThatTeam = tGameSystem.getGameObjectProperty(string(tdata[#int_thrower_id]), #team_id)
+  [477] getlocal 2 .............................. <tThisTeam>
+  [479] getlocal 3 .............................. <tThatTeam>
+  [481] nteq .................................... <tThisTeam <> tThatTeam>
+  [482] jmpifz [489] ............................ if tThisTeam <> tThatTeam then
+  [485] pushint8 1 .............................. <1>
+  [487] setlocal 1 .............................. tAwardScore = 1
+  [489] getlocal 1 .............................. <tAwardScore>
+  [491] jmpifz [514] ............................ if tAwardScore then
+  [494] getlocal 0 .............................. <tGameSystem>
+  [496] getparam 2 .............................. <tdata>
+  [498] pushsymb 240 ............................ <#int_thrower_id>
+  [500] pusharglist 2 ........................... <tdata, #int_thrower_id>
+  [502] objcall 44 .............................. <tdata[#int_thrower_id]>
+  [504] pusharglist 1 ........................... <tdata[#int_thrower_id]>
+  [506] extcall 42 .............................. <string(tdata[#int_thrower_id])>
+  [508] pushsymb 249 ............................ <#award_kill_score>
+  [510] pusharglistnoret 3 ...................... <tGameSystem, string(tdata[#int_thrower_id]), #award_kill_score>
+  [512] objcall 66 .............................. tGameSystem.executeGameObjectEvent(string(tdata[#int_thrower_id]), #award_kill_score)
+  [514] jmp [544] ............................... (case) otherwise:
+  [517] pop 1
+  [519] getparam 0 .............................. <me>
+  [521] pushcons 4 .............................. <"Undefined event!">
+  [523] getparam 1 .............................. <tTopic>
+  [525] joinpadstr .............................. <"Undefined event!" && tTopic>
+  [526] pushcons 5 .............................. <"for">
+  [528] joinpadstr .............................. <"Undefined event!" && tTopic && "for">
+  [529] getparam 0 .............................. <me>
+  [531] getobjprop 250 .......................... <me.pID>
+  [533] joinpadstr .............................. <"Undefined event!" && tTopic && "for" && me.pID>
+  [534] pushsymb 13 ............................. <#Refresh>
+  [536] pusharglist 3 ........................... <me, "Undefined event!" && tTopic && "for" && me.pID, #Refresh>
+  [538] extcall 64 .............................. <error(me, "Undefined event!" && tTopic && "for" && me.pID, #Refresh)>
+  [540] pusharglistnoret 1 ...................... <error(me, "Undefined event!" && tTopic && "for" && me.pID, #Refresh)>
+  [542] extcall 35 .............................. return error(me, "Undefined event!" && tTopic && "for" && me.pID, #Refresh)
+  [544] pop 1 ................................... end case
+  [546] pushint8 1 .............................. <1>
+  [548] pusharglistnoret 1 ...................... <1>
+  [550] extcall 35 .............................. return 1
+  [552] ret
+end
+
+on setAvatarEventListener me, tName, tID
+  [  0] pushsymb 219 ............................ <#room_component>
+  [  2] pusharglist 1 ........................... <#room_component>
+  [  4] extcall 56 .............................. <getObject(#room_component)>
+  [  6] setlocal 0 .............................. tRoom = getObject(#room_component)
+  [  8] getlocal 0 .............................. <tRoom>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tRoom = 0>
+  [ 12] jmpifz [ 20] ............................ if tRoom = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 35 .............................. return 0
+  [ 20] getlocal 0 .............................. <tRoom>
+  [ 22] getparam 2 .............................. <tID>
+  [ 24] pusharglist 2 ........................... <tRoom, tID>
+  [ 26] objcall 257 ............................. <tRoom.getUserObject(tID)>
+  [ 29] setlocal 1 .............................. tObject = tRoom.getUserObject(tID)
+  [ 31] getlocal 1 .............................. <tObject>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <tObject = 0>
+  [ 35] jmpifz [ 43] ............................ if tObject = 0 then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 35 .............................. return 0
+  [ 43] pushsymb 4 .............................. <#setAvatarEventListener>
+  [ 45] getlocal 1 .............................. <tObject>
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglist 1 ........................... <me>
+  [ 51] objcall 197 ............................. <me.getID()>
+  [ 53] pusharglistnoret 3 ...................... <#setAvatarEventListener, tObject, me.getID()>
+  [ 55] extcall 102 ............................. call(#setAvatarEventListener, tObject, me.getID())
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] pusharglistnoret 1 ...................... <1>
+  [ 61] extcall 35 .............................. return 1
+  [ 63] ret
+end
+
+on eventProcSnowwarUserRollOver me, tEvent, tID, tProp
+  [  0] pushsymb 219 ............................ <#room_component>
+  [  2] pusharglist 1 ........................... <#room_component>
+  [  4] extcall 56 .............................. <getObject(#room_component)>
+  [  6] setlocal 0 .............................. tRoom = getObject(#room_component)
+  [  8] getlocal 0 .............................. <tRoom>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tRoom = 0>
+  [ 12] jmpifz [ 20] ............................ if tRoom = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 35 .............................. return 0
+  [ 20] getlocal 0 .............................. <tRoom>
+  [ 22] getparam 2 .............................. <tID>
+  [ 24] pusharglist 2 ........................... <tRoom, tID>
+  [ 26] objcall 257 ............................. <tRoom.getUserObject(tID)>
+  [ 29] setlocal 1 .............................. tObject = tRoom.getUserObject(tID)
+  [ 31] getlocal 1 .............................. <tObject>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <tObject = 0>
+  [ 35] jmpifz [ 43] ............................ if tObject = 0 then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 35 .............................. return 0
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglist 1 ........................... <me>
+  [ 47] objcall 228 ............................. <me.getGameSystem()>
+  [ 49] setlocal 2 .............................. tGameSystem = me.getGameSystem()
+  [ 51] getparam 1 .............................. <tEvent>
+  [ 53] pushsymb 78 ............................. <#mouseEnter>
+  [ 55] eq ...................................... <tEvent = #mouseEnter>
+  [ 56] jmpifz [264] ............................ if tEvent = #mouseEnter then / else
+  [ 59] getlocal 1 .............................. <tObject>
+  [ 61] pusharglist 1 ........................... <tObject>
+  [ 63] objcall 262 ............................. <tObject.getName()>
+  [ 66] setlocal 3 .............................. tName = tObject.getName()
+  [ 68] pushzero ................................ <0>
+  [ 69] setlocal 4 .............................. tOwnPlayer = 0
+  [ 71] getlocal 2 .............................. <tGameSystem>
+  [ 73] pusharglist 1 ........................... <tGameSystem>
+  [ 75] objcall 60 .............................. <tGameSystem.getSpectatorModeFlag()>
+  [ 77] not ..................................... <not tGameSystem.getSpectatorModeFlag()>
+  [ 78] jmpifz [159] ............................ if not tGameSystem.getSpectatorModeFlag() then
+  [ 81] getlocal 3 .............................. <tName>
+  [ 83] pushsymb 61 ............................. <#session>
+  [ 85] pusharglist 1 ........................... <#session>
+  [ 87] extcall 56 .............................. <getObject(#session)>
+  [ 89] pushsymb 263 ............................ <#userName>
+  [ 92] pusharglist 2 ........................... <getObject(#session), #userName>
+  [ 94] objcall 63 .............................. <getObject(#session).GET(#userName)>
+  [ 96] eq ...................................... <tName = getObject(#session).GET(#userName)>
+  [ 97] jmpifz [107] ............................ if tName = getObject(#session).GET(#userName) then / else
+  [100] pushint8 1 .............................. <1>
+  [102] setlocal 4 .............................. tOwnPlayer = 1
+  [104] jmp [159]
+  [107] getlocal 2 .............................. <tGameSystem>
+  [109] pusharglist 1 ........................... <tGameSystem>
+  [111] objcall 58 .............................. <tGameSystem.getGamestatus()>
+  [113] pushsymb 59 ............................. <#game_started>
+  [115] eq ...................................... <tGameSystem.getGamestatus() = #game_started>
+  [116] jmpifz [159] ............................ if tGameSystem.getGamestatus() = #game_started then
+  [119] pushcons 6 .............................. <"sw_crosshair">
+  [121] pusharglist 1 ........................... <"sw_crosshair">
+  [123] extcall 141 ............................. <getmemnum("sw_crosshair")>
+  [125] setlocal 5 .............................. tMemberNum = getmemnum("sw_crosshair")
+  [127] pushcons 7 .............................. <"sw_crosshair.mask">
+  [129] pusharglist 1 ........................... <"sw_crosshair.mask">
+  [131] extcall 141 ............................. <getmemnum("sw_crosshair.mask")>
+  [133] setlocal 6 .............................. tMemberNum2 = getmemnum("sw_crosshair.mask")
+  [135] getlocal 5 .............................. <tMemberNum>
+  [137] pushzero ................................ <0>
+  [138] nteq .................................... <tMemberNum <> 0>
+  [139] getlocal 6 .............................. <tMemberNum2>
+  [141] pushzero ................................ <0>
+  [142] nteq .................................... <tMemberNum2 <> 0>
+  [143] and ..................................... <(tMemberNum <> 0) and (tMemberNum2 <> 0)>
+  [144] jmpifz [159] ............................ if (tMemberNum <> 0) and (tMemberNum2 <> 0) then
+  [147] getlocal 5 .............................. <tMemberNum>
+  [149] getlocal 6 .............................. <tMemberNum2>
+  [151] pusharglist 2 ........................... <[tMemberNum, tMemberNum2]>
+  [153] pushlist ................................ <[tMemberNum, tMemberNum2]>
+  [154] pusharglistnoret 1 ...................... <[tMemberNum, tMemberNum2]>
+  [156] extcall 264 ............................. cursor([tMemberNum, tMemberNum2])
+  [159] getlocal 1 .............................. <tObject>
+  [161] pusharglist 1 ........................... <tObject>
+  [163] objcall 265 ............................. <tObject.getLocation()>
+  [166] setlocal 7 .............................. tloc = tObject.getLocation()
+  [168] getlocal 2 .............................. <tGameSystem>
+  [170] getlocal 7 .............................. <tloc>
+  [172] pushint8 1 .............................. <1>
+  [174] pusharglist 2 ........................... <tloc, 1>
+  [176] objcall 44 .............................. <tloc[1]>
+  [178] getlocal 7 .............................. <tloc>
+  [180] pushint8 2 .............................. <2>
+  [182] pusharglist 2 ........................... <tloc, 2>
+  [184] objcall 44 .............................. <tloc[2]>
+  [186] pushzero ................................ <0>
+  [187] pusharglist 4 ........................... <tGameSystem, tloc[1], tloc[2], 0>
+  [189] objcall 266 ............................. <tGameSystem.convertTileToWorldCoordinate(tloc[1], tloc[2], 0)>
+  [192] setlocal 7 .............................. tloc = tGameSystem.convertTileToWorldCoordinate(tloc[1], tloc[2], 0)
+  [194] getlocal 2 .............................. <tGameSystem>
+  [196] getlocal 7 .............................. <tloc>
+  [198] pushint8 1 .............................. <1>
+  [200] pusharglist 2 ........................... <tloc, 1>
+  [202] objcall 44 .............................. <tloc[1]>
+  [204] getlocal 7 .............................. <tloc>
+  [206] pushint8 2 .............................. <2>
+  [208] pusharglist 2 ........................... <tloc, 2>
+  [210] objcall 44 .............................. <tloc[2]>
+  [212] pushzero ................................ <0>
+  [213] pusharglist 4 ........................... <tGameSystem, tloc[1], tloc[2], 0>
+  [215] objcall 267 ............................. <tGameSystem.convertWorldToScreenCoordinate(tloc[1], tloc[2], 0)>
+  [218] setlocal 7 .............................. tloc = tGameSystem.convertWorldToScreenCoordinate(tloc[1], tloc[2], 0)
+  [220] getlocal 2 .............................. <tGameSystem>
+  [222] getlocal 1 .............................. <tObject>
+  [224] pusharglist 1 ........................... <tObject>
+  [226] objcall 25 .............................. <tObject.getAvatarId()>
+  [228] pushsymb 268 ............................ <#score>
+  [231] pusharglist 3 ........................... <tGameSystem, tObject.getAvatarId(), #score>
+  [233] objcall 239 ............................. <tGameSystem.getGameObjectProperty(tObject.getAvatarId(), #score)>
+  [235] setlocal 8 .............................. tScore = tGameSystem.getGameObjectProperty(tObject.getAvatarId(), #score)
+  [237] getparam 0 .............................. <me>
+  [239] getlocal 3 .............................. <tName>
+  [241] getlocal 8 .............................. <tScore>
+  [243] getlocal 1 .............................. <tObject>
+  [245] pusharglist 1 ........................... <tObject>
+  [247] objcall 24 .............................. <tObject.getTeamId()>
+  [249] getlocal 7 .............................. <tloc>
+  [251] getlocal 4 .............................. <tOwnPlayer>
+  [253] pusharglist 6 ........................... <me, tName, tScore, tObject.getTeamId(), tloc, tOwnPlayer>
+  [255] objcall 217 ............................. <me.displayAvatarInfo(tName, tScore, tObject.getTeamId(), tloc, tOwnPlayer)>
+  [257] pusharglistnoret 1 ...................... <me.displayAvatarInfo(tName, tScore, tObject.getTeamId(), tloc, tOwnPlayer)>
+  [259] extcall 35 .............................. return me.displayAvatarInfo(tName, tScore, tObject.getTeamId(), tloc, tOwnPlayer)
+  [261] jmp [281]
+  [264] pushzero ................................ <0>
+  [265] pusharglistnoret 1 ...................... <0>
+  [267] extcall 269 ............................. setcursor(0)
+  [270] getparam 0 .............................. <me>
+  [272] pushzero ................................ <0>
+  [273] pusharglist 2 ........................... <me, 0>
+  [275] objcall 217 ............................. <me.displayAvatarInfo(0)>
+  [277] pusharglistnoret 1 ...................... <me.displayAvatarInfo(0)>
+  [279] extcall 35 .............................. return me.displayAvatarInfo(0)
+  [281] ret
+end
+
+on displayAvatarInfo me, tName, tScore, tTeamId, tloc, tOwnPlayer
+  [  0] getparam 1 .............................. <tName>
+  [  2] pusharglist 1 ........................... <tName>
+  [  4] extcall 276 ............................. <stringp(tName)>
+  [  7] jmpifz [ 83] ............................ if stringp(tName) then / else
+  [ 10] getprop 277 ............................. <pHiliterObj>
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 55 .............................. <VOID>
+  [ 17] nteq .................................... <pHiliterObj <> VOID>
+  [ 18] jmpifz [ 27] ............................ if pHiliterObj <> VOID then
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] pusharglistnoret 1 ...................... <1>
+  [ 25] extcall 35 .............................. return 1
+  [ 27] pushsymb 279 ............................ <#temp>
+  [ 30] pushcons 8 .............................. <"snowwar.object_avatar.roomobject.hiliter.class">
+  [ 32] pusharglist 1 ........................... <"snowwar.object_avatar.roomobject.hiliter.class">
+  [ 34] extcall 280 ............................. <getClassVariable("snowwar.object_avatar.roomobject.hiliter.class")>
+  [ 37] pusharglist 2 ........................... <#temp, getClassVariable("snowwar.object_avatar.roomobject.hiliter.class")>
+  [ 39] extcall 278 ............................. <createObject(#temp, getClassVariable("snowwar.object_avatar.roomobject.hiliter.class"))>
+  [ 42] setprop 277 ............................. pHiliterObj = createObject(#temp, getClassVariable("snowwar.object_avatar.roomobject.hiliter.class"))
+  [ 45] getprop 277 ............................. <pHiliterObj>
+  [ 48] pushzero ................................ <0>
+  [ 49] eq ...................................... <pHiliterObj = 0>
+  [ 50] jmpifz [ 58] ............................ if pHiliterObj = 0 then
+  [ 53] pushzero ................................ <0>
+  [ 54] pusharglistnoret 1 ...................... <0>
+  [ 56] extcall 35 .............................. return 0
+  [ 58] getprop 277 ............................. <pHiliterObj>
+  [ 61] getparam 1 .............................. <tName>
+  [ 63] getparam 2 .............................. <tScore>
+  [ 65] getparam 3 .............................. <tTeamId>
+  [ 67] getparam 4 .............................. <tloc>
+  [ 69] getparam 5 .............................. <tOwnPlayer>
+  [ 71] pusharglist 6 ........................... <pHiliterObj, tName, tScore, tTeamId, tloc, tOwnPlayer>
+  [ 73] objcall 281 ............................. <pHiliterObj.display(tName, tScore, tTeamId, tloc, tOwnPlayer)>
+  [ 76] pusharglistnoret 1 ...................... <pHiliterObj.display(tName, tScore, tTeamId, tloc, tOwnPlayer)>
+  [ 78] extcall 35 .............................. return pHiliterObj.display(tName, tScore, tTeamId, tloc, tOwnPlayer)
+  [ 80] jmp [109]
+  [ 83] getprop 277 ............................. <pHiliterObj>
+  [ 86] pusharglist 0 ........................... <>
+  [ 88] extcall 55 .............................. <VOID>
+  [ 90] nteq .................................... <pHiliterObj <> VOID>
+  [ 91] jmpifz [102] ............................ if pHiliterObj <> VOID then
+  [ 94] getprop 277 ............................. <pHiliterObj>
+  [ 97] pusharglistnoret 1 ...................... <pHiliterObj>
+  [ 99] objcall 282 ............................. pHiliterObj.hide()
+  [102] pusharglist 0 ........................... <>
+  [104] extcall 55 .............................. <VOID>
+  [106] setprop 277 ............................. pHiliterObj = VOID
+  [109] pushint8 1 .............................. <1>
+  [111] pusharglistnoret 1 ...................... <1>
+  [113] extcall 35 .............................. return 1
+  [115] ret
+end

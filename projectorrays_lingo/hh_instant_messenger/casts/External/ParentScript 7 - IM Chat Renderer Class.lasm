@@ -1,0 +1,351 @@
+property pChatImage, pListLine, pWriter, pChatWidth, pHighlightUserID, pMaxHeight, pMargin
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. pChatData = []
+  [  5] pushint16 185 ........................... <185>
+  [  8] setprop 297 ............................. pChatWidth = 185
+  [ 11] pushint8 3 .............................. <3>
+  [ 13] setprop 391 ............................. pMargin = 3
+  [ 16] pushcons 0 .............................. <"im.chat.length.max">
+  [ 18] pusharglist 1 ........................... <"im.chat.length.max">
+  [ 20] extcall 143 ............................. <getIntVariable("im.chat.length.max")>
+  [ 22] setprop 298 ............................. pMaxHeight = getIntVariable("im.chat.length.max")
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglistnoret 1 ...................... <me>
+  [ 29] objcall 204 ............................. me.clearImage()
+  [ 31] pushcons 1 .............................. <"struct.font.plain">
+  [ 33] pusharglist 1 ........................... <"struct.font.plain">
+  [ 35] extcall 302 ............................. <getStructVariable("struct.font.plain")>
+  [ 38] setlocal 1 .............................. tFont = getStructVariable("struct.font.plain")
+  [ 40] getlocal 1 .............................. <tFont>
+  [ 42] pushsymb 303 ............................ <#wordWrap>
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglistnoret 3 ...................... <tFont, #wordWrap, 1>
+  [ 49] objcall 80 .............................. tFont.setaProp(#wordWrap, 1)
+  [ 51] getlocal 1 .............................. <tFont>
+  [ 53] pushsymb 158 ............................ <#rect>
+  [ 55] pushzero ................................ <0>
+  [ 56] pushzero ................................ <0>
+  [ 57] getprop 297 ............................. <pChatWidth>
+  [ 60] pushint8 2 .............................. <2>
+  [ 62] getprop 391 ............................. <pMargin>
+  [ 65] mul ..................................... <2 * pMargin>
+  [ 66] sub ..................................... <pChatWidth - (2 * pMargin)>
+  [ 67] pushzero ................................ <0>
+  [ 68] pusharglist 4 ........................... <0, 0, pChatWidth - (2 * pMargin), 0>
+  [ 70] extcall 158 ............................. <rect(0, 0, pChatWidth - (2 * pMargin), 0)>
+  [ 72] pusharglistnoret 3 ...................... <tFont, #rect, rect(0, 0, pChatWidth - (2 * pMargin), 0)>
+  [ 74] objcall 80 .............................. tFont.setaProp(#rect, rect(0, 0, pChatWidth - (2 * pMargin), 0))
+  [ 76] pusharglist 0 ........................... <>
+  [ 78] extcall 148 ............................. <getUniqueID()>
+  [ 80] setlocal 2 .............................. tID = getUniqueID()
+  [ 82] getlocal 2 .............................. <tID>
+  [ 84] getlocal 1 .............................. <tFont>
+  [ 86] pusharglistnoret 2 ...................... <tID, tFont>
+  [ 88] extcall 299 ............................. createWriter(tID, tFont)
+  [ 91] getlocal 2 .............................. <tID>
+  [ 93] pusharglist 1 ........................... <tID>
+  [ 95] extcall 301 ............................. <getWriter(tID)>
+  [ 98] setprop 300 ............................. pWriter = getWriter(tID)
+  [101] getprop 300 ............................. <pWriter>
+  [104] getlocal 1 .............................. <tFont>
+  [106] pusharglistnoret 2 ...................... <pWriter, tFont>
+  [108] objcall 304 ............................. pWriter.define(tFont)
+  [111] pushsymb 49 ............................. <#session>
+  [113] pusharglist 1 ........................... <#session>
+  [115] extcall 48 .............................. <getObject(#session)>
+  [117] pushcons 2 .............................. <"user_user_id">
+  [119] pusharglist 2 ........................... <getObject(#session), "user_user_id">
+  [121] objcall 50 .............................. <getObject(#session).GET("user_user_id")>
+  [123] setprop 305 ............................. pHighlightUserID = getObject(#session).GET("user_user_id")
+  [126] pushint8 1 .............................. <1>
+  [128] pusharglistnoret 1 ...................... <1>
+  [130] extcall 30 .............................. return 1
+  [132] ret
+end
+
+on deconstruct me
+  [  0] getprop 300 ............................. <pWriter>
+  [  3] pusharglist 1 ........................... <pWriter>
+  [  5] objcall 36 .............................. <pWriter.getID()>
+  [  7] pusharglistnoret 1 ...................... <pWriter.getID()>
+  [  9] extcall 154 ............................. removeObject(pWriter.getID())
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 30 .............................. return 1
+  [ 17] ret
+end
+
+on setWidth me, tWidth
+  [  0] getparam 1 .............................. <tWidth>
+  [  2] setprop 297 ............................. pChatWidth = tWidth
+  [  5] ret
+end
+
+on renderChatEntry me, tEntry, tPos
+  [  0] getparam 1 .............................. <tEntry>
+  [  2] pushsymb 93 ............................. <#type>
+  [  4] pusharglist 2 ........................... <tEntry, #type>
+  [  6] objcall 57 .............................. <tEntry.getaProp(#type)>
+  [  8] setlocal 0 .............................. ttype = tEntry.getaProp(#type)
+  [ 10] getparam 1 .............................. <tEntry>
+  [ 12] pushsymb 95 ............................. <#userID>
+  [ 14] pusharglist 2 ........................... <tEntry, #userID>
+  [ 16] objcall 57 .............................. <tEntry.getaProp(#userID)>
+  [ 18] setlocal 1 .............................. tUserID = tEntry.getaProp(#userID)
+  [ 20] getparam 1 .............................. <tEntry>
+  [ 22] pushsymb 96 ............................. <#Msg>
+  [ 24] pusharglist 2 ........................... <tEntry, #Msg>
+  [ 26] objcall 57 .............................. <tEntry.getaProp(#Msg)>
+  [ 28] setlocal 2 .............................. tText = tEntry.getaProp(#Msg)
+  [ 30] getlocal 0 .............................. <ttype>
+  [ 32] pushsymb 94 ............................. <#message>
+  [ 34] eq ...................................... <ttype = #message>
+  [ 35] getlocal 0 .............................. <ttype>
+  [ 37] pushsymb 104 ............................ <#invitation>
+  [ 39] eq ...................................... <ttype = #invitation>
+  [ 40] or ...................................... <(ttype = #message) or (ttype = #invitation)>
+  [ 41] setlocal 3 .............................. tUseTime = (ttype = #message) or (ttype = #invitation)
+  [ 43] getlocal 3 .............................. <tUseTime>
+  [ 45] jmpifz [ 61] ............................ if tUseTime then
+  [ 48] getparam 1 .............................. <tEntry>
+  [ 50] pushsymb 97 ............................. <#time>
+  [ 52] pusharglist 2 ........................... <tEntry, #time>
+  [ 54] objcall 57 .............................. <tEntry.getaProp(#time)>
+  [ 56] getlocal 2 .............................. <tText>
+  [ 58] joinpadstr .............................. <tEntry.getaProp(#time) && tText>
+  [ 59] setlocal 2 .............................. tText = tEntry.getaProp(#time) && tText
+  [ 61] getlocal 0 .............................. <ttype>
+  [ 63] peek 0 .................................. case ttype of
+  [ 65] pushsymb 104 ............................ <#invitation>
+  [ 67] eq
+  [ 68] jmpifz [ 84] ............................ (case) #invitation:
+  [ 71] pushcons 3 .............................. <"im.color.invitation">
+  [ 73] pushcons 4 .............................. <"FFFFFF">
+  [ 75] pusharglist 2 ........................... <"im.color.invitation", "FFFFFF">
+  [ 77] extcall 74 .............................. <getVariable("im.color.invitation", "FFFFFF")>
+  [ 79] setlocal 4 .............................. tColor = getVariable("im.color.invitation", "FFFFFF")
+  [ 81] jmp [182]
+  [ 84] peek 0
+  [ 86] pushsymb 103 ............................ <#notification>
+  [ 88] eq
+  [ 89] jmpifz [105] ............................ (case) #notification:
+  [ 92] pushcons 5 .............................. <"im.color.notification">
+  [ 94] pushcons 4 .............................. <"FFFFFF">
+  [ 96] pusharglist 2 ........................... <"im.color.notification", "FFFFFF">
+  [ 98] extcall 74 .............................. <getVariable("im.color.notification", "FFFFFF")>
+  [100] setlocal 4 .............................. tColor = getVariable("im.color.notification", "FFFFFF")
+  [102] jmp [182]
+  [105] peek 0
+  [107] pushsymb 27 ............................. <#error>
+  [109] eq
+  [110] jmpifz [126] ............................ (case) #error:
+  [113] pushcons 6 .............................. <"im.color.error">
+  [115] pushcons 4 .............................. <"FFFFFF">
+  [117] pusharglist 2 ........................... <"im.color.error", "FFFFFF">
+  [119] extcall 74 .............................. <getVariable("im.color.error", "FFFFFF")>
+  [121] setlocal 4 .............................. tColor = getVariable("im.color.error", "FFFFFF")
+  [123] jmp [182]
+  [126] peek 0
+  [128] pushsymb 94 ............................. <#message>
+  [130] eq
+  [131] jmpifz [169] ............................ (case) #message:
+  [134] getlocal 1 .............................. <tUserID>
+  [136] getprop 305 ............................. <pHighlightUserID>
+  [139] eq ...................................... <tUserID = pHighlightUserID>
+  [140] jmpifz [156] ............................ if tUserID = pHighlightUserID then / else
+  [143] pushcons 7 .............................. <"im.color.sender">
+  [145] pushcons 4 .............................. <"FFFFFF">
+  [147] pusharglist 2 ........................... <"im.color.sender", "FFFFFF">
+  [149] extcall 74 .............................. <getVariable("im.color.sender", "FFFFFF")>
+  [151] setlocal 4 .............................. tColor = getVariable("im.color.sender", "FFFFFF")
+  [153] jmp [166]
+  [156] pushcons 8 .............................. <"im.color.receiver">
+  [158] pushcons 4 .............................. <"FFFFFF">
+  [160] pusharglist 2 ........................... <"im.color.receiver", "FFFFFF">
+  [162] extcall 74 .............................. <getVariable("im.color.receiver", "FFFFFF")>
+  [164] setlocal 4 .............................. tColor = getVariable("im.color.receiver", "FFFFFF")
+  [166] jmp [182]
+  [169] peek 0
+  [171] pushsymb 392 ............................ <#otherwise>
+  [174] eq
+  [175] jmpifz [182] ............................ (case) #otherwise:
+  [178] pushcons 4 .............................. <"FFFFFF">
+  [180] setlocal 4 .............................. tColor = "FFFFFF"
+  [182] pop 1 ................................... end case
+  [184] getprop 300 ............................. <pWriter>
+  [187] getlocal 2 .............................. <tText>
+  [189] pusharglist 2 ........................... <pWriter, tText>
+  [191] objcall 310 ............................. <pWriter.render(tText)>
+  [194] pusharglist 1 ........................... <pWriter.render(tText)>
+  [196] objcall 218 ............................. <pWriter.render(tText).duplicate()>
+  [198] setlocal 5 .............................. tTextImage = pWriter.render(tText).duplicate()
+  [200] getprop 297 ............................. <pChatWidth>
+  [203] getlocal 5 .............................. <tTextImage>
+  [205] getobjprop 247 .......................... <tTextImage.height>
+  [207] pushint8 2 .............................. <2>
+  [209] getprop 391 ............................. <pMargin>
+  [212] mul ..................................... <2 * pMargin>
+  [213] add ..................................... <tTextImage.height + (2 * pMargin)>
+  [214] pushint8 8 .............................. <8>
+  [216] pusharglist 3 ........................... <pChatWidth, tTextImage.height + (2 * pMargin), 8>
+  [218] extcall 311 ............................. <image(pChatWidth, tTextImage.height + (2 * pMargin), 8)>
+  [221] setlocal 6 .............................. tEntryImage = image(pChatWidth, tTextImage.height + (2 * pMargin), 8)
+  [223] getlocal 6 .............................. <tEntryImage>
+  [225] getlocal 6 .............................. <tEntryImage>
+  [227] getobjprop 158 .......................... <tEntryImage.rect>
+  [229] getlocal 4 .............................. <tColor>
+  [231] pusharglist 1 ........................... <tColor>
+  [233] extcall 388 ............................. <rgb(tColor)>
+  [236] pusharglistnoret 3 ...................... <tEntryImage, tEntryImage.rect, rgb(tColor)>
+  [238] objcall 312 ............................. tEntryImage.fill(tEntryImage.rect, rgb(tColor))
+  [241] getlocal 5 .............................. <tTextImage>
+  [243] getobjprop 158 .......................... <tTextImage.rect>
+  [245] getprop 391 ............................. <pMargin>
+  [248] getprop 391 ............................. <pMargin>
+  [251] getprop 391 ............................. <pMargin>
+  [254] getprop 391 ............................. <pMargin>
+  [257] pusharglist 4 ........................... <pMargin, pMargin, pMargin, pMargin>
+  [259] extcall 158 ............................. <rect(pMargin, pMargin, pMargin, pMargin)>
+  [261] add ..................................... <tTextImage.rect + rect(pMargin, pMargin, pMargin, pMargin)>
+  [262] setlocal 7 .............................. tTargetRect = tTextImage.rect + rect(pMargin, pMargin, pMargin, pMargin)
+  [264] getlocal 6 .............................. <tEntryImage>
+  [266] getlocal 5 .............................. <tTextImage>
+  [268] getlocal 7 .............................. <tTargetRect>
+  [270] getlocal 5 .............................. <tTextImage>
+  [272] getobjprop 158 .......................... <tTextImage.rect>
+  [274] pusharglistnoret 4 ...................... <tEntryImage, tTextImage, tTargetRect, tTextImage.rect>
+  [276] objcall 313 ............................. tEntryImage.copyPixels(tTextImage, tTargetRect, tTextImage.rect)
+  [279] getprop 314 ............................. <pChatImage>
+  [282] getobjprop 247 .......................... <pChatImage.height>
+  [284] getlocal 6 .............................. <tEntryImage>
+  [286] getobjprop 247 .......................... <tEntryImage.height>
+  [288] add ..................................... <pChatImage.height + tEntryImage.height>
+  [289] setlocal 8 .............................. tNewHeight = pChatImage.height + tEntryImage.height
+  [291] getlocal 8 .............................. <tNewHeight>
+  [293] getprop 298 ............................. <pMaxHeight>
+  [296] gt ...................................... <tNewHeight > pMaxHeight>
+  [297] jmpifz [305] ............................ if tNewHeight > pMaxHeight then
+  [300] getprop 298 ............................. <pMaxHeight>
+  [303] setlocal 8 .............................. tNewHeight = pMaxHeight
+  [305] getprop 297 ............................. <pChatWidth>
+  [308] getlocal 8 .............................. <tNewHeight>
+  [310] pushint8 8 .............................. <8>
+  [312] pusharglist 3 ........................... <pChatWidth, tNewHeight, 8>
+  [314] extcall 311 ............................. <image(pChatWidth, tNewHeight, 8)>
+  [317] setlocal 9 .............................. tNewChatImage = image(pChatWidth, tNewHeight, 8)
+  [319] getparam 2 .............................. <tPos>
+  [321] pushsymb 205 ............................ <#start>
+  [323] eq ...................................... <tPos = #start>
+  [324] jmpifz [402] ............................ if tPos = #start then / else
+  [327] getlocal 8 .............................. <tNewHeight>
+  [329] getprop 298 ............................. <pMaxHeight>
+  [332] eq ...................................... <tNewHeight = pMaxHeight>
+  [333] jmpifz [341] ............................ if tNewHeight = pMaxHeight then
+  [336] pushzero ................................ <0>
+  [337] pusharglistnoret 1 ...................... <0>
+  [339] extcall 30 .............................. return 0
+  [341] getlocal 9 .............................. <tNewChatImage>
+  [343] getlocal 6 .............................. <tEntryImage>
+  [345] getlocal 6 .............................. <tEntryImage>
+  [347] getobjprop 158 .......................... <tEntryImage.rect>
+  [349] getlocal 6 .............................. <tEntryImage>
+  [351] getobjprop 158 .......................... <tEntryImage.rect>
+  [353] pusharglistnoret 4 ...................... <tNewChatImage, tEntryImage, tEntryImage.rect, tEntryImage.rect>
+  [355] objcall 313 ............................. tNewChatImage.copyPixels(tEntryImage, tEntryImage.rect, tEntryImage.rect)
+  [358] pushzero ................................ <0>
+  [359] getlocal 6 .............................. <tEntryImage>
+  [361] getobjprop 247 .......................... <tEntryImage.height>
+  [363] getprop 297 ............................. <pChatWidth>
+  [366] getlocal 6 .............................. <tEntryImage>
+  [368] getobjprop 247 .......................... <tEntryImage.height>
+  [370] getprop 314 ............................. <pChatImage>
+  [373] getobjprop 247 .......................... <pChatImage.height>
+  [375] add ..................................... <tEntryImage.height + pChatImage.height>
+  [376] pusharglist 4 ........................... <0, tEntryImage.height, pChatWidth, tEntryImage.height + pChatImage.height>
+  [378] extcall 158 ............................. <rect(0, tEntryImage.height, pChatWidth, tEntryImage.height + pChatImage.height)>
+  [380] setlocal 7 .............................. tTargetRect = rect(0, tEntryImage.height, pChatWidth, tEntryImage.height + pChatImage.height)
+  [382] getlocal 9 .............................. <tNewChatImage>
+  [384] getprop 314 ............................. <pChatImage>
+  [387] getlocal 7 .............................. <tTargetRect>
+  [389] getprop 314 ............................. <pChatImage>
+  [392] getobjprop 158 .......................... <pChatImage.rect>
+  [394] pusharglistnoret 4 ...................... <tNewChatImage, pChatImage, tTargetRect, pChatImage.rect>
+  [396] objcall 313 ............................. tNewChatImage.copyPixels(pChatImage, tTargetRect, pChatImage.rect)
+  [399] jmp [504]
+  [402] getlocal 9 .............................. <tNewChatImage>
+  [404] getobjprop 247 .......................... <tNewChatImage.height>
+  [406] getlocal 6 .............................. <tEntryImage>
+  [408] getobjprop 247 .......................... <tEntryImage.height>
+  [410] sub ..................................... <tNewChatImage.height - tEntryImage.height>
+  [411] getprop 314 ............................. <pChatImage>
+  [414] getobjprop 247 .......................... <pChatImage.height>
+  [416] sub ..................................... <tNewChatImage.height - tEntryImage.height - pChatImage.height>
+  [417] setlocal 10 ............................. tTop = tNewChatImage.height - tEntryImage.height - pChatImage.height
+  [419] getlocal 10 ............................. <tTop>
+  [421] getprop 314 ............................. <pChatImage>
+  [424] getobjprop 247 .......................... <pChatImage.height>
+  [426] add ..................................... <tTop + pChatImage.height>
+  [427] setlocal 11 ............................. tBottom = tTop + pChatImage.height
+  [429] pushzero ................................ <0>
+  [430] getlocal 10 ............................. <tTop>
+  [432] getprop 314 ............................. <pChatImage>
+  [435] getobjprop 159 .......................... <pChatImage.width>
+  [437] getlocal 11 ............................. <tBottom>
+  [439] pusharglist 4 ........................... <0, tTop, pChatImage.width, tBottom>
+  [441] extcall 158 ............................. <rect(0, tTop, pChatImage.width, tBottom)>
+  [443] setlocal 7 .............................. tTargetRect = rect(0, tTop, pChatImage.width, tBottom)
+  [445] getlocal 9 .............................. <tNewChatImage>
+  [447] getprop 314 ............................. <pChatImage>
+  [450] getlocal 7 .............................. <tTargetRect>
+  [452] getprop 314 ............................. <pChatImage>
+  [455] getobjprop 158 .......................... <pChatImage.rect>
+  [457] pusharglistnoret 4 ...................... <tNewChatImage, pChatImage, tTargetRect, pChatImage.rect>
+  [459] objcall 313 ............................. tNewChatImage.copyPixels(pChatImage, tTargetRect, pChatImage.rect)
+  [462] getlocal 9 .............................. <tNewChatImage>
+  [464] getobjprop 247 .......................... <tNewChatImage.height>
+  [466] getlocal 6 .............................. <tEntryImage>
+  [468] getobjprop 247 .......................... <tEntryImage.height>
+  [470] sub ..................................... <tNewChatImage.height - tEntryImage.height>
+  [471] setlocal 10 ............................. tTop = tNewChatImage.height - tEntryImage.height
+  [473] pushzero ................................ <0>
+  [474] getlocal 10 ............................. <tTop>
+  [476] getprop 297 ............................. <pChatWidth>
+  [479] getlocal 9 .............................. <tNewChatImage>
+  [481] getobjprop 247 .......................... <tNewChatImage.height>
+  [483] pusharglist 4 ........................... <0, tTop, pChatWidth, tNewChatImage.height>
+  [485] extcall 158 ............................. <rect(0, tTop, pChatWidth, tNewChatImage.height)>
+  [487] setlocal 7 .............................. tTargetRect = rect(0, tTop, pChatWidth, tNewChatImage.height)
+  [489] getlocal 9 .............................. <tNewChatImage>
+  [491] getlocal 6 .............................. <tEntryImage>
+  [493] getlocal 7 .............................. <tTargetRect>
+  [495] getlocal 6 .............................. <tEntryImage>
+  [497] getobjprop 158 .......................... <tEntryImage.rect>
+  [499] pusharglistnoret 4 ...................... <tNewChatImage, tEntryImage, tTargetRect, tEntryImage.rect>
+  [501] objcall 313 ............................. tNewChatImage.copyPixels(tEntryImage, tTargetRect, tEntryImage.rect)
+  [504] getlocal 9 .............................. <tNewChatImage>
+  [506] setprop 314 ............................. pChatImage = tNewChatImage
+  [509] pushint8 1 .............................. <1>
+  [511] pusharglistnoret 1 ...................... <1>
+  [513] extcall 30 .............................. return 1
+  [515] ret
+end
+
+on clearImage me
+  [  0] getprop 297 ............................. <pChatWidth>
+  [  3] pushzero ................................ <0>
+  [  4] pushint8 8 .............................. <8>
+  [  6] pusharglist 3 ........................... <pChatWidth, 0, 8>
+  [  8] extcall 311 ............................. <image(pChatWidth, 0, 8)>
+  [ 11] setprop 314 ............................. pChatImage = image(pChatWidth, 0, 8)
+  [ 14] ret
+end
+
+on getChatImage me
+  [  0] getprop 314 ............................. <pChatImage>
+  [  3] pusharglistnoret 1 ...................... <pChatImage>
+  [  5] extcall 30 .............................. return pChatImage
+  [  7] ret
+end

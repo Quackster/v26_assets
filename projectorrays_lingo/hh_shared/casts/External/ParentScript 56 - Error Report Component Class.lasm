@@ -1,0 +1,156 @@
+property pErrorLists
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 602 ............................. pErrorLists = []
+  [  6] pushsymb 600 ............................ <#showErrorMessage>
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglist 1 ........................... <me>
+  [ 13] objcall 17 .............................. <me.getID()>
+  [ 15] pushsymb 600 ............................ <#showErrorMessage>
+  [ 18] pusharglistnoret 3 ...................... <#showErrorMessage, me.getID(), #showErrorMessage>
+  [ 20] extcall 15 .............................. registerMessage(#showErrorMessage, me.getID(), #showErrorMessage)
+  [ 22] pushcons 0 .............................. <"crossDomainDownload">
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 17 .............................. <me.getID()>
+  [ 30] pushsymb 599 ............................ <#registerCrossDomainError>
+  [ 33] pusharglistnoret 3 ...................... <"crossDomainDownload", me.getID(), #registerCrossDomainError>
+  [ 35] extcall 15 .............................. registerMessage("crossDomainDownload", me.getID(), #registerCrossDomainError)
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 18 .............................. return 1
+  [ 43] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 600 ............................ <#showErrorMessage>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 17 .............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#showErrorMessage, me.getID()>
+  [ 11] extcall 20 .............................. unregisterMessage(#showErrorMessage, me.getID())
+  [ 13] pusharglist 0 ........................... <[]>
+  [ 15] pushlist ................................ <[]>
+  [ 16] setprop 602 ............................. pErrorLists = []
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] pusharglistnoret 1 ...................... <1>
+  [ 23] extcall 18 .............................. return 1
+  [ 25] ret
+end
+
+on registerCrossDomainError me, tURL
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0 .............................. tShowAlert = 1
+  [  4] pushsymb 117 ............................ <#session>
+  [  6] pusharglist 1 ........................... <#session>
+  [  8] extcall 116 ............................. <getObject(#session)>
+  [ 10] setlocal 1 .............................. tSessionObj = getObject(#session)
+  [ 12] getlocal 1 .............................. <tSessionObj>
+  [ 14] pusharglist 1 ........................... <tSessionObj>
+  [ 16] extcall 34 .............................. <voidp(tSessionObj)>
+  [ 18] not ..................................... <not voidp(tSessionObj)>
+  [ 19] jmpifz [ 60] ............................ if not voidp(tSessionObj) then
+  [ 22] getlocal 1 .............................. <tSessionObj>
+  [ 24] pushcons 1 .............................. <"user_rights">
+  [ 26] pusharglist 2 ........................... <tSessionObj, "user_rights">
+  [ 28] objcall 118 ............................. <tSessionObj.GET("user_rights")>
+  [ 30] setlocal 2 .............................. tRights = tSessionObj.GET("user_rights")
+  [ 32] getlocal 2 .............................. <tRights>
+  [ 34] pusharglist 1 ........................... <tRights>
+  [ 36] extcall 115 ............................. <listp(tRights)>
+  [ 38] jmpifz [ 60] ............................ if listp(tRights) then
+  [ 41] getlocal 2 .............................. <tRights>
+  [ 43] pushcons 2 .............................. <"fuse_alert">
+  [ 45] pusharglist 2 ........................... <tRights, "fuse_alert">
+  [ 47] objcall 119 ............................. <tRights.getOne("fuse_alert")>
+  [ 49] setlocal 3 .............................. tAlertRight = tRights.getOne("fuse_alert")
+  [ 51] getlocal 3 .............................. <tAlertRight>
+  [ 53] not ..................................... <not tAlertRight>
+  [ 54] jmpifz [ 60] ............................ if not tAlertRight then
+  [ 57] pushzero ................................ <0>
+  [ 58] setlocal 0 .............................. tShowAlert = 0
+  [ 60] getlocal 0 .............................. <tShowAlert>
+  [ 62] jmpifz [ 90] ............................ if tShowAlert then
+  [ 65] pushcons 3 .............................. <"alert_cross_domain_download">
+  [ 67] pusharglist 1 ........................... <"alert_cross_domain_download">
+  [ 69] extcall 84 .............................. <getText("alert_cross_domain_download")>
+  [ 71] pushcons 4 .............................. <RETURN>
+  [ 73] joinstr ................................. <getText("alert_cross_domain_download") & RETURN>
+  [ 74] getparam 1 .............................. <tURL>
+  [ 76] joinstr ................................. <getText("alert_cross_domain_download") & RETURN & tURL>
+  [ 77] setlocal 4 .............................. tMessage = getText("alert_cross_domain_download") & RETURN & tURL
+  [ 79] getparam 0 .............................. <me>
+  [ 81] pushcons 5 .............................. <"client">
+  [ 83] getlocal 4 .............................. <tMessage>
+  [ 85] pusharglistnoret 3 ...................... <me, "client", tMessage>
+  [ 87] objcall 600 ............................. me.showErrorMessage("client", tMessage)
+  [ 90] ret
+end
+
+on showErrorMessage me, tErrorID, tErrorMessage
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tErrorList = [:]
+  [  5] getlocal 0 .............................. <tErrorList>
+  [  7] pushsymb 586 ............................ <#errorId>
+  [ 10] getparam 1 .............................. <tErrorID>
+  [ 12] pusharglistnoret 3 ...................... <tErrorList, #errorId, tErrorID>
+  [ 14] objcall 194 ............................. tErrorList[#errorId] = tErrorID
+  [ 16] getlocal 0 .............................. <tErrorList>
+  [ 18] pushsymb 588 ............................ <#errorMsg>
+  [ 21] getparam 2 .............................. <tErrorMessage>
+  [ 23] pusharglistnoret 3 ...................... <tErrorList, #errorMsg, tErrorMessage>
+  [ 25] objcall 194 ............................. tErrorList[#errorMsg] = tErrorMessage
+  [ 27] getparam 0 .............................. <me>
+  [ 29] getlocal 0 .............................. <tErrorList>
+  [ 31] pusharglistnoret 2 ...................... <me, tErrorList>
+  [ 33] objcall 601 ............................. me.storeErrorReport(tErrorList)
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pusharglist 1 ........................... <me>
+  [ 40] objcall 237 ............................. <me.getInterface()>
+  [ 42] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 44] objcall 574 ............................. me.getInterface().showErrors()
+  [ 47] ret
+end
+
+on storeErrorReport me, tErrorList
+  [  0] getprop 602 ............................. <pErrorLists>
+  [  3] getparam 1 .............................. <tErrorList>
+  [  5] pusharglistnoret 2 ...................... <pErrorLists, tErrorList>
+  [  7] objcall 185 ............................. pErrorLists.add(tErrorList)
+  [  9] ret
+end
+
+on getErrorLists me
+  [  0] getprop 602 ............................. <pErrorLists>
+  [  3] pusharglistnoret 1 ...................... <pErrorLists>
+  [  5] extcall 18 .............................. return pErrorLists
+  [  7] ret
+end
+
+on clearErrorLists me, tIndex
+  [  0] getparam 1 .............................. <tIndex>
+  [  2] getprop 602 ............................. <pErrorLists>
+  [  5] getobjprop 125 .......................... <pErrorLists.count>
+  [  7] pusharglist 2 ........................... <tIndex, pErrorLists.count>
+  [  9] extcall 612 ............................. <min(tIndex, pErrorLists.count)>
+  [ 12] setparam 1 .............................. tIndex = min(tIndex, pErrorLists.count)
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] setlocal 0
+  [ 18] getlocal 0
+  [ 20] getparam 1 .............................. <tIndex>
+  [ 22] lteq
+  [ 23] jmpifz [ 45] ............................ repeat with i = 1 to tIndex
+  [ 26] getprop 602 ............................. <pErrorLists>
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] pusharglistnoret 2 ...................... <pErrorLists, 1>
+  [ 33] objcall 613 ............................. pErrorLists.deleteAt(1)
+  [ 36] pushint8 1
+  [ 38] getlocal 0
+  [ 40] add
+  [ 41] setlocal 0
+  [ 43] endrepeat [ 18]
+  [ 45] ret
+end

@@ -1,0 +1,2126 @@
+property pBottomBarId, pFloodblocking, pFloodTimer, pMessengerFlash, pFloodEnterCount, pTextIsHelpTExt, pBouncerID, pIMFlashTimeoutID, pIMFlashState, pPopupControllerID, pTypingTimeoutName, pDisableRoomevents, pSignImg, pSignState, pOldPosH, pOldPosV
+
+on construct me
+  [  0] pushcons 0 .............................. <"RoomBarID">
+  [  2] setprop 302 ............................. pBottomBarId = "RoomBarID"
+  [  5] pushzero ................................ <0>
+  [  6] setprop 303 ............................. pFloodblocking = 0
+  [  9] pushzero ................................ <0>
+  [ 10] setprop 304 ............................. pMessengerFlash = 0
+  [ 13] pushzero ................................ <0>
+  [ 14] setprop 305 ............................. pFloodTimer = 0
+  [ 17] pushzero ................................ <0>
+  [ 18] setprop 306 ............................. pFloodEnterCount = 0
+  [ 21] pushzero ................................ <0>
+  [ 22] setprop 307 ............................. pTextIsHelpTExt = 0
+  [ 25] pushsymb 309 ............................ <#roombar_messenger_icon_bouncer>
+  [ 28] setprop 308 ............................. pBouncerID = #roombar_messenger_icon_bouncer
+  [ 31] pushsymb 311 ............................ <#im_icon_flash_timeout>
+  [ 34] setprop 310 ............................. pIMFlashTimeoutID = #im_icon_flash_timeout
+  [ 37] pushsymb 313 ............................ <#roombar_popup_controller>
+  [ 40] setprop 312 ............................. pPopupControllerID = #roombar_popup_controller
+  [ 43] pushcons 1 .............................. <"typing_state_timeout">
+  [ 45] setprop 314 ............................. pTypingTimeoutName = "typing_state_timeout"
+  [ 48] pushzero ................................ <0>
+  [ 49] setprop 315 ............................. pDisableRoomevents = 0
+  [ 52] pushcons 2 .............................. <"disable.roomevents">
+  [ 54] pusharglist 1 ........................... <"disable.roomevents">
+  [ 56] extcall 236 ............................. <variableExists("disable.roomevents")>
+  [ 58] jmpifz [ 71] ............................ if variableExists("disable.roomevents") then
+  [ 61] pushcons 2 .............................. <"disable.roomevents">
+  [ 63] pusharglist 1 ........................... <"disable.roomevents">
+  [ 65] extcall 316 ............................. <getIntVariable("disable.roomevents")>
+  [ 68] setprop 315 ............................. pDisableRoomevents = getIntVariable("disable.roomevents")
+  [ 71] pushsymb 317 ............................ <#notify>
+  [ 74] getparam 0 .............................. <me>
+  [ 76] pusharglist 1 ........................... <me>
+  [ 78] objcall 34 .............................. <me.getID()>
+  [ 80] pushsymb 317 ............................ <#notify>
+  [ 83] pusharglistnoret 3 ...................... <#notify, me.getID(), #notify>
+  [ 85] extcall 33 .............................. registerMessage(#notify, me.getID(), #notify)
+  [ 87] pushsymb 292 ............................ <#updateMessageCount>
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglist 1 ........................... <me>
+  [ 94] objcall 34 .............................. <me.getID()>
+  [ 96] pushsymb 292 ............................ <#updateMessageCount>
+  [ 99] pusharglistnoret 3 ...................... <#updateMessageCount, me.getID(), #updateMessageCount>
+  [101] extcall 33 .............................. registerMessage(#updateMessageCount, me.getID(), #updateMessageCount)
+  [103] pushsymb 293 ............................ <#updateFriendListIcon>
+  [106] getparam 0 .............................. <me>
+  [108] pusharglist 1 ........................... <me>
+  [110] objcall 34 .............................. <me.getID()>
+  [112] pushsymb 293 ............................ <#updateFriendListIcon>
+  [115] pusharglistnoret 3 ...................... <#updateFriendListIcon, me.getID(), #updateFriendListIcon>
+  [117] extcall 33 .............................. registerMessage(#updateFriendListIcon, me.getID(), #updateFriendListIcon)
+  [119] pushsymb 318 ............................ <#soundSettingChanged>
+  [122] getparam 0 .............................. <me>
+  [124] pusharglist 1 ........................... <me>
+  [126] objcall 34 .............................. <me.getID()>
+  [128] pushsymb 295 ............................ <#updateSoundButton>
+  [131] pusharglistnoret 3 ...................... <#soundSettingChanged, me.getID(), #updateSoundButton>
+  [133] extcall 33 .............................. registerMessage(#soundSettingChanged, me.getID(), #updateSoundButton)
+  [135] pushsymb 319 ............................ <#IMStateChanged>
+  [138] getparam 0 .............................. <me>
+  [140] pusharglist 1 ........................... <me>
+  [142] objcall 34 .............................. <me.getID()>
+  [144] pushsymb 298 ............................ <#updateIMIcon>
+  [147] pusharglistnoret 3 ...................... <#IMStateChanged, me.getID(), #updateIMIcon>
+  [149] extcall 33 .............................. registerMessage(#IMStateChanged, me.getID(), #updateIMIcon)
+  [151] pushsymb 276 ............................ <#setRollOverInfo>
+  [154] getparam 0 .............................. <me>
+  [156] pusharglist 1 ........................... <me>
+  [158] objcall 34 .............................. <me.getID()>
+  [160] pushsymb 276 ............................ <#setRollOverInfo>
+  [163] pusharglistnoret 3 ...................... <#setRollOverInfo, me.getID(), #setRollOverInfo>
+  [165] extcall 33 .............................. registerMessage(#setRollOverInfo, me.getID(), #setRollOverInfo)
+  [167] pushint8 1 .............................. <1>
+  [169] pusharglistnoret 1 ...................... <1>
+  [171] extcall 52 .............................. return 1
+  [173] ret
+end
+
+on deconstruct me
+  [  0] getprop 314 ............................. <pTypingTimeoutName>
+  [  3] pusharglist 1 ........................... <pTypingTimeoutName>
+  [  5] extcall 320 ............................. <timeoutExists(pTypingTimeoutName)>
+  [  8] jmpifz [ 19] ............................ if timeoutExists(pTypingTimeoutName) then
+  [ 11] getprop 314 ............................. <pTypingTimeoutName>
+  [ 14] pusharglistnoret 1 ...................... <pTypingTimeoutName>
+  [ 16] extcall 321 ............................. removeTimeout(pTypingTimeoutName)
+  [ 19] pushsymb 71 ............................. <#room>
+  [ 21] pusharglist 1 ........................... <#room>
+  [ 23] extcall 70 .............................. <getThread(#room)>
+  [ 25] pusharglist 1 ........................... <getThread(#room)>
+  [ 27] objcall 72 .............................. <getThread(#room).getComponent()>
+  [ 29] pusharglistnoret 1 ...................... <getThread(#room).getComponent()>
+  [ 31] objcall 322 ............................. getThread(#room).getComponent().removeIconBarManager()
+  [ 34] pushsymb 317 ............................ <#notify>
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pusharglist 1 ........................... <me>
+  [ 41] objcall 34 .............................. <me.getID()>
+  [ 43] pusharglistnoret 2 ...................... <#notify, me.getID()>
+  [ 45] extcall 54 .............................. unregisterMessage(#notify, me.getID())
+  [ 47] pushsymb 292 ............................ <#updateMessageCount>
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglist 1 ........................... <me>
+  [ 54] objcall 34 .............................. <me.getID()>
+  [ 56] pusharglistnoret 2 ...................... <#updateMessageCount, me.getID()>
+  [ 58] extcall 54 .............................. unregisterMessage(#updateMessageCount, me.getID())
+  [ 60] pushsymb 293 ............................ <#updateFriendListIcon>
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pusharglist 1 ........................... <me>
+  [ 67] objcall 34 .............................. <me.getID()>
+  [ 69] pusharglistnoret 2 ...................... <#updateFriendListIcon, me.getID()>
+  [ 71] extcall 54 .............................. unregisterMessage(#updateFriendListIcon, me.getID())
+  [ 73] pushsymb 318 ............................ <#soundSettingChanged>
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pusharglist 1 ........................... <me>
+  [ 80] objcall 34 .............................. <me.getID()>
+  [ 82] pusharglistnoret 2 ...................... <#soundSettingChanged, me.getID()>
+  [ 84] extcall 54 .............................. unregisterMessage(#soundSettingChanged, me.getID())
+  [ 86] pushsymb 319 ............................ <#IMStateChanged>
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglist 1 ........................... <me>
+  [ 93] objcall 34 .............................. <me.getID()>
+  [ 95] pusharglistnoret 2 ...................... <#IMStateChanged, me.getID()>
+  [ 97] extcall 54 .............................. unregisterMessage(#IMStateChanged, me.getID())
+  [ 99] pushsymb 276 ............................ <#setRollOverInfo>
+  [102] getparam 0 .............................. <me>
+  [104] pusharglist 1 ........................... <me>
+  [106] objcall 34 .............................. <me.getID()>
+  [108] pusharglistnoret 2 ...................... <#setRollOverInfo, me.getID()>
+  [110] extcall 54 .............................. unregisterMessage(#setRollOverInfo, me.getID())
+  [112] pushint8 1 .............................. <1>
+  [114] pusharglistnoret 1 ...................... <1>
+  [116] extcall 52 .............................. return 1
+  [118] ret
+end
+
+on showRoomBar me, tLayout
+  [  0] getprop 302 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 59 .............................. <windowExists(pBottomBarId)>
+  [  7] not ..................................... <not windowExists(pBottomBarId)>
+  [  8] jmpifz [ 24] ............................ if not windowExists(pBottomBarId) then
+  [ 11] getprop 302 ............................. <pBottomBarId>
+  [ 14] pushcons 3 .............................. <"empty.window">
+  [ 16] pushzero ................................ <0>
+  [ 17] pushint16 487 ........................... <487>
+  [ 20] pusharglistnoret 4 ...................... <pBottomBarId, "empty.window", 0, 487>
+  [ 22] extcall 60 .............................. createWindow(pBottomBarId, "empty.window", 0, 487)
+  [ 24] pushsymb 71 ............................. <#room>
+  [ 26] pusharglist 1 ........................... <#room>
+  [ 28] extcall 70 .............................. <getThread(#room)>
+  [ 30] pusharglist 1 ........................... <getThread(#room)>
+  [ 32] objcall 72 .............................. <getThread(#room).getComponent()>
+  [ 34] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 36] objcall 323 ............................. <getThread(#room).getComponent().getIconBarManager()>
+  [ 39] setlocal 0 .............................. tManager = getThread(#room).getComponent().getIconBarManager()
+  [ 41] getlocal 0 .............................. <tManager>
+  [ 43] getprop 302 ............................. <pBottomBarId>
+  [ 46] pusharglistnoret 2 ...................... <tManager, pBottomBarId>
+  [ 48] objcall 324 ............................. tManager.define(pBottomBarId)
+  [ 51] getprop 302 ............................. <pBottomBarId>
+  [ 54] pusharglist 1 ........................... <pBottomBarId>
+  [ 56] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [ 58] setlocal 1 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 60] getlocal 1 .............................. <tWndObj>
+  [ 62] pushzero ................................ <0>
+  [ 63] eq ...................................... <tWndObj = 0>
+  [ 64] jmpifz [ 72] ............................ if tWndObj = 0 then
+  [ 67] pushzero ................................ <0>
+  [ 68] pusharglistnoret 1 ...................... <0>
+  [ 70] extcall 52 .............................. return 0
+  [ 72] getlocal 1 .............................. <tWndObj>
+  [ 74] pushint8 1 .............................. <1>
+  [ 76] pusharglistnoret 2 ...................... <tWndObj, 1>
+  [ 78] objcall 325 ............................. tWndObj.lock(1)
+  [ 81] getlocal 1 .............................. <tWndObj>
+  [ 83] pusharglistnoret 1 ...................... <tWndObj>
+  [ 85] objcall 326 ............................. tWndObj.unmerge()
+  [ 88] getparam 1 .............................. <tLayout>
+  [ 90] pusharglist 1 ........................... <tLayout>
+  [ 92] extcall 249 ............................. <stringp(tLayout)>
+  [ 94] not ..................................... <not stringp(tLayout)>
+  [ 95] jmpifz [127] ............................ if not stringp(tLayout) then
+  [ 98] pushsymb 71 ............................. <#room>
+  [100] pusharglist 1 ........................... <#room>
+  [102] extcall 70 .............................. <getThread(#room)>
+  [104] pusharglist 1 ........................... <getThread(#room)>
+  [106] objcall 72 .............................. <getThread(#room).getComponent()>
+  [108] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [110] objcall 327 ............................. <getThread(#room).getComponent().getSpectatorMode()>
+  [113] jmpifz [123] ............................ if getThread(#room).getComponent().getSpectatorMode() then / else
+  [116] pushcons 4 .............................. <"room_bar_spectator.window">
+  [118] setparam 1 .............................. tLayout = "room_bar_spectator.window"
+  [120] jmp [127]
+  [123] pushcons 5 .............................. <"room_bar.window">
+  [125] setparam 1 .............................. tLayout = "room_bar.window"
+  [127] getlocal 1 .............................. <tWndObj>
+  [129] getparam 1 .............................. <tLayout>
+  [131] pusharglist 2 ........................... <tWndObj, tLayout>
+  [133] objcall 328 ............................. <tWndObj.merge(tLayout)>
+  [136] not ..................................... <not tWndObj.merge(tLayout)>
+  [137] jmpifz [145] ............................ if not tWndObj.merge(tLayout) then
+  [140] pushzero ................................ <0>
+  [141] pusharglistnoret 1 ...................... <0>
+  [143] extcall 52 .............................. return 0
+  [145] getprop 315 ............................. <pDisableRoomevents>
+  [148] jmpifz [176] ............................ if pDisableRoomevents then
+  [151] getlocal 1 .............................. <tWndObj>
+  [153] pushcons 6 .............................. <"int_event_image">
+  [155] pusharglist 2 ........................... <tWndObj, "int_event_image">
+  [157] objcall 95 .............................. <tWndObj.getElement("int_event_image")>
+  [159] setlocal 2 .............................. tEventsIcon = tWndObj.getElement("int_event_image")
+  [161] getlocal 2 .............................. <tEventsIcon>
+  [163] pushsymb 187 ............................ <#member>
+  [165] pushcons 7 .............................. <"event_icon_disabled">
+  [167] pusharglist 1 ........................... <"event_icon_disabled">
+  [169] extcall 329 ............................. <getMember("event_icon_disabled")>
+  [172] pusharglistnoret 3 ...................... <tEventsIcon, #member, getMember("event_icon_disabled")>
+  [174] objcall 183 ............................. tEventsIcon.setProperty(#member, getMember("event_icon_disabled"))
+  [176] getparam 0 .............................. <me>
+  [178] pusharglistnoret 1 ...................... <me>
+  [180] objcall 298 ............................. me.updateIMIcon()
+  [183] getlocal 1 .............................. <tWndObj>
+  [185] getparam 0 .............................. <me>
+  [187] pusharglist 1 ........................... <me>
+  [189] objcall 34 .............................. <me.getID()>
+  [191] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [193] objcall 330 ............................. tWndObj.registerClient(me.getID())
+  [196] getlocal 1 .............................. <tWndObj>
+  [198] pushsymb 300 ............................ <#eventProcRoomBar>
+  [201] getparam 0 .............................. <me>
+  [203] pusharglist 1 ........................... <me>
+  [205] objcall 34 .............................. <me.getID()>
+  [207] pushsymb 119 ............................ <#mouseUp>
+  [209] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseUp>
+  [211] objcall 120 ............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseUp)
+  [213] getlocal 1 .............................. <tWndObj>
+  [215] pushsymb 300 ............................ <#eventProcRoomBar>
+  [218] getparam 0 .............................. <me>
+  [220] pusharglist 1 ........................... <me>
+  [222] objcall 34 .............................. <me.getID()>
+  [224] pushsymb 331 ............................ <#keyDown>
+  [227] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #keyDown>
+  [229] objcall 120 ............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #keyDown)
+  [231] getlocal 1 .............................. <tWndObj>
+  [233] pushsymb 300 ............................ <#eventProcRoomBar>
+  [236] getparam 0 .............................. <me>
+  [238] pusharglist 1 ........................... <me>
+  [240] objcall 34 .............................. <me.getID()>
+  [242] pushsymb 121 ............................ <#mouseEnter>
+  [244] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseEnter>
+  [246] objcall 120 ............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseEnter)
+  [248] getlocal 1 .............................. <tWndObj>
+  [250] pushsymb 300 ............................ <#eventProcRoomBar>
+  [253] getparam 0 .............................. <me>
+  [255] pusharglist 1 ........................... <me>
+  [257] objcall 34 .............................. <me.getID()>
+  [259] pushsymb 123 ............................ <#mouseLeave>
+  [261] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseLeave>
+  [263] objcall 120 ............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseLeave)
+  [265] getlocal 1 .............................. <tWndObj>
+  [267] pushsymb 300 ............................ <#eventProcRoomBar>
+  [270] getparam 0 .............................. <me>
+  [272] pusharglist 1 ........................... <me>
+  [274] objcall 34 .............................. <me.getID()>
+  [276] pushsymb 332 ............................ <#mouseDown>
+  [279] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseDown>
+  [281] objcall 120 ............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseDown)
+  [283] getlocal 1 .............................. <tWndObj>
+  [285] pushsymb 300 ............................ <#eventProcRoomBar>
+  [288] getparam 0 .............................. <me>
+  [290] pusharglist 1 ........................... <me>
+  [292] objcall 34 .............................. <me.getID()>
+  [294] pushsymb 122 ............................ <#mouseWithin>
+  [296] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseWithin>
+  [298] objcall 120 ............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseWithin)
+  [300] getlocal 1 .............................. <tWndObj>
+  [302] pushsymb 300 ............................ <#eventProcRoomBar>
+  [305] getparam 0 .............................. <me>
+  [307] pusharglist 1 ........................... <me>
+  [309] objcall 34 .............................. <me.getID()>
+  [311] pushsymb 333 ............................ <#mouseUpOutSide>
+  [314] pusharglistnoret 4 ...................... <tWndObj, #eventProcRoomBar, me.getID(), #mouseUpOutSide>
+  [316] objcall 120 ............................. tWndObj.registerProcedure(#eventProcRoomBar, me.getID(), #mouseUpOutSide)
+  [318] getparam 0 .............................. <me>
+  [320] pusharglistnoret 1 ...................... <me>
+  [322] objcall 295 ............................. me.updateSoundButton()
+  [325] pushint8 1 .............................. <1>
+  [327] pusharglistnoret 1 ...................... <1>
+  [329] extcall 52 .............................. return 1
+  [331] ret
+end
+
+on hideRoomBar me
+  [  0] pushsymb 336 ............................ <#flash_messenger_icon>
+  [  3] pusharglist 1 ........................... <#flash_messenger_icon>
+  [  5] extcall 320 ............................. <timeoutExists(#flash_messenger_icon)>
+  [  8] jmpifz [ 19] ............................ if timeoutExists(#flash_messenger_icon) then
+  [ 11] pushsymb 336 ............................ <#flash_messenger_icon>
+  [ 14] pusharglistnoret 1 ...................... <#flash_messenger_icon>
+  [ 16] extcall 321 ............................. removeTimeout(#flash_messenger_icon)
+  [ 19] getprop 302 ............................. <pBottomBarId>
+  [ 22] pusharglist 1 ........................... <pBottomBarId>
+  [ 24] extcall 59 .............................. <windowExists(pBottomBarId)>
+  [ 26] jmpifz [ 37] ............................ if windowExists(pBottomBarId) then
+  [ 29] getprop 302 ............................. <pBottomBarId>
+  [ 32] pusharglistnoret 1 ...................... <pBottomBarId>
+  [ 34] extcall 337 ............................. removeWindow(pBottomBarId)
+  [ 37] getprop 308 ............................. <pBouncerID>
+  [ 40] pusharglist 1 ........................... <pBouncerID>
+  [ 42] extcall 145 ............................. <objectExists(pBouncerID)>
+  [ 44] jmpifz [ 54] ............................ if objectExists(pBouncerID) then
+  [ 47] getprop 308 ............................. <pBouncerID>
+  [ 50] pusharglistnoret 1 ...................... <pBouncerID>
+  [ 52] extcall 55 .............................. removeObject(pBouncerID)
+  [ 54] pushsymb 71 ............................. <#room>
+  [ 56] pusharglist 1 ........................... <#room>
+  [ 58] extcall 70 .............................. <getThread(#room)>
+  [ 60] pusharglist 1 ........................... <getThread(#room)>
+  [ 62] objcall 72 .............................. <getThread(#room).getComponent()>
+  [ 64] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 66] objcall 323 ............................. <getThread(#room).getComponent().getIconBarManager()>
+  [ 69] setlocal 0 .............................. tManager = getThread(#room).getComponent().getIconBarManager()
+  [ 71] getlocal 0 .............................. <tManager>
+  [ 73] pusharglistnoret 1 ...................... <tManager>
+  [ 75] objcall 338 ............................. tManager.hideExtensions()
+  [ 78] ret
+end
+
+on applyChatHelpText me
+  [  0] getprop 302 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 59 .............................. <windowExists(pBottomBarId)>
+  [  7] not ..................................... <not windowExists(pBottomBarId)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pBottomBarId) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 52 .............................. return 0
+  [ 16] getprop 302 ............................. <pBottomBarId>
+  [ 19] pusharglist 1 ........................... <pBottomBarId>
+  [ 21] extcall 59 .............................. <windowExists(pBottomBarId)>
+  [ 23] jmpifz [ 73] ............................ if windowExists(pBottomBarId) then
+  [ 26] getprop 302 ............................. <pBottomBarId>
+  [ 29] pusharglist 1 ........................... <pBottomBarId>
+  [ 31] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [ 33] setlocal 0 .............................. tWindowObj = getWindow(pBottomBarId)
+  [ 35] getlocal 0 .............................. <tWindowObj>
+  [ 37] pushcons 8 .............................. <"chat_field">
+  [ 39] pusharglist 2 ........................... <tWindowObj, "chat_field">
+  [ 41] objcall 180 ............................. <tWindowObj.elementExists("chat_field")>
+  [ 43] jmpifz [ 73] ............................ if tWindowObj.elementExists("chat_field") then
+  [ 46] getlocal 0 .............................. <tWindowObj>
+  [ 48] pushcons 8 .............................. <"chat_field">
+  [ 50] pusharglist 2 ........................... <tWindowObj, "chat_field">
+  [ 52] objcall 95 .............................. <tWindowObj.getElement("chat_field")>
+  [ 54] setlocal 1 .............................. tChatElem = tWindowObj.getElement("chat_field")
+  [ 56] getlocal 1 .............................. <tChatElem>
+  [ 58] pushcons 9 .............................. <"NUH_chat">
+  [ 60] pusharglist 1 ........................... <"NUH_chat">
+  [ 62] extcall 204 ............................. <getText("NUH_chat")>
+  [ 64] pusharglistnoret 2 ...................... <tChatElem, getText("NUH_chat")>
+  [ 66] objcall 205 ............................. tChatElem.setText(getText("NUH_chat"))
+  [ 68] pushint8 1 .............................. <1>
+  [ 70] setprop 307 ............................. pTextIsHelpTExt = 1
+  [ 73] ret
+end
+
+on setSpeechDropdown me, tMode
+  [  0] getprop 302 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 59 .............................. <windowExists(pBottomBarId)>
+  [  7] jmpifz [ 72] ............................ if windowExists(pBottomBarId) then
+  [ 10] getprop 302 ............................. <pBottomBarId>
+  [ 13] pusharglist 1 ........................... <pBottomBarId>
+  [ 15] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [ 17] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 19] getlocal 0 .............................. <tWndObj>
+  [ 21] pushzero ................................ <0>
+  [ 22] eq ...................................... <tWndObj = 0>
+  [ 23] jmpifz [ 32] ............................ if tWndObj = 0 then
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglistnoret 1 ...................... <1>
+  [ 30] extcall 52 .............................. return 1
+  [ 32] getlocal 0 .............................. <tWndObj>
+  [ 34] pushcons 10 ............................. <"int_speechmode_dropmenu">
+  [ 36] pusharglist 2 ........................... <tWndObj, "int_speechmode_dropmenu">
+  [ 38] objcall 95 .............................. <tWndObj.getElement("int_speechmode_dropmenu")>
+  [ 40] setlocal 1 .............................. tElem = tWndObj.getElement("int_speechmode_dropmenu")
+  [ 42] getlocal 1 .............................. <tElem>
+  [ 44] pushzero ................................ <0>
+  [ 45] eq ...................................... <tElem = 0>
+  [ 46] jmpifz [ 55] ............................ if tElem = 0 then
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] pusharglistnoret 1 ...................... <1>
+  [ 53] extcall 52 .............................. return 1
+  [ 55] getlocal 1 .............................. <tElem>
+  [ 57] getparam 1 .............................. <tMode>
+  [ 59] pushint8 1 .............................. <1>
+  [ 61] pusharglistnoret 3 ...................... <tElem, tMode, 1>
+  [ 63] objcall 340 ............................. tElem.setSelection(tMode, 1)
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] pusharglistnoret 1 ...................... <1>
+  [ 70] extcall 52 .............................. return 1
+  [ 72] ret
+end
+
+on setRollOverInfo me, tInfo
+  [  0] getprop 302 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 52 .............................. return 0
+  [ 21] getlocal 0 .............................. <tWndObj>
+  [ 23] pushcons 11 ............................. <"room_tooltip_text">
+  [ 25] pusharglist 2 ........................... <tWndObj, "room_tooltip_text">
+  [ 27] objcall 180 ............................. <tWndObj.elementExists("room_tooltip_text")>
+  [ 29] jmpifz [ 46] ............................ if tWndObj.elementExists("room_tooltip_text") then
+  [ 32] getlocal 0 .............................. <tWndObj>
+  [ 34] pushcons 11 ............................. <"room_tooltip_text">
+  [ 36] pusharglist 2 ........................... <tWndObj, "room_tooltip_text">
+  [ 38] objcall 95 .............................. <tWndObj.getElement("room_tooltip_text")>
+  [ 40] getparam 1 .............................. <tInfo>
+  [ 42] pusharglistnoret 2 ...................... <tWndObj.getElement("room_tooltip_text"), tInfo>
+  [ 44] objcall 205 ............................. tWndObj.getElement("room_tooltip_text").setText(tInfo)
+  [ 46] ret
+end
+
+on updateMessageCount me, tCount
+  [  0] getparam 1 .............................. <tCount>
+  [  2] pushzero ................................ <0>
+  [  3] gt ...................................... <tCount > 0>
+  [  4] jmpifz [ 19] ............................ if tCount > 0 then / else
+  [  7] getparam 0 .............................. <me>
+  [  9] pushint8 1 .............................. <1>
+  [ 11] pusharglistnoret 2 ...................... <me, 1>
+  [ 13] objcall 293 ............................. me.updateFriendListIcon(1)
+  [ 16] jmp [ 27]
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 2 ...................... <me, 0>
+  [ 24] objcall 293 ............................. me.updateFriendListIcon(0)
+  [ 27] ret
+end
+
+on updateFriendListIcon me, tActive
+  [  0] getprop 302 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 52 .............................. return 0
+  [ 21] getlocal 0 .............................. <tWndObj>
+  [ 23] pushcons 12 ............................. <"friend_list_icon">
+  [ 25] pusharglist 2 ........................... <tWndObj, "friend_list_icon">
+  [ 27] objcall 95 .............................. <tWndObj.getElement("friend_list_icon")>
+  [ 29] setlocal 1 .............................. tIconElem = tWndObj.getElement("friend_list_icon")
+  [ 31] getlocal 1 .............................. <tIconElem>
+  [ 33] not ..................................... <not tIconElem>
+  [ 34] jmpifz [ 42] ............................ if not tIconElem then
+  [ 37] pushzero ................................ <0>
+  [ 38] pusharglistnoret 1 ...................... <0>
+  [ 40] extcall 52 .............................. return 0
+  [ 42] getparam 1 .............................. <tActive>
+  [ 44] jmpifz [ 60] ............................ if tActive then / else
+  [ 47] getlocal 1 .............................. <tIconElem>
+  [ 49] pushsymb 187 ............................ <#member>
+  [ 51] pushcons 13 ............................. <"friend_list_icon_notification">
+  [ 53] pusharglistnoret 3 ...................... <tIconElem, #member, "friend_list_icon_notification">
+  [ 55] objcall 183 ............................. tIconElem.setProperty(#member, "friend_list_icon_notification")
+  [ 57] jmp [ 70]
+  [ 60] getlocal 1 .............................. <tIconElem>
+  [ 62] pushsymb 187 ............................ <#member>
+  [ 64] pushcons 12 ............................. <"friend_list_icon">
+  [ 66] pusharglistnoret 3 ...................... <tIconElem, #member, "friend_list_icon">
+  [ 68] objcall 183 ............................. tIconElem.setProperty(#member, "friend_list_icon")
+  [ 70] ret
+end
+
+on bounceIMIcon me, tstate
+  [  0] pushcons 14 ............................. <"bounce.messenger.icon">
+  [  2] pusharglist 1 ........................... <"bounce.messenger.icon">
+  [  4] extcall 236 ............................. <variableExists("bounce.messenger.icon")>
+  [  6] jmpifz [ 24] ............................ if variableExists("bounce.messenger.icon") then
+  [  9] pushcons 14 ............................. <"bounce.messenger.icon">
+  [ 11] pusharglist 1 ........................... <"bounce.messenger.icon">
+  [ 13] extcall 159 ............................. <getVariable("bounce.messenger.icon")>
+  [ 15] not ..................................... <not getVariable("bounce.messenger.icon")>
+  [ 16] jmpifz [ 24] ............................ if not getVariable("bounce.messenger.icon") then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 52 .............................. return 0
+  [ 24] getprop 308 ............................. <pBouncerID>
+  [ 27] pusharglist 1 ........................... <pBouncerID>
+  [ 29] extcall 145 ............................. <objectExists(pBouncerID)>
+  [ 31] not ..................................... <not objectExists(pBouncerID)>
+  [ 32] jmpifz [ 44] ............................ if not objectExists(pBouncerID) then
+  [ 35] getprop 308 ............................. <pBouncerID>
+  [ 38] pushcons 15 ............................. <"Element Bouncer Class">
+  [ 40] pusharglistnoret 2 ...................... <pBouncerID, "Element Bouncer Class">
+  [ 42] extcall 21 .............................. createObject(pBouncerID, "Element Bouncer Class")
+  [ 44] getprop 308 ............................. <pBouncerID>
+  [ 47] pusharglist 1 ........................... <pBouncerID>
+  [ 49] extcall 49 .............................. <getObject(pBouncerID)>
+  [ 51] setlocal 0 .............................. tBouncer = getObject(pBouncerID)
+  [ 53] getparam 1 .............................. <tstate>
+  [ 55] getlocal 0 .............................. <tBouncer>
+  [ 57] pusharglist 1 ........................... <tBouncer>
+  [ 59] objcall 346 ............................. <tBouncer.getState()>
+  [ 62] eq ...................................... <tstate = tBouncer.getState()>
+  [ 63] jmpifz [ 72] ............................ if tstate = tBouncer.getState() then
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] pusharglistnoret 1 ...................... <1>
+  [ 70] extcall 52 .............................. return 1
+  [ 72] getparam 1 .............................. <tstate>
+  [ 74] jmpifz [104] ............................ if tstate then / else
+  [ 77] getlocal 0 .............................. <tBouncer>
+  [ 79] getprop 302 ............................. <pBottomBarId>
+  [ 82] pushcons 16 ............................. <"im_icon">
+  [ 84] pusharglist 1 ........................... <["im_icon"]>
+  [ 86] pushlist ................................ <["im_icon"]>
+  [ 87] pusharglistnoret 3 ...................... <tBouncer, pBottomBarId, ["im_icon"]>
+  [ 89] objcall 347 ............................. tBouncer.registerElement(pBottomBarId, ["im_icon"])
+  [ 92] getlocal 0 .............................. <tBouncer>
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] pusharglistnoret 2 ...................... <tBouncer, 1>
+  [ 98] objcall 348 ............................. tBouncer.setBounce(1)
+  [101] jmp [112]
+  [104] getlocal 0 .............................. <tBouncer>
+  [106] pushzero ................................ <0>
+  [107] pusharglistnoret 2 ...................... <tBouncer, 0>
+  [109] objcall 348 ............................. tBouncer.setBounce(0)
+  [112] ret
+end
+
+on updateSoundButton me
+  [  0] getprop 302 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 52 .............................. return 0
+  [ 21] pusharglist 0 ........................... <>
+  [ 23] extcall 351 ............................. <getSoundState()>
+  [ 26] setlocal 1 .............................. tstate = getSoundState()
+  [ 28] getlocal 0 .............................. <tWndObj>
+  [ 30] pushcons 17 ............................. <"int_sound_image">
+  [ 32] pusharglist 2 ........................... <tWndObj, "int_sound_image">
+  [ 34] objcall 95 .............................. <tWndObj.getElement("int_sound_image")>
+  [ 36] setlocal 2 .............................. tElem = tWndObj.getElement("int_sound_image")
+  [ 38] getlocal 2 .............................. <tElem>
+  [ 40] pushzero ................................ <0>
+  [ 41] nteq .................................... <tElem <> 0>
+  [ 42] jmpifz [113] ............................ if tElem <> 0 then
+  [ 45] getlocal 1 .............................. <tstate>
+  [ 47] jmpifz [ 83] ............................ if tstate then / else
+  [ 50] pushcons 18 ............................. <"sounds_small_on_icon">
+  [ 52] pusharglist 1 ........................... <"sounds_small_on_icon">
+  [ 54] extcall 352 ............................. <getmemnum("sounds_small_on_icon")>
+  [ 57] setlocal 3 .............................. tMemNum = getmemnum("sounds_small_on_icon")
+  [ 59] getlocal 3 .............................. <tMemNum>
+  [ 61] pushzero ................................ <0>
+  [ 62] gt ...................................... <tMemNum > 0>
+  [ 63] jmpifz [ 80] ............................ if tMemNum > 0 then
+  [ 66] getlocal 2 .............................. <tElem>
+  [ 68] getlocal 3 .............................. <tMemNum>
+  [ 70] pusharglist 1 ........................... <tMemNum>
+  [ 72] extcall 187 ............................. <member(tMemNum)>
+  [ 74] getobjprop 186 .......................... <member(tMemNum).image>
+  [ 76] pusharglistnoret 2 ...................... <tElem, member(tMemNum).image>
+  [ 78] objcall 101 ............................. tElem.feedImage(member(tMemNum).image)
+  [ 80] jmp [113]
+  [ 83] pushcons 19 ............................. <"sounds_small_off_icon">
+  [ 85] pusharglist 1 ........................... <"sounds_small_off_icon">
+  [ 87] extcall 352 ............................. <getmemnum("sounds_small_off_icon")>
+  [ 90] setlocal 3 .............................. tMemNum = getmemnum("sounds_small_off_icon")
+  [ 92] getlocal 3 .............................. <tMemNum>
+  [ 94] pushzero ................................ <0>
+  [ 95] gt ...................................... <tMemNum > 0>
+  [ 96] jmpifz [113] ............................ if tMemNum > 0 then
+  [ 99] getlocal 2 .............................. <tElem>
+  [101] getlocal 3 .............................. <tMemNum>
+  [103] pusharglist 1 ........................... <tMemNum>
+  [105] extcall 187 ............................. <member(tMemNum)>
+  [107] getobjprop 186 .......................... <member(tMemNum).image>
+  [109] pusharglistnoret 2 ...................... <tElem, member(tMemNum).image>
+  [111] objcall 101 ............................. tElem.feedImage(member(tMemNum).image)
+  [113] ret
+end
+
+on setTypingState me, tstate
+  [  0] pushint16 2000 .......................... <2000>
+  [  3] setlocal 0 .............................. tTimeoutTime = 2000
+  [  5] getparam 1 .............................. <tstate>
+  [  7] pushzero ................................ <0>
+  [  8] eq ...................................... <tstate = 0>
+  [  9] jmpifz [ 45] ............................ if tstate = 0 then / else
+  [ 12] getprop 314 ............................. <pTypingTimeoutName>
+  [ 15] pusharglist 1 ........................... <pTypingTimeoutName>
+  [ 17] extcall 320 ............................. <timeoutExists(pTypingTimeoutName)>
+  [ 20] jmpifz [ 34] ............................ if timeoutExists(pTypingTimeoutName) then / else
+  [ 23] getprop 314 ............................. <pTypingTimeoutName>
+  [ 26] pusharglistnoret 1 ...................... <pTypingTimeoutName>
+  [ 28] extcall 321 ............................. removeTimeout(pTypingTimeoutName)
+  [ 31] jmp [ 42]
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 2 ...................... <me, 0>
+  [ 39] objcall 297 ............................. me.sendTypingState(0)
+  [ 42] jmp [ 87]
+  [ 45] getprop 314 ............................. <pTypingTimeoutName>
+  [ 48] pusharglist 1 ........................... <pTypingTimeoutName>
+  [ 50] extcall 320 ............................. <timeoutExists(pTypingTimeoutName)>
+  [ 53] jmpifz [ 64] ............................ if timeoutExists(pTypingTimeoutName) then
+  [ 56] getprop 314 ............................. <pTypingTimeoutName>
+  [ 59] pusharglistnoret 1 ...................... <pTypingTimeoutName>
+  [ 61] extcall 321 ............................. removeTimeout(pTypingTimeoutName)
+  [ 64] getprop 314 ............................. <pTypingTimeoutName>
+  [ 67] getlocal 0 .............................. <tTimeoutTime>
+  [ 69] pushsymb 297 ............................ <#sendTypingState>
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglist 1 ........................... <me>
+  [ 76] objcall 34 .............................. <me.getID()>
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] pushint8 1 .............................. <1>
+  [ 82] pusharglistnoret 6 ...................... <pTypingTimeoutName, tTimeoutTime, #sendTypingState, me.getID(), 1, 1>
+  [ 84] extcall 354 ............................. createTimeout(pTypingTimeoutName, tTimeoutTime, #sendTypingState, me.getID(), 1, 1)
+  [ 87] ret
+end
+
+on sendTypingState me, tstate
+  [  0] pushsymb 154 ............................ <#Info>
+  [  2] pusharglist 1 ........................... <#Info>
+  [  4] extcall 153 ............................. <getConnection(#Info)>
+  [  6] setlocal 0 .............................. tConn = getConnection(#Info)
+  [  8] getparam 1 .............................. <tstate>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] eq ...................................... <tstate = 1>
+  [ 13] jmpifz [ 27] ............................ if tstate = 1 then / else
+  [ 16] getlocal 0 .............................. <tConn>
+  [ 18] pushcons 20 ............................. <"USER_START_TYPING">
+  [ 20] pusharglistnoret 2 ...................... <tConn, "USER_START_TYPING">
+  [ 22] objcall 155 ............................. tConn.send("USER_START_TYPING")
+  [ 24] jmp [ 35]
+  [ 27] getlocal 0 .............................. <tConn>
+  [ 29] pushcons 21 ............................. <"USER_CANCEL_TYPING">
+  [ 31] pusharglistnoret 2 ...................... <tConn, "USER_CANCEL_TYPING">
+  [ 33] objcall 155 ............................. tConn.send("USER_CANCEL_TYPING")
+  [ 35] ret
+end
+
+on showVote me
+  [  0] getprop 302 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 52 .............................. return 0
+  [ 21] getlocal 0 .............................. <tWndObj>
+  [ 23] pushcons 22 ............................. <"chat_field_bg_long">
+  [ 25] pusharglist 2 ........................... <tWndObj, "chat_field_bg_long">
+  [ 27] objcall 95 .............................. <tWndObj.getElement("chat_field_bg_long")>
+  [ 29] pushsymb 96 ............................. <#width>
+  [ 31] pusharglist 2 ........................... <tWndObj.getElement("chat_field_bg_long"), #width>
+  [ 33] objcall 63 .............................. <tWndObj.getElement("chat_field_bg_long").getProperty(#width)>
+  [ 35] setlocal 1 .............................. tWidthLong = tWndObj.getElement("chat_field_bg_long").getProperty(#width)
+  [ 37] getlocal 0 .............................. <tWndObj>
+  [ 39] pushcons 23 ............................. <"chat_field_bg_short">
+  [ 41] pusharglist 2 ........................... <tWndObj, "chat_field_bg_short">
+  [ 43] objcall 95 .............................. <tWndObj.getElement("chat_field_bg_short")>
+  [ 45] pushsymb 96 ............................. <#width>
+  [ 47] pusharglist 2 ........................... <tWndObj.getElement("chat_field_bg_short"), #width>
+  [ 49] objcall 63 .............................. <tWndObj.getElement("chat_field_bg_short").getProperty(#width)>
+  [ 51] setlocal 2 .............................. tWidthShort = tWndObj.getElement("chat_field_bg_short").getProperty(#width)
+  [ 53] getlocal 0 .............................. <tWndObj>
+  [ 55] pushcons 8 .............................. <"chat_field">
+  [ 57] pusharglist 2 ........................... <tWndObj, "chat_field">
+  [ 59] objcall 95 .............................. <tWndObj.getElement("chat_field")>
+  [ 61] getlocal 2 .............................. <tWidthShort>
+  [ 63] getlocal 1 .............................. <tWidthLong>
+  [ 65] sub ..................................... <tWidthShort - tWidthLong>
+  [ 66] pushzero ................................ <0>
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] pusharglistnoret 4 ...................... <tWndObj.getElement("chat_field"), tWidthShort - tWidthLong, 0, 1>
+  [ 71] objcall 102 ............................. tWndObj.getElement("chat_field").resizeBy(tWidthShort - tWidthLong, 0, 1)
+  [ 73] getlocal 0 .............................. <tWndObj>
+  [ 75] pushcons 22 ............................. <"chat_field_bg_long">
+  [ 77] pusharglist 2 ........................... <tWndObj, "chat_field_bg_long">
+  [ 79] objcall 95 .............................. <tWndObj.getElement("chat_field_bg_long")>
+  [ 81] pusharglistnoret 1 ...................... <tWndObj.getElement("chat_field_bg_long")>
+  [ 83] objcall 64 .............................. tWndObj.getElement("chat_field_bg_long").hide()
+  [ 85] getlocal 0 .............................. <tWndObj>
+  [ 87] pushcons 24 ............................. <"int_drop_vote">
+  [ 89] pusharglist 2 ........................... <tWndObj, "int_drop_vote">
+  [ 91] objcall 180 ............................. <tWndObj.elementExists("int_drop_vote")>
+  [ 93] jmpifz [175] ............................ if tWndObj.elementExists("int_drop_vote") then
+  [ 96] getlocal 0 .............................. <tWndObj>
+  [ 98] pushcons 24 ............................. <"int_drop_vote">
+  [100] pusharglist 2 ........................... <tWndObj, "int_drop_vote">
+  [102] objcall 95 .............................. <tWndObj.getElement("int_drop_vote")>
+  [104] pushcons 25 ............................. <"pelle_kyltti1">
+  [106] pusharglist 1 ........................... <"pelle_kyltti1">
+  [108] extcall 352 ............................. <getmemnum("pelle_kyltti1")>
+  [111] pusharglist 1 ........................... <getmemnum("pelle_kyltti1")>
+  [113] extcall 187 ............................. <member(getmemnum("pelle_kyltti1"))>
+  [115] getobjprop 186 .......................... <member(getmemnum("pelle_kyltti1")).image>
+  [117] pusharglistnoret 2 ...................... <tWndObj.getElement("int_drop_vote"), member(getmemnum("pelle_kyltti1")).image>
+  [119] objcall 101 ............................. tWndObj.getElement("int_drop_vote").feedImage(member(getmemnum("pelle_kyltti1")).image)
+  [121] pusharglist 0 ........................... <>
+  [123] extcall 26 .............................. <VOID>
+  [125] setprop 357 ............................. pSignState = VOID
+  [128] pushint8 1 .............................. <1>
+  [130] inv ..................................... <-1>
+  [131] setprop 358 ............................. pOldPosH = -1
+  [134] pushint8 1 .............................. <1>
+  [136] inv ..................................... <-1>
+  [137] setprop 359 ............................. pOldPosV = -1
+  [140] pushcons 26 ............................. <"pelle_kyltti2">
+  [142] pusharglist 1 ........................... <"pelle_kyltti2">
+  [144] extcall 352 ............................. <getmemnum("pelle_kyltti2")>
+  [147] pusharglist 1 ........................... <getmemnum("pelle_kyltti2")>
+  [149] extcall 187 ............................. <member(getmemnum("pelle_kyltti2"))>
+  [151] getobjprop 96 ........................... <member(getmemnum("pelle_kyltti2")).width>
+  [153] pushcons 26 ............................. <"pelle_kyltti2">
+  [155] pusharglist 1 ........................... <"pelle_kyltti2">
+  [157] extcall 352 ............................. <getmemnum("pelle_kyltti2")>
+  [160] pusharglist 1 ........................... <getmemnum("pelle_kyltti2")>
+  [162] extcall 187 ............................. <member(getmemnum("pelle_kyltti2"))>
+  [164] getobjprop 98 ........................... <member(getmemnum("pelle_kyltti2")).height>
+  [166] pushint8 16 ............................. <16>
+  [168] pusharglist 3 ........................... <member(getmemnum("pelle_kyltti2")).width, member(getmemnum("pelle_kyltti2")).height, 16>
+  [170] extcall 186 ............................. <image(member(getmemnum("pelle_kyltti2")).width, member(getmemnum("pelle_kyltti2")).height, 16)>
+  [172] setprop 360 ............................. pSignImg = image(member(getmemnum("pelle_kyltti2")).width, member(getmemnum("pelle_kyltti2")).height, 16)
+  [175] ret
+end
+
+on updateIMIcon me
+  [  0] getprop 302 ............................. <pBottomBarId>
+  [  3] pusharglist 1 ........................... <pBottomBarId>
+  [  5] extcall 59 .............................. <windowExists(pBottomBarId)>
+  [  7] not ..................................... <not windowExists(pBottomBarId)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pBottomBarId) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 52 .............................. return 0
+  [ 16] pushcons 27 ............................. <"instant_messenger">
+  [ 18] pusharglist 1 ........................... <"instant_messenger">
+  [ 20] extcall 245 ............................. <threadExists("instant_messenger")>
+  [ 22] not ..................................... <not threadExists("instant_messenger")>
+  [ 23] jmpifz [ 31] ............................ if not threadExists("instant_messenger") then
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 52 .............................. return 0
+  [ 31] pushcons 27 ............................. <"instant_messenger">
+  [ 33] pusharglist 1 ........................... <"instant_messenger">
+  [ 35] extcall 70 .............................. <getThread("instant_messenger")>
+  [ 37] pusharglist 1 ........................... <getThread("instant_messenger")>
+  [ 39] objcall 73 .............................. <getThread("instant_messenger").getInterface()>
+  [ 41] pusharglist 1 ........................... <getThread("instant_messenger").getInterface()>
+  [ 43] objcall 346 ............................. <getThread("instant_messenger").getInterface().getState()>
+  [ 46] setlocal 0 .............................. tstate = getThread("instant_messenger").getInterface().getState()
+  [ 48] getlocal 0 .............................. <tstate>
+  [ 50] pusharglist 1 ........................... <tstate>
+  [ 52] extcall 69 .............................. <voidp(tstate)>
+  [ 54] jmpifz [ 62] ............................ if voidp(tstate) then
+  [ 57] pushsymb 363 ............................ <#inactive>
+  [ 60] setlocal 0 .............................. tstate = #inactive
+  [ 62] getprop 302 ............................. <pBottomBarId>
+  [ 65] pusharglist 1 ........................... <pBottomBarId>
+  [ 67] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [ 69] setlocal 1 .............................. tWnd = getWindow(pBottomBarId)
+  [ 71] getlocal 1 .............................. <tWnd>
+  [ 73] pushcons 16 ............................. <"im_icon">
+  [ 75] pusharglist 2 ........................... <tWnd, "im_icon">
+  [ 77] objcall 95 .............................. <tWnd.getElement("im_icon")>
+  [ 79] setlocal 2 .............................. tElem = tWnd.getElement("im_icon")
+  [ 81] getlocal 2 .............................. <tElem>
+  [ 83] pushzero ................................ <0>
+  [ 84] eq ...................................... <tElem = 0>
+  [ 85] jmpifz [ 93] ............................ if tElem = 0 then
+  [ 88] pushzero ................................ <0>
+  [ 89] pusharglistnoret 1 ...................... <0>
+  [ 91] extcall 52 .............................. return 0
+  [ 93] getlocal 0 .............................. <tstate>
+  [ 95] peek 0 .................................. case tstate of
+  [ 97] pushsymb 364 ............................ <#Active>
+  [100] eq
+  [101] jmpifz [144] ............................ (case) #Active:
+  [104] pushcons 28 ............................. <"im.icon.active">
+  [106] pusharglist 1 ........................... <"im.icon.active">
+  [108] extcall 329 ............................. <getMember("im.icon.active")>
+  [111] setlocal 3 .............................. tmember = getMember("im.icon.active")
+  [113] getlocal 2 .............................. <tElem>
+  [115] pushsymb 182 ............................ <#cursor>
+  [117] pushcons 29 ............................. <"cursor.finger">
+  [119] pusharglistnoret 3 ...................... <tElem, #cursor, "cursor.finger">
+  [121] objcall 183 ............................. tElem.setProperty(#cursor, "cursor.finger")
+  [123] getparam 0 .............................. <me>
+  [125] pushzero ................................ <0>
+  [126] pusharglistnoret 2 ...................... <me, 0>
+  [128] objcall 294 ............................. me.bounceIMIcon(0)
+  [131] getparam 0 .............................. <me>
+  [133] pushsymb 365 ............................ <#stop>
+  [136] pusharglistnoret 2 ...................... <me, #stop>
+  [138] objcall 299 ............................. me.flashIMIcon(#stop)
+  [141] jmp [249]
+  [144] peek 0
+  [146] pushsymb 366 ............................ <#highlighted>
+  [149] eq
+  [150] jmpifz [194] ............................ (case) #highlighted:
+  [153] pushcons 30 ............................. <"im.icon.highlighted">
+  [155] pusharglist 1 ........................... <"im.icon.highlighted">
+  [157] extcall 329 ............................. <getMember("im.icon.highlighted")>
+  [160] setlocal 3 .............................. tmember = getMember("im.icon.highlighted")
+  [162] getlocal 2 .............................. <tElem>
+  [164] pushsymb 182 ............................ <#cursor>
+  [166] pushcons 29 ............................. <"cursor.finger">
+  [168] pusharglistnoret 3 ...................... <tElem, #cursor, "cursor.finger">
+  [170] objcall 183 ............................. tElem.setProperty(#cursor, "cursor.finger")
+  [172] getparam 0 .............................. <me>
+  [174] pushint8 1 .............................. <1>
+  [176] pusharglistnoret 2 ...................... <me, 1>
+  [178] objcall 294 ............................. me.bounceIMIcon(1)
+  [181] getparam 0 .............................. <me>
+  [183] pushsymb 367 ............................ <#start>
+  [186] pusharglistnoret 2 ...................... <me, #start>
+  [188] objcall 299 ............................. me.flashIMIcon(#start)
+  [191] jmp [249]
+  [194] peek 0
+  [196] pushsymb 363 ............................ <#inactive>
+  [199] eq
+  [200] jmpifz [242] ............................ (case) #inactive:
+  [203] pushcons 31 ............................. <"im.icon.inactive">
+  [205] pusharglist 1 ........................... <"im.icon.inactive">
+  [207] extcall 329 ............................. <getMember("im.icon.inactive")>
+  [210] setlocal 3 .............................. tmember = getMember("im.icon.inactive")
+  [212] getlocal 2 .............................. <tElem>
+  [214] pushsymb 182 ............................ <#cursor>
+  [216] pushzero ................................ <0>
+  [217] pusharglistnoret 3 ...................... <tElem, #cursor, 0>
+  [219] objcall 183 ............................. tElem.setProperty(#cursor, 0)
+  [221] getparam 0 .............................. <me>
+  [223] pushzero ................................ <0>
+  [224] pusharglistnoret 2 ...................... <me, 0>
+  [226] objcall 294 ............................. me.bounceIMIcon(0)
+  [229] getparam 0 .............................. <me>
+  [231] pushsymb 365 ............................ <#stop>
+  [234] pusharglistnoret 2 ...................... <me, #stop>
+  [236] objcall 299 ............................. me.flashIMIcon(#stop)
+  [239] jmp [249] ............................... (case) otherwise:
+  [242] pop 1
+  [244] pushzero ................................ <0>
+  [245] pusharglistnoret 1 ...................... <0>
+  [247] extcall 52 .............................. return 0
+  [249] pop 1 ................................... end case
+  [251] getlocal 2 .............................. <tElem>
+  [253] pushsymb 187 ............................ <#member>
+  [255] getlocal 3 .............................. <tmember>
+  [257] pusharglistnoret 3 ...................... <tElem, #member, tmember>
+  [259] objcall 183 ............................. tElem.setProperty(#member, tmember)
+  [261] pushint8 1 .............................. <1>
+  [263] pusharglistnoret 1 ...................... <1>
+  [265] extcall 52 .............................. return 1
+  [267] ret
+end
+
+on flashIMIcon me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] peek 0 .................................. case tstate of
+  [  4] pushsymb 367 ............................ <#start>
+  [  7] eq
+  [  8] jmpifz [ 69] ............................ (case) #start:
+  [ 11] getprop 310 ............................. <pIMFlashTimeoutID>
+  [ 14] pusharglist 1 ........................... <pIMFlashTimeoutID>
+  [ 16] extcall 320 ............................. <timeoutExists(pIMFlashTimeoutID)>
+  [ 19] jmpifz [ 30] ............................ if timeoutExists(pIMFlashTimeoutID) then
+  [ 22] getprop 310 ............................. <pIMFlashTimeoutID>
+  [ 25] pusharglistnoret 1 ...................... <pIMFlashTimeoutID>
+  [ 27] extcall 321 ............................. removeTimeout(pIMFlashTimeoutID)
+  [ 30] getprop 310 ............................. <pIMFlashTimeoutID>
+  [ 33] pusharglist 1 ........................... <pIMFlashTimeoutID>
+  [ 35] extcall 320 ............................. <timeoutExists(pIMFlashTimeoutID)>
+  [ 38] not ..................................... <not timeoutExists(pIMFlashTimeoutID)>
+  [ 39] jmpifz [ 66] ............................ if not timeoutExists(pIMFlashTimeoutID) then
+  [ 42] getprop 310 ............................. <pIMFlashTimeoutID>
+  [ 45] pushint16 500 ........................... <500>
+  [ 48] pushsymb 299 ............................ <#flashIMIcon>
+  [ 51] getparam 0 .............................. <me>
+  [ 53] pusharglist 1 ........................... <me>
+  [ 55] objcall 34 .............................. <me.getID()>
+  [ 57] pushsymb 370 ............................ <#flash>
+  [ 60] pushzero ................................ <0>
+  [ 61] pusharglistnoret 6 ...................... <pIMFlashTimeoutID, 500, #flashIMIcon, me.getID(), #flash, 0>
+  [ 63] extcall 354 ............................. createTimeout(pIMFlashTimeoutID, 500, #flashIMIcon, me.getID(), #flash, 0)
+  [ 66] jmp [198]
+  [ 69] peek 0
+  [ 71] pushsymb 365 ............................ <#stop>
+  [ 74] eq
+  [ 75] jmpifz [100] ............................ (case) #stop:
+  [ 78] getprop 310 ............................. <pIMFlashTimeoutID>
+  [ 81] pusharglist 1 ........................... <pIMFlashTimeoutID>
+  [ 83] extcall 320 ............................. <timeoutExists(pIMFlashTimeoutID)>
+  [ 86] jmpifz [ 97] ............................ if timeoutExists(pIMFlashTimeoutID) then
+  [ 89] getprop 310 ............................. <pIMFlashTimeoutID>
+  [ 92] pusharglistnoret 1 ...................... <pIMFlashTimeoutID>
+  [ 94] extcall 321 ............................. removeTimeout(pIMFlashTimeoutID)
+  [ 97] jmp [198]
+  [100] peek 0
+  [102] pushsymb 370 ............................ <#flash>
+  [105] eq
+  [106] jmpifz [198] ............................ (case) #flash:
+  [109] getprop 302 ............................. <pBottomBarId>
+  [112] pusharglist 1 ........................... <pBottomBarId>
+  [114] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [116] setlocal 0 .............................. tWnd = getWindow(pBottomBarId)
+  [118] getlocal 0 .............................. <tWnd>
+  [120] not ..................................... <not tWnd>
+  [121] jmpifz [131] ............................ if not tWnd then
+  [124] pop 1
+  [126] pushzero ................................ <0>
+  [127] pusharglistnoret 1 ...................... <0>
+  [129] extcall 52 .............................. return 0
+  [131] getlocal 0 .............................. <tWnd>
+  [133] pushcons 16 ............................. <"im_icon">
+  [135] pusharglist 2 ........................... <tWnd, "im_icon">
+  [137] objcall 95 .............................. <tWnd.getElement("im_icon")>
+  [139] setlocal 1 .............................. tElem = tWnd.getElement("im_icon")
+  [141] getlocal 1 .............................. <tElem>
+  [143] pusharglist 1 ........................... <tElem>
+  [145] extcall 371 ............................. <objectp(tElem)>
+  [148] not ..................................... <not objectp(tElem)>
+  [149] jmpifz [159] ............................ if not objectp(tElem) then
+  [152] pop 1
+  [154] pushzero ................................ <0>
+  [155] pusharglistnoret 1 ...................... <0>
+  [157] extcall 52 .............................. return 0
+  [159] getprop 372 ............................. <pIMFlashState>
+  [162] pushint8 1 .............................. <1>
+  [164] eq ...................................... <pIMFlashState = 1>
+  [165] jmpifz [181] ............................ if pIMFlashState = 1 then / else
+  [168] getlocal 1 .............................. <tElem>
+  [170] pushsymb 187 ............................ <#member>
+  [172] pushcons 32 ............................. <"im.icon.highlighted.2">
+  [174] pusharglistnoret 3 ...................... <tElem, #member, "im.icon.highlighted.2">
+  [176] objcall 183 ............................. tElem.setProperty(#member, "im.icon.highlighted.2")
+  [178] jmp [191]
+  [181] getlocal 1 .............................. <tElem>
+  [183] pushsymb 187 ............................ <#member>
+  [185] pushcons 30 ............................. <"im.icon.highlighted">
+  [187] pusharglistnoret 3 ...................... <tElem, #member, "im.icon.highlighted">
+  [189] objcall 183 ............................. tElem.setProperty(#member, "im.icon.highlighted")
+  [191] getprop 372 ............................. <pIMFlashState>
+  [194] not ..................................... <not pIMFlashState>
+  [195] setprop 372 ............................. pIMFlashState = not pIMFlashState
+  [198] pop 1 ................................... end case
+  [200] ret
+end
+
+on eventProcRoomBar me, tEvent, tSprID, tParam
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] pushcons 8 .............................. <"chat_field">
+  [  4] eq ...................................... <tSprID = "chat_field">
+  [  5] getparam 1 .............................. <tEvent>
+  [  7] pushsymb 331 ............................ <#keyDown>
+  [ 10] eq ...................................... <tEvent = #keyDown>
+  [ 11] getparam 1 .............................. <tEvent>
+  [ 13] pushsymb 119 ............................ <#mouseUp>
+  [ 15] eq ...................................... <tEvent = #mouseUp>
+  [ 16] or ...................................... <(tEvent = #keyDown) or (tEvent = #mouseUp)>
+  [ 17] and ..................................... <(tSprID = "chat_field") and ((tEvent = #keyDown) or (tEvent = #mouseUp))>
+  [ 18] jmpifz [ 54] ............................ if (tSprID = "chat_field") and ((tEvent = #keyDown) or (tEvent = #mouseUp)) then
+  [ 21] getprop 307 ............................. <pTextIsHelpTExt>
+  [ 24] jmpifz [ 54] ............................ if pTextIsHelpTExt then
+  [ 27] getprop 302 ............................. <pBottomBarId>
+  [ 30] pusharglist 1 ........................... <pBottomBarId>
+  [ 32] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [ 34] getparam 2 .............................. <tSprID>
+  [ 36] pusharglist 2 ........................... <getWindow(pBottomBarId), tSprID>
+  [ 38] objcall 95 .............................. <getWindow(pBottomBarId).getElement(tSprID)>
+  [ 40] setlocal 0 .............................. tChatField = getWindow(pBottomBarId).getElement(tSprID)
+  [ 42] getlocal 0 .............................. <tChatField>
+  [ 44] pushcons 33 ............................. <EMPTY>
+  [ 46] pusharglistnoret 2 ...................... <tChatField, EMPTY>
+  [ 48] objcall 205 ............................. tChatField.setText(EMPTY)
+  [ 50] pushzero ................................ <0>
+  [ 51] setprop 307 ............................. pTextIsHelpTExt = 0
+  [ 54] getparam 1 .............................. <tEvent>
+  [ 56] pushsymb 331 ............................ <#keyDown>
+  [ 59] eq ...................................... <tEvent = #keyDown>
+  [ 60] getparam 2 .............................. <tSprID>
+  [ 62] pushcons 8 .............................. <"chat_field">
+  [ 64] eq ...................................... <tSprID = "chat_field">
+  [ 65] and ..................................... <(tEvent = #keyDown) and (tSprID = "chat_field")>
+  [ 66] jmpifz [552] ............................ if (tEvent = #keyDown) and (tSprID = "chat_field") then
+  [ 69] getprop 302 ............................. <pBottomBarId>
+  [ 72] pusharglist 1 ........................... <pBottomBarId>
+  [ 74] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [ 76] getparam 2 .............................. <tSprID>
+  [ 78] pusharglist 2 ........................... <getWindow(pBottomBarId), tSprID>
+  [ 80] objcall 95 .............................. <getWindow(pBottomBarId).getElement(tSprID)>
+  [ 82] setlocal 0 .............................. tChatField = getWindow(pBottomBarId).getElement(tSprID)
+  [ 84] pusharglist 0 ........................... <>
+  [ 86] thebuiltin 373 .......................... <the commandDown>
+  [ 89] pusharglist 0 ........................... <>
+  [ 91] thebuiltin 374 .......................... <the keyCode>
+  [ 94] pushint8 8 .............................. <8>
+  [ 96] eq ...................................... <the keyCode = 8>
+  [ 97] pusharglist 0 ........................... <>
+  [ 99] thebuiltin 374 .......................... <the keyCode>
+  [102] pushint8 9 .............................. <9>
+  [104] eq ...................................... <the keyCode = 9>
+  [105] or ...................................... <(the keyCode = 8) or (the keyCode = 9)>
+  [106] and ..................................... <the commandDown and ((the keyCode = 8) or (the keyCode = 9))>
+  [107] jmpifz [146] ............................ if the commandDown and ((the keyCode = 8) or (the keyCode = 9)) then
+  [110] pushsymb 107 ............................ <#session>
+  [112] pusharglist 1 ........................... <#session>
+  [114] extcall 49 .............................. <getObject(#session)>
+  [116] pushcons 34 ............................. <"user_rights">
+  [118] pusharglist 2 ........................... <getObject(#session), "user_rights">
+  [120] objcall 108 ............................. <getObject(#session).GET("user_rights")>
+  [122] pushcons 35 ............................. <"fuse_debug_window">
+  [124] pusharglist 2 ........................... <getObject(#session).GET("user_rights"), "fuse_debug_window">
+  [126] objcall 163 ............................. <getObject(#session).GET("user_rights").getOne("fuse_debug_window")>
+  [128] not ..................................... <not getObject(#session).GET("user_rights").getOne("fuse_debug_window")>
+  [129] jmpifz [146] ............................ if not getObject(#session).GET("user_rights").getOne("fuse_debug_window") then
+  [132] getlocal 0 .............................. <tChatField>
+  [134] pushcons 33 ............................. <EMPTY>
+  [136] pusharglistnoret 2 ...................... <tChatField, EMPTY>
+  [138] objcall 205 ............................. tChatField.setText(EMPTY)
+  [140] pushint8 1 .............................. <1>
+  [142] pusharglistnoret 1 ...................... <1>
+  [144] extcall 52 .............................. return 1
+  [146] pusharglist 0 ........................... <>
+  [148] thebuiltin 374 .......................... <the keyCode>
+  [151] setlocal 1 .............................. tKeyCode = the keyCode
+  [153] getlocal 1 .............................. <tKeyCode>
+  [155] peek 0 .................................. case tKeyCode of
+  [157] pushint8 36 ............................. <36>
+  [159] nteq
+  [160] jmpifz [171] ............................ (case) 36, ...
+  [163] peek 0
+  [165] pushint8 76 ............................. <76>
+  [167] eq
+  [168] jmpifz [451] ............................ (case) ..., 76:
+  [171] getlocal 0 .............................. <tChatField>
+  [173] pusharglist 1 ........................... <tChatField>
+  [175] objcall 204 ............................. <tChatField.getText()>
+  [177] pushcons 33 ............................. <EMPTY>
+  [179] eq ...................................... <tChatField.getText() = EMPTY>
+  [180] jmpifz [191] ............................ if tChatField.getText() = EMPTY then
+  [183] pop 1
+  [185] pushint8 1 .............................. <1>
+  [187] pusharglistnoret 1 ...................... <1>
+  [189] extcall 52 .............................. return 1
+  [191] getprop 303 ............................. <pFloodblocking>
+  [194] jmpifz [223] ............................ if pFloodblocking then
+  [197] getmovieprop 149 ........................ <the milliSeconds>
+  [199] getprop 305 ............................. <pFloodTimer>
+  [202] lt ...................................... <the milliSeconds < pFloodTimer>
+  [203] jmpifz [216] ............................ if the milliSeconds < pFloodTimer then / else
+  [206] pop 1
+  [208] pushzero ................................ <0>
+  [209] pusharglistnoret 1 ...................... <0>
+  [211] extcall 52 .............................. return 0
+  [213] jmp [223]
+  [216] pusharglist 0 ........................... <>
+  [218] extcall 26 .............................. <VOID>
+  [220] setprop 306 ............................. pFloodEnterCount = VOID
+  [223] getprop 306 ............................. <pFloodEnterCount>
+  [226] pusharglist 1 ........................... <pFloodEnterCount>
+  [228] extcall 69 .............................. <voidp(pFloodEnterCount)>
+  [230] jmpifz [249] ............................ if voidp(pFloodEnterCount) then / else
+  [233] pushzero ................................ <0>
+  [234] setprop 306 ............................. pFloodEnterCount = 0
+  [237] pushzero ................................ <0>
+  [238] setprop 303 ............................. pFloodblocking = 0
+  [241] getmovieprop 149 ........................ <the milliSeconds>
+  [243] setprop 305 ............................. pFloodTimer = the milliSeconds
+  [246] jmp [383]
+  [249] getprop 306 ............................. <pFloodEnterCount>
+  [252] pushint8 1 .............................. <1>
+  [254] add ..................................... <pFloodEnterCount + 1>
+  [255] setprop 306 ............................. pFloodEnterCount = pFloodEnterCount + 1
+  [258] pushint8 2 .............................. <2>
+  [260] setlocal 2 .............................. tFloodCountLimit = 2
+  [262] pushint16 3000 .......................... <3000>
+  [265] setlocal 3 .............................. tFloodTimerLimit = 3000
+  [267] pushint16 30000 ......................... <30000>
+  [270] setlocal 4 .............................. tFloodTimeout = 30000
+  [272] pushcons 36 ............................. <"client.flood.timeout">
+  [274] setlocal 5 .............................. tExternalFloodTimeout = "client.flood.timeout"
+  [276] getlocal 5 .............................. <tExternalFloodTimeout>
+  [278] pusharglist 1 ........................... <tExternalFloodTimeout>
+  [280] extcall 236 ............................. <variableExists(tExternalFloodTimeout)>
+  [282] jmpifz [305] ............................ if variableExists(tExternalFloodTimeout) then
+  [285] getlocal 5 .............................. <tExternalFloodTimeout>
+  [287] pusharglist 1 ........................... <tExternalFloodTimeout>
+  [289] extcall 159 ............................. <getVariable(tExternalFloodTimeout)>
+  [291] getlocal 4 .............................. <tFloodTimeout>
+  [293] gt ...................................... <getVariable(tExternalFloodTimeout) > tFloodTimeout>
+  [294] jmpifz [305] ............................ if getVariable(tExternalFloodTimeout) > tFloodTimeout then
+  [297] getlocal 5 .............................. <tExternalFloodTimeout>
+  [299] pusharglist 1 ........................... <tExternalFloodTimeout>
+  [301] extcall 159 ............................. <getVariable(tExternalFloodTimeout)>
+  [303] setlocal 4 .............................. tFloodTimeout = getVariable(tExternalFloodTimeout)
+  [305] getprop 306 ............................. <pFloodEnterCount>
+  [308] getlocal 2 .............................. <tFloodCountLimit>
+  [310] gt ...................................... <pFloodEnterCount > tFloodCountLimit>
+  [311] jmpifz [383] ............................ if pFloodEnterCount > tFloodCountLimit then
+  [314] getmovieprop 149 ........................ <the milliSeconds>
+  [316] getprop 305 ............................. <pFloodTimer>
+  [319] getlocal 3 .............................. <tFloodTimerLimit>
+  [321] add ..................................... <pFloodTimer + tFloodTimerLimit>
+  [322] lt ...................................... <the milliSeconds < (pFloodTimer + tFloodTimerLimit)>
+  [323] jmpifz [376] ............................ if the milliSeconds < (pFloodTimer + tFloodTimerLimit) then / else
+  [326] getlocal 0 .............................. <tChatField>
+  [328] pushcons 33 ............................. <EMPTY>
+  [330] pusharglistnoret 2 ...................... <tChatField, EMPTY>
+  [332] objcall 205 ............................. tChatField.setText(EMPTY)
+  [334] pushcons 37 ............................. <"FloodBlocking">
+  [336] pushcons 38 ............................. <"Flood Blocking Class">
+  [338] pusharglistnoret 2 ...................... <"FloodBlocking", "Flood Blocking Class">
+  [340] extcall 21 .............................. createObject("FloodBlocking", "Flood Blocking Class")
+  [342] pushcons 37 ............................. <"FloodBlocking">
+  [344] pusharglist 1 ........................... <"FloodBlocking">
+  [346] extcall 49 .............................. <getObject("FloodBlocking")>
+  [348] getprop 302 ............................. <pBottomBarId>
+  [351] getparam 2 .............................. <tSprID>
+  [353] getlocal 4 .............................. <tFloodTimeout>
+  [355] pusharglistnoret 4 ...................... <getObject("FloodBlocking"), pBottomBarId, tSprID, tFloodTimeout>
+  [357] objcall 375 ............................. getObject("FloodBlocking").Init(pBottomBarId, tSprID, tFloodTimeout)
+  [360] pushint8 1 .............................. <1>
+  [362] setprop 303 ............................. pFloodblocking = 1
+  [365] getmovieprop 149 ........................ <the milliSeconds>
+  [367] getlocal 4 .............................. <tFloodTimeout>
+  [369] add ..................................... <the milliSeconds + tFloodTimeout>
+  [370] setprop 305 ............................. pFloodTimer = the milliSeconds + tFloodTimeout
+  [373] jmp [383]
+  [376] pusharglist 0 ........................... <>
+  [378] extcall 26 .............................. <VOID>
+  [380] setprop 306 ............................. pFloodEnterCount = VOID
+  [383] pushsymb 71 ............................. <#room>
+  [385] pusharglist 1 ........................... <#room>
+  [387] extcall 70 .............................. <getThread(#room)>
+  [389] pusharglist 1 ........................... <getThread(#room)>
+  [391] objcall 72 .............................. <getThread(#room).getComponent()>
+  [393] getlocal 0 .............................. <tChatField>
+  [395] pusharglist 1 ........................... <tChatField>
+  [397] objcall 204 ............................. <tChatField.getText()>
+  [399] pusharglistnoret 2 ...................... <getThread(#room).getComponent(), tChatField.getText()>
+  [401] objcall 376 ............................. getThread(#room).getComponent().sendChat(tChatField.getText())
+  [404] pushsymb 377 ............................ <#NUH_close>
+  [407] pushcons 39 ............................. <"chat">
+  [409] pusharglistnoret 2 ...................... <#NUH_close, "chat">
+  [411] extcall 217 ............................. executeMessage(#NUH_close, "chat")
+  [413] getprop 314 ............................. <pTypingTimeoutName>
+  [416] pusharglist 1 ........................... <pTypingTimeoutName>
+  [418] extcall 320 ............................. <timeoutExists(pTypingTimeoutName)>
+  [421] jmpifz [432] ............................ if timeoutExists(pTypingTimeoutName) then
+  [424] getprop 314 ............................. <pTypingTimeoutName>
+  [427] pusharglistnoret 1 ...................... <pTypingTimeoutName>
+  [429] extcall 321 ............................. removeTimeout(pTypingTimeoutName)
+  [432] getlocal 0 .............................. <tChatField>
+  [434] pushcons 33 ............................. <EMPTY>
+  [436] pusharglistnoret 2 ...................... <tChatField, EMPTY>
+  [438] objcall 205 ............................. tChatField.setText(EMPTY)
+  [440] pop 1
+  [442] pushint8 1 .............................. <1>
+  [444] pusharglistnoret 1 ...................... <1>
+  [446] extcall 52 .............................. return 1
+  [448] jmp [545]
+  [451] peek 0
+  [453] pushint8 51 ............................. <51>
+  [455] eq
+  [456] jmpifz [484] ............................ (case) 51:
+  [459] getlocal 0 .............................. <tChatField>
+  [461] pusharglist 1 ........................... <tChatField>
+  [463] objcall 204 ............................. <tChatField.getText()>
+  [465] getobjprop 198 .......................... <tChatField.getText().length>
+  [467] pushint8 1 .............................. <1>
+  [469] eq ...................................... <tChatField.getText().length = 1>
+  [470] jmpifz [481] ............................ if tChatField.getText().length = 1 then
+  [473] getparam 0 .............................. <me>
+  [475] pushzero ................................ <0>
+  [476] pusharglistnoret 2 ...................... <me, 0>
+  [478] objcall 296 ............................. me.setTypingState(0)
+  [481] jmp [545]
+  [484] peek 0
+  [486] pushint8 117 ............................ <117>
+  [488] eq
+  [489] jmpifz [523] ............................ (case) 117:
+  [492] getlocal 0 .............................. <tChatField>
+  [494] pusharglist 1 ........................... <tChatField>
+  [496] objcall 204 ............................. <tChatField.getText()>
+  [498] pushcons 33 ............................. <EMPTY>
+  [500] nteq .................................... <tChatField.getText() <> EMPTY>
+  [501] jmpifz [512] ............................ if tChatField.getText() <> EMPTY then
+  [504] getparam 0 .............................. <me>
+  [506] pushzero ................................ <0>
+  [507] pusharglistnoret 2 ...................... <me, 0>
+  [509] objcall 296 ............................. me.setTypingState(0)
+  [512] getlocal 0 .............................. <tChatField>
+  [514] pushcons 33 ............................. <EMPTY>
+  [516] pusharglistnoret 2 ...................... <tChatField, EMPTY>
+  [518] objcall 205 ............................. tChatField.setText(EMPTY)
+  [520] jmp [545] ............................... (case) otherwise:
+  [523] getlocal 0 .............................. <tChatField>
+  [525] pusharglist 1 ........................... <tChatField>
+  [527] objcall 204 ............................. <tChatField.getText()>
+  [529] getobjprop 198 .......................... <tChatField.getText().length>
+  [531] pushzero ................................ <0>
+  [532] eq ...................................... <tChatField.getText().length = 0>
+  [533] jmpifz [545] ............................ if tChatField.getText().length = 0 then
+  [536] getparam 0 .............................. <me>
+  [538] pushint8 1 .............................. <1>
+  [540] pusharglistnoret 2 ...................... <me, 1>
+  [542] objcall 296 ............................. me.setTypingState(1)
+  [545] pop 1 ................................... end case
+  [547] pushzero ................................ <0>
+  [548] pusharglistnoret 1 ...................... <0>
+  [550] extcall 52 .............................. return 0
+  [552] getprop 302 ............................. <pBottomBarId>
+  [555] pusharglist 1 ........................... <pBottomBarId>
+  [557] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [559] getparam 2 .............................. <tSprID>
+  [561] pusharglist 2 ........................... <getWindow(pBottomBarId), tSprID>
+  [563] objcall 95 .............................. <getWindow(pBottomBarId).getElement(tSprID)>
+  [565] pushsymb 378 ............................ <#blend>
+  [568] pusharglist 2 ........................... <getWindow(pBottomBarId).getElement(tSprID), #blend>
+  [570] objcall 63 .............................. <getWindow(pBottomBarId).getElement(tSprID).getProperty(#blend)>
+  [572] pushint8 100 ............................ <100>
+  [574] eq ...................................... <getWindow(pBottomBarId).getElement(tSprID).getProperty(#blend) = 100>
+  [575] jmpifz [1599] ........................... if getWindow(pBottomBarId).getElement(tSprID).getProperty(#blend) = 100 then
+  [578] getparam 2 .............................. <tSprID>
+  [580] peek 0 .................................. case tSprID of
+  [582] pushcons 40 ............................. <"int_help_image">
+  [584] eq
+  [585] jmpifz [656] ............................ (case) "int_help_image":
+  [588] getparam 1 .............................. <tEvent>
+  [590] pushsymb 119 ............................ <#mouseUp>
+  [592] eq ...................................... <tEvent = #mouseUp>
+  [593] jmpifz [606] ............................ if tEvent = #mouseUp then
+  [596] pushsymb 379 ............................ <#openGeneralDialog>
+  [599] pushsymb 380 ............................ <#help>
+  [602] pusharglistnoret 2 ...................... <#openGeneralDialog, #help>
+  [604] extcall 217 ............................. executeMessage(#openGeneralDialog, #help)
+  [606] getparam 1 .............................. <tEvent>
+  [608] pushsymb 121 ............................ <#mouseEnter>
+  [610] eq ...................................... <tEvent = #mouseEnter>
+  [611] jmpifz [636] ............................ if tEvent = #mouseEnter then / else
+  [614] pushcons 41 ............................. <"interface_icon_help">
+  [616] pushcons 41 ............................. <"interface_icon_help">
+  [618] pusharglist 2 ........................... <"interface_icon_help", "interface_icon_help">
+  [620] extcall 204 ............................. <getText("interface_icon_help", "interface_icon_help")>
+  [622] setlocal 6 .............................. tInfo = getText("interface_icon_help", "interface_icon_help")
+  [624] getparam 0 .............................. <me>
+  [626] getlocal 6 .............................. <tInfo>
+  [628] pusharglistnoret 2 ...................... <me, tInfo>
+  [630] objcall 276 ............................. me.setRollOverInfo(tInfo)
+  [633] jmp [653]
+  [636] getparam 1 .............................. <tEvent>
+  [638] pushsymb 123 ............................ <#mouseLeave>
+  [640] eq ...................................... <tEvent = #mouseLeave>
+  [641] jmpifz [653] ............................ if tEvent = #mouseLeave then
+  [644] getparam 0 .............................. <me>
+  [646] pushcons 33 ............................. <EMPTY>
+  [648] pusharglistnoret 2 ...................... <me, EMPTY>
+  [650] objcall 276 ............................. me.setRollOverInfo(EMPTY)
+  [653] jmp [1597]
+  [656] peek 0
+  [658] pushcons 42 ............................. <"int_hand_image">
+  [660] eq
+  [661] jmpifz [750] ............................ (case) "int_hand_image":
+  [664] getparam 1 .............................. <tEvent>
+  [666] pushsymb 119 ............................ <#mouseUp>
+  [668] eq ...................................... <tEvent = #mouseUp>
+  [669] jmpifz [700] ............................ if tEvent = #mouseUp then
+  [672] pushsymb 377 ............................ <#NUH_close>
+  [675] pushcons 43 ............................. <"hand">
+  [677] pusharglistnoret 2 ...................... <#NUH_close, "hand">
+  [679] extcall 217 ............................. executeMessage(#NUH_close, "hand")
+  [681] pushsymb 71 ............................. <#room>
+  [683] pusharglist 1 ........................... <#room>
+  [685] extcall 70 .............................. <getThread(#room)>
+  [687] pusharglist 1 ........................... <getThread(#room)>
+  [689] objcall 73 .............................. <getThread(#room).getInterface()>
+  [691] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [693] objcall 231 ............................. <getThread(#room).getInterface().getContainer()>
+  [695] pusharglistnoret 1 ...................... <getThread(#room).getInterface().getContainer()>
+  [697] objcall 381 ............................. getThread(#room).getInterface().getContainer().openClose()
+  [700] getparam 1 .............................. <tEvent>
+  [702] pushsymb 121 ............................ <#mouseEnter>
+  [704] eq ...................................... <tEvent = #mouseEnter>
+  [705] jmpifz [730] ............................ if tEvent = #mouseEnter then / else
+  [708] pushcons 44 ............................. <"interface_icon_hand">
+  [710] pushcons 44 ............................. <"interface_icon_hand">
+  [712] pusharglist 2 ........................... <"interface_icon_hand", "interface_icon_hand">
+  [714] extcall 204 ............................. <getText("interface_icon_hand", "interface_icon_hand")>
+  [716] setlocal 6 .............................. tInfo = getText("interface_icon_hand", "interface_icon_hand")
+  [718] getparam 0 .............................. <me>
+  [720] getlocal 6 .............................. <tInfo>
+  [722] pusharglistnoret 2 ...................... <me, tInfo>
+  [724] objcall 276 ............................. me.setRollOverInfo(tInfo)
+  [727] jmp [747]
+  [730] getparam 1 .............................. <tEvent>
+  [732] pushsymb 123 ............................ <#mouseLeave>
+  [734] eq ...................................... <tEvent = #mouseLeave>
+  [735] jmpifz [747] ............................ if tEvent = #mouseLeave then
+  [738] getparam 0 .............................. <me>
+  [740] pushcons 33 ............................. <EMPTY>
+  [742] pusharglistnoret 2 ...................... <me, EMPTY>
+  [744] objcall 276 ............................. me.setRollOverInfo(EMPTY)
+  [747] jmp [1597]
+  [750] peek 0
+  [752] pushcons 45 ............................. <"int_brochure_image">
+  [754] eq
+  [755] jmpifz [823] ............................ (case) "int_brochure_image":
+  [758] getparam 1 .............................. <tEvent>
+  [760] pushsymb 119 ............................ <#mouseUp>
+  [762] eq ...................................... <tEvent = #mouseUp>
+  [763] jmpifz [773] ............................ if tEvent = #mouseUp then
+  [766] pushsymb 382 ............................ <#show_hide_catalogue>
+  [769] pusharglistnoret 1 ...................... <#show_hide_catalogue>
+  [771] extcall 217 ............................. executeMessage(#show_hide_catalogue)
+  [773] getparam 1 .............................. <tEvent>
+  [775] pushsymb 121 ............................ <#mouseEnter>
+  [777] eq ...................................... <tEvent = #mouseEnter>
+  [778] jmpifz [803] ............................ if tEvent = #mouseEnter then / else
+  [781] pushcons 46 ............................. <"interface_icon_catalog">
+  [783] pushcons 46 ............................. <"interface_icon_catalog">
+  [785] pusharglist 2 ........................... <"interface_icon_catalog", "interface_icon_catalog">
+  [787] extcall 204 ............................. <getText("interface_icon_catalog", "interface_icon_catalog")>
+  [789] setlocal 6 .............................. tInfo = getText("interface_icon_catalog", "interface_icon_catalog")
+  [791] getparam 0 .............................. <me>
+  [793] getlocal 6 .............................. <tInfo>
+  [795] pusharglistnoret 2 ...................... <me, tInfo>
+  [797] objcall 276 ............................. me.setRollOverInfo(tInfo)
+  [800] jmp [820]
+  [803] getparam 1 .............................. <tEvent>
+  [805] pushsymb 123 ............................ <#mouseLeave>
+  [807] eq ...................................... <tEvent = #mouseLeave>
+  [808] jmpifz [820] ............................ if tEvent = #mouseLeave then
+  [811] getparam 0 .............................. <me>
+  [813] pushcons 33 ............................. <EMPTY>
+  [815] pusharglistnoret 2 ...................... <me, EMPTY>
+  [817] objcall 276 ............................. me.setRollOverInfo(EMPTY)
+  [820] jmp [1597]
+  [823] peek 0
+  [825] pushcons 47 ............................. <"int_purse_image">
+  [827] eq
+  [828] jmpifz [899] ............................ (case) "int_purse_image":
+  [831] getparam 1 .............................. <tEvent>
+  [833] pushsymb 119 ............................ <#mouseUp>
+  [835] eq ...................................... <tEvent = #mouseUp>
+  [836] jmpifz [849] ............................ if tEvent = #mouseUp then
+  [839] pushsymb 379 ............................ <#openGeneralDialog>
+  [842] pushsymb 383 ............................ <#purse>
+  [845] pusharglistnoret 2 ...................... <#openGeneralDialog, #purse>
+  [847] extcall 217 ............................. executeMessage(#openGeneralDialog, #purse)
+  [849] getparam 1 .............................. <tEvent>
+  [851] pushsymb 121 ............................ <#mouseEnter>
+  [853] eq ...................................... <tEvent = #mouseEnter>
+  [854] jmpifz [879] ............................ if tEvent = #mouseEnter then / else
+  [857] pushcons 48 ............................. <"interface_icon_purse">
+  [859] pushcons 48 ............................. <"interface_icon_purse">
+  [861] pusharglist 2 ........................... <"interface_icon_purse", "interface_icon_purse">
+  [863] extcall 204 ............................. <getText("interface_icon_purse", "interface_icon_purse")>
+  [865] setlocal 6 .............................. tInfo = getText("interface_icon_purse", "interface_icon_purse")
+  [867] getparam 0 .............................. <me>
+  [869] getlocal 6 .............................. <tInfo>
+  [871] pusharglistnoret 2 ...................... <me, tInfo>
+  [873] objcall 276 ............................. me.setRollOverInfo(tInfo)
+  [876] jmp [896]
+  [879] getparam 1 .............................. <tEvent>
+  [881] pushsymb 123 ............................ <#mouseLeave>
+  [883] eq ...................................... <tEvent = #mouseLeave>
+  [884] jmpifz [896] ............................ if tEvent = #mouseLeave then
+  [887] getparam 0 .............................. <me>
+  [889] pushcons 33 ............................. <EMPTY>
+  [891] pusharglistnoret 2 ...................... <me, EMPTY>
+  [893] objcall 276 ............................. me.setRollOverInfo(EMPTY)
+  [896] jmp [1597]
+  [899] peek 0
+  [901] pushcons 49 ............................. <"int_controller_image">
+  [903] eq
+  [904] jmpifz [979] ............................ (case) "int_controller_image":
+  [907] getparam 1 .............................. <tEvent>
+  [909] pushsymb 119 ............................ <#mouseUp>
+  [911] eq ...................................... <tEvent = #mouseUp>
+  [912] jmpifz [931] ............................ if tEvent = #mouseUp then
+  [915] pushsymb 377 ............................ <#NUH_close>
+  [918] pushcons 50 ............................. <"games">
+  [920] pusharglistnoret 2 ...................... <#NUH_close, "games">
+  [922] extcall 217 ............................. executeMessage(#NUH_close, "games")
+  [924] pushsymb 384 ............................ <#toggle_ig>
+  [927] pusharglistnoret 1 ...................... <#toggle_ig>
+  [929] extcall 217 ............................. executeMessage(#toggle_ig)
+  [931] getparam 1 .............................. <tEvent>
+  [933] pushsymb 121 ............................ <#mouseEnter>
+  [935] eq ...................................... <tEvent = #mouseEnter>
+  [936] jmpifz [959] ............................ if tEvent = #mouseEnter then / else
+  [939] pushcons 51 ............................. <"interface_icon_ig">
+  [941] pusharglist 1 ........................... <"interface_icon_ig">
+  [943] extcall 204 ............................. <getText("interface_icon_ig")>
+  [945] setlocal 6 .............................. tInfo = getText("interface_icon_ig")
+  [947] getparam 0 .............................. <me>
+  [949] getlocal 6 .............................. <tInfo>
+  [951] pusharglistnoret 2 ...................... <me, tInfo>
+  [953] objcall 276 ............................. me.setRollOverInfo(tInfo)
+  [956] jmp [976]
+  [959] getparam 1 .............................. <tEvent>
+  [961] pushsymb 123 ............................ <#mouseLeave>
+  [963] eq ...................................... <tEvent = #mouseLeave>
+  [964] jmpifz [976] ............................ if tEvent = #mouseLeave then
+  [967] getparam 0 .............................. <me>
+  [969] pushcons 33 ............................. <EMPTY>
+  [971] pusharglistnoret 2 ...................... <me, EMPTY>
+  [973] objcall 276 ............................. me.setRollOverInfo(EMPTY)
+  [976] jmp [1597]
+  [979] peek 0
+  [981] pushcons 6 .............................. <"int_event_image">
+  [983] eq
+  [984] jmpifz [1073] ........................... (case) "int_event_image":
+  [987] getparam 1 .............................. <tEvent>
+  [989] pushsymb 119 ............................ <#mouseUp>
+  [991] eq ...................................... <tEvent = #mouseUp>
+  [992] jmpifz [1025] ........................... if tEvent = #mouseUp then
+  [995] pushsymb 377 ............................ <#NUH_close>
+  [998] pushcons 52 ............................. <"events">
+  [1000] pusharglistnoret 2 ..................... <#NUH_close, "events">
+  [1002] extcall 217 ............................ executeMessage(#NUH_close, "events")
+  [1004] getprop 315 ............................ <pDisableRoomevents>
+  [1007] jmpifz [1018] .......................... if pDisableRoomevents then
+  [1010] pop 1
+  [1012] pushint8 1 ............................. <1>
+  [1014] pusharglistnoret 1 ..................... <1>
+  [1016] extcall 52 ............................. return 1
+  [1018] pushsymb 385 ........................... <#show_hide_roomevents>
+  [1021] pusharglistnoret 1 ..................... <#show_hide_roomevents>
+  [1023] extcall 217 ............................ executeMessage(#show_hide_roomevents)
+  [1025] getparam 1 ............................. <tEvent>
+  [1027] pushsymb 121 ........................... <#mouseEnter>
+  [1029] eq ..................................... <tEvent = #mouseEnter>
+  [1030] jmpifz [1053] .......................... if tEvent = #mouseEnter then / else
+  [1033] pushcons 53 ............................ <"interface_icon_events">
+  [1035] pusharglist 1 .......................... <"interface_icon_events">
+  [1037] extcall 204 ............................ <getText("interface_icon_events")>
+  [1039] setlocal 6 ............................. tInfo = getText("interface_icon_events")
+  [1041] getparam 0 ............................. <me>
+  [1043] getlocal 6 ............................. <tInfo>
+  [1045] pusharglistnoret 2 ..................... <me, tInfo>
+  [1047] objcall 276 ............................ me.setRollOverInfo(tInfo)
+  [1050] jmp [1070]
+  [1053] getparam 1 ............................. <tEvent>
+  [1055] pushsymb 123 ........................... <#mouseLeave>
+  [1057] eq ..................................... <tEvent = #mouseLeave>
+  [1058] jmpifz [1070] .......................... if tEvent = #mouseLeave then
+  [1061] getparam 0 ............................. <me>
+  [1063] pushcons 33 ............................ <EMPTY>
+  [1065] pusharglistnoret 2 ..................... <me, EMPTY>
+  [1067] objcall 276 ............................ me.setRollOverInfo(EMPTY)
+  [1070] jmp [1597]
+  [1073] peek 0
+  [1075] pushcons 54 ............................ <"int_nav_image">
+  [1077] eq
+  [1078] jmpifz [1146] .......................... (case) "int_nav_image":
+  [1081] getparam 1 ............................. <tEvent>
+  [1083] pushsymb 119 ........................... <#mouseUp>
+  [1085] eq ..................................... <tEvent = #mouseUp>
+  [1086] jmpifz [1096] .......................... if tEvent = #mouseUp then
+  [1089] pushsymb 386 ........................... <#show_hide_navigator>
+  [1092] pusharglistnoret 1 ..................... <#show_hide_navigator>
+  [1094] extcall 217 ............................ executeMessage(#show_hide_navigator)
+  [1096] getparam 1 ............................. <tEvent>
+  [1098] pushsymb 121 ........................... <#mouseEnter>
+  [1100] eq ..................................... <tEvent = #mouseEnter>
+  [1101] jmpifz [1126] .......................... if tEvent = #mouseEnter then / else
+  [1104] pushcons 55 ............................ <"interface_icon_navigator">
+  [1106] pushcons 55 ............................ <"interface_icon_navigator">
+  [1108] pusharglist 2 .......................... <"interface_icon_navigator", "interface_icon_navigator">
+  [1110] extcall 204 ............................ <getText("interface_icon_navigator", "interface_icon_navigator")>
+  [1112] setlocal 6 ............................. tInfo = getText("interface_icon_navigator", "interface_icon_navigator")
+  [1114] getparam 0 ............................. <me>
+  [1116] getlocal 6 ............................. <tInfo>
+  [1118] pusharglistnoret 2 ..................... <me, tInfo>
+  [1120] objcall 276 ............................ me.setRollOverInfo(tInfo)
+  [1123] jmp [1143]
+  [1126] getparam 1 ............................. <tEvent>
+  [1128] pushsymb 123 ........................... <#mouseLeave>
+  [1130] eq ..................................... <tEvent = #mouseLeave>
+  [1131] jmpifz [1143] .......................... if tEvent = #mouseLeave then
+  [1134] getparam 0 ............................. <me>
+  [1136] pushcons 33 ............................ <EMPTY>
+  [1138] pusharglistnoret 2 ..................... <me, EMPTY>
+  [1140] objcall 276 ............................ me.setRollOverInfo(EMPTY)
+  [1143] jmp [1597]
+  [1146] peek 0
+  [1148] pushcons 56 ............................ <"get_credit_text">
+  [1150] eq
+  [1151] jmpifz [1175] .......................... (case) "get_credit_text":
+  [1154] getparam 1 ............................. <tEvent>
+  [1156] pushsymb 119 ........................... <#mouseUp>
+  [1158] eq ..................................... <tEvent = #mouseUp>
+  [1159] jmpifz [1172] .......................... if tEvent = #mouseUp then
+  [1162] pushsymb 379 ........................... <#openGeneralDialog>
+  [1165] pushsymb 383 ........................... <#purse>
+  [1168] pusharglistnoret 2 ..................... <#openGeneralDialog, #purse>
+  [1170] extcall 217 ............................ executeMessage(#openGeneralDialog, #purse)
+  [1172] jmp [1597]
+  [1175] peek 0
+  [1177] pushcons 10 ............................ <"int_speechmode_dropmenu">
+  [1179] eq
+  [1180] jmpifz [1211] .......................... (case) "int_speechmode_dropmenu":
+  [1183] getparam 1 ............................. <tEvent>
+  [1185] pushsymb 119 ........................... <#mouseUp>
+  [1187] eq ..................................... <tEvent = #mouseUp>
+  [1188] jmpifz [1208] .......................... if tEvent = #mouseUp then
+  [1191] pushsymb 71 ............................ <#room>
+  [1193] pusharglist 1 .......................... <#room>
+  [1195] extcall 70 ............................. <getThread(#room)>
+  [1197] pusharglist 1 .......................... <getThread(#room)>
+  [1199] objcall 72 ............................. <getThread(#room).getComponent()>
+  [1201] getparam 3 ............................. <tParam>
+  [1203] pusharglistnoret 2 ..................... <getThread(#room).getComponent(), tParam>
+  [1205] objcall 387 ............................ getThread(#room).getComponent().setChatMode(tParam)
+  [1208] jmp [1597]
+  [1211] peek 0
+  [1213] pushcons 57 ............................ <"int_tv_close">
+  [1215] eq
+  [1216] jmpifz [1291] .......................... (case) "int_tv_close":
+  [1219] getparam 1 ............................. <tEvent>
+  [1221] pushsymb 119 ........................... <#mouseUp>
+  [1223] eq ..................................... <tEvent = #mouseUp>
+  [1224] jmpifz [1243] .......................... if tEvent = #mouseUp then
+  [1227] pushsymb 71 ............................ <#room>
+  [1229] pusharglist 1 .......................... <#room>
+  [1231] extcall 70 ............................. <getThread(#room)>
+  [1233] pusharglist 1 .......................... <getThread(#room)>
+  [1235] objcall 72 ............................. <getThread(#room).getComponent()>
+  [1237] pushzero ............................... <0>
+  [1238] pusharglistnoret 2 ..................... <getThread(#room).getComponent(), 0>
+  [1240] objcall 388 ............................ getThread(#room).getComponent().setSpectatorMode(0)
+  [1243] getparam 1 ............................. <tEvent>
+  [1245] pushsymb 121 ........................... <#mouseEnter>
+  [1247] eq ..................................... <tEvent = #mouseEnter>
+  [1248] jmpifz [1271] .......................... if tEvent = #mouseEnter then / else
+  [1251] pushcons 58 ............................ <"interface_icon_tv_close">
+  [1253] pusharglist 1 .......................... <"interface_icon_tv_close">
+  [1255] extcall 204 ............................ <getText("interface_icon_tv_close")>
+  [1257] setlocal 6 ............................. tInfo = getText("interface_icon_tv_close")
+  [1259] getparam 0 ............................. <me>
+  [1261] getlocal 6 ............................. <tInfo>
+  [1263] pusharglistnoret 2 ..................... <me, tInfo>
+  [1265] objcall 276 ............................ me.setRollOverInfo(tInfo)
+  [1268] jmp [1288]
+  [1271] getparam 1 ............................. <tEvent>
+  [1273] pushsymb 123 ........................... <#mouseLeave>
+  [1275] eq ..................................... <tEvent = #mouseLeave>
+  [1276] jmpifz [1288] .......................... if tEvent = #mouseLeave then
+  [1279] getparam 0 ............................. <me>
+  [1281] pushcons 33 ............................ <EMPTY>
+  [1283] pusharglistnoret 2 ..................... <me, EMPTY>
+  [1285] objcall 276 ............................ me.setRollOverInfo(EMPTY)
+  [1288] jmp [1597]
+  [1291] peek 0
+  [1293] pushcons 17 ............................ <"int_sound_image">
+  [1295] nteq
+  [1296] jmpifz [1307] .......................... (case) "int_sound_image", ...
+  [1299] peek 0
+  [1301] pushcons 59 ............................ <"int_sound_bg_image">
+  [1303] eq
+  [1304] jmpifz [1413] .......................... (case) ..., "int_sound_bg_image":
+  [1307] getparam 1 ............................. <tEvent>
+  [1309] pushsymb 119 ........................... <#mouseUp>
+  [1311] eq ..................................... <tEvent = #mouseUp>
+  [1312] jmpifz [1363] .......................... if tEvent = #mouseUp then
+  [1315] pusharglist 0 .......................... <>
+  [1317] extcall 351 ............................ <getSoundState()>
+  [1320] not .................................... <not getSoundState()>
+  [1321] pusharglistnoret 1 ..................... <not getSoundState()>
+  [1323] extcall 389 ............................ setSoundState(not getSoundState())
+  [1326] pushsymb 71 ............................ <#room>
+  [1328] pusharglist 1 .......................... <#room>
+  [1330] extcall 70 ............................. <getThread(#room)>
+  [1332] pusharglist 1 .......................... <getThread(#room)>
+  [1334] objcall 72 ............................. <getThread(#room).getComponent()>
+  [1336] pusharglist 1 .......................... <getThread(#room).getComponent()>
+  [1338] objcall 220 ............................ <getThread(#room).getComponent().getRoomConnection()>
+  [1340] pushcons 60 ............................ <"SET_SOUND_SETTING">
+  [1342] pushsymb 76 ............................ <#integer>
+  [1344] pusharglist 0 .......................... <>
+  [1346] extcall 351 ............................ <getSoundState()>
+  [1349] pusharglist 2 .......................... <[#integer: getSoundState()]>
+  [1351] pushproplist ........................... <[#integer: getSoundState()]>
+  [1352] pusharglistnoret 3 ..................... <getThread(#room).getComponent().getRoomConnection(), "SET_SOUND_SETTING", [#integer: getSoundState()]>
+  [1354] objcall 155 ............................ getThread(#room).getComponent().getRoomConnection().send("SET_SOUND_SETTING", [#integer: getSoundState()])
+  [1356] getparam 0 ............................. <me>
+  [1358] pusharglistnoret 1 ..................... <me>
+  [1360] objcall 295 ............................ me.updateSoundButton()
+  [1363] getparam 1 ............................. <tEvent>
+  [1365] pushsymb 121 ........................... <#mouseEnter>
+  [1367] eq ..................................... <tEvent = #mouseEnter>
+  [1368] jmpifz [1393] .......................... if tEvent = #mouseEnter then / else
+  [1371] pushcons 61 ............................ <"interface_icon_sound">
+  [1373] pushcons 61 ............................ <"interface_icon_sound">
+  [1375] pusharglist 2 .......................... <"interface_icon_sound", "interface_icon_sound">
+  [1377] extcall 204 ............................ <getText("interface_icon_sound", "interface_icon_sound")>
+  [1379] setlocal 6 ............................. tInfo = getText("interface_icon_sound", "interface_icon_sound")
+  [1381] getparam 0 ............................. <me>
+  [1383] getlocal 6 ............................. <tInfo>
+  [1385] pusharglistnoret 2 ..................... <me, tInfo>
+  [1387] objcall 276 ............................ me.setRollOverInfo(tInfo)
+  [1390] jmp [1410]
+  [1393] getparam 1 ............................. <tEvent>
+  [1395] pushsymb 123 ........................... <#mouseLeave>
+  [1397] eq ..................................... <tEvent = #mouseLeave>
+  [1398] jmpifz [1410] .......................... if tEvent = #mouseLeave then
+  [1401] getparam 0 ............................. <me>
+  [1403] pushcons 33 ............................ <EMPTY>
+  [1405] pusharglistnoret 2 ..................... <me, EMPTY>
+  [1407] objcall 276 ............................ me.setRollOverInfo(EMPTY)
+  [1410] jmp [1597]
+  [1413] peek 0
+  [1415] pushcons 24 ............................ <"int_drop_vote">
+  [1417] eq
+  [1418] jmpifz [1437] .......................... (case) "int_drop_vote":
+  [1421] getparam 0 ............................. <me>
+  [1423] getparam 1 ............................. <tEvent>
+  [1425] getparam 2 ............................. <tSprID>
+  [1427] getparam 3 ............................. <tParam>
+  [1429] pusharglistnoret 4 ..................... <me, tEvent, tSprID, tParam>
+  [1431] objcall 301 ............................ me.eventProcVote(tEvent, tSprID, tParam)
+  [1434] jmp [1597]
+  [1437] peek 0
+  [1439] pushcons 16 ............................ <"im_icon">
+  [1441] eq
+  [1442] jmpifz [1517] .......................... (case) "im_icon":
+  [1445] getparam 1 ............................. <tEvent>
+  [1447] peek 0 ................................. case tEvent of
+  [1449] pushsymb 119 ........................... <#mouseUp>
+  [1451] eq
+  [1452] jmpifz [1471] .......................... (case) #mouseUp:
+  [1455] pop 2
+  [1457] pushsymb 390 ........................... <#toggle_im>
+  [1460] pusharglist 1 .......................... <#toggle_im>
+  [1462] extcall 217 ............................ <executeMessage(#toggle_im)>
+  [1464] pusharglistnoret 1 ..................... <executeMessage(#toggle_im)>
+  [1466] extcall 52 ............................. return executeMessage(#toggle_im)
+  [1468] jmp [1512]
+  [1471] peek 0
+  [1473] pushsymb 121 ........................... <#mouseEnter>
+  [1475] eq
+  [1476] jmpifz [1495] .......................... (case) #mouseEnter:
+  [1479] getparam 0 ............................. <me>
+  [1481] pushcons 62 ............................ <"im_tooltip">
+  [1483] pusharglist 1 .......................... <"im_tooltip">
+  [1485] extcall 204 ............................ <getText("im_tooltip")>
+  [1487] pusharglistnoret 2 ..................... <me, getText("im_tooltip")>
+  [1489] objcall 276 ............................ me.setRollOverInfo(getText("im_tooltip"))
+  [1492] jmp [1512]
+  [1495] peek 0
+  [1497] pushsymb 123 ........................... <#mouseLeave>
+  [1499] eq
+  [1500] jmpifz [1512] .......................... (case) #mouseLeave:
+  [1503] getparam 0 ............................. <me>
+  [1505] pushcons 33 ............................ <EMPTY>
+  [1507] pusharglistnoret 2 ..................... <me, EMPTY>
+  [1509] objcall 276 ............................ me.setRollOverInfo(EMPTY)
+  [1512] pop 1 .................................. end case
+  [1514] jmp [1597]
+  [1517] peek 0
+  [1519] pushcons 12 ............................ <"friend_list_icon">
+  [1521] eq
+  [1522] jmpifz [1597] .......................... (case) "friend_list_icon":
+  [1525] getparam 1 ............................. <tEvent>
+  [1527] pushsymb 119 ........................... <#mouseUp>
+  [1529] eq ..................................... <tEvent = #mouseUp>
+  [1530] jmpifz [1552] .......................... if tEvent = #mouseUp then / else
+  [1533] pushsymb 391 ........................... <#toggle_friend_list>
+  [1536] pusharglistnoret 1 ..................... <#toggle_friend_list>
+  [1538] extcall 217 ............................ executeMessage(#toggle_friend_list)
+  [1540] pushsymb 377 ........................... <#NUH_close>
+  [1543] pushcons 63 ............................ <"friends">
+  [1545] pusharglistnoret 2 ..................... <#NUH_close, "friends">
+  [1547] extcall 217 ............................ executeMessage(#NUH_close, "friends")
+  [1549] jmp [1597]
+  [1552] getparam 1 ............................. <tEvent>
+  [1554] pushsymb 121 ........................... <#mouseEnter>
+  [1556] eq ..................................... <tEvent = #mouseEnter>
+  [1557] jmpifz [1580] .......................... if tEvent = #mouseEnter then / else
+  [1560] pushcons 64 ............................ <"friend_list_title">
+  [1562] pusharglist 1 .......................... <"friend_list_title">
+  [1564] extcall 204 ............................ <getText("friend_list_title")>
+  [1566] setlocal 6 ............................. tInfo = getText("friend_list_title")
+  [1568] getparam 0 ............................. <me>
+  [1570] getlocal 6 ............................. <tInfo>
+  [1572] pusharglistnoret 2 ..................... <me, tInfo>
+  [1574] objcall 276 ............................ me.setRollOverInfo(tInfo)
+  [1577] jmp [1597]
+  [1580] getparam 1 ............................. <tEvent>
+  [1582] pushsymb 123 ........................... <#mouseLeave>
+  [1584] eq ..................................... <tEvent = #mouseLeave>
+  [1585] jmpifz [1597] .......................... if tEvent = #mouseLeave then
+  [1588] getparam 0 ............................. <me>
+  [1590] pushcons 33 ............................ <EMPTY>
+  [1592] pusharglistnoret 2 ..................... <me, EMPTY>
+  [1594] objcall 276 ............................ me.setRollOverInfo(EMPTY)
+  [1597] pop 1 .................................. end case
+  [1599] getparam 1 ............................. <tEvent>
+  [1601] pushsymb 121 ........................... <#mouseEnter>
+  [1603] eq ..................................... <tEvent = #mouseEnter>
+  [1604] getparam 1 ............................. <tEvent>
+  [1606] pushsymb 123 ........................... <#mouseLeave>
+  [1608] eq ..................................... <tEvent = #mouseLeave>
+  [1609] or ..................................... <(tEvent = #mouseEnter) or (tEvent = #mouseLeave)>
+  [1610] jmpifz [1655] .......................... if (tEvent = #mouseEnter) or (tEvent = #mouseLeave) then
+  [1613] getprop 312 ............................ <pPopupControllerID>
+  [1616] pusharglist 1 .......................... <pPopupControllerID>
+  [1618] extcall 145 ............................ <objectExists(pPopupControllerID)>
+  [1620] not .................................... <not objectExists(pPopupControllerID)>
+  [1621] jmpifz [1633] .......................... if not objectExists(pPopupControllerID) then
+  [1624] getprop 312 ............................ <pPopupControllerID>
+  [1627] pushcons 65 ............................ <"Popup Controller Class">
+  [1629] pusharglistnoret 2 ..................... <pPopupControllerID, "Popup Controller Class">
+  [1631] extcall 21 ............................. createObject(pPopupControllerID, "Popup Controller Class")
+  [1633] getprop 312 ............................ <pPopupControllerID>
+  [1636] pusharglist 1 .......................... <pPopupControllerID>
+  [1638] extcall 49 ............................. <getObject(pPopupControllerID)>
+  [1640] setlocal 7 ............................. tPopupController = getObject(pPopupControllerID)
+  [1642] getlocal 7 ............................. <tPopupController>
+  [1644] getparam 1 ............................. <tEvent>
+  [1646] getparam 2 ............................. <tSprID>
+  [1648] getparam 3 ............................. <tParam>
+  [1650] pusharglistnoret 4 ..................... <tPopupController, tEvent, tSprID, tParam>
+  [1652] objcall 392 ............................ tPopupController.handleEvent(tEvent, tSprID, tParam)
+  [1655] ret
+end
+
+on eventProcVote me, tEvent, tSprID, tParam
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] pushcons 24 ............................. <"int_drop_vote">
+  [  4] eq ...................................... <tSprID = "int_drop_vote">
+  [  5] jmpifz [774] ............................ if tSprID = "int_drop_vote" then
+  [  8] getprop 302 ............................. <pBottomBarId>
+  [ 11] pusharglist 1 ........................... <pBottomBarId>
+  [ 13] extcall 61 .............................. <getWindow(pBottomBarId)>
+  [ 15] setlocal 0 .............................. tWndObj = getWindow(pBottomBarId)
+  [ 17] getparam 1 .............................. <tEvent>
+  [ 19] pushsymb 332 ............................ <#mouseDown>
+  [ 22] eq ...................................... <tEvent = #mouseDown>
+  [ 23] jmpifz [109] ............................ if tEvent = #mouseDown then / else
+  [ 26] pushcons 26 ............................. <"pelle_kyltti2">
+  [ 28] pusharglist 1 ........................... <"pelle_kyltti2">
+  [ 30] extcall 352 ............................. <getmemnum("pelle_kyltti2")>
+  [ 33] pusharglist 1 ........................... <getmemnum("pelle_kyltti2")>
+  [ 35] extcall 187 ............................. <member(getmemnum("pelle_kyltti2"))>
+  [ 37] setlocal 1 .............................. tSignMem = member(getmemnum("pelle_kyltti2"))
+  [ 39] getlocal 0 .............................. <tWndObj>
+  [ 41] pushcons 24 ............................. <"int_drop_vote">
+  [ 43] pusharglist 2 ........................... <tWndObj, "int_drop_vote">
+  [ 45] objcall 95 .............................. <tWndObj.getElement("int_drop_vote")>
+  [ 47] setlocal 2 .............................. tDropElem = tWndObj.getElement("int_drop_vote")
+  [ 49] getlocal 2 .............................. <tDropElem>
+  [ 51] pushsymb 400 ............................ <#buffer>
+  [ 54] pusharglist 2 ........................... <tDropElem, #buffer>
+  [ 56] objcall 63 .............................. <tDropElem.getProperty(#buffer)>
+  [ 58] getlocal 1 .............................. <tSignMem>
+  [ 60] getchainedprop 186 ...................... <tSignMem.image>
+  [ 62] pusharglist 1 ........................... <tSignMem.image>
+  [ 64] objcall 401 ............................. <tSignMem.image.duplicate()>
+  [ 67] setobjprop 186 .......................... tDropElem.getProperty(#buffer).image = tSignMem.image.duplicate()
+  [ 69] getlocal 2 .............................. <tDropElem>
+  [ 71] pushsymb 400 ............................ <#buffer>
+  [ 74] pusharglist 2 ........................... <tDropElem, #buffer>
+  [ 76] objcall 63 .............................. <tDropElem.getProperty(#buffer)>
+  [ 78] pushzero ................................ <0>
+  [ 79] pushint8 120 ............................ <120>
+  [ 81] pusharglist 2 ........................... <0, 120>
+  [ 83] extcall 402 ............................. <point(0, 120)>
+  [ 86] setobjprop 403 .......................... tDropElem.getProperty(#buffer).regPoint = point(0, 120)
+  [ 89] getlocal 2 .............................. <tDropElem>
+  [ 91] pushsymb 98 ............................. <#height>
+  [ 93] getlocal 1 .............................. <tSignMem>
+  [ 95] getobjprop 98 ........................... <tSignMem.height>
+  [ 97] pusharglistnoret 3 ...................... <tDropElem, #height, tSignMem.height>
+  [ 99] objcall 183 ............................. tDropElem.setProperty(#height, tSignMem.height)
+  [101] pushint8 1 .............................. <1>
+  [103] setprop 357 ............................. pSignState = 1
+  [106] jmp [774]
+  [109] getparam 1 .............................. <tEvent>
+  [111] pushsymb 119 ............................ <#mouseUp>
+  [113] eq ...................................... <tEvent = #mouseUp>
+  [114] jmpifz [269] ............................ if tEvent = #mouseUp then / else
+  [117] pushcons 25 ............................. <"pelle_kyltti1">
+  [119] pusharglist 1 ........................... <"pelle_kyltti1">
+  [121] extcall 352 ............................. <getmemnum("pelle_kyltti1")>
+  [124] pusharglist 1 ........................... <getmemnum("pelle_kyltti1")>
+  [126] extcall 187 ............................. <member(getmemnum("pelle_kyltti1"))>
+  [128] setlocal 1 .............................. tSignMem = member(getmemnum("pelle_kyltti1"))
+  [130] getlocal 0 .............................. <tWndObj>
+  [132] pushcons 24 ............................. <"int_drop_vote">
+  [134] pusharglist 2 ........................... <tWndObj, "int_drop_vote">
+  [136] objcall 95 .............................. <tWndObj.getElement("int_drop_vote")>
+  [138] setlocal 2 .............................. tDropElem = tWndObj.getElement("int_drop_vote")
+  [140] getlocal 2 .............................. <tDropElem>
+  [142] pushsymb 400 ............................ <#buffer>
+  [145] pusharglist 2 ........................... <tDropElem, #buffer>
+  [147] objcall 63 .............................. <tDropElem.getProperty(#buffer)>
+  [149] getlocal 1 .............................. <tSignMem>
+  [151] getchainedprop 186 ...................... <tSignMem.image>
+  [153] pusharglist 1 ........................... <tSignMem.image>
+  [155] objcall 401 ............................. <tSignMem.image.duplicate()>
+  [158] setobjprop 186 .......................... tDropElem.getProperty(#buffer).image = tSignMem.image.duplicate()
+  [160] getlocal 2 .............................. <tDropElem>
+  [162] pushsymb 400 ............................ <#buffer>
+  [165] pusharglist 2 ........................... <tDropElem, #buffer>
+  [167] objcall 63 .............................. <tDropElem.getProperty(#buffer)>
+  [169] pushzero ................................ <0>
+  [170] pushzero ................................ <0>
+  [171] pusharglist 2 ........................... <0, 0>
+  [173] extcall 402 ............................. <point(0, 0)>
+  [176] setobjprop 403 .......................... tDropElem.getProperty(#buffer).regPoint = point(0, 0)
+  [179] getlocal 2 .............................. <tDropElem>
+  [181] pushsymb 98 ............................. <#height>
+  [183] getlocal 1 .............................. <tSignMem>
+  [185] getobjprop 98 ........................... <tSignMem.height>
+  [187] pusharglistnoret 3 ...................... <tDropElem, #height, tSignMem.height>
+  [189] objcall 183 ............................. tDropElem.setProperty(#height, tSignMem.height)
+  [191] getprop 357 ............................. <pSignState>
+  [194] pusharglist 1 ........................... <pSignState>
+  [196] extcall 69 .............................. <voidp(pSignState)>
+  [198] getprop 359 ............................. <pOldPosV>
+  [201] pushint8 7 .............................. <7>
+  [203] lt ...................................... <pOldPosV < 7>
+  [204] or ...................................... <voidp(pSignState) or (pOldPosV < 7)>
+  [205] jmpifz [259] ............................ if voidp(pSignState) or (pOldPosV < 7) then
+  [208] getprop 358 ............................. <pOldPosH>
+  [211] pushint8 7 .............................. <7>
+  [213] mul ..................................... <pOldPosH * 7>
+  [214] getprop 359 ............................. <pOldPosV>
+  [217] pushint8 1 .............................. <1>
+  [219] add ..................................... <pOldPosV + 1>
+  [220] add ..................................... <(pOldPosH * 7) + (pOldPosV + 1)>
+  [221] setlocal 3 .............................. tSignMode = (pOldPosH * 7) + (pOldPosV + 1)
+  [223] getlocal 3 .............................. <tSignMode>
+  [225] pushint8 14 ............................. <14>
+  [227] gt ...................................... <tSignMode > 14>
+  [228] jmpifz [238] ............................ if tSignMode > 14 then / else
+  [231] pushint8 14 ............................. <14>
+  [233] setlocal 3 .............................. tSignMode = 14
+  [235] jmp [250]
+  [238] getlocal 3 .............................. <tSignMode>
+  [240] pushint8 1 .............................. <1>
+  [242] lt ...................................... <tSignMode < 1>
+  [243] jmpifz [250] ............................ if tSignMode < 1 then
+  [246] pushint8 1 .............................. <1>
+  [248] setlocal 3 .............................. tSignMode = 1
+  [250] pushsymb 404 ............................ <#sendVoteSign>
+  [253] getlocal 3 .............................. <tSignMode>
+  [255] pusharglistnoret 2 ...................... <#sendVoteSign, tSignMode>
+  [257] extcall 217 ............................. executeMessage(#sendVoteSign, tSignMode)
+  [259] pusharglist 0 ........................... <>
+  [261] extcall 26 .............................. <VOID>
+  [263] setprop 357 ............................. pSignState = VOID
+  [266] jmp [774]
+  [269] getparam 1 .............................. <tEvent>
+  [271] pushsymb 333 ............................ <#mouseUpOutSide>
+  [274] eq ...................................... <tEvent = #mouseUpOutSide>
+  [275] jmpifz [362] ............................ if tEvent = #mouseUpOutSide then / else
+  [278] pushcons 25 ............................. <"pelle_kyltti1">
+  [280] pusharglist 1 ........................... <"pelle_kyltti1">
+  [282] extcall 352 ............................. <getmemnum("pelle_kyltti1")>
+  [285] pusharglist 1 ........................... <getmemnum("pelle_kyltti1")>
+  [287] extcall 187 ............................. <member(getmemnum("pelle_kyltti1"))>
+  [289] setlocal 1 .............................. tSignMem = member(getmemnum("pelle_kyltti1"))
+  [291] getlocal 0 .............................. <tWndObj>
+  [293] pushcons 24 ............................. <"int_drop_vote">
+  [295] pusharglist 2 ........................... <tWndObj, "int_drop_vote">
+  [297] objcall 95 .............................. <tWndObj.getElement("int_drop_vote")>
+  [299] setlocal 2 .............................. tDropElem = tWndObj.getElement("int_drop_vote")
+  [301] getlocal 2 .............................. <tDropElem>
+  [303] pushsymb 400 ............................ <#buffer>
+  [306] pusharglist 2 ........................... <tDropElem, #buffer>
+  [308] objcall 63 .............................. <tDropElem.getProperty(#buffer)>
+  [310] getlocal 1 .............................. <tSignMem>
+  [312] getchainedprop 186 ...................... <tSignMem.image>
+  [314] pusharglist 1 ........................... <tSignMem.image>
+  [316] objcall 401 ............................. <tSignMem.image.duplicate()>
+  [319] setobjprop 186 .......................... tDropElem.getProperty(#buffer).image = tSignMem.image.duplicate()
+  [321] getlocal 2 .............................. <tDropElem>
+  [323] pushsymb 400 ............................ <#buffer>
+  [326] pusharglist 2 ........................... <tDropElem, #buffer>
+  [328] objcall 63 .............................. <tDropElem.getProperty(#buffer)>
+  [330] pushzero ................................ <0>
+  [331] pushzero ................................ <0>
+  [332] pusharglist 2 ........................... <0, 0>
+  [334] extcall 402 ............................. <point(0, 0)>
+  [337] setobjprop 403 .......................... tDropElem.getProperty(#buffer).regPoint = point(0, 0)
+  [340] getlocal 2 .............................. <tDropElem>
+  [342] pushsymb 98 ............................. <#height>
+  [344] getlocal 1 .............................. <tSignMem>
+  [346] getobjprop 98 ........................... <tSignMem.height>
+  [348] pusharglistnoret 3 ...................... <tDropElem, #height, tSignMem.height>
+  [350] objcall 183 ............................. tDropElem.setProperty(#height, tSignMem.height)
+  [352] pusharglist 0 ........................... <>
+  [354] extcall 26 .............................. <VOID>
+  [356] setprop 357 ............................. pSignState = VOID
+  [359] jmp [774]
+  [362] getparam 1 .............................. <tEvent>
+  [364] pushsymb 122 ............................ <#mouseWithin>
+  [366] eq ...................................... <tEvent = #mouseWithin>
+  [367] jmpifz [774] ............................ if tEvent = #mouseWithin then
+  [370] getprop 357 ............................. <pSignState>
+  [373] pusharglist 1 ........................... <pSignState>
+  [375] extcall 69 .............................. <voidp(pSignState)>
+  [377] jmpifz [384] ............................ if voidp(pSignState) then
+  [380] pusharglistnoret 0 ...................... <>
+  [382] extcall 52 .............................. return 
+  [384] getprop 360 ............................. <pSignImg>
+  [387] pusharglist 1 ........................... <pSignImg>
+  [389] extcall 69 .............................. <voidp(pSignImg)>
+  [391] jmpifz [398] ............................ if voidp(pSignImg) then
+  [394] pusharglistnoret 0 ...................... <>
+  [396] extcall 52 .............................. return 
+  [398] pushint8 40 ............................. <40>
+  [400] setlocal 4 .............................. w = 40
+  [402] pushint8 17 ............................. <17>
+  [404] setlocal 5 .............................. h = 17
+  [406] pushint8 11 ............................. <11>
+  [408] setprop 357 ............................. pSignState = 11
+  [411] pushcons 26 ............................. <"pelle_kyltti2">
+  [413] pusharglist 1 ........................... <"pelle_kyltti2">
+  [415] extcall 352 ............................. <getmemnum("pelle_kyltti2")>
+  [418] pusharglist 1 ........................... <getmemnum("pelle_kyltti2")>
+  [420] extcall 187 ............................. <member(getmemnum("pelle_kyltti2"))>
+  [422] setlocal 1 .............................. tSignMem = member(getmemnum("pelle_kyltti2"))
+  [424] getlocal 0 .............................. <tWndObj>
+  [426] pushcons 24 ............................. <"int_drop_vote">
+  [428] pusharglist 2 ........................... <tWndObj, "int_drop_vote">
+  [430] objcall 95 .............................. <tWndObj.getElement("int_drop_vote")>
+  [432] setlocal 2 .............................. tDropElem = tWndObj.getElement("int_drop_vote")
+  [434] getlocal 2 .............................. <tDropElem>
+  [436] pushsymb 405 ............................ <#sprite>
+  [439] pusharglist 2 ........................... <tDropElem, #sprite>
+  [441] objcall 63 .............................. <tDropElem.getProperty(#sprite)>
+  [443] setlocal 6 .............................. tSpr = tDropElem.getProperty(#sprite)
+  [445] getprop 358 ............................. <pOldPosH>
+  [448] pusharglist 0 ........................... <>
+  [450] thebuiltin 406 .......................... <the mouseH>
+  [453] getlocal 6 .............................. <tSpr>
+  [455] getobjprop 164 .......................... <tSpr.left>
+  [457] sub ..................................... <the mouseH - tSpr.left>
+  [458] getlocal 4 .............................. <w>
+  [460] div ..................................... <(the mouseH - tSpr.left) / w>
+  [461] nteq .................................... <pOldPosH <> ((the mouseH - tSpr.left) / w)>
+  [462] getprop 359 ............................. <pOldPosV>
+  [465] pusharglist 0 ........................... <>
+  [467] thebuiltin 407 .......................... <the mouseV>
+  [470] getlocal 6 .............................. <tSpr>
+  [472] getobjprop 408 .......................... <tSpr.top>
+  [475] sub ..................................... <the mouseV - tSpr.top>
+  [476] getlocal 5 .............................. <h>
+  [478] div ..................................... <(the mouseV - tSpr.top) / h>
+  [479] nteq .................................... <pOldPosV <> ((the mouseV - tSpr.top) / h)>
+  [480] or ...................................... <(pOldPosH <> ((the mouseH - tSpr.left) / w)) or (pOldPosV <> ((the mouseV - tSpr.top) / h))>
+  [481] jmpifz [774] ............................ if (pOldPosH <> ((the mouseH - tSpr.left) / w)) or (pOldPosV <> ((the mouseV - tSpr.top) / h)) then
+  [484] pusharglist 0 ........................... <>
+  [486] thebuiltin 407 .......................... <the mouseV>
+  [489] getlocal 6 .............................. <tSpr>
+  [491] getobjprop 408 .......................... <tSpr.top>
+  [494] sub ..................................... <the mouseV - tSpr.top>
+  [495] getlocal 5 .............................. <h>
+  [497] div ..................................... <(the mouseV - tSpr.top) / h>
+  [498] pushint8 7 .............................. <7>
+  [500] lt ...................................... <((the mouseV - tSpr.top) / h) < 7>
+  [501] jmpifz [685] ............................ if ((the mouseV - tSpr.top) / h) < 7 then / else
+  [504] pusharglist 0 ........................... <>
+  [506] thebuiltin 406 .......................... <the mouseH>
+  [509] getlocal 6 .............................. <tSpr>
+  [511] getobjprop 164 .......................... <tSpr.left>
+  [513] sub ..................................... <the mouseH - tSpr.left>
+  [514] getlocal 4 .............................. <w>
+  [516] div ..................................... <(the mouseH - tSpr.left) / w>
+  [517] setprop 358 ............................. pOldPosH = (the mouseH - tSpr.left) / w
+  [520] pusharglist 0 ........................... <>
+  [522] thebuiltin 407 .......................... <the mouseV>
+  [525] getlocal 6 .............................. <tSpr>
+  [527] getobjprop 408 .......................... <tSpr.top>
+  [530] sub ..................................... <the mouseV - tSpr.top>
+  [531] getlocal 5 .............................. <h>
+  [533] div ..................................... <(the mouseV - tSpr.top) / h>
+  [534] setprop 359 ............................. pOldPosV = (the mouseV - tSpr.top) / h
+  [537] getprop 360 ............................. <pSignImg>
+  [540] getlocal 1 .............................. <tSignMem>
+  [542] getobjprop 186 .......................... <tSignMem.image>
+  [544] getprop 360 ............................. <pSignImg>
+  [547] getobjprop 201 .......................... <pSignImg.rect>
+  [549] getprop 360 ............................. <pSignImg>
+  [552] getobjprop 201 .......................... <pSignImg.rect>
+  [554] pusharglistnoret 4 ...................... <pSignImg, tSignMem.image, pSignImg.rect, pSignImg.rect>
+  [556] objcall 409 ............................. pSignImg.copyPixels(tSignMem.image, pSignImg.rect, pSignImg.rect)
+  [559] pushcons 66 ............................. <"kyltti_hiliter">
+  [561] pusharglist 1 ........................... <"kyltti_hiliter">
+  [563] extcall 352 ............................. <getmemnum("kyltti_hiliter")>
+  [566] pusharglist 1 ........................... <getmemnum("kyltti_hiliter")>
+  [568] extcall 187 ............................. <member(getmemnum("kyltti_hiliter"))>
+  [570] getobjprop 186 .......................... <member(getmemnum("kyltti_hiliter")).image>
+  [572] setlocal 7 .............................. tSignHiliterImg = member(getmemnum("kyltti_hiliter")).image
+  [574] getlocal 4 .............................. <w>
+  [576] getlocal 5 .............................. <h>
+  [578] pushint8 16 ............................. <16>
+  [580] pusharglist 3 ........................... <w, h, 16>
+  [582] extcall 186 ............................. <image(w, h, 16)>
+  [584] setlocal 7 .............................. tSignHiliterImg = image(w, h, 16)
+  [586] getlocal 7 .............................. <tSignHiliterImg>
+  [588] getlocal 7 .............................. <tSignHiliterImg>
+  [590] getobjprop 201 .......................... <tSignHiliterImg.rect>
+  [592] pushint16 187 ........................... <187>
+  [595] pushint16 187 ........................... <187>
+  [598] pushint16 187 ........................... <187>
+  [601] pusharglist 3 ........................... <187, 187, 187>
+  [603] extcall 410 ............................. <rgb(187, 187, 187)>
+  [606] pusharglistnoret 3 ...................... <tSignHiliterImg, tSignHiliterImg.rect, rgb(187, 187, 187)>
+  [608] objcall 411 ............................. tSignHiliterImg.fill(tSignHiliterImg.rect, rgb(187, 187, 187))
+  [611] getlocal 7 .............................. <tSignHiliterImg>
+  [613] getobjprop 201 .......................... <tSignHiliterImg.rect>
+  [615] getlocal 4 .............................. <w>
+  [617] getprop 358 ............................. <pOldPosH>
+  [620] mul ..................................... <w * pOldPosH>
+  [621] pushint8 1 .............................. <1>
+  [623] add ..................................... <(w * pOldPosH) + 1>
+  [624] getlocal 5 .............................. <h>
+  [626] getprop 359 ............................. <pOldPosV>
+  [629] mul ..................................... <h * pOldPosV>
+  [630] pushint8 1 .............................. <1>
+  [632] add ..................................... <(h * pOldPosV) + 1>
+  [633] getlocal 4 .............................. <w>
+  [635] getprop 358 ............................. <pOldPosH>
+  [638] mul ..................................... <w * pOldPosH>
+  [639] pushint8 1 .............................. <1>
+  [641] add ..................................... <(w * pOldPosH) + 1>
+  [642] getlocal 5 .............................. <h>
+  [644] getprop 359 ............................. <pOldPosV>
+  [647] mul ..................................... <h * pOldPosV>
+  [648] pushint8 1 .............................. <1>
+  [650] add ..................................... <(h * pOldPosV) + 1>
+  [651] pusharglist 4 ........................... <(w * pOldPosH) + 1, (h * pOldPosV) + 1, (w * pOldPosH) + 1, (h * pOldPosV) + 1>
+  [653] extcall 201 ............................. <rect((w * pOldPosH) + 1, (h * pOldPosV) + 1, (w * pOldPosH) + 1, (h * pOldPosV) + 1)>
+  [655] add ..................................... <tSignHiliterImg.rect + rect((w * pOldPosH) + 1, (h * pOldPosV) + 1, (w * pOldPosH) + 1, (h * pOldPosV) + 1)>
+  [656] setlocal 8 .............................. tdestrect = tSignHiliterImg.rect + rect((w * pOldPosH) + 1, (h * pOldPosV) + 1, (w * pOldPosH) + 1, (h * pOldPosV) + 1)
+  [658] getprop 360 ............................. <pSignImg>
+  [661] getlocal 7 .............................. <tSignHiliterImg>
+  [663] getlocal 8 .............................. <tdestrect>
+  [665] getlocal 7 .............................. <tSignHiliterImg>
+  [667] getobjprop 201 .......................... <tSignHiliterImg.rect>
+  [669] pushsymb 412 ............................ <#ink>
+  [672] pushint8 39 ............................. <39>
+  [674] pusharglist 2 ........................... <[#ink: 39]>
+  [676] pushproplist ............................ <[#ink: 39]>
+  [677] pusharglistnoret 5 ...................... <pSignImg, tSignHiliterImg, tdestrect, tSignHiliterImg.rect, [#ink: 39]>
+  [679] objcall 409 ............................. pSignImg.copyPixels(tSignHiliterImg, tdestrect, tSignHiliterImg.rect, [#ink: 39])
+  [682] jmp [740]
+  [685] pusharglist 0 ........................... <>
+  [687] thebuiltin 406 .......................... <the mouseH>
+  [690] getlocal 6 .............................. <tSpr>
+  [692] getobjprop 164 .......................... <tSpr.left>
+  [694] sub ..................................... <the mouseH - tSpr.left>
+  [695] getlocal 4 .............................. <w>
+  [697] div ..................................... <(the mouseH - tSpr.left) / w>
+  [698] setprop 358 ............................. pOldPosH = (the mouseH - tSpr.left) / w
+  [701] pusharglist 0 ........................... <>
+  [703] thebuiltin 407 .......................... <the mouseV>
+  [706] getlocal 6 .............................. <tSpr>
+  [708] getobjprop 408 .......................... <tSpr.top>
+  [711] sub ..................................... <the mouseV - tSpr.top>
+  [712] getlocal 5 .............................. <h>
+  [714] div ..................................... <(the mouseV - tSpr.top) / h>
+  [715] setprop 359 ............................. pOldPosV = (the mouseV - tSpr.top) / h
+  [718] getprop 360 ............................. <pSignImg>
+  [721] getlocal 1 .............................. <tSignMem>
+  [723] getobjprop 186 .......................... <tSignMem.image>
+  [725] getprop 360 ............................. <pSignImg>
+  [728] getobjprop 201 .......................... <pSignImg.rect>
+  [730] getprop 360 ............................. <pSignImg>
+  [733] getobjprop 201 .......................... <pSignImg.rect>
+  [735] pusharglistnoret 4 ...................... <pSignImg, tSignMem.image, pSignImg.rect, pSignImg.rect>
+  [737] objcall 409 ............................. pSignImg.copyPixels(tSignMem.image, pSignImg.rect, pSignImg.rect)
+  [740] getlocal 2 .............................. <tDropElem>
+  [742] pushsymb 400 ............................ <#buffer>
+  [745] pusharglist 2 ........................... <tDropElem, #buffer>
+  [747] objcall 63 .............................. <tDropElem.getProperty(#buffer)>
+  [749] getprop 360 ............................. <pSignImg>
+  [752] setobjprop 186 .......................... tDropElem.getProperty(#buffer).image = pSignImg
+  [754] getlocal 2 .............................. <tDropElem>
+  [756] pushsymb 400 ............................ <#buffer>
+  [759] pusharglist 2 ........................... <tDropElem, #buffer>
+  [761] objcall 63 .............................. <tDropElem.getProperty(#buffer)>
+  [763] pushzero ................................ <0>
+  [764] pushint8 120 ............................ <120>
+  [766] pusharglist 2 ........................... <0, 120>
+  [768] extcall 402 ............................. <point(0, 120)>
+  [771] setobjprop 403 .......................... tDropElem.getProperty(#buffer).regPoint = point(0, 120)
+  [774] ret
+end

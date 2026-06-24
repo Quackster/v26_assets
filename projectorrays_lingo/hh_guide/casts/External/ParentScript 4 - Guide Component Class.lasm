@@ -1,0 +1,256 @@
+property pState, pInvitationData
+
+on construct me
+  [  0] pushsymb 32 ............................. <#disabled>
+  [  2] setprop 57 .............................. pState = #disabled
+  [  4] pusharglist 0 ........................... <[:]>
+  [  6] pushproplist ............................ <[:]>
+  [  7] setprop 58 .............................. pInvitationData = [:]
+  [  9] pushsymb 142 ............................ <#userlogin>
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglist 1 ........................... <me>
+  [ 15] objcall 15 .............................. <me.getID()>
+  [ 17] pushsymb 139 ............................ <#Init>
+  [ 19] pusharglistnoret 3 ...................... <#userlogin, me.getID(), #Init>
+  [ 21] extcall 14 .............................. registerMessage(#userlogin, me.getID(), #Init)
+  [ 23] pushsymb 55 ............................. <#showInvitation>
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglist 1 ........................... <me>
+  [ 29] objcall 15 .............................. <me.getID()>
+  [ 31] pushsymb 130 ............................ <#setInvitation>
+  [ 33] pusharglistnoret 3 ...................... <#showInvitation, me.getID(), #setInvitation>
+  [ 35] extcall 14 .............................. registerMessage(#showInvitation, me.getID(), #setInvitation)
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 16 .............................. return 1
+  [ 43] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 142 ............................ <#userlogin>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 15 .............................. <me.getID()>
+  [  8] pushsymb 139 ............................ <#Init>
+  [ 10] pusharglistnoret 3 ...................... <#userlogin, me.getID(), #Init>
+  [ 12] extcall 19 .............................. unregisterMessage(#userlogin, me.getID(), #Init)
+  [ 14] pushsymb 55 ............................. <#showInvitation>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 15 .............................. <me.getID()>
+  [ 22] pushsymb 130 ............................ <#setInvitation>
+  [ 24] pusharglistnoret 3 ...................... <#showInvitation, me.getID(), #setInvitation>
+  [ 26] extcall 19 .............................. unregisterMessage(#showInvitation, me.getID(), #setInvitation)
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] pusharglistnoret 1 ...................... <1>
+  [ 32] extcall 16 .............................. return 1
+  [ 34] ret
+end
+
+on setInvitation me, tInvitationData
+  [  0] getparam 1 .............................. <tInvitationData>
+  [  2] getobjprop 79 ........................... <tInvitationData.ilk>
+  [  4] pushsymb 121 ............................ <#propList>
+  [  6] nteq .................................... <tInvitationData.ilk <> #propList>
+  [  7] jmpifz [ 15] ............................ if tInvitationData.ilk <> #propList then
+  [ 10] pusharglist 0 ........................... <[:]>
+  [ 12] pushproplist ............................ <[:]>
+  [ 13] setparam 1 .............................. tInvitationData = [:]
+  [ 15] getparam 1 .............................. <tInvitationData>
+  [ 17] setprop 58 .............................. pInvitationData = tInvitationData
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushsymb 35 ............................. <#ready>
+  [ 23] pusharglistnoret 2 ...................... <me, #ready>
+  [ 25] objcall 56 .............................. me.setState(#ready)
+  [ 27] ret
+end
+
+on getInvitation me
+  [  0] getprop 58 .............................. <pInvitationData>
+  [  2] pusharglistnoret 1 ...................... <pInvitationData>
+  [  4] extcall 16 .............................. return pInvitationData
+  [  6] ret
+end
+
+on cancelInvitation me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 58 .............................. pInvitationData = [:]
+  [  5] getparam 0 .............................. <me>
+  [  7] pushsymb 34 ............................. <#waiting>
+  [  9] pusharglistnoret 2 ...................... <me, #waiting>
+  [ 11] objcall 56 .............................. me.setState(#waiting)
+  [ 13] ret
+end
+
+on getState me
+  [  0] getprop 57 .............................. <pState>
+  [  2] pusharglistnoret 1 ...................... <pState>
+  [  4] extcall 16 .............................. return pState
+  [  6] ret
+end
+
+on setState me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] getprop 57 .............................. <pState>
+  [  4] eq ...................................... <tstate = pState>
+  [  5] jmpifz [ 14] ............................ if tstate = pState then
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 16 .............................. return 1
+  [ 14] getparam 1 .............................. <tstate>
+  [ 16] setprop 57 .............................. pState = tstate
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglist 1 ........................... <me>
+  [ 22] objcall 59 .............................. <me.getInterface()>
+  [ 24] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 26] objcall 8 ............................... me.getInterface().update()
+  [ 28] ret
+end
+
+on Init me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 67 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 123 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 29] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 13] pushcons 0 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 124 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 1 .............................. <"MSG_INIT_TUTORSERVICE">
+  [ 25] pusharglistnoret 2 ...................... <getConnection(getVariable("connection.info.id")), "MSG_INIT_TUTORSERVICE">
+  [ 27] objcall 125 ............................. getConnection(getVariable("connection.info.id")).send("MSG_INIT_TUTORSERVICE")
+  [ 29] ret
+end
+
+on startWaiting me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 67 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 123 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 29] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 13] pushcons 0 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 124 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 2 .............................. <"MSG_WAIT_FOR_TUTOR_INVITATIONS">
+  [ 25] pusharglistnoret 2 ...................... <getConnection(getVariable("connection.info.id")), "MSG_WAIT_FOR_TUTOR_INVITATIONS">
+  [ 27] objcall 125 ............................. getConnection(getVariable("connection.info.id")).send("MSG_WAIT_FOR_TUTOR_INVITATIONS")
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pushsymb 34 ............................. <#waiting>
+  [ 33] pusharglistnoret 2 ...................... <me, #waiting>
+  [ 35] objcall 56 .............................. me.setState(#waiting)
+  [ 37] ret
+end
+
+on cancelWaiting me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 67 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 123 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 29] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 13] pushcons 0 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 124 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 3 .............................. <"MSG_CANCEL_WAIT_FOR_TUTOR_INVITATIONS">
+  [ 25] pusharglistnoret 2 ...................... <getConnection(getVariable("connection.info.id")), "MSG_CANCEL_WAIT_FOR_TUTOR_INVITATIONS">
+  [ 27] objcall 125 ............................. getConnection(getVariable("connection.info.id")).send("MSG_CANCEL_WAIT_FOR_TUTOR_INVITATIONS")
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pushsymb 33 ............................. <#enabled>
+  [ 33] pusharglistnoret 2 ...................... <me, #enabled>
+  [ 35] objcall 56 .............................. me.setState(#enabled)
+  [ 37] ret
+end
+
+on acceptInvitation me
+  [  0] getprop 58 .............................. <pInvitationData>
+  [  2] pusharglist 1 ........................... <pInvitationData>
+  [  4] extcall 79 .............................. <ilk(pInvitationData)>
+  [  6] pushsymb 121 ............................ <#propList>
+  [  8] nteq .................................... <ilk(pInvitationData) <> #propList>
+  [  9] jmpifz [ 17] ............................ if ilk(pInvitationData) <> #propList then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 16 .............................. return 0
+  [ 17] getprop 58 .............................. <pInvitationData>
+  [ 19] pushsymb 112 ............................ <#userID>
+  [ 21] pusharglist 2 ........................... <pInvitationData, #userID>
+  [ 23] objcall 122 ............................. <pInvitationData.getaProp(#userID)>
+  [ 25] setlocal 0 .............................. tSenderId = pInvitationData.getaProp(#userID)
+  [ 27] getlocal 0 .............................. <tSenderId>
+  [ 29] pusharglist 1 ........................... <tSenderId>
+  [ 31] extcall 83 .............................. <voidp(tSenderId)>
+  [ 33] jmpifz [ 41] ............................ if voidp(tSenderId) then
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 1 ...................... <0>
+  [ 39] extcall 16 .............................. return 0
+  [ 41] pushcons 0 .............................. <"connection.info.id">
+  [ 43] pusharglist 1 ........................... <"connection.info.id">
+  [ 45] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 47] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 49] extcall 123 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 51] jmpifz [ 77] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 54] pushcons 0 .............................. <"connection.info.id">
+  [ 56] pusharglist 1 ........................... <"connection.info.id">
+  [ 58] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 60] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 62] extcall 124 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 64] pushcons 4 .............................. <"MSG_ACCEPT_TUTOR_INVITATION">
+  [ 66] pushsymb 101 ............................ <#string>
+  [ 68] getlocal 0 .............................. <tSenderId>
+  [ 70] pusharglist 2 ........................... <[#string: tSenderId]>
+  [ 72] pushproplist ............................ <[#string: tSenderId]>
+  [ 73] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "MSG_ACCEPT_TUTOR_INVITATION", [#string: tSenderId]>
+  [ 75] objcall 125 ............................. getConnection(getVariable("connection.info.id")).send("MSG_ACCEPT_TUTOR_INVITATION", [#string: tSenderId])
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pushsymb 33 ............................. <#enabled>
+  [ 81] pusharglistnoret 2 ...................... <me, #enabled>
+  [ 83] objcall 56 .............................. me.setState(#enabled)
+  [ 85] ret
+end
+
+on rejectInvitation me
+  [  0] getprop 58 .............................. <pInvitationData>
+  [  2] pushsymb 112 ............................ <#userID>
+  [  4] pusharglist 2 ........................... <pInvitationData, #userID>
+  [  6] objcall 122 ............................. <pInvitationData.getaProp(#userID)>
+  [  8] setlocal 0 .............................. tSenderId = pInvitationData.getaProp(#userID)
+  [ 10] getlocal 0 .............................. <tSenderId>
+  [ 12] pusharglist 1 ........................... <tSenderId>
+  [ 14] extcall 83 .............................. <voidp(tSenderId)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tSenderId) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 16 .............................. return 0
+  [ 24] pushcons 0 .............................. <"connection.info.id">
+  [ 26] pusharglist 1 ........................... <"connection.info.id">
+  [ 28] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 30] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 32] extcall 123 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 34] jmpifz [ 60] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 37] pushcons 0 .............................. <"connection.info.id">
+  [ 39] pusharglist 1 ........................... <"connection.info.id">
+  [ 41] extcall 67 .............................. <getVariable("connection.info.id")>
+  [ 43] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 45] extcall 124 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 47] pushcons 5 .............................. <"MSG_REJECT_TUTOR_INVITATION">
+  [ 49] pushsymb 101 ............................ <#string>
+  [ 51] getlocal 0 .............................. <tSenderId>
+  [ 53] pusharglist 2 ........................... <[#string: tSenderId]>
+  [ 55] pushproplist ............................ <[#string: tSenderId]>
+  [ 56] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "MSG_REJECT_TUTOR_INVITATION", [#string: tSenderId]>
+  [ 58] objcall 125 ............................. getConnection(getVariable("connection.info.id")).send("MSG_REJECT_TUTOR_INVITATION", [#string: tSenderId])
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pushsymb 33 ............................. <#enabled>
+  [ 64] pusharglistnoret 2 ...................... <me, #enabled>
+  [ 66] objcall 56 .............................. me.setState(#enabled)
+  [ 68] ret
+end

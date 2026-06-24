@@ -1,0 +1,1625 @@
+property pWindowTitle, pBuddyList, pRemoveCheckBoxList, pOnScreenNum, pPageNr, pPageCount, pArrangeType, pChosen, pLimitPntr, pRemoveList
+
+on construct me
+  [  0] pushcons 0 .............................. <"buddyremove_windowheader">
+  [  2] pusharglist 1 ........................... <"buddyremove_windowheader">
+  [  4] extcall 38 .............................. <getText("buddyremove_windowheader")>
+  [  6] setprop 37 .............................. pWindowTitle = getText("buddyremove_windowheader")
+  [  8] pusharglist 0 ........................... <[:]>
+  [ 10] pushproplist ............................ <[:]>
+  [ 11] setprop 382 ............................. pBuddyList = [:]
+  [ 14] pusharglist 0 ........................... <[]>
+  [ 16] pushlist ................................ <[]>
+  [ 17] setprop 664 ............................. pRemoveCheckBoxList = []
+  [ 20] pushint8 10 ............................. <10>
+  [ 22] setprop 665 ............................. pOnScreenNum = 10
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] setprop 666 ............................. pPageNr = 1
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] setprop 567 ............................. pPageCount = 1
+  [ 35] pushsymb 668 ............................ <#none>
+  [ 38] setprop 667 ............................. pArrangeType = #none
+  [ 41] pushzero ................................ <0>
+  [ 42] setprop 669 ............................. pChosen = 0
+  [ 45] pusharglist 0 ........................... <[:]>
+  [ 47] pushproplist ............................ <[:]>
+  [ 48] setprop 670 ............................. pLimitPntr = [:]
+  [ 51] pusharglist 0 ........................... <[]>
+  [ 53] pushlist ................................ <[]>
+  [ 54] setprop 671 ............................. pRemoveList = []
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] setlocal 0
+  [ 61] getlocal 0
+  [ 63] getprop 665 ............................. <pOnScreenNum>
+  [ 66] lteq
+  [ 67] jmpifz [ 87] ............................ repeat with i = 1 to pOnScreenNum
+  [ 70] getprop 664 ............................. <pRemoveCheckBoxList>
+  [ 73] pushzero ................................ <0>
+  [ 74] pusharglistnoret 2 ...................... <pRemoveCheckBoxList, 0>
+  [ 76] objcall 208 ............................. pRemoveCheckBoxList.add(0)
+  [ 78] pushint8 1
+  [ 80] getlocal 0
+  [ 82] add
+  [ 83] setlocal 0
+  [ 85] endrepeat [ 61]
+  [ 87] ret
+end
+
+on deconstruct me
+  [  0] ret
+end
+
+on openRemoveWindow me, tFriendListCopy, tListLimitsPntr
+  [  0] getparam 1 .............................. <tFriendListCopy>
+  [  2] setprop 382 ............................. pBuddyList = tFriendListCopy
+  [  5] getparam 2 .............................. <tListLimitsPntr>
+  [  7] setprop 670 ............................. pLimitPntr = tListLimitsPntr
+  [ 10] getprop 382 ............................. <pBuddyList>
+  [ 13] pusharglistnoret 1 ...................... <pBuddyList>
+  [ 15] objcall 103 ............................. pBuddyList.sort()
+  [ 17] getprop 382 ............................. <pBuddyList>
+  [ 20] getobjprop 274 .......................... <pBuddyList.ilk>
+  [ 23] pushsymb 672 ............................ <#propList>
+  [ 26] nteq .................................... <pBuddyList.ilk <> #propList>
+  [ 27] getprop 670 ............................. <pLimitPntr>
+  [ 30] getobjprop 274 .......................... <pLimitPntr.ilk>
+  [ 33] pushsymb 672 ............................ <#propList>
+  [ 36] nteq .................................... <pLimitPntr.ilk <> #propList>
+  [ 37] or ...................................... <(pBuddyList.ilk <> #propList) or (pLimitPntr.ilk <> #propList)>
+  [ 38] jmpifz [ 46] ............................ if (pBuddyList.ilk <> #propList) or (pLimitPntr.ilk <> #propList) then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 81 .............................. return 0
+  [ 46] getprop 37 .............................. <pWindowTitle>
+  [ 48] pusharglist 1 ........................... <pWindowTitle>
+  [ 50] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [ 52] jmpifz [ 61] ............................ if windowExists(pWindowTitle) then
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] pusharglistnoret 1 ...................... <1>
+  [ 59] extcall 81 .............................. return 1
+  [ 61] getprop 37 .............................. <pWindowTitle>
+  [ 63] pushcons 1 .............................. <"habbo_full.window">
+  [ 65] pushzero ................................ <0>
+  [ 66] pushzero ................................ <0>
+  [ 67] pushsymb 469 ............................ <#modal>
+  [ 70] pusharglist 5 ........................... <pWindowTitle, "habbo_full.window", 0, 0, #modal>
+  [ 72] extcall 246 ............................. <createWindow(pWindowTitle, "habbo_full.window", 0, 0, #modal)>
+  [ 74] not ..................................... <not createWindow(pWindowTitle, "habbo_full.window", 0, 0, #modal)>
+  [ 75] jmpifz [ 94] ............................ if not createWindow(pWindowTitle, "habbo_full.window", 0, 0, #modal) then
+  [ 78] getparam 0 .............................. <me>
+  [ 80] pushcons 2 .............................. <"Failed to open Messenger window!!!">
+  [ 82] pushsymb 243 ............................ <#openRemoveWindow>
+  [ 84] pushsymb 218 ............................ <#major>
+  [ 86] pusharglist 4 ........................... <me, "Failed to open Messenger window!!!", #openRemoveWindow, #major>
+  [ 88] extcall 123 ............................. <error(me, "Failed to open Messenger window!!!", #openRemoveWindow, #major)>
+  [ 90] pusharglistnoret 1 ...................... <error(me, "Failed to open Messenger window!!!", #openRemoveWindow, #major)>
+  [ 92] extcall 81 .............................. return error(me, "Failed to open Messenger window!!!", #openRemoveWindow, #major)
+  [ 94] getprop 37 .............................. <pWindowTitle>
+  [ 96] pusharglist 1 ........................... <pWindowTitle>
+  [ 98] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [100] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [102] getlocal 0 .............................. <tWndObj>
+  [104] pushcons 3 .............................. <"console_buddylistfull.window">
+  [106] pusharglist 2 ........................... <tWndObj, "console_buddylistfull.window">
+  [108] objcall 254 ............................. <tWndObj.merge("console_buddylistfull.window")>
+  [110] not ..................................... <not tWndObj.merge("console_buddylistfull.window")>
+  [111] jmpifz [136] ............................ if not tWndObj.merge("console_buddylistfull.window") then
+  [114] getlocal 0 .............................. <tWndObj>
+  [116] pusharglistnoret 1 ...................... <tWndObj>
+  [118] objcall 255 ............................. tWndObj.close()
+  [120] getparam 0 .............................. <me>
+  [122] pushcons 2 .............................. <"Failed to open Messenger window!!!">
+  [124] pushsymb 243 ............................ <#openRemoveWindow>
+  [126] pushsymb 218 ............................ <#major>
+  [128] pusharglist 4 ........................... <me, "Failed to open Messenger window!!!", #openRemoveWindow, #major>
+  [130] extcall 123 ............................. <error(me, "Failed to open Messenger window!!!", #openRemoveWindow, #major)>
+  [132] pusharglistnoret 1 ...................... <error(me, "Failed to open Messenger window!!!", #openRemoveWindow, #major)>
+  [134] extcall 81 .............................. return error(me, "Failed to open Messenger window!!!", #openRemoveWindow, #major)
+  [136] getlocal 0 .............................. <tWndObj>
+  [138] pushcons 4 .............................. <"console_friendremove_list_full">
+  [140] pusharglist 2 ........................... <tWndObj, "console_friendremove_list_full">
+  [142] objcall 150 ............................. <tWndObj.getElement("console_friendremove_list_full")>
+  [144] setlocal 1 .............................. tElem = tWndObj.getElement("console_friendremove_list_full")
+  [146] pushcons 5 .............................. <"buddyremove_list_full">
+  [148] pusharglist 1 ........................... <"buddyremove_list_full">
+  [150] extcall 38 .............................. <getText("buddyremove_list_full")>
+  [152] setlocal 2 .............................. tText = getText("buddyremove_list_full")
+  [154] getlocal 2 .............................. <tText>
+  [156] pushcons 6 .............................. <"%mylimit%">
+  [158] getprop 670 ............................. <pLimitPntr>
+  [161] pushsymb 61 ............................. <#own>
+  [163] pusharglist 2 ........................... <pLimitPntr, #own>
+  [165] objcall 212 ............................. <pLimitPntr.getProp(#own)>
+  [167] pusharglist 1 ........................... <pLimitPntr.getProp(#own)>
+  [169] extcall 146 ............................. <string(pLimitPntr.getProp(#own))>
+  [171] pusharglist 3 ........................... <tText, "%mylimit%", string(pLimitPntr.getProp(#own))>
+  [173] extcall 263 ............................. <replaceChunks(tText, "%mylimit%", string(pLimitPntr.getProp(#own)))>
+  [176] setlocal 2 .............................. tText = replaceChunks(tText, "%mylimit%", string(pLimitPntr.getProp(#own)))
+  [178] getlocal 2 .............................. <tText>
+  [180] pushcons 7 .............................. <"%clublimit%">
+  [182] getprop 670 ............................. <pLimitPntr>
+  [185] pushsymb 63 ............................. <#club>
+  [187] pusharglist 2 ........................... <pLimitPntr, #club>
+  [189] objcall 212 ............................. <pLimitPntr.getProp(#club)>
+  [191] pusharglist 1 ........................... <pLimitPntr.getProp(#club)>
+  [193] extcall 146 ............................. <string(pLimitPntr.getProp(#club))>
+  [195] pusharglist 3 ........................... <tText, "%clublimit%", string(pLimitPntr.getProp(#club))>
+  [197] extcall 263 ............................. <replaceChunks(tText, "%clublimit%", string(pLimitPntr.getProp(#club)))>
+  [200] setlocal 2 .............................. tText = replaceChunks(tText, "%clublimit%", string(pLimitPntr.getProp(#club)))
+  [202] pushcons 8 .............................. <"buddyremove_hc_info_url">
+  [204] pusharglist 1 ........................... <"buddyremove_hc_info_url">
+  [206] extcall 38 .............................. <getText("buddyremove_hc_info_url")>
+  [208] pushcons 9 .............................. <"http">
+  [210] contains0str ............................ <getText("buddyremove_hc_info_url") starts "http">
+  [211] not ..................................... <not (getText("buddyremove_hc_info_url") starts "http")>
+  [212] jmpifz [227] ............................ if not (getText("buddyremove_hc_info_url") starts "http") then
+  [215] getlocal 0 .............................. <tWndObj>
+  [217] pushcons 10 ............................. <"buddyremove_hc_more_info">
+  [219] pusharglist 2 ........................... <tWndObj, "buddyremove_hc_more_info">
+  [221] objcall 150 ............................. <tWndObj.getElement("buddyremove_hc_more_info")>
+  [223] pusharglistnoret 1 ...................... <tWndObj.getElement("buddyremove_hc_more_info")>
+  [225] objcall 170 ............................. tWndObj.getElement("buddyremove_hc_more_info").hide()
+  [227] getlocal 1 .............................. <tElem>
+  [229] getlocal 2 .............................. <tText>
+  [231] pusharglistnoret 2 ...................... <tElem, tText>
+  [233] objcall 151 ............................. tElem.setText(tText)
+  [235] getlocal 0 .............................. <tWndObj>
+  [237] getparam 0 .............................. <me>
+  [239] pusharglist 1 ........................... <me>
+  [241] objcall 91 .............................. <me.getID()>
+  [243] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [245] objcall 247 ............................. tWndObj.registerClient(me.getID())
+  [247] getlocal 0 .............................. <tWndObj>
+  [249] pushsymb 663 ............................ <#eventProcBuddyRemove>
+  [252] getparam 0 .............................. <me>
+  [254] pusharglist 1 ........................... <me>
+  [256] objcall 91 .............................. <me.getID()>
+  [258] pushsymb 248 ............................ <#mouseUp>
+  [260] pusharglistnoret 4 ...................... <tWndObj, #eventProcBuddyRemove, me.getID(), #mouseUp>
+  [262] objcall 249 ............................. tWndObj.registerProcedure(#eventProcBuddyRemove, me.getID(), #mouseUp)
+  [264] getlocal 0 .............................. <tWndObj>
+  [266] pushsymb 663 ............................ <#eventProcBuddyRemove>
+  [269] getparam 0 .............................. <me>
+  [271] pusharglist 1 ........................... <me>
+  [273] objcall 91 .............................. <me.getID()>
+  [275] pushsymb 250 ............................ <#mouseDown>
+  [277] pusharglistnoret 4 ...................... <tWndObj, #eventProcBuddyRemove, me.getID(), #mouseDown>
+  [279] objcall 249 ............................. tWndObj.registerProcedure(#eventProcBuddyRemove, me.getID(), #mouseDown)
+  [281] getlocal 0 .............................. <tWndObj>
+  [283] pusharglistnoret 1 ...................... <tWndObj>
+  [285] objcall 673 ............................. tWndObj.center()
+  [288] pushint8 1 .............................. <1>
+  [290] pusharglistnoret 1 ...................... <1>
+  [292] extcall 81 .............................. return 1
+  [294] ret
+end
+
+on confirmationReceived me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 658 ............................. <me.sendRemoveList()>
+  [  7] pusharglistnoret 1 ...................... <me.sendRemoveList()>
+  [  9] extcall 81 .............................. return me.sendRemoveList()
+  [ 11] ret
+end
+
+on removeUnnecessaryFromBuddylist me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 382 ............................. <pBuddyList>
+  [  9] getobjprop 113 .......................... <pBuddyList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 79] ............................ repeat with i = 1 to pBuddyList.count
+  [ 15] getprop 382 ............................. <pBuddyList>
+  [ 18] pushsymb 167 ............................ <#customText>
+  [ 20] pusharglistnoret 2 ...................... <pBuddyList, #customText>
+  [ 22] objcall 129 ............................. pBuddyList.deleteProp(#customText)
+  [ 24] getprop 382 ............................. <pBuddyList>
+  [ 27] pushsymb 428 ............................ <#msgs>
+  [ 30] pusharglistnoret 2 ...................... <pBuddyList, #msgs>
+  [ 32] objcall 129 ............................. pBuddyList.deleteProp(#msgs)
+  [ 34] getprop 382 ............................. <pBuddyList>
+  [ 37] pushsymb 122 ............................ <#update>
+  [ 39] pusharglistnoret 2 ...................... <pBuddyList, #update>
+  [ 41] objcall 129 ............................. pBuddyList.deleteProp(#update)
+  [ 43] getprop 382 ............................. <pBuddyList>
+  [ 46] pushsymb 227 ............................ <#sex>
+  [ 48] pusharglistnoret 2 ...................... <pBuddyList, #sex>
+  [ 50] objcall 129 ............................. pBuddyList.deleteProp(#sex)
+  [ 52] getprop 382 ............................. <pBuddyList>
+  [ 55] pushsymb 169 ............................ <#location>
+  [ 57] pusharglistnoret 2 ...................... <pBuddyList, #location>
+  [ 59] objcall 129 ............................. pBuddyList.deleteProp(#location)
+  [ 61] getprop 382 ............................. <pBuddyList>
+  [ 64] pushsymb 157 ............................ <#online>
+  [ 66] pusharglistnoret 2 ...................... <pBuddyList, #online>
+  [ 68] objcall 129 ............................. pBuddyList.deleteProp(#online)
+  [ 70] pushint8 1
+  [ 72] getlocal 0
+  [ 74] add
+  [ 75] setlocal 0
+  [ 77] endrepeat [  4]
+  [ 79] pushint8 1 .............................. <1>
+  [ 81] pusharglistnoret 1 ...................... <1>
+  [ 83] extcall 81 .............................. return 1
+  [ 85] ret
+end
+
+on setUpMassRemoveWindow me
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [  6] not ..................................... <not windowExists(pWindowTitle)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowTitle) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 81 .............................. return 0
+  [ 15] getprop 37 .............................. <pWindowTitle>
+  [ 17] pusharglist 1 ........................... <pWindowTitle>
+  [ 19] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 21] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 23] getlocal 0 .............................. <tWndObj>
+  [ 25] pusharglistnoret 1 ...................... <tWndObj>
+  [ 27] objcall 245 ............................. tWndObj.unmerge()
+  [ 29] getlocal 0 .............................. <tWndObj>
+  [ 31] pushcons 11 ............................. <"console_massbuddyremove.window">
+  [ 33] pusharglist 2 ........................... <tWndObj, "console_massbuddyremove.window">
+  [ 35] objcall 254 ............................. <tWndObj.merge("console_massbuddyremove.window")>
+  [ 37] not ..................................... <not tWndObj.merge("console_massbuddyremove.window")>
+  [ 38] jmpifz [ 51] ............................ if not tWndObj.merge("console_massbuddyremove.window") then
+  [ 41] getlocal 0 .............................. <tWndObj>
+  [ 43] pusharglist 1 ........................... <tWndObj>
+  [ 45] objcall 255 ............................. <tWndObj.close()>
+  [ 47] pusharglistnoret 1 ...................... <tWndObj.close()>
+  [ 49] extcall 81 .............................. return tWndObj.close()
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] setlocal 1
+  [ 55] getlocal 1
+  [ 57] getprop 382 ............................. <pBuddyList>
+  [ 60] getobjprop 113 .......................... <pBuddyList.count>
+  [ 62] lteq
+  [ 63] jmpifz [ 93] ............................ repeat with i = 1 to pBuddyList.count
+  [ 66] getprop 382 ............................. <pBuddyList>
+  [ 69] getlocal 1 .............................. <i>
+  [ 71] pusharglist 2 ........................... <pBuddyList, i>
+  [ 73] objcall 116 ............................. <pBuddyList[i]>
+  [ 75] pushsymb 676 ............................ <#Remove>
+  [ 78] pushzero ................................ <0>
+  [ 79] pusharglistnoret 3 ...................... <pBuddyList[i], #Remove, 0>
+  [ 81] objcall 456 ............................. pBuddyList[i].addProp(#Remove, 0)
+  [ 84] pushint8 1
+  [ 86] getlocal 1
+  [ 88] add
+  [ 89] setlocal 1
+  [ 91] endrepeat [ 55]
+  [ 93] getprop 382 ............................. <pBuddyList>
+  [ 96] getobjprop 113 .......................... <pBuddyList.count>
+  [ 98] getprop 665 ............................. <pOnScreenNum>
+  [101] div ..................................... <pBuddyList.count / pOnScreenNum>
+  [102] setprop 567 ............................. pPageCount = pBuddyList.count / pOnScreenNum
+  [105] getprop 382 ............................. <pBuddyList>
+  [108] getobjprop 113 .......................... <pBuddyList.count>
+  [110] getprop 665 ............................. <pOnScreenNum>
+  [113] mod ..................................... <pBuddyList.count mod pOnScreenNum>
+  [114] pushzero ................................ <0>
+  [115] nteq .................................... <(pBuddyList.count mod pOnScreenNum) <> 0>
+  [116] jmpifz [128] ............................ if (pBuddyList.count mod pOnScreenNum) <> 0 then
+  [119] getprop 567 ............................. <pPageCount>
+  [122] pushint8 1 .............................. <1>
+  [124] add ..................................... <pPageCount + 1>
+  [125] setprop 567 ............................. pPageCount = pPageCount + 1
+  [128] getparam 0 .............................. <me>
+  [130] pushsymb 117 ............................ <#name>
+  [132] pusharglistnoret 2 ...................... <me, #name>
+  [134] objcall 659 ............................. me.arrangeFriendList(#name)
+  [137] pushint8 1 .............................. <1>
+  [139] pusharglistnoret 1 ...................... <1>
+  [141] extcall 81 .............................. return 1
+  [143] ret
+end
+
+on changeOptionLevel me, tStyle
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [  6] not ..................................... <not windowExists(pWindowTitle)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowTitle) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 81 .............................. return 0
+  [ 15] getparam 1 .............................. <tStyle>
+  [ 17] peek 0 .................................. case tStyle of
+  [ 19] pushsymb 677 ............................ <#more>
+  [ 22] eq
+  [ 23] jmpifz [ 67] ............................ (case) #more:
+  [ 26] getprop 37 .............................. <pWindowTitle>
+  [ 28] pusharglist 1 ........................... <pWindowTitle>
+  [ 30] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 32] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 34] getlocal 0 .............................. <tWndObj>
+  [ 36] pusharglistnoret 1 ...................... <tWndObj>
+  [ 38] objcall 245 ............................. tWndObj.unmerge()
+  [ 40] getlocal 0 .............................. <tWndObj>
+  [ 42] pushcons 12 ............................. <"console_massremove_extended.window">
+  [ 44] pusharglist 2 ........................... <tWndObj, "console_massremove_extended.window">
+  [ 46] objcall 254 ............................. <tWndObj.merge("console_massremove_extended.window")>
+  [ 48] not ..................................... <not tWndObj.merge("console_massremove_extended.window")>
+  [ 49] jmpifz [ 64] ............................ if not tWndObj.merge("console_massremove_extended.window") then
+  [ 52] pop 1
+  [ 54] getlocal 0 .............................. <tWndObj>
+  [ 56] pusharglist 1 ........................... <tWndObj>
+  [ 58] objcall 255 ............................. <tWndObj.close()>
+  [ 60] pusharglistnoret 1 ...................... <tWndObj.close()>
+  [ 62] extcall 81 .............................. return tWndObj.close()
+  [ 64] jmp [114]
+  [ 67] peek 0
+  [ 69] pushsymb 678 ............................ <#less>
+  [ 72] eq
+  [ 73] jmpifz [114] ............................ (case) #less:
+  [ 76] getprop 37 .............................. <pWindowTitle>
+  [ 78] pusharglist 1 ........................... <pWindowTitle>
+  [ 80] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 82] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 84] getlocal 0 .............................. <tWndObj>
+  [ 86] pusharglistnoret 1 ...................... <tWndObj>
+  [ 88] objcall 245 ............................. tWndObj.unmerge()
+  [ 90] getlocal 0 .............................. <tWndObj>
+  [ 92] pushcons 11 ............................. <"console_massbuddyremove.window">
+  [ 94] pusharglist 2 ........................... <tWndObj, "console_massbuddyremove.window">
+  [ 96] objcall 254 ............................. <tWndObj.merge("console_massbuddyremove.window")>
+  [ 98] not ..................................... <not tWndObj.merge("console_massbuddyremove.window")>
+  [ 99] jmpifz [114] ............................ if not tWndObj.merge("console_massbuddyremove.window") then
+  [102] pop 1
+  [104] getlocal 0 .............................. <tWndObj>
+  [106] pusharglist 1 ........................... <tWndObj>
+  [108] objcall 255 ............................. <tWndObj.close()>
+  [110] pusharglistnoret 1 ...................... <tWndObj.close()>
+  [112] extcall 81 .............................. return tWndObj.close()
+  [114] pop 1 ................................... end case
+  [116] getparam 0 .............................. <me>
+  [118] pusharglist 1 ........................... <me>
+  [120] objcall 196 ............................. <me.updateView()>
+  [122] pusharglistnoret 1 ...................... <me.updateView()>
+  [124] extcall 81 .............................. return me.updateView()
+  [126] ret
+end
+
+on updateView me
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [  6] not ..................................... <not windowExists(pWindowTitle)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowTitle) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 81 .............................. return 0
+  [ 15] getprop 37 .............................. <pWindowTitle>
+  [ 17] pusharglist 1 ........................... <pWindowTitle>
+  [ 19] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 21] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 23] getprop 666 ............................. <pPageNr>
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] sub ..................................... <pPageNr - 1>
+  [ 29] getprop 665 ............................. <pOnScreenNum>
+  [ 32] mul ..................................... <(pPageNr - 1) * pOnScreenNum>
+  [ 33] setlocal 1 .............................. tStartNr = (pPageNr - 1) * pOnScreenNum
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setlocal 2
+  [ 39] getlocal 2
+  [ 41] getprop 665 ............................. <pOnScreenNum>
+  [ 44] lteq
+  [ 45] jmpifz [217] ............................ repeat with i = 1 to pOnScreenNum
+  [ 48] pushcons 13 ............................. <"console_friendremove_name">
+  [ 50] getlocal 2 .............................. <i>
+  [ 52] joinstr ................................. <"console_friendremove_name" & i>
+  [ 53] setlocal 3 .............................. tElem1ID = "console_friendremove_name" & i
+  [ 55] pushcons 14 ............................. <"friendremove_checkbox">
+  [ 57] getlocal 2 .............................. <i>
+  [ 59] joinstr ................................. <"friendremove_checkbox" & i>
+  [ 60] setlocal 4 .............................. tElem2ID = "friendremove_checkbox" & i
+  [ 62] getlocal 0 .............................. <tWndObj>
+  [ 64] getlocal 3 .............................. <tElem1ID>
+  [ 66] pusharglist 2 ........................... <tWndObj, tElem1ID>
+  [ 68] objcall 150 ............................. <tWndObj.getElement(tElem1ID)>
+  [ 70] setlocal 5 .............................. tElem1 = tWndObj.getElement(tElem1ID)
+  [ 72] getlocal 0 .............................. <tWndObj>
+  [ 74] getlocal 4 .............................. <tElem2ID>
+  [ 76] pusharglist 2 ........................... <tWndObj, tElem2ID>
+  [ 78] objcall 150 ............................. <tWndObj.getElement(tElem2ID)>
+  [ 80] setlocal 6 .............................. tElem2 = tWndObj.getElement(tElem2ID)
+  [ 82] getlocal 1 .............................. <tStartNr>
+  [ 84] getlocal 2 .............................. <i>
+  [ 86] add ..................................... <tStartNr + i>
+  [ 87] getprop 382 ............................. <pBuddyList>
+  [ 90] getobjprop 113 .......................... <pBuddyList.count>
+  [ 92] gt ...................................... <(tStartNr + i) > pBuddyList.count>
+  [ 93] jmpifz [111] ............................ if (tStartNr + i) > pBuddyList.count then
+  [ 96] getlocal 5 .............................. <tElem1>
+  [ 98] pusharglistnoret 1 ...................... <tElem1>
+  [100] objcall 170 ............................. tElem1.hide()
+  [102] getlocal 6 .............................. <tElem2>
+  [104] pusharglistnoret 1 ...................... <tElem2>
+  [106] objcall 170 ............................. tElem2.hide()
+  [108] jmp [208] ............................... next repeat
+  [111] getlocal 5 .............................. <tElem1>
+  [113] pusharglistnoret 1 ...................... <tElem1>
+  [115] objcall 166 ............................. tElem1.show()
+  [117] getlocal 6 .............................. <tElem2>
+  [119] pusharglistnoret 1 ...................... <tElem2>
+  [121] objcall 166 ............................. tElem2.show()
+  [123] getlocal 5 .............................. <tElem1>
+  [125] getprop 382 ............................. <pBuddyList>
+  [128] getlocal 1 .............................. <tStartNr>
+  [130] getlocal 2 .............................. <i>
+  [132] add ..................................... <tStartNr + i>
+  [133] pusharglist 2 ........................... <pBuddyList, tStartNr + i>
+  [135] objcall 116 ............................. <pBuddyList[tStartNr + i]>
+  [137] getobjprop 117 .......................... <pBuddyList[tStartNr + i].name>
+  [139] pusharglistnoret 2 ...................... <tElem1, pBuddyList[tStartNr + i].name>
+  [141] objcall 151 ............................. tElem1.setText(pBuddyList[tStartNr + i].name)
+  [143] getprop 382 ............................. <pBuddyList>
+  [146] getlocal 1 .............................. <tStartNr>
+  [148] getlocal 2 .............................. <i>
+  [150] add ..................................... <tStartNr + i>
+  [151] pusharglist 2 ........................... <pBuddyList, tStartNr + i>
+  [153] objcall 116 ............................. <pBuddyList[tStartNr + i]>
+  [155] getobjprop 676 .......................... <pBuddyList[tStartNr + i].Remove>
+  [158] not ..................................... <not pBuddyList[tStartNr + i].Remove>
+  [159] jmpifz [186] ............................ if not pBuddyList[tStartNr + i].Remove then
+  [162] getprop 664 ............................. <pRemoveCheckBoxList>
+  [165] getlocal 2 .............................. <i>
+  [167] pushzero ................................ <0>
+  [168] pusharglistnoret 3 ...................... <pRemoveCheckBoxList, i, 0>
+  [170] objcall 118 ............................. pRemoveCheckBoxList[i] = 0
+  [172] getparam 0 .............................. <me>
+  [174] getlocal 4 .............................. <tElem2ID>
+  [176] pushcons 15 ............................. <"button.checkbox.off">
+  [178] pusharglistnoret 3 ...................... <me, tElem2ID, "button.checkbox.off">
+  [180] objcall 654 ............................. me.updateCheckButton(tElem2ID, "button.checkbox.off")
+  [183] jmp [208] ............................... next repeat
+  [186] getprop 664 ............................. <pRemoveCheckBoxList>
+  [189] getlocal 2 .............................. <i>
+  [191] pushint8 1 .............................. <1>
+  [193] pusharglistnoret 3 ...................... <pRemoveCheckBoxList, i, 1>
+  [195] objcall 118 ............................. pRemoveCheckBoxList[i] = 1
+  [197] getparam 0 .............................. <me>
+  [199] getlocal 4 .............................. <tElem2ID>
+  [201] pushcons 16 ............................. <"button.checkbox.on">
+  [203] pusharglistnoret 3 ...................... <me, tElem2ID, "button.checkbox.on">
+  [205] objcall 654 ............................. me.updateCheckButton(tElem2ID, "button.checkbox.on")
+  [208] pushint8 1
+  [210] getlocal 2
+  [212] add
+  [213] setlocal 2
+  [215] endrepeat [ 39]
+  [217] getlocal 0 .............................. <tWndObj>
+  [219] pushcons 17 ............................. <"console_friendremove_pagecounter">
+  [221] pusharglist 2 ........................... <tWndObj, "console_friendremove_pagecounter">
+  [223] objcall 150 ............................. <tWndObj.getElement("console_friendremove_pagecounter")>
+  [225] setlocal 7 .............................. tElem = tWndObj.getElement("console_friendremove_pagecounter")
+  [227] getlocal 7 .............................. <tElem>
+  [229] pushcons 18 ............................. <"buddyremove_pagecounter">
+  [231] pusharglist 1 ........................... <"buddyremove_pagecounter">
+  [233] extcall 38 .............................. <getText("buddyremove_pagecounter")>
+  [235] getprop 666 ............................. <pPageNr>
+  [238] joinpadstr .............................. <getText("buddyremove_pagecounter") && pPageNr>
+  [239] pushcons 19 ............................. <"/">
+  [241] joinpadstr .............................. <getText("buddyremove_pagecounter") && pPageNr && "/">
+  [242] getprop 567 ............................. <pPageCount>
+  [245] joinpadstr .............................. <getText("buddyremove_pagecounter") && pPageNr && "/" && pPageCount>
+  [246] pusharglistnoret 2 ...................... <tElem, getText("buddyremove_pagecounter") && pPageNr && "/" && pPageCount>
+  [248] objcall 151 ............................. tElem.setText(getText("buddyremove_pagecounter") && pPageNr && "/" && pPageCount)
+  [250] getlocal 0 .............................. <tWndObj>
+  [252] pushcons 20 ............................. <"console_friendremove_prev">
+  [254] pusharglist 2 ........................... <tWndObj, "console_friendremove_prev">
+  [256] objcall 150 ............................. <tWndObj.getElement("console_friendremove_prev")>
+  [258] setlocal 7 .............................. tElem = tWndObj.getElement("console_friendremove_prev")
+  [260] getprop 666 ............................. <pPageNr>
+  [263] pushint8 1 .............................. <1>
+  [265] eq ...................................... <pPageNr = 1>
+  [266] jmpifz [278] ............................ if pPageNr = 1 then / else
+  [269] getlocal 7 .............................. <tElem>
+  [271] pusharglistnoret 1 ...................... <tElem>
+  [273] objcall 170 ............................. tElem.hide()
+  [275] jmp [284]
+  [278] getlocal 7 .............................. <tElem>
+  [280] pusharglistnoret 1 ...................... <tElem>
+  [282] objcall 166 ............................. tElem.show()
+  [284] getlocal 0 .............................. <tWndObj>
+  [286] pushcons 21 ............................. <"console_friendremove_next">
+  [288] pusharglist 2 ........................... <tWndObj, "console_friendremove_next">
+  [290] objcall 150 ............................. <tWndObj.getElement("console_friendremove_next")>
+  [292] setlocal 7 .............................. tElem = tWndObj.getElement("console_friendremove_next")
+  [294] getprop 666 ............................. <pPageNr>
+  [297] getprop 567 ............................. <pPageCount>
+  [300] eq ...................................... <pPageNr = pPageCount>
+  [301] jmpifz [313] ............................ if pPageNr = pPageCount then / else
+  [304] getlocal 7 .............................. <tElem>
+  [306] pusharglistnoret 1 ...................... <tElem>
+  [308] objcall 170 ............................. tElem.hide()
+  [310] jmp [319]
+  [313] getlocal 7 .............................. <tElem>
+  [315] pusharglistnoret 1 ...................... <tElem>
+  [317] objcall 166 ............................. tElem.show()
+  [319] getlocal 0 .............................. <tWndObj>
+  [321] pushcons 22 ............................. <"console_friendremove_accept_button">
+  [323] pusharglist 2 ........................... <tWndObj, "console_friendremove_accept_button">
+  [325] objcall 150 ............................. <tWndObj.getElement("console_friendremove_accept_button")>
+  [327] setlocal 7 .............................. tElem = tWndObj.getElement("console_friendremove_accept_button")
+  [329] getprop 669 ............................. <pChosen>
+  [332] pushzero ................................ <0>
+  [333] eq ...................................... <pChosen = 0>
+  [334] jmpifz [346] ............................ if pChosen = 0 then / else
+  [337] getlocal 7 .............................. <tElem>
+  [339] pusharglistnoret 1 ...................... <tElem>
+  [341] objcall 165 ............................. tElem.deactivate()
+  [343] jmp [352]
+  [346] getlocal 7 .............................. <tElem>
+  [348] pusharglistnoret 1 ...................... <tElem>
+  [350] objcall 162 ............................. tElem.Activate()
+  [352] getparam 0 .............................. <me>
+  [354] pusharglistnoret 1 ...................... <me>
+  [356] objcall 652 ............................. me.updateToChooseCounter()
+  [359] pushsymb 681 ............................ <#arrow>
+  [362] pusharglistnoret 1 ...................... <#arrow>
+  [364] extcall 680 ............................. setcursor(#arrow)
+  [367] ret
+end
+
+on hideNames me
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [  6] not ..................................... <not windowExists(pWindowTitle)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowTitle) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 81 .............................. return 0
+  [ 15] getprop 37 .............................. <pWindowTitle>
+  [ 17] pusharglist 1 ........................... <pWindowTitle>
+  [ 19] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 21] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] setlocal 1
+  [ 27] getlocal 1
+  [ 29] getprop 665 ............................. <pOnScreenNum>
+  [ 32] lteq
+  [ 33] jmpifz [ 83] ............................ repeat with i = 1 to pOnScreenNum
+  [ 36] getlocal 0 .............................. <tWndObj>
+  [ 38] pushcons 13 ............................. <"console_friendremove_name">
+  [ 40] getlocal 1 .............................. <i>
+  [ 42] joinstr ................................. <"console_friendremove_name" & i>
+  [ 43] pusharglist 2 ........................... <tWndObj, "console_friendremove_name" & i>
+  [ 45] objcall 150 ............................. <tWndObj.getElement("console_friendremove_name" & i)>
+  [ 47] setlocal 2 .............................. tElem1 = tWndObj.getElement("console_friendremove_name" & i)
+  [ 49] getlocal 0 .............................. <tWndObj>
+  [ 51] pushcons 14 ............................. <"friendremove_checkbox">
+  [ 53] getlocal 1 .............................. <i>
+  [ 55] joinstr ................................. <"friendremove_checkbox" & i>
+  [ 56] pusharglist 2 ........................... <tWndObj, "friendremove_checkbox" & i>
+  [ 58] objcall 150 ............................. <tWndObj.getElement("friendremove_checkbox" & i)>
+  [ 60] setlocal 3 .............................. tElem2 = tWndObj.getElement("friendremove_checkbox" & i)
+  [ 62] getlocal 2 .............................. <tElem1>
+  [ 64] pusharglistnoret 1 ...................... <tElem1>
+  [ 66] objcall 170 ............................. tElem1.hide()
+  [ 68] getlocal 3 .............................. <tElem2>
+  [ 70] pusharglistnoret 1 ...................... <tElem2>
+  [ 72] objcall 170 ............................. tElem2.hide()
+  [ 74] pushint8 1
+  [ 76] getlocal 1
+  [ 78] add
+  [ 79] setlocal 1
+  [ 81] endrepeat [ 27]
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] pusharglistnoret 1 ...................... <1>
+  [ 87] extcall 81 .............................. return 1
+  [ 89] ret
+end
+
+on nextPage me
+  [  0] getprop 666 ............................. <pPageNr>
+  [  3] getprop 567 ............................. <pPageCount>
+  [  6] lt ...................................... <pPageNr < pPageCount>
+  [  7] jmpifz [ 25] ............................ if pPageNr < pPageCount then
+  [ 10] getprop 666 ............................. <pPageNr>
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] add ..................................... <pPageNr + 1>
+  [ 16] setprop 666 ............................. pPageNr = pPageNr + 1
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglistnoret 1 ...................... <me>
+  [ 23] objcall 196 ............................. me.updateView()
+  [ 25] ret
+end
+
+on prevPage me
+  [  0] getprop 666 ............................. <pPageNr>
+  [  3] pushint8 1 .............................. <1>
+  [  5] gt ...................................... <pPageNr > 1>
+  [  6] jmpifz [ 24] ............................ if pPageNr > 1 then
+  [  9] getprop 666 ............................. <pPageNr>
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] sub ..................................... <pPageNr - 1>
+  [ 15] setprop 666 ............................. pPageNr = pPageNr - 1
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglistnoret 1 ...................... <me>
+  [ 22] objcall 196 ............................. me.updateView()
+  [ 24] ret
+end
+
+on nameClicked me, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pushsymb 117 ............................ <#name>
+  [  6] pusharglist 3 ........................... <me, tID, #name>
+  [  8] objcall 651 ............................. <me.checkBoxClicked(tID, #name)>
+  [ 11] pusharglistnoret 1 ...................... <me.checkBoxClicked(tID, #name)>
+  [ 13] extcall 81 .............................. return me.checkBoxClicked(tID, #name)
+  [ 15] ret
+end
+
+on checkBoxClicked me, tID, ttype
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [  6] not ..................................... <not windowExists(pWindowTitle)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowTitle) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 81 .............................. return 0
+  [ 15] getparam 2 .............................. <ttype>
+  [ 17] pushsymb 117 ............................ <#name>
+  [ 19] eq ...................................... <ttype = #name>
+  [ 20] jmpifz [ 51] ............................ if ttype = #name then / else
+  [ 23] getparam 1 .............................. <tID>
+  [ 25] pushsymb 210 ............................ <#char>
+  [ 27] pushint8 26 ............................. <26>
+  [ 29] getparam 1 .............................. <tID>
+  [ 31] pushsymb 210 ............................ <#char>
+  [ 33] pusharglist 2 ........................... <tID, #char>
+  [ 35] objcall 113 ............................. <tID.char.count>
+  [ 37] pusharglist 4 ........................... <tID, #char, 26, tID.char.count>
+  [ 39] objcall 212 ............................. <tID.char[26..tID.char.count]>
+  [ 41] pusharglist 1 ........................... <tID.char[26..tID.char.count]>
+  [ 43] extcall 276 ............................. <integer(tID.char[26..tID.char.count])>
+  [ 46] setlocal 0 .............................. tNum = integer(tID.char[26..tID.char.count])
+  [ 48] jmp [ 76]
+  [ 51] getparam 1 .............................. <tID>
+  [ 53] pushsymb 210 ............................ <#char>
+  [ 55] pushint8 22 ............................. <22>
+  [ 57] getparam 1 .............................. <tID>
+  [ 59] pushsymb 210 ............................ <#char>
+  [ 61] pusharglist 2 ........................... <tID, #char>
+  [ 63] objcall 113 ............................. <tID.char.count>
+  [ 65] pusharglist 4 ........................... <tID, #char, 22, tID.char.count>
+  [ 67] objcall 212 ............................. <tID.char[22..tID.char.count]>
+  [ 69] pusharglist 1 ........................... <tID.char[22..tID.char.count]>
+  [ 71] extcall 276 ............................. <integer(tID.char[22..tID.char.count])>
+  [ 74] setlocal 0 .............................. tNum = integer(tID.char[22..tID.char.count])
+  [ 76] getprop 666 ............................. <pPageNr>
+  [ 79] pushint8 1 .............................. <1>
+  [ 81] sub ..................................... <pPageNr - 1>
+  [ 82] getprop 665 ............................. <pOnScreenNum>
+  [ 85] mul ..................................... <(pPageNr - 1) * pOnScreenNum>
+  [ 86] setlocal 1 .............................. tStartNr = (pPageNr - 1) * pOnScreenNum
+  [ 88] pushcons 14 ............................. <"friendremove_checkbox">
+  [ 90] getlocal 0 .............................. <tNum>
+  [ 92] joinstr ................................. <"friendremove_checkbox" & tNum>
+  [ 93] setlocal 2 .............................. tBoxID = "friendremove_checkbox" & tNum
+  [ 95] getprop 664 ............................. <pRemoveCheckBoxList>
+  [ 98] getlocal 0 .............................. <tNum>
+  [100] pusharglist 2 ........................... <pRemoveCheckBoxList, tNum>
+  [102] objcall 116 ............................. <pRemoveCheckBoxList[tNum]>
+  [104] pushzero ................................ <0>
+  [105] eq ...................................... <pRemoveCheckBoxList[tNum] = 0>
+  [106] jmpifz [160] ............................ if pRemoveCheckBoxList[tNum] = 0 then / else
+  [109] getprop 664 ............................. <pRemoveCheckBoxList>
+  [112] getlocal 0 .............................. <tNum>
+  [114] pushint8 1 .............................. <1>
+  [116] pusharglistnoret 3 ...................... <pRemoveCheckBoxList, tNum, 1>
+  [118] objcall 118 ............................. pRemoveCheckBoxList[tNum] = 1
+  [120] getprop 382 ............................. <pBuddyList>
+  [123] getlocal 1 .............................. <tStartNr>
+  [125] getlocal 0 .............................. <tNum>
+  [127] add ..................................... <tStartNr + tNum>
+  [128] pusharglist 2 ........................... <pBuddyList, tStartNr + tNum>
+  [130] objcall 116 ............................. <pBuddyList[tStartNr + tNum]>
+  [132] pushint8 1 .............................. <1>
+  [134] setobjprop 676 .......................... pBuddyList[tStartNr + tNum].Remove = 1
+  [137] getprop 669 ............................. <pChosen>
+  [140] pushint8 1 .............................. <1>
+  [142] add ..................................... <pChosen + 1>
+  [143] setprop 669 ............................. pChosen = pChosen + 1
+  [146] getparam 0 .............................. <me>
+  [148] getlocal 2 .............................. <tBoxID>
+  [150] pushcons 16 ............................. <"button.checkbox.on">
+  [152] pusharglistnoret 3 ...................... <me, tBoxID, "button.checkbox.on">
+  [154] objcall 654 ............................. me.updateCheckButton(tBoxID, "button.checkbox.on")
+  [157] jmp [206]
+  [160] getprop 664 ............................. <pRemoveCheckBoxList>
+  [163] getlocal 0 .............................. <tNum>
+  [165] pushzero ................................ <0>
+  [166] pusharglistnoret 3 ...................... <pRemoveCheckBoxList, tNum, 0>
+  [168] objcall 118 ............................. pRemoveCheckBoxList[tNum] = 0
+  [170] getprop 382 ............................. <pBuddyList>
+  [173] getlocal 1 .............................. <tStartNr>
+  [175] getlocal 0 .............................. <tNum>
+  [177] add ..................................... <tStartNr + tNum>
+  [178] pusharglist 2 ........................... <pBuddyList, tStartNr + tNum>
+  [180] objcall 116 ............................. <pBuddyList[tStartNr + tNum]>
+  [182] pushzero ................................ <0>
+  [183] setobjprop 676 .......................... pBuddyList[tStartNr + tNum].Remove = 0
+  [186] getprop 669 ............................. <pChosen>
+  [189] pushint8 1 .............................. <1>
+  [191] sub ..................................... <pChosen - 1>
+  [192] setprop 669 ............................. pChosen = pChosen - 1
+  [195] getparam 0 .............................. <me>
+  [197] getlocal 2 .............................. <tBoxID>
+  [199] pushcons 15 ............................. <"button.checkbox.off">
+  [201] pusharglistnoret 3 ...................... <me, tBoxID, "button.checkbox.off">
+  [203] objcall 654 ............................. me.updateCheckButton(tBoxID, "button.checkbox.off")
+  [206] getprop 37 .............................. <pWindowTitle>
+  [208] pusharglist 1 ........................... <pWindowTitle>
+  [210] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [212] setlocal 3 .............................. tWndObj = getWindow(pWindowTitle)
+  [214] getlocal 3 .............................. <tWndObj>
+  [216] pushcons 22 ............................. <"console_friendremove_accept_button">
+  [218] pusharglist 2 ........................... <tWndObj, "console_friendremove_accept_button">
+  [220] objcall 150 ............................. <tWndObj.getElement("console_friendremove_accept_button")>
+  [222] setlocal 4 .............................. tElem = tWndObj.getElement("console_friendremove_accept_button")
+  [224] getprop 669 ............................. <pChosen>
+  [227] pushzero ................................ <0>
+  [228] eq ...................................... <pChosen = 0>
+  [229] jmpifz [241] ............................ if pChosen = 0 then / else
+  [232] getlocal 4 .............................. <tElem>
+  [234] pusharglistnoret 1 ...................... <tElem>
+  [236] objcall 165 ............................. tElem.deactivate()
+  [238] jmp [247]
+  [241] getlocal 4 .............................. <tElem>
+  [243] pusharglistnoret 1 ...................... <tElem>
+  [245] objcall 162 ............................. tElem.Activate()
+  [247] getparam 0 .............................. <me>
+  [249] pusharglist 1 ........................... <me>
+  [251] objcall 652 ............................. <me.updateToChooseCounter()>
+  [254] pusharglistnoret 1 ...................... <me.updateToChooseCounter()>
+  [256] extcall 81 .............................. return me.updateToChooseCounter()
+  [258] ret
+end
+
+on updateToChooseCounter me
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [  6] not ..................................... <not windowExists(pWindowTitle)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowTitle) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 81 .............................. return 0
+  [ 15] getprop 37 .............................. <pWindowTitle>
+  [ 17] pusharglist 1 ........................... <pWindowTitle>
+  [ 19] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 21] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 23] getprop 382 ............................. <pBuddyList>
+  [ 26] getobjprop 113 .......................... <pBuddyList.count>
+  [ 28] getprop 670 ............................. <pLimitPntr>
+  [ 31] getobjprop 61 ........................... <pLimitPntr.own>
+  [ 33] sub ..................................... <pBuddyList.count - pLimitPntr.own>
+  [ 34] getprop 669 ............................. <pChosen>
+  [ 37] sub ..................................... <pBuddyList.count - pLimitPntr.own - pChosen>
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] add ..................................... <pBuddyList.count - pLimitPntr.own - pChosen + 1>
+  [ 41] setlocal 1 .............................. tToRemove = pBuddyList.count - pLimitPntr.own - pChosen + 1
+  [ 43] getlocal 0 .............................. <tWndObj>
+  [ 45] pushcons 23 ............................. <"console_friendremove_ok_text">
+  [ 47] pusharglist 2 ........................... <tWndObj, "console_friendremove_ok_text">
+  [ 49] objcall 150 ............................. <tWndObj.getElement("console_friendremove_ok_text")>
+  [ 51] setlocal 2 .............................. tElem1 = tWndObj.getElement("console_friendremove_ok_text")
+  [ 53] getlocal 0 .............................. <tWndObj>
+  [ 55] pushcons 24 ............................. <"console_friendremove_header">
+  [ 57] pusharglist 2 ........................... <tWndObj, "console_friendremove_header">
+  [ 59] objcall 150 ............................. <tWndObj.getElement("console_friendremove_header")>
+  [ 61] setlocal 3 .............................. tElem2 = tWndObj.getElement("console_friendremove_header")
+  [ 63] getlocal 1 .............................. <tToRemove>
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] lt ...................................... <tToRemove < 1>
+  [ 68] jmpifz [ 86] ............................ if tToRemove < 1 then / else
+  [ 71] getlocal 2 .............................. <tElem1>
+  [ 73] pusharglistnoret 1 ...................... <tElem1>
+  [ 75] objcall 166 ............................. tElem1.show()
+  [ 77] getlocal 3 .............................. <tElem2>
+  [ 79] pusharglistnoret 1 ...................... <tElem2>
+  [ 81] objcall 170 ............................. tElem2.hide()
+  [ 83] jmp [131]
+  [ 86] getlocal 3 .............................. <tElem2>
+  [ 88] pusharglistnoret 1 ...................... <tElem2>
+  [ 90] objcall 166 ............................. tElem2.show()
+  [ 92] getlocal 2 .............................. <tElem1>
+  [ 94] pusharglistnoret 1 ...................... <tElem1>
+  [ 96] objcall 170 ............................. tElem1.hide()
+  [ 98] pushcons 25 ............................. <"buddyremove_header">
+  [100] pusharglist 1 ........................... <"buddyremove_header">
+  [102] extcall 38 .............................. <getText("buddyremove_header")>
+  [104] setlocal 4 .............................. tText = getText("buddyremove_header")
+  [106] getlocal 4 .............................. <tText>
+  [108] pushcons 26 ............................. <"%amount%">
+  [110] getlocal 1 .............................. <tToRemove>
+  [112] pusharglist 1 ........................... <tToRemove>
+  [114] extcall 146 ............................. <string(tToRemove)>
+  [116] pusharglist 3 ........................... <tText, "%amount%", string(tToRemove)>
+  [118] extcall 263 ............................. <replaceChunks(tText, "%amount%", string(tToRemove))>
+  [121] setlocal 4 .............................. tText = replaceChunks(tText, "%amount%", string(tToRemove))
+  [123] getlocal 3 .............................. <tElem2>
+  [125] getlocal 4 .............................. <tText>
+  [127] pusharglistnoret 2 ...................... <tElem2, tText>
+  [129] objcall 151 ............................. tElem2.setText(tText)
+  [131] pushint8 1 .............................. <1>
+  [133] pusharglistnoret 1 ...................... <1>
+  [135] extcall 81 .............................. return 1
+  [137] ret
+end
+
+on getStayCount me
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tStay = 0
+  [  3] pushint8 1 .............................. <1>
+  [  5] setlocal 1
+  [  7] getlocal 1
+  [  9] getprop 382 ............................. <pBuddyList>
+  [ 12] getobjprop 113 .......................... <pBuddyList.count>
+  [ 14] lteq
+  [ 15] jmpifz [ 50] ............................ repeat with i = 1 to pBuddyList.count
+  [ 18] getprop 382 ............................. <pBuddyList>
+  [ 21] getlocal 1 .............................. <i>
+  [ 23] pusharglist 2 ........................... <pBuddyList, i>
+  [ 25] objcall 116 ............................. <pBuddyList[i]>
+  [ 27] getobjprop 676 .......................... <pBuddyList[i].Remove>
+  [ 30] not ..................................... <not pBuddyList[i].Remove>
+  [ 31] jmpifz [ 41] ............................ if not pBuddyList[i].Remove then
+  [ 34] getlocal 0 .............................. <tStay>
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] add ..................................... <tStay + 1>
+  [ 39] setlocal 0 .............................. tStay = tStay + 1
+  [ 41] pushint8 1
+  [ 43] getlocal 1
+  [ 45] add
+  [ 46] setlocal 1
+  [ 48] endrepeat [  7]
+  [ 50] getlocal 0 .............................. <tStay>
+  [ 52] pusharglistnoret 1 ...................... <tStay>
+  [ 54] extcall 81 .............................. return tStay
+  [ 56] ret
+end
+
+on updateCheckButton me, tElementId, tMemName
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [  6] not ..................................... <not windowExists(pWindowTitle)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowTitle) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 81 .............................. return 0
+  [ 15] getprop 37 .............................. <pWindowTitle>
+  [ 17] pusharglist 1 ........................... <pWindowTitle>
+  [ 19] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 21] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 23] getparam 2 .............................. <tMemName>
+  [ 25] pusharglist 1 ........................... <tMemName>
+  [ 27] extcall 198 ............................. <getmemnum(tMemName)>
+  [ 29] pusharglist 1 ........................... <getmemnum(tMemName)>
+  [ 31] extcall 197 ............................. <member(getmemnum(tMemName))>
+  [ 33] getobjprop 134 .......................... <member(getmemnum(tMemName)).image>
+  [ 35] setlocal 1 .............................. tNewImg = member(getmemnum(tMemName)).image
+  [ 37] getlocal 0 .............................. <tWndObj>
+  [ 39] getparam 1 .............................. <tElementId>
+  [ 41] pusharglist 2 ........................... <tWndObj, tElementId>
+  [ 43] objcall 199 ............................. <tWndObj.elementExists(tElementId)>
+  [ 45] jmpifz [ 62] ............................ if tWndObj.elementExists(tElementId) then
+  [ 48] getlocal 0 .............................. <tWndObj>
+  [ 50] getparam 1 .............................. <tElementId>
+  [ 52] pusharglist 2 ........................... <tWndObj, tElementId>
+  [ 54] objcall 150 ............................. <tWndObj.getElement(tElementId)>
+  [ 56] getlocal 1 .............................. <tNewImg>
+  [ 58] pusharglistnoret 2 ...................... <tWndObj.getElement(tElementId), tNewImg>
+  [ 60] objcall 191 ............................. tWndObj.getElement(tElementId).feedImage(tNewImg)
+  [ 62] pushint8 1 .............................. <1>
+  [ 64] pusharglistnoret 1 ...................... <1>
+  [ 66] extcall 81 .............................. return 1
+  [ 68] ret
+end
+
+on endMassRemovalSession me, tHideMessenger
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] not ..................................... <not tWndObj>
+  [ 11] pusharglist 0 ........................... <>
+  [ 13] extcall 49 .............................. <VOID>
+  [ 15] eq ...................................... <not tWndObj = VOID>
+  [ 16] jmpifz [ 25] ............................ if not tWndObj = VOID then
+  [ 19] getlocal 0 .............................. <tWndObj>
+  [ 21] pusharglistnoret 1 ...................... <tWndObj>
+  [ 23] objcall 255 ............................. tWndObj.close()
+  [ 25] pushcons 27 ............................. <"buddy_massremove">
+  [ 27] pusharglist 1 ........................... <"buddy_massremove">
+  [ 29] extcall 94 .............................. <objectExists("buddy_massremove")>
+  [ 31] jmpifz [ 40] ............................ if objectExists("buddy_massremove") then
+  [ 34] pushcons 27 ............................. <"buddy_massremove">
+  [ 36] pusharglistnoret 1 ...................... <"buddy_massremove">
+  [ 38] extcall 95 .............................. removeObject("buddy_massremove")
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] pusharglistnoret 1 ...................... <1>
+  [ 44] extcall 81 .............................. return 1
+  [ 46] ret
+end
+
+on showConfirmationWindow me
+  [  0] getprop 37 .............................. <pWindowTitle>
+  [  2] pusharglist 1 ........................... <pWindowTitle>
+  [  4] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] pusharglistnoret 1 ...................... <tWndObj>
+  [ 12] objcall 245 ............................. tWndObj.unmerge()
+  [ 14] getlocal 0 .............................. <tWndObj>
+  [ 16] pushcons 28 ............................. <"console_massremove_confirm.window">
+  [ 18] pusharglist 2 ........................... <tWndObj, "console_massremove_confirm.window">
+  [ 20] objcall 254 ............................. <tWndObj.merge("console_massremove_confirm.window")>
+  [ 22] not ..................................... <not tWndObj.merge("console_massremove_confirm.window")>
+  [ 23] jmpifz [ 36] ............................ if not tWndObj.merge("console_massremove_confirm.window") then
+  [ 26] getlocal 0 .............................. <tWndObj>
+  [ 28] pusharglist 1 ........................... <tWndObj>
+  [ 30] objcall 255 ............................. <tWndObj.close()>
+  [ 32] pusharglistnoret 1 ...................... <tWndObj.close()>
+  [ 34] extcall 81 .............................. return tWndObj.close()
+  [ 36] getlocal 0 .............................. <tWndObj>
+  [ 38] pushcons 29 ............................. <"console_friendremove_remove_text">
+  [ 40] pusharglist 2 ........................... <tWndObj, "console_friendremove_remove_text">
+  [ 42] objcall 150 ............................. <tWndObj.getElement("console_friendremove_remove_text")>
+  [ 44] setlocal 1 .............................. tElem = tWndObj.getElement("console_friendremove_remove_text")
+  [ 46] pushcons 30 ............................. <"buddyremove_remove_text">
+  [ 48] pusharglist 1 ........................... <"buddyremove_remove_text">
+  [ 50] extcall 38 .............................. <getText("buddyremove_remove_text")>
+  [ 52] setlocal 2 .............................. tText = getText("buddyremove_remove_text")
+  [ 54] getlocal 2 .............................. <tText>
+  [ 56] pushcons 31 ............................. <"%removeamount%">
+  [ 58] getprop 669 ............................. <pChosen>
+  [ 61] pusharglist 1 ........................... <pChosen>
+  [ 63] extcall 146 ............................. <string(pChosen)>
+  [ 65] pusharglist 3 ........................... <tText, "%removeamount%", string(pChosen)>
+  [ 67] extcall 263 ............................. <replaceChunks(tText, "%removeamount%", string(pChosen))>
+  [ 70] setlocal 2 .............................. tText = replaceChunks(tText, "%removeamount%", string(pChosen))
+  [ 72] getlocal 2 .............................. <tText>
+  [ 74] pushcons 32 ............................. <"%amountleft%">
+  [ 76] getprop 382 ............................. <pBuddyList>
+  [ 79] getobjprop 113 .......................... <pBuddyList.count>
+  [ 81] getprop 669 ............................. <pChosen>
+  [ 84] sub ..................................... <pBuddyList.count - pChosen>
+  [ 85] pusharglist 1 ........................... <pBuddyList.count - pChosen>
+  [ 87] extcall 146 ............................. <string(pBuddyList.count - pChosen)>
+  [ 89] pusharglist 3 ........................... <tText, "%amountleft%", string(pBuddyList.count - pChosen)>
+  [ 91] extcall 263 ............................. <replaceChunks(tText, "%amountleft%", string(pBuddyList.count - pChosen))>
+  [ 94] setlocal 2 .............................. tText = replaceChunks(tText, "%amountleft%", string(pBuddyList.count - pChosen))
+  [ 96] getlocal 1 .............................. <tElem>
+  [ 98] getlocal 2 .............................. <tText>
+  [100] pusharglistnoret 2 ...................... <tElem, tText>
+  [102] objcall 151 ............................. tElem.setText(tText)
+  [104] pushcons 33 ............................. <EMPTY>
+  [106] setlocal 2 .............................. tText = EMPTY
+  [108] pushint8 1 .............................. <1>
+  [110] setlocal 3
+  [112] getlocal 3
+  [114] getprop 382 ............................. <pBuddyList>
+  [117] getobjprop 113 .......................... <pBuddyList.count>
+  [119] lteq
+  [120] jmpifz [167] ............................ repeat with i = 1 to pBuddyList.count
+  [123] getprop 382 ............................. <pBuddyList>
+  [126] getlocal 3 .............................. <i>
+  [128] pusharglist 2 ........................... <pBuddyList, i>
+  [130] objcall 116 ............................. <pBuddyList[i]>
+  [132] getobjprop 676 .......................... <pBuddyList[i].Remove>
+  [135] not ..................................... <not pBuddyList[i].Remove>
+  [136] jmpifz [158] ............................ if not pBuddyList[i].Remove then
+  [139] getlocal 2 .............................. <tText>
+  [141] getprop 382 ............................. <pBuddyList>
+  [144] getlocal 3 .............................. <i>
+  [146] pusharglist 2 ........................... <pBuddyList, i>
+  [148] objcall 116 ............................. <pBuddyList[i]>
+  [150] getobjprop 117 .......................... <pBuddyList[i].name>
+  [152] joinstr ................................. <tText & pBuddyList[i].name>
+  [153] pushcons 34 ............................. <", ">
+  [155] joinstr ................................. <tText & pBuddyList[i].name & ", ">
+  [156] setlocal 2 .............................. tText = tText & pBuddyList[i].name & ", "
+  [158] pushint8 1
+  [160] getlocal 3
+  [162] add
+  [163] setlocal 3
+  [165] endrepeat [112]
+  [167] getlocal 2 .............................. <tText>
+  [169] pushsymb 210 ............................ <#char>
+  [171] pushint8 1 .............................. <1>
+  [173] getlocal 2 .............................. <tText>
+  [175] pushsymb 210 ............................ <#char>
+  [177] pusharglist 2 ........................... <tText, #char>
+  [179] objcall 113 ............................. <tText.char.count>
+  [181] pushint8 2 .............................. <2>
+  [183] sub ..................................... <tText.char.count - 2>
+  [184] pusharglist 4 ........................... <tText, #char, 1, tText.char.count - 2>
+  [186] objcall 212 ............................. <tText.char[1..tText.char.count - 2]>
+  [188] setlocal 2 .............................. tText = tText.char[1..tText.char.count - 2]
+  [190] getlocal 0 .............................. <tWndObj>
+  [192] pushcons 35 ............................. <"console_friendremove_keep_list">
+  [194] pusharglist 2 ........................... <tWndObj, "console_friendremove_keep_list">
+  [196] objcall 150 ............................. <tWndObj.getElement("console_friendremove_keep_list")>
+  [198] setlocal 1 .............................. tElem = tWndObj.getElement("console_friendremove_keep_list")
+  [200] getlocal 1 .............................. <tElem>
+  [202] getlocal 2 .............................. <tText>
+  [204] pusharglistnoret 2 ...................... <tElem, tText>
+  [206] objcall 151 ............................. tElem.setText(tText)
+  [208] ret
+end
+
+on commitRemove me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 671 ............................. pRemoveList = []
+  [  6] pushint8 1 .............................. <1>
+  [  8] setlocal 0
+  [ 10] getlocal 0
+  [ 12] getprop 382 ............................. <pBuddyList>
+  [ 15] getobjprop 113 .......................... <pBuddyList.count>
+  [ 17] lteq
+  [ 18] jmpifz [ 63] ............................ repeat with i = 1 to pBuddyList.count
+  [ 21] getprop 382 ............................. <pBuddyList>
+  [ 24] getlocal 0 .............................. <i>
+  [ 26] pusharglist 2 ........................... <pBuddyList, i>
+  [ 28] objcall 116 ............................. <pBuddyList[i]>
+  [ 30] getobjprop 676 .......................... <pBuddyList[i].Remove>
+  [ 33] jmpifz [ 54] ............................ if pBuddyList[i].Remove then
+  [ 36] getprop 671 ............................. <pRemoveList>
+  [ 39] getprop 382 ............................. <pBuddyList>
+  [ 42] getlocal 0 .............................. <i>
+  [ 44] pusharglist 2 ........................... <pBuddyList, i>
+  [ 46] objcall 116 ............................. <pBuddyList[i]>
+  [ 48] getobjprop 125 .......................... <pBuddyList[i].id>
+  [ 50] pusharglistnoret 2 ...................... <pRemoveList, pBuddyList[i].id>
+  [ 52] objcall 208 ............................. pRemoveList.add(pBuddyList[i].id)
+  [ 54] pushint8 1
+  [ 56] getlocal 0
+  [ 58] add
+  [ 59] setlocal 0
+  [ 61] endrepeat [ 10]
+  [ 63] getprop 37 .............................. <pWindowTitle>
+  [ 65] pusharglist 1 ........................... <pWindowTitle>
+  [ 67] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 69] setlocal 1 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 71] getlocal 1 .............................. <tWndObj>
+  [ 73] not ..................................... <not tWndObj>
+  [ 74] pusharglist 0 ........................... <>
+  [ 76] extcall 49 .............................. <VOID>
+  [ 78] eq ...................................... <not tWndObj = VOID>
+  [ 79] jmpifz [ 88] ............................ if not tWndObj = VOID then
+  [ 82] getlocal 1 .............................. <tWndObj>
+  [ 84] pusharglistnoret 1 ...................... <tWndObj>
+  [ 86] objcall 255 ............................. tWndObj.close()
+  [ 88] pushsymb 398 ............................ <#messenger>
+  [ 91] pusharglist 1 ........................... <#messenger>
+  [ 93] extcall 404 ............................. <getThread(#messenger)>
+  [ 96] pusharglist 1 ........................... <getThread(#messenger)>
+  [ 98] objcall 396 ............................. <getThread(#messenger).getInterface()>
+  [101] pusharglistnoret 1 ...................... <getThread(#messenger).getInterface()>
+  [103] objcall 7 ............................... getThread(#messenger).getInterface().setMessengerInactive()
+  [105] getparam 0 .............................. <me>
+  [107] pusharglist 1 ........................... <me>
+  [109] objcall 658 ............................. <me.sendRemoveList()>
+  [112] pusharglistnoret 1 ...................... <me.sendRemoveList()>
+  [114] extcall 81 .............................. return me.sendRemoveList()
+  [116] ret
+end
+
+on sendRemoveList me
+  [  0] getprop 671 ............................. <pRemoveList>
+  [  3] pusharglist 0 ........................... <[]>
+  [  5] pushlist ................................ <[]>
+  [  6] eq ...................................... <pRemoveList = []>
+  [  7] jmpifz [ 46] ............................ if pRemoveList = [] then
+  [ 10] pushcons 36 ............................. <"connection.info.id">
+  [ 12] pusharglist 1 ........................... <"connection.info.id">
+  [ 14] extcall 42 .............................. <getVariable("connection.info.id")>
+  [ 16] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 18] extcall 295 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 21] pushcons 37 ............................. <"MESSENGER_UPDATE">
+  [ 23] pushsymb 276 ............................ <#integer>
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglist 2 ........................... <[#integer: 0]>
+  [ 29] pushproplist ............................ <[#integer: 0]>
+  [ 30] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "MESSENGER_UPDATE", [#integer: 0]>
+  [ 32] objcall 296 ............................. getConnection(getVariable("connection.info.id")).send("MESSENGER_UPDATE", [#integer: 0])
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 655 ............................. <me.endMassRemovalSession()>
+  [ 42] pusharglistnoret 1 ...................... <me.endMassRemovalSession()>
+  [ 44] extcall 81 .............................. return me.endMassRemovalSession()
+  [ 46] pushint16 400 ........................... <400>
+  [ 49] setlocal 0 .............................. tListSize = 400
+  [ 51] pushzero ................................ <0>
+  [ 52] setlocal 1 .............................. tCount = 0
+  [ 54] pushsymb 276 ............................ <#integer>
+  [ 57] pushzero ................................ <0>
+  [ 58] pusharglist 2 ........................... <[#integer: 0]>
+  [ 60] pushproplist ............................ <[#integer: 0]>
+  [ 61] setlocal 2 .............................. tSendList = [#integer: 0]
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] setlocal 3
+  [ 67] getlocal 3
+  [ 69] getlocal 0 .............................. <tListSize>
+  [ 71] lteq
+  [ 72] jmpifz [137] ............................ repeat with i = 1 to tListSize
+  [ 75] getlocal 2 .............................. <tSendList>
+  [ 77] pushsymb 276 ............................ <#integer>
+  [ 80] getprop 671 ............................. <pRemoveList>
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] pusharglist 2 ........................... <pRemoveList, 1>
+  [ 87] objcall 116 ............................. <pRemoveList[1]>
+  [ 89] pusharglist 1 ........................... <pRemoveList[1]>
+  [ 91] extcall 276 ............................. <integer(pRemoveList[1])>
+  [ 94] pusharglistnoret 3 ...................... <tSendList, #integer, integer(pRemoveList[1])>
+  [ 96] objcall 456 ............................. tSendList.addProp(#integer, integer(pRemoveList[1]))
+  [ 99] getprop 671 ............................. <pRemoveList>
+  [102] pushint8 1 .............................. <1>
+  [104] pusharglistnoret 2 ...................... <pRemoveList, 1>
+  [106] objcall 126 ............................. pRemoveList.deleteAt(1)
+  [108] getlocal 1 .............................. <tCount>
+  [110] pushint8 1 .............................. <1>
+  [112] add ..................................... <tCount + 1>
+  [113] setlocal 1 .............................. tCount = tCount + 1
+  [115] getprop 671 ............................. <pRemoveList>
+  [118] pusharglist 0 ........................... <[]>
+  [120] pushlist ................................ <[]>
+  [121] eq ...................................... <pRemoveList = []>
+  [122] jmpifz [128] ............................ if pRemoveList = [] then
+  [125] jmp [137] ............................... exit repeat
+  [128] pushint8 1
+  [130] getlocal 3
+  [132] add
+  [133] setlocal 3
+  [135] endrepeat [ 67]
+  [137] getlocal 2 .............................. <tSendList>
+  [139] pushint8 1 .............................. <1>
+  [141] getlocal 1 .............................. <tCount>
+  [143] pusharglistnoret 3 ...................... <tSendList, 1, tCount>
+  [145] objcall 118 ............................. tSendList[1] = tCount
+  [147] pushcons 36 ............................. <"connection.info.id">
+  [149] pusharglist 1 ........................... <"connection.info.id">
+  [151] extcall 42 .............................. <getVariable("connection.info.id")>
+  [153] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [155] extcall 295 ............................. <getConnection(getVariable("connection.info.id"))>
+  [158] pushcons 38 ............................. <"MESSENGER_REMOVEBUDDY">
+  [160] getlocal 2 .............................. <tSendList>
+  [162] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "MESSENGER_REMOVEBUDDY", tSendList>
+  [164] objcall 296 ............................. getConnection(getVariable("connection.info.id")).send("MESSENGER_REMOVEBUDDY", tSendList)
+  [167] pushint8 1 .............................. <1>
+  [169] pusharglistnoret 1 ...................... <1>
+  [171] extcall 81 .............................. return 1
+  [173] ret
+end
+
+on arrangeFriendList me, ttype
+  [  0] getprop 667 ............................. <pArrangeType>
+  [  3] getparam 1 .............................. <ttype>
+  [  5] eq ...................................... <pArrangeType = ttype>
+  [  6] jmpifz [ 14] ............................ if pArrangeType = ttype then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 81 .............................. return 0
+  [ 14] getparam 1 .............................. <ttype>
+  [ 16] pushsymb 697 ............................ <#logintime>
+  [ 19] eq ...................................... <ttype = #logintime>
+  [ 20] jmpifz [ 30] ............................ if ttype = #logintime then
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglistnoret 1 ...................... <me>
+  [ 27] objcall 660 ............................. me.showWaitIfNecessary()
+  [ 30] pusharglist 0 ........................... <[:]>
+  [ 32] pushproplist ............................ <[:]>
+  [ 33] setlocal 0 .............................. tNewList = [:]
+  [ 35] getmovieprop 698 ........................ <the itemDelimiter>
+  [ 38] setlocal 1 .............................. tTemp = the itemDelimiter
+  [ 40] pushcons 39 ............................. <"-">
+  [ 42] setmovieprop 698 ........................ the itemDelimiter = "-"
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] setlocal 2
+  [ 49] getlocal 2
+  [ 51] getprop 382 ............................. <pBuddyList>
+  [ 54] getobjprop 113 .......................... <pBuddyList.count>
+  [ 56] lteq
+  [ 57] jmpifz [197] ............................ repeat with i = 1 to pBuddyList.count
+  [ 60] getparam 1 .............................. <ttype>
+  [ 62] peek 0 .................................. case ttype of
+  [ 64] pushsymb 117 ............................ <#name>
+  [ 66] eq
+  [ 67] jmpifz [100] ............................ (case) #name:
+  [ 70] getlocal 0 .............................. <tNewList>
+  [ 72] getprop 382 ............................. <pBuddyList>
+  [ 75] getlocal 2 .............................. <i>
+  [ 77] pusharglist 2 ........................... <pBuddyList, i>
+  [ 79] objcall 116 ............................. <pBuddyList[i]>
+  [ 81] getobjprop 117 .......................... <pBuddyList[i].name>
+  [ 83] getprop 382 ............................. <pBuddyList>
+  [ 86] getlocal 2 .............................. <i>
+  [ 88] pusharglist 2 ........................... <pBuddyList, i>
+  [ 90] objcall 116 ............................. <pBuddyList[i]>
+  [ 92] pusharglistnoret 3 ...................... <tNewList, pBuddyList[i].name, pBuddyList[i]>
+  [ 94] objcall 456 ............................. tNewList.addProp(pBuddyList[i].name, pBuddyList[i])
+  [ 97] jmp [186]
+  [100] peek 0
+  [102] pushsymb 697 ............................ <#logintime>
+  [105] eq
+  [106] jmpifz [186] ............................ (case) #logintime:
+  [109] getprop 382 ............................. <pBuddyList>
+  [112] getlocal 2 .............................. <i>
+  [114] pusharglist 2 ........................... <pBuddyList, i>
+  [116] objcall 116 ............................. <pBuddyList[i]>
+  [118] getchainedprop 168 ...................... <pBuddyList[i].lastAccess>
+  [120] pushsymb 699 ............................ <#word>
+  [123] pushint8 1 .............................. <1>
+  [125] pusharglist 3 ........................... <pBuddyList[i].lastAccess, #word, 1>
+  [127] objcall 212 ............................. <pBuddyList[i].lastAccess.word[1]>
+  [129] setlocal 3 .............................. tTime = pBuddyList[i].lastAccess.word[1]
+  [131] getlocal 3 .............................. <tTime>
+  [133] pushsymb 700 ............................ <#item>
+  [136] pushint8 3 .............................. <3>
+  [138] pusharglist 3 ........................... <tTime, #item, 3>
+  [140] objcall 212 ............................. <tTime.item[3]>
+  [142] getlocal 3 .............................. <tTime>
+  [144] pushsymb 700 ............................ <#item>
+  [147] pushint8 2 .............................. <2>
+  [149] pusharglist 3 ........................... <tTime, #item, 2>
+  [151] objcall 212 ............................. <tTime.item[2]>
+  [153] joinstr ................................. <tTime.item[3] & tTime.item[2]>
+  [154] getlocal 3 .............................. <tTime>
+  [156] pushsymb 700 ............................ <#item>
+  [159] pushint8 1 .............................. <1>
+  [161] pusharglist 3 ........................... <tTime, #item, 1>
+  [163] objcall 212 ............................. <tTime.item[1]>
+  [165] joinstr ................................. <tTime.item[3] & tTime.item[2] & tTime.item[1]>
+  [166] setlocal 4 .............................. tArrangedTime = tTime.item[3] & tTime.item[2] & tTime.item[1]
+  [168] getlocal 0 .............................. <tNewList>
+  [170] getlocal 4 .............................. <tArrangedTime>
+  [172] getprop 382 ............................. <pBuddyList>
+  [175] getlocal 2 .............................. <i>
+  [177] pusharglist 2 ........................... <pBuddyList, i>
+  [179] objcall 116 ............................. <pBuddyList[i]>
+  [181] pusharglistnoret 3 ...................... <tNewList, tArrangedTime, pBuddyList[i]>
+  [183] objcall 456 ............................. tNewList.addProp(tArrangedTime, pBuddyList[i])
+  [186] pop 1 ................................... end case
+  [188] pushint8 1
+  [190] getlocal 2
+  [192] add
+  [193] setlocal 2
+  [195] endrepeat [ 49]
+  [197] getlocal 0 .............................. <tNewList>
+  [199] pusharglistnoret 1 ...................... <tNewList>
+  [201] objcall 103 ............................. tNewList.sort()
+  [203] getlocal 1 .............................. <tTemp>
+  [205] setmovieprop 698 ........................ the itemDelimiter = tTemp
+  [208] getlocal 0 .............................. <tNewList>
+  [210] pusharglist 1 ........................... <tNewList>
+  [212] objcall 107 ............................. <tNewList.duplicate()>
+  [214] setprop 382 ............................. pBuddyList = tNewList.duplicate()
+  [217] pushint8 1 .............................. <1>
+  [219] setprop 666 ............................. pPageNr = 1
+  [222] getparam 1 .............................. <ttype>
+  [224] setprop 667 ............................. pArrangeType = ttype
+  [227] getparam 0 .............................. <me>
+  [229] pusharglistnoret 1 ...................... <me>
+  [231] objcall 196 ............................. me.updateView()
+  [233] pushint8 1 .............................. <1>
+  [235] pusharglistnoret 1 ...................... <1>
+  [237] extcall 81 .............................. return 1
+  [239] ret
+end
+
+on showWaitIfNecessary me
+  [  0] getprop 382 ............................. <pBuddyList>
+  [  3] getobjprop 113 .......................... <pBuddyList.count>
+  [  5] pushint16 500 ........................... <500>
+  [  8] lt ...................................... <pBuddyList.count < 500>
+  [  9] jmpifz [ 18] ............................ if pBuddyList.count < 500 then
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 81 .............................. return 1
+  [ 18] getprop 37 .............................. <pWindowTitle>
+  [ 20] pusharglist 1 ........................... <pWindowTitle>
+  [ 22] extcall 87 .............................. <windowExists(pWindowTitle)>
+  [ 24] not ..................................... <not windowExists(pWindowTitle)>
+  [ 25] jmpifz [ 33] ............................ if not windowExists(pWindowTitle) then
+  [ 28] pushzero ................................ <0>
+  [ 29] pusharglistnoret 1 ...................... <0>
+  [ 31] extcall 81 .............................. return 0
+  [ 33] getprop 37 .............................. <pWindowTitle>
+  [ 35] pusharglist 1 ........................... <pWindowTitle>
+  [ 37] extcall 149 ............................. <getWindow(pWindowTitle)>
+  [ 39] setlocal 0 .............................. tWndObj = getWindow(pWindowTitle)
+  [ 41] getlocal 0 .............................. <tWndObj>
+  [ 43] pushcons 24 ............................. <"console_friendremove_header">
+  [ 45] pusharglist 2 ........................... <tWndObj, "console_friendremove_header">
+  [ 47] objcall 150 ............................. <tWndObj.getElement("console_friendremove_header")>
+  [ 49] setlocal 1 .............................. tElem = tWndObj.getElement("console_friendremove_header")
+  [ 51] pushcons 40 ............................. <"buddyremove_pleasewait">
+  [ 53] pusharglist 1 ........................... <"buddyremove_pleasewait">
+  [ 55] extcall 38 .............................. <getText("buddyremove_pleasewait")>
+  [ 57] setlocal 2 .............................. tText = getText("buddyremove_pleasewait")
+  [ 59] getlocal 1 .............................. <tElem>
+  [ 61] getlocal 2 .............................. <tText>
+  [ 63] pusharglistnoret 2 ...................... <tElem, tText>
+  [ 65] objcall 151 ............................. tElem.setText(tText)
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglistnoret 1 ...................... <me>
+  [ 71] objcall 647 ............................. me.hideNames()
+  [ 74] pushsymb 704 ............................ <#timer>
+  [ 77] pusharglistnoret 1 ...................... <#timer>
+  [ 79] extcall 680 ............................. setcursor(#timer)
+  [ 82] pusharglistnoret 0 ...................... <>
+  [ 84] extcall 705 ............................. updateStage()
+  [ 87] pushint8 1 .............................. <1>
+  [ 89] pusharglistnoret 1 ...................... <1>
+  [ 91] extcall 81 .............................. return 1
+  [ 93] ret
+end
+
+on selectAllFriends me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 382 ............................. <pBuddyList>
+  [  9] getobjprop 113 .......................... <pBuddyList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 38] ............................ repeat with i = 1 to pBuddyList.count
+  [ 15] getprop 382 ............................. <pBuddyList>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pBuddyList, i>
+  [ 22] objcall 116 ............................. <pBuddyList[i]>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] setobjprop 676 .......................... pBuddyList[i].Remove = 1
+  [ 29] pushint8 1
+  [ 31] getlocal 0
+  [ 33] add
+  [ 34] setlocal 0
+  [ 36] endrepeat [  4]
+  [ 38] getprop 382 ............................. <pBuddyList>
+  [ 41] getobjprop 113 .......................... <pBuddyList.count>
+  [ 43] setprop 669 ............................. pChosen = pBuddyList.count
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pusharglistnoret 1 ...................... <me>
+  [ 50] objcall 196 ............................. me.updateView()
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] pusharglistnoret 1 ...................... <1>
+  [ 56] extcall 81 .............................. return 1
+  [ 58] ret
+end
+
+on invertSelection me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 382 ............................. <pBuddyList>
+  [  9] getobjprop 113 .......................... <pBuddyList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 49] ............................ repeat with i = 1 to pBuddyList.count
+  [ 15] getprop 382 ............................. <pBuddyList>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pBuddyList, i>
+  [ 22] objcall 116 ............................. <pBuddyList[i]>
+  [ 24] getprop 382 ............................. <pBuddyList>
+  [ 27] getlocal 0 .............................. <i>
+  [ 29] pusharglist 2 ........................... <pBuddyList, i>
+  [ 31] objcall 116 ............................. <pBuddyList[i]>
+  [ 33] getobjprop 676 .......................... <pBuddyList[i].Remove>
+  [ 36] not ..................................... <not pBuddyList[i].Remove>
+  [ 37] setobjprop 676 .......................... pBuddyList[i].Remove = not pBuddyList[i].Remove
+  [ 40] pushint8 1
+  [ 42] getlocal 0
+  [ 44] add
+  [ 45] setlocal 0
+  [ 47] endrepeat [  4]
+  [ 49] getprop 382 ............................. <pBuddyList>
+  [ 52] getobjprop 113 .......................... <pBuddyList.count>
+  [ 54] getprop 669 ............................. <pChosen>
+  [ 57] sub ..................................... <pBuddyList.count - pChosen>
+  [ 58] setprop 669 ............................. pChosen = pBuddyList.count - pChosen
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglistnoret 1 ...................... <me>
+  [ 65] objcall 196 ............................. me.updateView()
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] pusharglistnoret 1 ...................... <1>
+  [ 71] extcall 81 .............................. return 1
+  [ 73] ret
+end
+
+on eventProcBuddyRemove me, tEvent, tElemID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 248 ............................ <#mouseUp>
+  [  4] eq ...................................... <tEvent = #mouseUp>
+  [  5] jmpifz [307] ............................ if tEvent = #mouseUp then
+  [  8] getparam 2 .............................. <tElemID>
+  [ 10] peek 0 .................................. case tElemID of
+  [ 12] pushcons 21 ............................. <"console_friendremove_next">
+  [ 14] eq
+  [ 15] jmpifz [ 28] ............................ (case) "console_friendremove_next":
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglistnoret 1 ...................... <me>
+  [ 22] objcall 648 ............................. me.nextPage()
+  [ 25] jmp [233]
+  [ 28] peek 0
+  [ 30] pushcons 20 ............................. <"console_friendremove_prev">
+  [ 32] eq
+  [ 33] jmpifz [ 46] ............................ (case) "console_friendremove_prev":
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pusharglistnoret 1 ...................... <me>
+  [ 40] objcall 649 ............................. me.prevPage()
+  [ 43] jmp [233]
+  [ 46] peek 0
+  [ 48] pushcons 22 ............................. <"console_friendremove_accept_button">
+  [ 50] eq
+  [ 51] jmpifz [ 64] ............................ (case) "console_friendremove_accept_button":
+  [ 54] getparam 0 .............................. <me>
+  [ 56] pusharglistnoret 1 ...................... <me>
+  [ 58] objcall 656 ............................. me.showConfirmationWindow()
+  [ 61] jmp [233]
+  [ 64] peek 0
+  [ 66] pushcons 41 ............................. <"console_friendremove_confirm">
+  [ 68] eq
+  [ 69] jmpifz [ 82] ............................ (case) "console_friendremove_confirm":
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglistnoret 1 ...................... <me>
+  [ 76] objcall 657 ............................. me.commitRemove()
+  [ 79] jmp [233]
+  [ 82] peek 0
+  [ 84] pushcons 42 ............................. <"console_friendremove_continue">
+  [ 86] eq
+  [ 87] jmpifz [100] ............................ (case) "console_friendremove_continue":
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglistnoret 1 ...................... <me>
+  [ 94] objcall 645 ............................. me.setUpMassRemoveWindow()
+  [ 97] jmp [233]
+  [100] peek 0
+  [102] pushcons 43 ............................. <"console_friendremove_not_now">
+  [104] nteq
+  [105] jmpifz [116] ............................ (case) "console_friendremove_not_now", ...
+  [108] peek 0
+  [110] pushcons 44 ............................. <"console_friendremove_cancel_button">
+  [112] eq
+  [113] jmpifz [126] ............................ (case) ..., "console_friendremove_cancel_button":
+  [116] getparam 0 .............................. <me>
+  [118] pusharglistnoret 1 ...................... <me>
+  [120] objcall 655 ............................. me.endMassRemovalSession()
+  [123] jmp [233]
+  [126] peek 0
+  [128] pushcons 45 ............................. <"console_friendremove_dropmenu">
+  [130] eq
+  [131] jmpifz [179] ............................ (case) "console_friendremove_dropmenu":
+  [134] getparam 3 .............................. <tParam>
+  [136] peek 0 .................................. case tParam of
+  [138] pushcons 46 ............................. <"buddyremove_logintime">
+  [140] eq
+  [141] jmpifz [157] ............................ (case) "buddyremove_logintime":
+  [144] getparam 0 .............................. <me>
+  [146] pushsymb 697 ............................ <#logintime>
+  [149] pusharglistnoret 2 ...................... <me, #logintime>
+  [151] objcall 659 ............................. me.arrangeFriendList(#logintime)
+  [154] jmp [174]
+  [157] peek 0
+  [159] pushcons 47 ............................. <"buddyremove_alphabetical">
+  [161] eq
+  [162] jmpifz [174] ............................ (case) "buddyremove_alphabetical":
+  [165] getparam 0 .............................. <me>
+  [167] pushsymb 117 ............................ <#name>
+  [169] pusharglistnoret 2 ...................... <me, #name>
+  [171] objcall 659 ............................. me.arrangeFriendList(#name)
+  [174] pop 1 ................................... end case
+  [176] jmp [233]
+  [179] peek 0
+  [181] pushcons 48 ............................. <"console_friendremove_select_all">
+  [183] eq
+  [184] jmpifz [197] ............................ (case) "console_friendremove_select_all":
+  [187] getparam 0 .............................. <me>
+  [189] pusharglistnoret 1 ...................... <me>
+  [191] objcall 661 ............................. me.selectAllFriends()
+  [194] jmp [233]
+  [197] peek 0
+  [199] pushcons 49 ............................. <"console_friendremove_invert">
+  [201] eq
+  [202] jmpifz [215] ............................ (case) "console_friendremove_invert":
+  [205] getparam 0 .............................. <me>
+  [207] pusharglistnoret 1 ...................... <me>
+  [209] objcall 662 ............................. me.invertSelection()
+  [212] jmp [233]
+  [215] peek 0
+  [217] pushcons 50 ............................. <"console_friendremove_confirm_cancel">
+  [219] eq
+  [220] jmpifz [233] ............................ (case) "console_friendremove_confirm_cancel":
+  [223] getparam 0 .............................. <me>
+  [225] pushsymb 678 ............................ <#less>
+  [228] pusharglistnoret 2 ...................... <me, #less>
+  [230] objcall 646 ............................. me.changeOptionLevel(#less)
+  [233] pop 1 ................................... end case
+  [235] getparam 2 .............................. <tElemID>
+  [237] pushsymb 210 ............................ <#char>
+  [239] pusharglist 2 ........................... <tElemID, #char>
+  [241] objcall 113 ............................. <tElemID.char.count>
+  [243] setlocal 0 .............................. tLen = tElemID.char.count
+  [245] getlocal 0 .............................. <tLen>
+  [247] pushint8 2 .............................. <2>
+  [249] gt ...................................... <tLen > 2>
+  [250] jmpifz [307] ............................ if tLen > 2 then
+  [253] getparam 2 .............................. <tElemID>
+  [255] pushsymb 210 ............................ <#char>
+  [257] pushint8 1 .............................. <1>
+  [259] pushint8 21 ............................. <21>
+  [261] pusharglist 4 ........................... <tElemID, #char, 1, 21>
+  [263] objcall 212 ............................. <tElemID.char[1..21]>
+  [265] pushcons 14 ............................. <"friendremove_checkbox">
+  [267] eq ...................................... <tElemID.char[1..21] = "friendremove_checkbox">
+  [268] jmpifz [280] ............................ if tElemID.char[1..21] = "friendremove_checkbox" then
+  [271] getparam 0 .............................. <me>
+  [273] getparam 2 .............................. <tElemID>
+  [275] pusharglistnoret 2 ...................... <me, tElemID>
+  [277] objcall 651 ............................. me.checkBoxClicked(tElemID)
+  [280] getparam 2 .............................. <tElemID>
+  [282] pushsymb 210 ............................ <#char>
+  [284] pushint8 1 .............................. <1>
+  [286] pushint8 25 ............................. <25>
+  [288] pusharglist 4 ........................... <tElemID, #char, 1, 25>
+  [290] objcall 212 ............................. <tElemID.char[1..25]>
+  [292] pushcons 13 ............................. <"console_friendremove_name">
+  [294] eq ...................................... <tElemID.char[1..25] = "console_friendremove_name">
+  [295] jmpifz [307] ............................ if tElemID.char[1..25] = "console_friendremove_name" then
+  [298] getparam 0 .............................. <me>
+  [300] getparam 2 .............................. <tElemID>
+  [302] pusharglistnoret 2 ...................... <me, tElemID>
+  [304] objcall 650 ............................. me.nameClicked(tElemID)
+  [307] getparam 1 .............................. <tEvent>
+  [309] pushsymb 250 ............................ <#mouseDown>
+  [311] eq ...................................... <tEvent = #mouseDown>
+  [312] jmpifz [398] ............................ if tEvent = #mouseDown then
+  [315] getparam 2 .............................. <tElemID>
+  [317] peek 0 .................................. case tElemID of
+  [319] pushcons 51 ............................. <"close">
+  [321] eq
+  [322] jmpifz [335] ............................ (case) "close":
+  [325] getparam 0 .............................. <me>
+  [327] pusharglistnoret 1 ...................... <me>
+  [329] objcall 655 ............................. me.endMassRemovalSession()
+  [332] jmp [396]
+  [335] peek 0
+  [337] pushcons 52 ............................. <"console_friendremove_moreoptions">
+  [339] eq
+  [340] jmpifz [356] ............................ (case) "console_friendremove_moreoptions":
+  [343] getparam 0 .............................. <me>
+  [345] pushsymb 677 ............................ <#more>
+  [348] pusharglistnoret 2 ...................... <me, #more>
+  [350] objcall 646 ............................. me.changeOptionLevel(#more)
+  [353] jmp [396]
+  [356] peek 0
+  [358] pushcons 53 ............................. <"console_friendremove_lessoptions">
+  [360] eq
+  [361] jmpifz [377] ............................ (case) "console_friendremove_lessoptions":
+  [364] getparam 0 .............................. <me>
+  [366] pushsymb 678 ............................ <#less>
+  [369] pusharglistnoret 2 ...................... <me, #less>
+  [371] objcall 646 ............................. me.changeOptionLevel(#less)
+  [374] jmp [396]
+  [377] peek 0
+  [379] pushcons 10 ............................. <"buddyremove_hc_more_info">
+  [381] eq
+  [382] jmpifz [396] ............................ (case) "buddyremove_hc_more_info":
+  [385] pushcons 8 .............................. <"buddyremove_hc_info_url">
+  [387] pusharglist 1 ........................... <"buddyremove_hc_info_url">
+  [389] extcall 38 .............................. <getText("buddyremove_hc_info_url")>
+  [391] pusharglistnoret 1 ...................... <getText("buddyremove_hc_info_url")>
+  [393] extcall 287 ............................. openNetPage(getText("buddyremove_hc_info_url"))
+  [396] pop 1 ................................... end case
+  [398] ret
+end

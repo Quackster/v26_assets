@@ -1,0 +1,232 @@
+property pListenerList, pAssetId, pDownloadURL, pAllowindexing, pAssetType, pParentId
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 197 ............................. pListenerList = []
+  [  5] pusharglist 0 ........................... <>
+  [  7] extcall 66 .............................. <VOID>
+  [  9] setprop 198 ............................. pAssetId = VOID
+  [ 11] pusharglist 0 ........................... <>
+  [ 13] extcall 66 .............................. <VOID>
+  [ 15] setlocal 0 .............................. pDownloadID = VOID
+  [ 17] pushzero ................................ <0>
+  [ 18] setprop 199 ............................. pAllowindexing = 0
+  [ 20] ret
+end
+
+on addCallbackListener me, tObjectID, tHandlerName, tCallbackParams
+  [  0] pushsymb 201 ............................ <#objectID>
+  [  2] getparam 1 .............................. <tObjectID>
+  [  4] pushsymb 202 ............................ <#handlerName>
+  [  6] getparam 2 .............................. <tHandlerName>
+  [  8] pushsymb 203 ............................ <#callbackParams>
+  [ 10] getparam 3 .............................. <tCallbackParams>
+  [ 12] pusharglist 6 ........................... <[#objectID: tObjectID, #handlerName: tHandlerName, #callbackParams: tCallbackParams]>
+  [ 14] pushproplist ............................ <[#objectID: tObjectID, #handlerName: tHandlerName, #callbackParams: tCallbackParams]>
+  [ 15] setlocal 0 .............................. tNewListener = [#objectID: tObjectID, #handlerName: tHandlerName, #callbackParams: tCallbackParams]
+  [ 17] getprop 197 ............................. <pListenerList>
+  [ 19] getlocal 0 .............................. <tNewListener>
+  [ 21] pusharglistnoret 2 ...................... <pListenerList, tNewListener>
+  [ 23] objcall 204 ............................. pListenerList.add(tNewListener)
+  [ 25] ret
+end
+
+on purgeCallbacks me, tSuccess
+  [  0] pushcons 0 .............................. <"dyndownload">
+  [  2] getmovieprop 90 ......................... <the milliSeconds>
+  [  4] joinstr ................................. <"dyndownload" & the milliSeconds>
+  [  5] setlocal 0 .............................. tTimeoutName = "dyndownload" & the milliSeconds
+  [  7] pushint8 1 .............................. <1>
+  [  9] setlocal 1 .............................. tCounter = 1
+  [ 11] getprop 197 ............................. <pListenerList>
+  [ 13] peek 0
+  [ 15] pusharglist 1
+  [ 17] extcall 32
+  [ 19] pushint8 1
+  [ 21] peek 0
+  [ 23] peek 2
+  [ 25] lteq
+  [ 26] jmpifz [154] ............................ repeat with tListener in pListenerList
+  [ 29] peek 2
+  [ 31] peek 1
+  [ 33] pusharglist 2
+  [ 35] extcall 33
+  [ 37] setlocal 2
+  [ 39] getlocal 2 .............................. <tListener>
+  [ 41] pushsymb 201 ............................ <#objectID>
+  [ 43] pusharglist 2 ........................... <tListener, #objectID>
+  [ 45] objcall 33 .............................. <tListener[#objectID]>
+  [ 47] pusharglist 1 ........................... <tListener[#objectID]>
+  [ 49] extcall 117 ............................. <getObject(tListener[#objectID])>
+  [ 51] setlocal 3 .............................. tObject = getObject(tListener[#objectID])
+  [ 53] getlocal 2 .............................. <tListener>
+  [ 55] pushsymb 202 ............................ <#handlerName>
+  [ 57] pusharglist 2 ........................... <tListener, #handlerName>
+  [ 59] objcall 33 .............................. <tListener[#handlerName]>
+  [ 61] setlocal 4 .............................. tHandler = tListener[#handlerName]
+  [ 63] getlocal 2 .............................. <tListener>
+  [ 65] pushsymb 203 ............................ <#callbackParams>
+  [ 67] pusharglist 2 ........................... <tListener, #callbackParams>
+  [ 69] objcall 33 .............................. <tListener[#callbackParams]>
+  [ 71] setlocal 5 .............................. tCallbackParams = tListener[#callbackParams]
+  [ 73] getlocal 3 .............................. <tObject>
+  [ 75] pushzero ................................ <0>
+  [ 76] nteq .................................... <tObject <> 0>
+  [ 77] getlocal 4 .............................. <tHandler>
+  [ 79] pusharglist 1 ........................... <tHandler>
+  [ 81] extcall 208 ............................. <symbolp(tHandler)>
+  [ 83] and ..................................... <(tObject <> 0) and symbolp(tHandler)>
+  [ 84] jmpifz [124] ............................ if (tObject <> 0) and symbolp(tHandler) then / else
+  [ 87] getlocal 0 .............................. <tTimeoutName>
+  [ 89] getlocal 1 .............................. <tCounter>
+  [ 91] joinstr ................................. <tTimeoutName & tCounter>
+  [ 92] pushint8 10 ............................. <10>
+  [ 94] pushsymb 196 ............................ <#sendTimeoutCallbacks>
+  [ 96] getparam 0 .............................. <me>
+  [ 98] pusharglist 1 ........................... <me>
+  [100] objcall 91 .............................. <me.getID()>
+  [102] getlocal 4 .............................. <tHandler>
+  [104] getlocal 3 .............................. <tObject>
+  [106] getprop 198 ............................. <pAssetId>
+  [108] getparam 1 .............................. <tSuccess>
+  [110] getlocal 5 .............................. <tCallbackParams>
+  [112] pusharglist 5 ........................... <[tHandler, tObject, pAssetId, tSuccess, tCallbackParams]>
+  [114] pushlist ................................ <[tHandler, tObject, pAssetId, tSuccess, tCallbackParams]>
+  [115] pushint8 1 .............................. <1>
+  [117] pusharglistnoret 6 ...................... <tTimeoutName & tCounter, 10, #sendTimeoutCallbacks, me.getID(), [tHandler, tObject, pAssetId, tSuccess, tCallbackParams], 1>
+  [119] extcall 89 .............................. createTimeout(tTimeoutName & tCounter, 10, #sendTimeoutCallbacks, me.getID(), [tHandler, tObject, pAssetId, tSuccess, tCallbackParams], 1)
+  [121] jmp [142]
+  [124] getparam 0 .............................. <me>
+  [126] pushcons 1 .............................. <"Object or handler invalid:">
+  [128] getlocal 3 .............................. <tObject>
+  [130] joinpadstr .............................. <"Object or handler invalid:" && tObject>
+  [131] getlocal 4 .............................. <tHandler>
+  [133] joinpadstr .............................. <"Object or handler invalid:" && tObject && tHandler>
+  [134] pushsymb 56 ............................. <#purgeCallbacks>
+  [136] pushsymb 222 ............................ <#minor>
+  [138] pusharglistnoret 4 ...................... <me, "Object or handler invalid:" && tObject && tHandler, #purgeCallbacks, #minor>
+  [140] extcall 44 .............................. error(me, "Object or handler invalid:" && tObject && tHandler, #purgeCallbacks, #minor)
+  [142] getlocal 1 .............................. <tCounter>
+  [144] pushint8 1 .............................. <1>
+  [146] add ..................................... <tCounter + 1>
+  [147] setlocal 1 .............................. tCounter = tCounter + 1
+  [149] pushint8 1
+  [151] add
+  [152] endrepeat [ 21]
+  [154] pop 3
+  [156] pusharglist 0 ........................... <[]>
+  [158] pushlist ................................ <[]>
+  [159] setprop 197 ............................. pListenerList = []
+  [161] ret
+end
+
+on setAssetId me, tAssetId
+  [  0] getparam 1 .............................. <tAssetId>
+  [  2] setprop 198 ............................. pAssetId = tAssetId
+  [  4] ret
+end
+
+on getAssetId me
+  [  0] getprop 198 ............................. <pAssetId>
+  [  2] pusharglistnoret 1 ...................... <pAssetId>
+  [  4] extcall 36 .............................. return pAssetId
+  [  6] ret
+end
+
+on setAssetType me, tAssetType
+  [  0] getparam 1 .............................. <tAssetType>
+  [  2] setprop 215 ............................. pAssetType = tAssetType
+  [  4] ret
+end
+
+on getAssetType me
+  [  0] getprop 215 ............................. <pAssetType>
+  [  2] pusharglistnoret 1 ...................... <pAssetType>
+  [  4] extcall 36 .............................. return pAssetType
+  [  6] ret
+end
+
+on setDownloadName me, tURL
+  [  0] getparam 1 .............................. <tURL>
+  [  2] setprop 216 ............................. pDownloadURL = tURL
+  [  4] ret
+end
+
+on getDownloadName me
+  [  0] pushcons 2 .............................. <"?">
+  [  2] getprop 216 ............................. <pDownloadURL>
+  [  4] pusharglist 2 ........................... <"?", pDownloadURL>
+  [  6] extcall 123 ............................. <offset("?", pDownloadURL)>
+  [  8] setlocal 0 .............................. tOffset = offset("?", pDownloadURL)
+  [ 10] getlocal 0 .............................. <tOffset>
+  [ 12] jmpifz [ 35] ............................ if tOffset then / else
+  [ 15] getprop 216 ............................. <pDownloadURL>
+  [ 17] pushsymb 124 ............................ <#char>
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] getlocal 0 .............................. <tOffset>
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] sub ..................................... <tOffset - 1>
+  [ 26] pusharglist 4 ........................... <pDownloadURL, #char, 1, tOffset - 1>
+  [ 28] objcall 120 ............................. <pDownloadURL.char[1..tOffset - 1]>
+  [ 30] setlocal 1 .............................. tDownloadURLNoParams = pDownloadURL.char[1..tOffset - 1]
+  [ 32] jmp [ 39]
+  [ 35] getprop 216 ............................. <pDownloadURL>
+  [ 37] setlocal 1 .............................. tDownloadURLNoParams = pDownloadURL
+  [ 39] getlocal 1 .............................. <tDownloadURLNoParams>
+  [ 41] pusharglistnoret 1 ...................... <tDownloadURLNoParams>
+  [ 43] extcall 36 .............................. return tDownloadURLNoParams
+  [ 45] ret
+end
+
+on setIndexing me, tAllowIndexing
+  [  0] getparam 1 .............................. <tAllowIndexing>
+  [  2] setprop 199 ............................. pAllowindexing = tAllowIndexing
+  [  4] ret
+end
+
+on getIndexing me
+  [  0] getprop 199 ............................. <pAllowindexing>
+  [  2] pusharglistnoret 1 ...................... <pAllowindexing>
+  [  4] extcall 36 .............................. return pAllowindexing
+  [  6] ret
+end
+
+on setParentId me, tParentId
+  [  0] getparam 1 .............................. <tParentId>
+  [  2] setprop 219 ............................. pParentId = tParentId
+  [  4] ret
+end
+
+on getParentId me
+  [  0] getprop 219 ............................. <pParentId>
+  [  2] pusharglistnoret 1 ...................... <pParentId>
+  [  4] extcall 36 .............................. return pParentId
+  [  6] ret
+end
+
+on sendTimeoutCallbacks me, tArguments
+  [  0] getparam 1 .............................. <tArguments>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <tArguments, 1>
+  [  6] objcall 33 .............................. <tArguments[1]>
+  [  8] getparam 1 .............................. <tArguments>
+  [ 10] pushint8 2 .............................. <2>
+  [ 12] pusharglist 2 ........................... <tArguments, 2>
+  [ 14] objcall 33 .............................. <tArguments[2]>
+  [ 16] getparam 1 .............................. <tArguments>
+  [ 18] pushint8 3 .............................. <3>
+  [ 20] pusharglist 2 ........................... <tArguments, 3>
+  [ 22] objcall 33 .............................. <tArguments[3]>
+  [ 24] getparam 1 .............................. <tArguments>
+  [ 26] pushint8 4 .............................. <4>
+  [ 28] pusharglist 2 ........................... <tArguments, 4>
+  [ 30] objcall 33 .............................. <tArguments[4]>
+  [ 32] getparam 1 .............................. <tArguments>
+  [ 34] pushint8 5 .............................. <5>
+  [ 36] pusharglist 2 ........................... <tArguments, 5>
+  [ 38] objcall 33 .............................. <tArguments[5]>
+  [ 40] pusharglistnoret 5 ...................... <tArguments[1], tArguments[2], tArguments[3], tArguments[4], tArguments[5]>
+  [ 42] extcall 220 ............................. call(tArguments[1], tArguments[2], tArguments[3], tArguments[4], tArguments[5])
+  [ 44] ret
+end

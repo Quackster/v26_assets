@@ -1,0 +1,172 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 221 ............................. <me.regMsgList(1)>
+  [  8] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 10] extcall 31 .............................. return me.regMsgList(1)
+  [ 12] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 221 ............................. <me.regMsgList(0)>
+  [  7] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [  9] extcall 31 .............................. return me.regMsgList(0)
+  [ 11] ret
+end
+
+on handleDimmerPresets me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 222 ............................ <#connection>
+  [  4] pusharglist 2 ........................... <tMsg, #connection>
+  [  6] objcall 71 .............................. <tMsg.getaProp(#connection)>
+  [  8] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 10] getlocal 0 .............................. <tConn>
+  [ 12] pusharglist 1 ........................... <tConn>
+  [ 14] objcall 223 ............................. <tConn.GetIntFrom()>
+  [ 16] setlocal 1 .............................. tNumOfPresets = tConn.GetIntFrom()
+  [ 18] getlocal 0 .............................. <tConn>
+  [ 20] pusharglist 1 ........................... <tConn>
+  [ 22] objcall 223 ............................. <tConn.GetIntFrom()>
+  [ 24] setlocal 2 .............................. tSelectedPresetID = tConn.GetIntFrom()
+  [ 26] pusharglist 0 ........................... <[:]>
+  [ 28] pushproplist ............................ <[:]>
+  [ 29] setlocal 3 .............................. tPresets = [:]
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] setlocal 4
+  [ 35] getlocal 4
+  [ 37] getlocal 1 .............................. <tNumOfPresets>
+  [ 39] lteq
+  [ 40] jmpifz [133] ............................ repeat with tPresetNum = 1 to tNumOfPresets
+  [ 43] pusharglist 0 ........................... <[:]>
+  [ 45] pushproplist ............................ <[:]>
+  [ 46] setlocal 5 .............................. tPresetData = [:]
+  [ 48] getlocal 0 .............................. <tConn>
+  [ 50] pusharglist 1 ........................... <tConn>
+  [ 52] objcall 223 ............................. <tConn.GetIntFrom()>
+  [ 54] setlocal 6 .............................. tPresetID = tConn.GetIntFrom()
+  [ 56] getlocal 0 .............................. <tConn>
+  [ 58] pusharglist 1 ........................... <tConn>
+  [ 60] objcall 223 ............................. <tConn.GetIntFrom()>
+  [ 62] setlocal 7 .............................. tEffectID = tConn.GetIntFrom()
+  [ 64] getlocal 0 .............................. <tConn>
+  [ 66] pusharglist 1 ........................... <tConn>
+  [ 68] objcall 224 ............................. <tConn.GetStrFrom()>
+  [ 70] setlocal 8 .............................. tColor = tConn.GetStrFrom()
+  [ 72] getlocal 0 .............................. <tConn>
+  [ 74] pusharglist 1 ........................... <tConn>
+  [ 76] objcall 223 ............................. <tConn.GetIntFrom()>
+  [ 78] setlocal 9 .............................. tLightness = tConn.GetIntFrom()
+  [ 80] getlocal 5 .............................. <tPresetData>
+  [ 82] pushsymb 70 ............................. <#effectID>
+  [ 84] getlocal 7 .............................. <tEffectID>
+  [ 86] pusharglistnoret 3 ...................... <tPresetData, #effectID, tEffectID>
+  [ 88] objcall 136 ............................. tPresetData.setaProp(#effectID, tEffectID)
+  [ 90] getlocal 5 .............................. <tPresetData>
+  [ 92] pushsymb 72 ............................. <#color>
+  [ 94] getlocal 8 .............................. <tColor>
+  [ 96] pusharglist 1 ........................... <tColor>
+  [ 98] extcall 52 .............................. <rgb(tColor)>
+  [100] pusharglistnoret 3 ...................... <tPresetData, #color, rgb(tColor)>
+  [102] objcall 136 ............................. tPresetData.setaProp(#color, rgb(tColor))
+  [104] getlocal 5 .............................. <tPresetData>
+  [106] pushsymb 74 ............................. <#lightness>
+  [108] getlocal 9 .............................. <tLightness>
+  [110] pusharglistnoret 3 ...................... <tPresetData, #lightness, tLightness>
+  [112] objcall 136 ............................. tPresetData.setaProp(#lightness, tLightness)
+  [114] getlocal 3 .............................. <tPresets>
+  [116] getlocal 6 .............................. <tPresetID>
+  [118] getlocal 5 .............................. <tPresetData>
+  [120] pusharglistnoret 3 ...................... <tPresets, tPresetID, tPresetData>
+  [122] objcall 136 ............................. tPresets.setaProp(tPresetID, tPresetData)
+  [124] pushint8 1
+  [126] getlocal 4
+  [128] add
+  [129] setlocal 4
+  [131] endrepeat [ 35]
+  [133] getparam 0 .............................. <me>
+  [135] pusharglist 1 ........................... <me>
+  [137] objcall 35 .............................. <me.getComponent()>
+  [139] getlocal 3 .............................. <tPresets>
+  [141] pusharglistnoret 2 ...................... <me.getComponent(), tPresets>
+  [143] objcall 158 ............................. me.getComponent().setPresets(tPresets)
+  [145] getlocal 3 .............................. <tPresets>
+  [147] pusharglistnoret 1 ...................... <tPresets>
+  [149] extcall 31 .............................. return tPresets
+  [151] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 365 ........................... <365>
+  [ 10] pushsymb 220 ............................ <#handleDimmerPresets>
+  [ 12] pusharglistnoret 3 ...................... <tMsgs, 365, #handleDimmerPresets>
+  [ 14] objcall 136 ............................. tMsgs.setaProp(365, #handleDimmerPresets)
+  [ 16] pusharglist 0 ........................... <[:]>
+  [ 18] pushproplist ............................ <[:]>
+  [ 19] setlocal 1 .............................. tCmds = [:]
+  [ 21] getlocal 1 .............................. <tCmds>
+  [ 23] pushcons 0 .............................. <"MSG_ROOMDIMMER_GET_PRESETS">
+  [ 25] pushint16 341 ........................... <341>
+  [ 28] pusharglistnoret 3 ...................... <tCmds, "MSG_ROOMDIMMER_GET_PRESETS", 341>
+  [ 30] objcall 136 ............................. tCmds.setaProp("MSG_ROOMDIMMER_GET_PRESETS", 341)
+  [ 32] getlocal 1 .............................. <tCmds>
+  [ 34] pushcons 1 .............................. <"MSG_ROOMDIMMER_SET_PRESET">
+  [ 36] pushint16 342 ........................... <342>
+  [ 39] pusharglistnoret 3 ...................... <tCmds, "MSG_ROOMDIMMER_SET_PRESET", 342>
+  [ 41] objcall 136 ............................. tCmds.setaProp("MSG_ROOMDIMMER_SET_PRESET", 342)
+  [ 43] getlocal 1 .............................. <tCmds>
+  [ 45] pushcons 2 .............................. <"MSG_ROOMDIMMER_CHANGE_STATE">
+  [ 47] pushint16 343 ........................... <343>
+  [ 50] pusharglistnoret 3 ...................... <tCmds, "MSG_ROOMDIMMER_CHANGE_STATE", 343>
+  [ 52] objcall 136 ............................. tCmds.setaProp("MSG_ROOMDIMMER_CHANGE_STATE", 343)
+  [ 54] getparam 1 .............................. <tBool>
+  [ 56] jmpifz [ 98] ............................ if tBool then / else
+  [ 59] pushcons 3 .............................. <"connection.info.id">
+  [ 61] pusharglist 1 ........................... <"connection.info.id">
+  [ 63] extcall 46 .............................. <getVariable("connection.info.id")>
+  [ 65] getparam 0 .............................. <me>
+  [ 67] pusharglist 1 ........................... <me>
+  [ 69] objcall 38 .............................. <me.getID()>
+  [ 71] getlocal 0 .............................. <tMsgs>
+  [ 73] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [ 75] extcall 228 ............................. registerListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [ 77] pushcons 3 .............................. <"connection.info.id">
+  [ 79] pusharglist 1 ........................... <"connection.info.id">
+  [ 81] extcall 46 .............................. <getVariable("connection.info.id")>
+  [ 83] getparam 0 .............................. <me>
+  [ 85] pusharglist 1 ........................... <me>
+  [ 87] objcall 38 .............................. <me.getID()>
+  [ 89] getlocal 1 .............................. <tCmds>
+  [ 91] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [ 93] extcall 229 ............................. registerCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [ 95] jmp [134]
+  [ 98] pushcons 3 .............................. <"connection.info.id">
+  [100] pusharglist 1 ........................... <"connection.info.id">
+  [102] extcall 46 .............................. <getVariable("connection.info.id")>
+  [104] getparam 0 .............................. <me>
+  [106] pusharglist 1 ........................... <me>
+  [108] objcall 38 .............................. <me.getID()>
+  [110] getlocal 0 .............................. <tMsgs>
+  [112] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [114] extcall 230 ............................. unregisterListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [116] pushcons 3 .............................. <"connection.info.id">
+  [118] pusharglist 1 ........................... <"connection.info.id">
+  [120] extcall 46 .............................. <getVariable("connection.info.id")>
+  [122] getparam 0 .............................. <me>
+  [124] pusharglist 1 ........................... <me>
+  [126] objcall 38 .............................. <me.getID()>
+  [128] getlocal 1 .............................. <tCmds>
+  [130] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [132] extcall 231 ............................. unregisterCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [134] pushint8 1 .............................. <1>
+  [136] pusharglistnoret 1 ...................... <1>
+  [138] extcall 31 .............................. return 1
+  [140] ret
+end

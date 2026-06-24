@@ -1,0 +1,95 @@
+property pSprite, pCurrentLoc, pXStart, pXEnd, pDelayAmount, pXSpeed, pYSpeed
+
+on define me, tsprite
+  [  0] getparam 1 .............................. <tsprite>
+  [  2] setprop 4 ............................... pSprite = tsprite
+  [  4] pushint16 730 ........................... <730>
+  [  7] setprop 6 ............................... pXStart = 730
+  [  9] pushint16 280 ........................... <280>
+  [ 12] setprop 10 .............................. pXEnd = 280
+  [ 14] pushcons 0 .............................. <0.59999999999999998>
+  [ 16] setprop 277 ............................. pXSpeed = 0.59999999999999998
+  [ 19] pushcons 1 .............................. <0.29999999999999999>
+  [ 21] setprop 278 ............................. pYSpeed = 0.29999999999999999
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglistnoret 1 ...................... <me>
+  [ 28] objcall 1 ............................... me.reset()
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglistnoret 1 ...................... <1>
+  [ 34] extcall 7 ............................... return 1
+  [ 36] ret
+end
+
+on reset me
+  [  0] pushint16 730 ........................... <730>
+  [  3] pushint16 430 ........................... <430>
+  [  6] pusharglist 2 ........................... <[730, 430]>
+  [  8] pushlist ................................ <[730, 430]>
+  [  9] setprop 23 .............................. pCurrentLoc = [730, 430]
+  [ 11] pushint8 20 ............................. <20>
+  [ 13] pusharglist 1 ........................... <20>
+  [ 15] extcall 228 ............................. <random(20)>
+  [ 17] pushint8 40 ............................. <40>
+  [ 19] add ..................................... <random(20) + 40>
+  [ 20] setprop 13 .............................. pDelayAmount = random(20) + 40
+  [ 22] ret
+end
+
+on update me
+  [  0] getprop 23 .............................. <pCurrentLoc>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <pCurrentLoc, 1>
+  [  6] objcall 18 .............................. <pCurrentLoc[1]>
+  [  8] getprop 10 .............................. <pXEnd>
+  [ 10] gt ...................................... <pCurrentLoc[1] > pXEnd>
+  [ 11] jmpifz [ 89] ............................ if pCurrentLoc[1] > pXEnd then / else
+  [ 14] getprop 23 .............................. <pCurrentLoc>
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] getprop 23 .............................. <pCurrentLoc>
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglist 2 ........................... <pCurrentLoc, 1>
+  [ 24] objcall 18 .............................. <pCurrentLoc[1]>
+  [ 26] getprop 277 ............................. <pXSpeed>
+  [ 29] sub ..................................... <pCurrentLoc[1] - pXSpeed>
+  [ 30] pusharglistnoret 3 ...................... <pCurrentLoc, 1, pCurrentLoc[1] - pXSpeed>
+  [ 32] objcall 24 .............................. pCurrentLoc[1] = pCurrentLoc[1] - pXSpeed
+  [ 34] getprop 23 .............................. <pCurrentLoc>
+  [ 36] pushint8 2 .............................. <2>
+  [ 38] getprop 23 .............................. <pCurrentLoc>
+  [ 40] pushint8 2 .............................. <2>
+  [ 42] pusharglist 2 ........................... <pCurrentLoc, 2>
+  [ 44] objcall 18 .............................. <pCurrentLoc[2]>
+  [ 46] getprop 278 ............................. <pYSpeed>
+  [ 49] sub ..................................... <pCurrentLoc[2] - pYSpeed>
+  [ 50] pusharglistnoret 3 ...................... <pCurrentLoc, 2, pCurrentLoc[2] - pYSpeed>
+  [ 52] objcall 24 .............................. pCurrentLoc[2] = pCurrentLoc[2] - pYSpeed
+  [ 54] getprop 4 ............................... <pSprite>
+  [ 56] getprop 23 .............................. <pCurrentLoc>
+  [ 58] pushint8 1 .............................. <1>
+  [ 60] pusharglist 2 ........................... <pCurrentLoc, 1>
+  [ 62] objcall 18 .............................. <pCurrentLoc[1]>
+  [ 64] pusharglist 1 ........................... <pCurrentLoc[1]>
+  [ 66] extcall 25 .............................. <integer(pCurrentLoc[1])>
+  [ 68] setobjprop 15 ........................... pSprite.locH = integer(pCurrentLoc[1])
+  [ 70] getprop 4 ............................... <pSprite>
+  [ 72] getprop 23 .............................. <pCurrentLoc>
+  [ 74] pushint8 2 .............................. <2>
+  [ 76] pusharglist 2 ........................... <pCurrentLoc, 2>
+  [ 78] objcall 18 .............................. <pCurrentLoc[2]>
+  [ 80] pusharglist 1 ........................... <pCurrentLoc[2]>
+  [ 82] extcall 25 .............................. <integer(pCurrentLoc[2])>
+  [ 84] setobjprop 78 ........................... pSprite.locV = integer(pCurrentLoc[2])
+  [ 86] jmp [109]
+  [ 89] getprop 13 .............................. <pDelayAmount>
+  [ 91] pushint8 1 .............................. <1>
+  [ 93] sub ..................................... <pDelayAmount - 1>
+  [ 94] setprop 13 .............................. pDelayAmount = pDelayAmount - 1
+  [ 96] getprop 13 .............................. <pDelayAmount>
+  [ 98] pushzero ................................ <0>
+  [ 99] lt ...................................... <pDelayAmount < 0>
+  [100] jmpifz [109] ............................ if pDelayAmount < 0 then
+  [103] getparam 0 .............................. <me>
+  [105] pusharglistnoret 1 ...................... <me>
+  [107] objcall 1 ............................... me.reset()
+  [109] ret
+end

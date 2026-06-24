@@ -1,0 +1,103 @@
+property pMessage, pCardObj
+
+on prepare me, tdata
+  [  0] pushcons 0 .............................. <"PackageCardObj">
+  [  2] setprop 688 ............................. pCardObj = "PackageCardObj"
+  [  5] getparam 1 .............................. <tdata>
+  [  7] pushsymb 315 ............................ <#stuffdata>
+  [ 10] pusharglist 2 ........................... <tdata, #stuffdata>
+  [ 12] objcall 61 .............................. <tdata[#stuffdata]>
+  [ 14] setparam 1 .............................. tdata = tdata[#stuffdata]
+  [ 16] getparam 1 .............................. <tdata>
+  [ 18] pusharglist 1 ........................... <tdata>
+  [ 20] extcall 97 .............................. <voidp(tdata)>
+  [ 22] not ..................................... <not voidp(tdata)>
+  [ 23] jmpifz [ 97] ............................ if not voidp(tdata) then
+  [ 26] getparam 1 .............................. <tdata>
+  [ 28] pushsymb 98 ............................. <#char>
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglist 3 ........................... <tdata, #char, 1>
+  [ 34] objcall 100 ............................. <tdata.char[1]>
+  [ 36] pushcons 1 .............................. <"!">
+  [ 38] eq ...................................... <tdata.char[1] = "!">
+  [ 39] jmpifz [ 64] ............................ if tdata.char[1] = "!" then / else
+  [ 42] getparam 1 .............................. <tdata>
+  [ 44] pushsymb 98 ............................. <#char>
+  [ 46] pushint8 2 .............................. <2>
+  [ 48] getparam 1 .............................. <tdata>
+  [ 50] pusharglist 1 ........................... <tdata>
+  [ 52] extcall 99 .............................. <length(tdata)>
+  [ 54] pusharglist 4 ........................... <tdata, #char, 2, length(tdata)>
+  [ 56] objcall 100 ............................. <tdata.char[2..length(tdata)]>
+  [ 58] setprop 689 ............................. pMessage = tdata.char[2..length(tdata)]
+  [ 61] jmp [ 97]
+  [ 64] getmovieprop 102 ........................ <the itemDelimiter>
+  [ 66] setlocal 0 .............................. tDelim = the itemDelimiter
+  [ 68] pushcons 2 .............................. <":">
+  [ 70] setmovieprop 102 ........................ the itemDelimiter = ":"
+  [ 72] getparam 1 .............................. <tdata>
+  [ 74] pushsymb 103 ............................ <#item>
+  [ 76] pushint8 4 .............................. <4>
+  [ 78] getparam 1 .............................. <tdata>
+  [ 80] pushsymb 103 ............................ <#item>
+  [ 82] pusharglist 2 ........................... <tdata, #item>
+  [ 84] objcall 60 .............................. <tdata.item.count>
+  [ 86] pusharglist 4 ........................... <tdata, #item, 4, tdata.item.count>
+  [ 88] objcall 100 ............................. <tdata.item[4..tdata.item.count]>
+  [ 90] setprop 689 ............................. pMessage = tdata.item[4..tdata.item.count]
+  [ 93] getlocal 0 .............................. <tDelim>
+  [ 95] setmovieprop 102 ........................ the itemDelimiter = tDelim
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] pusharglistnoret 1 ...................... <1>
+  [101] extcall 9 ............................... return 1
+  [103] ret
+end
+
+on select me
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 318 .......................... <the doubleClick>
+  [  5] jmpifz [ 15] ............................ if the doubleClick then
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglistnoret 1 ...................... <me>
+  [ 12] objcall 687 ............................. me.showCard()
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 9 ............................... return 1
+  [ 21] ret
+end
+
+on showCard me
+  [  0] getprop 688 ............................. <pCardObj>
+  [  3] pusharglist 1 ........................... <pCardObj>
+  [  5] extcall 470 ............................. <objectExists(pCardObj)>
+  [  8] not ..................................... <not objectExists(pCardObj)>
+  [  9] jmpifz [ 22] ............................ if not objectExists(pCardObj) then
+  [ 12] getprop 688 ............................. <pCardObj>
+  [ 15] pushcons 3 .............................. <"Package Card Class">
+  [ 17] pusharglistnoret 2 ...................... <pCardObj, "Package Card Class">
+  [ 19] extcall 389 ............................. createObject(pCardObj, "Package Card Class")
+  [ 22] getprop 688 ............................. <pCardObj>
+  [ 25] pusharglist 1 ........................... <pCardObj>
+  [ 27] extcall 87 .............................. <getObject(pCardObj)>
+  [ 29] pushsymb 133 ............................ <#id>
+  [ 31] getparam 0 .............................. <me>
+  [ 33] pusharglist 1 ........................... <me>
+  [ 35] objcall 7 ............................... <me.getID()>
+  [ 37] pushsymb 690 ............................ <#Msg>
+  [ 40] getprop 689 ............................. <pMessage>
+  [ 43] pushsymb 16 ............................. <#loc>
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pushsymb 14 ............................. <#pSprList>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] pusharglist 3 ........................... <me, #pSprList, 1>
+  [ 53] objcall 15 .............................. <me.pSprList[1]>
+  [ 55] getobjprop 16 ........................... <me.pSprList[1].loc>
+  [ 57] pusharglist 6 ........................... <[#id: me.getID(), #Msg: pMessage, #loc: me.pSprList[1].loc]>
+  [ 59] pushproplist ............................ <[#id: me.getID(), #Msg: pMessage, #loc: me.pSprList[1].loc]>
+  [ 60] pusharglistnoret 2 ...................... <getObject(pCardObj), [#id: me.getID(), #Msg: pMessage, #loc: me.pSprList[1].loc]>
+  [ 62] objcall 1 ............................... getObject(pCardObj).define([#id: me.getID(), #Msg: pMessage, #loc: me.pSprList[1].loc])
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] pusharglistnoret 1 ...................... <1>
+  [ 68] extcall 9 ............................... return 1
+  [ 70] ret
+end

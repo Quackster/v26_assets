@@ -15,6 +15,10 @@ file folder contains decoded assets and metadata:
 - `manifest.tsv` asset/member mapping
 - `file_info.tsv` parsed file metadata
 
+ProjectorRays Lingo/source dumps are in:
+
+`projectorrays_lingo/<file>/casts/**/*.ls`
+
 Summary:
 
 - Director/Shockwave files scanned: 295
@@ -27,7 +31,9 @@ Summary:
 - Palette exports: 1,307
 - Raw chunk exports: 21,436
 - Script members: 843
+- ProjectorRays `.ls` files: 844
 
 Batch logs:
 
 - `libreshockwave_summary.tsv`
+- `projectorrays_lingo/projectorrays_batch.log`

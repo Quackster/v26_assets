@@ -1,0 +1,257 @@
+on GET me, tKey, tDefault
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 735 ............................ <#pItemList>
+  [  5] getparam 1 .............................. <tKey>
+  [  7] pusharglist 3 ........................... <me, #pItemList, tKey>
+  [  9] objcall 22 .............................. <me.pItemList[tKey]>
+  [ 11] setlocal 0 .............................. tText = me.pItemList[tKey]
+  [ 13] getlocal 0 .............................. <tText>
+  [ 15] pusharglist 1 ........................... <tText>
+  [ 17] extcall 14 .............................. <voidp(tText)>
+  [ 19] jmpifz [ 76] ............................ if voidp(tText) then
+  [ 22] pushcons 0 .............................. <"Text not found:">
+  [ 24] getparam 1 .............................. <tKey>
+  [ 26] joinpadstr .............................. <"Text not found:" && tKey>
+  [ 27] setlocal 1 .............................. tError = "Text not found:" && tKey
+  [ 29] getparam 2 .............................. <tDefault>
+  [ 31] pusharglist 1 ........................... <tDefault>
+  [ 33] extcall 14 .............................. <voidp(tDefault)>
+  [ 35] not ..................................... <not voidp(tDefault)>
+  [ 36] jmpifz [ 59] ............................ if not voidp(tDefault) then / else
+  [ 39] getparam 2 .............................. <tDefault>
+  [ 41] setlocal 0 .............................. tText = tDefault
+  [ 43] getlocal 1 .............................. <tError>
+  [ 45] pushcons 1 .............................. <RETURN>
+  [ 47] joinstr ................................. <tError & RETURN>
+  [ 48] pushcons 2 .............................. <"Using given default:">
+  [ 50] joinstr ................................. <tError & RETURN & "Using given default:">
+  [ 51] getparam 2 .............................. <tDefault>
+  [ 53] joinpadstr .............................. <tError & RETURN & "Using given default:" && tDefault>
+  [ 54] setlocal 1 .............................. tError = tError & RETURN & "Using given default:" && tDefault
+  [ 56] jmp [ 63]
+  [ 59] getparam 1 .............................. <tKey>
+  [ 61] setlocal 0 .............................. tText = tKey
+  [ 63] getparam 0 .............................. <me>
+  [ 65] getlocal 1 .............................. <tError>
+  [ 67] pushsymb 173 ............................ <#GET>
+  [ 69] pushsymb 764 ............................ <#minor>
+  [ 72] pusharglistnoret 4 ...................... <me, tError, #GET, #minor>
+  [ 74] extcall 122 ............................. error(me, tError, #GET, #minor)
+  [ 76] pusharglist 0 ........................... <>
+  [ 78] extcall 61 .............................. <getStringServices()>
+  [ 80] getlocal 0 .............................. <tText>
+  [ 82] pusharglist 2 ........................... <getStringServices(), tText>
+  [ 84] objcall 365 ............................. <getStringServices().convertSpecialChars(tText)>
+  [ 87] setlocal 0 .............................. tText = getStringServices().convertSpecialChars(tText)
+  [ 89] getlocal 0 .............................. <tText>
+  [ 91] pusharglistnoret 1 ...................... <tText>
+  [ 93] extcall 11 .............................. return tText
+  [ 95] ret
+end
+
+on dump me, tField, tDelimiter
+  [  0] getparam 1 .............................. <tField>
+  [  2] pusharglist 1 ........................... <tField>
+  [  4] extcall 257 ............................. <memberExists(tField)>
+  [  7] not ..................................... <not memberExists(tField)>
+  [  8] jmpifz [ 31] ............................ if not memberExists(tField) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 3 .............................. <"Field member expected:">
+  [ 15] getparam 1 .............................. <tField>
+  [ 17] joinpadstr .............................. <"Field member expected:" && tField>
+  [ 18] pushsymb 358 ............................ <#dump>
+  [ 21] pushsymb 123 ............................ <#major>
+  [ 23] pusharglist 4 ........................... <me, "Field member expected:" && tField, #dump, #major>
+  [ 25] extcall 122 ............................. <error(me, "Field member expected:" && tField, #dump, #major)>
+  [ 27] pusharglistnoret 1 ...................... <error(me, "Field member expected:" && tField, #dump, #major)>
+  [ 29] extcall 11 .............................. return error(me, "Field member expected:" && tField, #dump, #major)
+  [ 31] getparam 1 .............................. <tField>
+  [ 33] pushzero ................................ <0>
+  [ 34] getfield ................................ <field(tField)>
+  [ 35] setlocal 0 .............................. tRawStr = field(tField)
+  [ 37] getlocal 0 .............................. <tRawStr>
+  [ 39] pusharglist 1 ........................... <tRawStr>
+  [ 41] extcall 374 ............................. <decodeUTF8(tRawStr)>
+  [ 44] setlocal 0 .............................. tRawStr = decodeUTF8(tRawStr)
+  [ 46] pusharglist 0 ........................... <>
+  [ 48] extcall 61 .............................. <getStringServices()>
+  [ 50] setlocal 1 .............................. tStrServices = getStringServices()
+  [ 52] pushcons 4 .............................. <"\\r">
+  [ 54] pushcons 1 .............................. <RETURN>
+  [ 56] pushcons 5 .............................. <"\\t">
+  [ 58] pushcons 6 .............................. <TAB>
+  [ 60] pushcons 7 .............................. <"\\s">
+  [ 62] pusharglist 0 ........................... <>
+  [ 64] extcall 1061 ............................ <SPACE>
+  [ 67] pushcons 8 .............................. <"<BR>">
+  [ 69] pushcons 1 .............................. <RETURN>
+  [ 71] pusharglist 8 ........................... <["\\r": RETURN, "\\t": TAB, "\\s": SPACE, "<BR>": RETURN]>
+  [ 73] pushproplist ............................ <["\\r": RETURN, "\\t": TAB, "\\s": SPACE, "<BR>": RETURN]>
+  [ 74] setlocal 2 .............................. tSpecialChunks = ["\\r": RETURN, "\\t": TAB, "\\s": SPACE, "<BR>": RETURN]
+  [ 76] pusharglist 0 ........................... <[]>
+  [ 78] pushlist ................................ <[]>
+  [ 79] setlocal 3 .............................. tLineChunks = []
+  [ 81] pushint8 100 ............................ <100>
+  [ 83] setlocal 4 .............................. tMaxLinesPerChunk = 100
+  [ 85] getlocal 0 .............................. <tRawStr>
+  [ 87] pushsymb 694 ............................ <#line>
+  [ 90] pusharglist 2 ........................... <tRawStr, #line>
+  [ 92] objcall 28 .............................. <tRawStr.line.count>
+  [ 94] getlocal 4 .............................. <tMaxLinesPerChunk>
+  [ 96] div ..................................... <tRawStr.line.count / tMaxLinesPerChunk>
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] add ..................................... <(tRawStr.line.count / tMaxLinesPerChunk) + 1>
+  [100] setlocal 5 .............................. tTotalChunkCount = (tRawStr.line.count / tMaxLinesPerChunk) + 1
+  [102] pushint8 1 .............................. <1>
+  [104] setlocal 6
+  [106] getlocal 6
+  [108] getlocal 5 .............................. <tTotalChunkCount>
+  [110] lteq
+  [111] jmpifz [171] ............................ repeat with tChunk = 1 to tTotalChunkCount
+  [114] getlocal 6 .............................. <tChunk>
+  [116] pushint8 1 .............................. <1>
+  [118] sub ..................................... <tChunk - 1>
+  [119] getlocal 4 .............................. <tMaxLinesPerChunk>
+  [121] mul ..................................... <(tChunk - 1) * tMaxLinesPerChunk>
+  [122] pushint8 1 .............................. <1>
+  [124] add ..................................... <((tChunk - 1) * tMaxLinesPerChunk) + 1>
+  [125] setlocal 7 .............................. tStartChunkIndex = ((tChunk - 1) * tMaxLinesPerChunk) + 1
+  [127] getlocal 7 .............................. <tStartChunkIndex>
+  [129] getlocal 4 .............................. <tMaxLinesPerChunk>
+  [131] add ..................................... <tStartChunkIndex + tMaxLinesPerChunk>
+  [132] pushint8 1 .............................. <1>
+  [134] sub ..................................... <tStartChunkIndex + tMaxLinesPerChunk - 1>
+  [135] setlocal 8 .............................. tEndChunkIndex = tStartChunkIndex + tMaxLinesPerChunk - 1
+  [137] getlocal 0 .............................. <tRawStr>
+  [139] pushsymb 694 ............................ <#line>
+  [142] getlocal 7 .............................. <tStartChunkIndex>
+  [144] getlocal 8 .............................. <tEndChunkIndex>
+  [146] pusharglist 4 ........................... <tRawStr, #line, tStartChunkIndex, tEndChunkIndex>
+  [148] objcall 22 .............................. <tRawStr.line[tStartChunkIndex..tEndChunkIndex]>
+  [150] setlocal 9 .............................. tLines = tRawStr.line[tStartChunkIndex..tEndChunkIndex]
+  [152] getlocal 3 .............................. <tLineChunks>
+  [154] getlocal 6 .............................. <tChunk>
+  [156] getlocal 9 .............................. <tLines>
+  [158] pusharglistnoret 3 ...................... <tLineChunks, tChunk, tLines>
+  [160] objcall 23 .............................. tLineChunks[tChunk] = tLines
+  [162] pushint8 1
+  [164] getlocal 6
+  [166] add
+  [167] setlocal 6
+  [169] endrepeat [106]
+  [171] getmovieprop 376 ........................ <the itemDelimiter>
+  [174] setlocal 10 ............................. tDelim = the itemDelimiter
+  [176] pushcons 9 .............................. <"=">
+  [178] setmovieprop 376 ........................ the itemDelimiter = "="
+  [181] getlocal 3 .............................. <tLineChunks>
+  [183] peek 0
+  [185] pusharglist 1
+  [187] extcall 28
+  [189] pushint8 1
+  [191] peek 0
+  [193] peek 2
+  [195] lteq
+  [196] jmpifz [392] ............................ repeat with tStr in tLineChunks
+  [199] peek 2
+  [201] peek 1
+  [203] pusharglist 2
+  [205] extcall 29
+  [207] setlocal 11
+  [209] getlocal 11 ............................. <tStr>
+  [211] pushsymb 694 ............................ <#line>
+  [214] pusharglist 2 ........................... <tStr, #line>
+  [216] objcall 28 .............................. <tStr.line.count>
+  [218] setlocal 12 ............................. tLineCount = tStr.line.count
+  [220] pushint8 1 .............................. <1>
+  [222] setlocal 13
+  [224] getlocal 13
+  [226] getlocal 12 ............................. <tLineCount>
+  [228] lteq
+  [229] jmpifz [387] ............................ repeat with tLineNo = 1 to tLineCount
+  [232] getlocal 11 ............................. <tStr>
+  [234] pushsymb 694 ............................ <#line>
+  [237] getlocal 13 ............................. <tLineNo>
+  [239] pusharglist 3 ........................... <tStr, #line, tLineNo>
+  [241] objcall 22 .............................. <tStr.line[tLineNo]>
+  [243] setlocal 14 ............................. tPair = tStr.line[tLineNo]
+  [245] getlocal 14 ............................. <tPair>
+  [247] pushint8 1 .............................. <1>
+  [249] pushint8 1 .............................. <1>
+  [251] pusharglist 3 ........................... <tPair, 1, 1>
+  [253] extcall 34 .............................. <chars(tPair, 1, 1)>
+  [255] pushcons 10 ............................. <"#">
+  [257] nteq .................................... <chars(tPair, 1, 1) <> "#">
+  [258] getlocal 14 ............................. <tPair>
+  [260] pushcons 11 ............................. <EMPTY>
+  [262] nteq .................................... <tPair <> EMPTY>
+  [263] and ..................................... <(chars(tPair, 1, 1) <> "#") and (tPair <> EMPTY)>
+  [264] jmpifz [378] ............................ if (chars(tPair, 1, 1) <> "#") and (tPair <> EMPTY) then
+  [267] getlocal 14 ............................. <tPair>
+  [269] pushsymb 377 ............................ <#item>
+  [272] pushint8 1 .............................. <1>
+  [274] pusharglist 3 ........................... <tPair, #item, 1>
+  [276] objcall 22 .............................. <tPair.item[1]>
+  [278] setlocal 15 ............................. tProp = tPair.item[1]
+  [280] getlocal 14 ............................. <tPair>
+  [282] pushsymb 377 ............................ <#item>
+  [285] pushint8 2 .............................. <2>
+  [287] getlocal 14 ............................. <tPair>
+  [289] pushsymb 377 ............................ <#item>
+  [292] pusharglist 2 ........................... <tPair, #item>
+  [294] objcall 28 .............................. <tPair.item.count>
+  [296] pusharglist 4 ........................... <tPair, #item, 2, tPair.item.count>
+  [298] objcall 22 .............................. <tPair.item[2..tPair.item.count]>
+  [300] setlocal 16 ............................. tValue = tPair.item[2..tPair.item.count]
+  [302] pushint8 1 .............................. <1>
+  [304] setlocal 17
+  [306] getlocal 17
+  [308] getlocal 2 .............................. <tSpecialChunks>
+  [310] getobjprop 28 ........................... <tSpecialChunks.count>
+  [312] lteq
+  [313] jmpifz [364] ............................ repeat with k = 1 to tSpecialChunks.count
+  [316] getlocal 2 .............................. <tSpecialChunks>
+  [318] getlocal 17 ............................. <k>
+  [320] pusharglist 2 ........................... <tSpecialChunks, k>
+  [322] objcall 111 ............................. <tSpecialChunks.getPropAt(k)>
+  [324] setlocal 18 ............................. tMark = tSpecialChunks.getPropAt(k)
+  [326] getlocal 16 ............................. <tValue>
+  [328] getlocal 18 ............................. <tMark>
+  [330] containsstr ............................. <tValue contains tMark>
+  [331] jmpifz [355] ............................ if tValue contains tMark then
+  [334] getlocal 1 .............................. <tStrServices>
+  [336] getlocal 16 ............................. <tValue>
+  [338] getlocal 18 ............................. <tMark>
+  [340] getlocal 2 .............................. <tSpecialChunks>
+  [342] getlocal 17 ............................. <k>
+  [344] pusharglist 2 ........................... <tSpecialChunks, k>
+  [346] objcall 29 .............................. <tSpecialChunks[k]>
+  [348] pusharglist 4 ........................... <tStrServices, tValue, tMark, tSpecialChunks[k]>
+  [350] objcall 369 ............................. <tStrServices.replaceChunks(tValue, tMark, tSpecialChunks[k])>
+  [353] setlocal 16 ............................. tValue = tStrServices.replaceChunks(tValue, tMark, tSpecialChunks[k])
+  [355] pushint8 1
+  [357] getlocal 17
+  [359] add
+  [360] setlocal 17
+  [362] endrepeat [306]
+  [364] getparam 0 .............................. <me>
+  [366] pushsymb 735 ............................ <#pItemList>
+  [369] getlocal 15 ............................. <tProp>
+  [371] getlocal 16 ............................. <tValue>
+  [373] pusharglistnoret 4 ...................... <me, #pItemList, tProp, tValue>
+  [375] objcall 1066 ............................ me.pItemList[tProp] = tValue
+  [378] pushint8 1
+  [380] getlocal 13
+  [382] add
+  [383] setlocal 13
+  [385] endrepeat [224]
+  [387] pushint8 1
+  [389] add
+  [390] endrepeat [191]
+  [392] pop 3
+  [394] getlocal 10 ............................. <tDelim>
+  [396] setmovieprop 376 ........................ the itemDelimiter = tDelim
+  [399] pushint8 1 .............................. <1>
+  [401] pusharglistnoret 1 ...................... <1>
+  [403] extcall 11 .............................. return 1
+  [405] ret
+end

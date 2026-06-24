@@ -1,0 +1,635 @@
+property pIcon, pWindowID, pGuideToolAnimTimeoutID, pAnimFrame, pUseAlertSound
+
+on construct me
+  [  0] pushcons 0 .............................. <"guide_tool_icon_object">
+  [  2] pushcons 1 .............................. <"Guide Tool Icon Class">
+  [  4] pusharglist 2 ........................... <"guide_tool_icon_object", "Guide Tool Icon Class">
+  [  6] extcall 11 .............................. <createObject("guide_tool_icon_object", "Guide Tool Icon Class")>
+  [  8] setprop 10 .............................. pIcon = createObject("guide_tool_icon_object", "Guide Tool Icon Class")
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] setprop 147 ............................. pUseAlertSound = 1
+  [ 14] pushcons 2 .............................. <"guide_tool_window_id">
+  [ 16] setprop 12 .............................. pWindowID = "guide_tool_window_id"
+  [ 18] pushcons 3 .............................. <"guide_tool_anim_update_timeout_id">
+  [ 20] setprop 13 .............................. pGuideToolAnimTimeoutID = "guide_tool_anim_update_timeout_id"
+  [ 22] pushsymb 3 .............................. <#toggleGuideTool>
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 15 .............................. <me.getID()>
+  [ 30] pushsymb 3 .............................. <#toggleGuideTool>
+  [ 32] pusharglistnoret 3 ...................... <#toggleGuideTool, me.getID(), #toggleGuideTool>
+  [ 34] extcall 14 .............................. registerMessage(#toggleGuideTool, me.getID(), #toggleGuideTool)
+  [ 36] pushsymb 161 ............................ <#gamesystem_constructed>
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pusharglist 1 ........................... <me>
+  [ 42] objcall 15 .............................. <me.getID()>
+  [ 44] pushsymb 162 ............................ <#hideAll>
+  [ 46] pusharglistnoret 3 ...................... <#gamesystem_constructed, me.getID(), #hideAll>
+  [ 48] extcall 14 .............................. registerMessage(#gamesystem_constructed, me.getID(), #hideAll)
+  [ 50] pushsymb 163 ............................ <#gamesystem_deconstructed>
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pusharglist 1 ........................... <me>
+  [ 56] objcall 15 .............................. <me.getID()>
+  [ 58] pushsymb 8 .............................. <#update>
+  [ 60] pusharglistnoret 3 ...................... <#gamesystem_deconstructed, me.getID(), #update>
+  [ 62] extcall 14 .............................. registerMessage(#gamesystem_deconstructed, me.getID(), #update)
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] pusharglistnoret 1 ...................... <1>
+  [ 68] extcall 16 .............................. return 1
+  [ 70] ret
+end
+
+on deconstruct me
+  [  0] getprop 10 .............................. <pIcon>
+  [  2] pusharglist 1 ........................... <pIcon>
+  [  4] objcall 15 .............................. <pIcon.getID()>
+  [  6] pusharglistnoret 1 ...................... <pIcon.getID()>
+  [  8] extcall 18 .............................. removeObject(pIcon.getID())
+  [ 10] pushsymb 3 .............................. <#toggleGuideTool>
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 15 .............................. <me.getID()>
+  [ 18] pusharglistnoret 2 ...................... <#toggleGuideTool, me.getID()>
+  [ 20] extcall 19 .............................. unregisterMessage(#toggleGuideTool, me.getID())
+  [ 22] pushsymb 161 ............................ <#gamesystem_constructed>
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 15 .............................. <me.getID()>
+  [ 30] pusharglistnoret 2 ...................... <#gamesystem_constructed, me.getID()>
+  [ 32] extcall 19 .............................. unregisterMessage(#gamesystem_constructed, me.getID())
+  [ 34] pushsymb 163 ............................ <#gamesystem_deconstructed>
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pusharglist 1 ........................... <me>
+  [ 40] objcall 15 .............................. <me.getID()>
+  [ 42] pusharglistnoret 2 ...................... <#gamesystem_deconstructed, me.getID()>
+  [ 44] extcall 19 .............................. unregisterMessage(#gamesystem_deconstructed, me.getID())
+  [ 46] getprop 12 .............................. <pWindowID>
+  [ 48] pusharglist 1 ........................... <pWindowID>
+  [ 50] extcall 22 .............................. <windowExists(pWindowID)>
+  [ 52] jmpifz [ 61] ............................ if windowExists(pWindowID) then
+  [ 55] getprop 12 .............................. <pWindowID>
+  [ 57] pusharglistnoret 1 ...................... <pWindowID>
+  [ 59] extcall 31 .............................. removeWindow(pWindowID)
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] pusharglistnoret 1 ...................... <1>
+  [ 65] extcall 16 .............................. return 1
+  [ 67] ret
+end
+
+on hideAll me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 61 .............................. me.hideGuideToolIcon()
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglistnoret 1 ...................... <me>
+  [ 10] objcall 7 ............................... me.closeGuideTool()
+  [ 12] ret
+end
+
+on showGuideToolIcon me
+  [  0] getprop 10 .............................. <pIcon>
+  [  2] pusharglist 1 ........................... <pIcon>
+  [  4] extcall 20 .............................. <objectp(pIcon)>
+  [  6] jmpifz [ 15] ............................ if objectp(pIcon) then
+  [  9] getprop 10 .............................. <pIcon>
+  [ 11] pusharglistnoret 1 ...................... <pIcon>
+  [ 13] objcall 21 .............................. pIcon.show()
+  [ 15] ret
+end
+
+on hideGuideToolIcon me
+  [  0] getprop 10 .............................. <pIcon>
+  [  2] pusharglist 1 ........................... <pIcon>
+  [  4] extcall 20 .............................. <objectp(pIcon)>
+  [  6] jmpifz [ 15] ............................ if objectp(pIcon) then
+  [  9] getprop 10 .............................. <pIcon>
+  [ 11] pusharglistnoret 1 ...................... <pIcon>
+  [ 13] objcall 54 .............................. pIcon.hide()
+  [ 15] ret
+end
+
+on toggleGuideTool me
+  [  0] getprop 12 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 22 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 20] ............................ if not windowExists(pWindowID) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 4 ............................... <me.openGuideTool()>
+  [ 16] pusharglistnoret 1 ...................... <me.openGuideTool()>
+  [ 18] extcall 16 .............................. return me.openGuideTool()
+  [ 20] getprop 12 .............................. <pWindowID>
+  [ 22] pusharglist 1 ........................... <pWindowID>
+  [ 24] extcall 23 .............................. <getWindow(pWindowID)>
+  [ 26] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 28] getlocal 0 .............................. <tWndObj>
+  [ 30] pushsymb 24 ............................. <#visible>
+  [ 32] pusharglist 2 ........................... <tWndObj, #visible>
+  [ 34] objcall 25 .............................. <tWndObj.getProperty(#visible)>
+  [ 36] jmpifz [ 48] ............................ if tWndObj.getProperty(#visible) then / else
+  [ 39] getparam 0 .............................. <me>
+  [ 41] pusharglistnoret 1 ...................... <me>
+  [ 43] objcall 7 ............................... me.closeGuideTool()
+  [ 45] jmp [ 54]
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglistnoret 1 ...................... <me>
+  [ 52] objcall 4 ............................... me.openGuideTool()
+  [ 54] ret
+end
+
+on openGuideTool me
+  [  0] getprop 12 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 22 .............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 26] ............................ if windowExists(pWindowID) then / else
+  [  9] getprop 12 .............................. <pWindowID>
+  [ 11] pusharglist 1 ........................... <pWindowID>
+  [ 13] extcall 23 .............................. <getWindow(pWindowID)>
+  [ 15] setlocal 0 .............................. tWindow = getWindow(pWindowID)
+  [ 17] getlocal 0 .............................. <tWindow>
+  [ 19] pusharglistnoret 1 ...................... <tWindow>
+  [ 21] objcall 21 .............................. tWindow.show()
+  [ 23] jmp [ 46]
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglist 1 ........................... <me>
+  [ 30] objcall 27 .............................. <me.getComponent()>
+  [ 32] pusharglist 1 ........................... <me.getComponent()>
+  [ 34] objcall 28 .............................. <me.getComponent().getState()>
+  [ 36] setlocal 1 .............................. tstate = me.getComponent().getState()
+  [ 38] getparam 0 .............................. <me>
+  [ 40] getlocal 1 .............................. <tstate>
+  [ 42] pusharglistnoret 2 ...................... <me, tstate>
+  [ 44] objcall 5 ............................... me.createGuideToolWindow(tstate)
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] pusharglistnoret 1 ...................... <1>
+  [ 50] extcall 16 .............................. return 1
+  [ 52] ret
+end
+
+on createGuideToolWindow me, tstate
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0 .............................. tUseDefaultLoc = 1
+  [  4] getprop 12 .............................. <pWindowID>
+  [  6] pusharglist 1 ........................... <pWindowID>
+  [  8] extcall 22 .............................. <windowExists(pWindowID)>
+  [ 10] jmpifz [ 22] ............................ if windowExists(pWindowID) then
+  [ 13] getprop 12 .............................. <pWindowID>
+  [ 15] pusharglistnoret 1 ...................... <pWindowID>
+  [ 17] extcall 31 .............................. removeWindow(pWindowID)
+  [ 19] pushzero ................................ <0>
+  [ 20] setlocal 0 .............................. tUseDefaultLoc = 0
+  [ 22] getparam 1 .............................. <tstate>
+  [ 24] peek 0 .................................. case tstate of
+  [ 26] pushsymb 32 ............................. <#disabled>
+  [ 28] eq
+  [ 29] jmpifz [ 42] ............................ (case) #disabled:
+  [ 32] pop 1
+  [ 34] pushzero ................................ <0>
+  [ 35] pusharglistnoret 1 ...................... <0>
+  [ 37] extcall 16 .............................. return 0
+  [ 39] jmp [ 84]
+  [ 42] peek 0
+  [ 44] pushsymb 33 ............................. <#enabled>
+  [ 46] eq
+  [ 47] jmpifz [ 57] ............................ (case) #enabled:
+  [ 50] pushcons 4 .............................. <"guide_tool_start.window">
+  [ 52] setlocal 1 .............................. tLayout = "guide_tool_start.window"
+  [ 54] jmp [ 84]
+  [ 57] peek 0
+  [ 59] pushsymb 34 ............................. <#waiting>
+  [ 61] eq
+  [ 62] jmpifz [ 72] ............................ (case) #waiting:
+  [ 65] pushcons 5 .............................. <"guide_tool_waiting.window">
+  [ 67] setlocal 1 .............................. tLayout = "guide_tool_waiting.window"
+  [ 69] jmp [ 84]
+  [ 72] peek 0
+  [ 74] pushsymb 35 ............................. <#ready>
+  [ 76] eq
+  [ 77] jmpifz [ 84] ............................ (case) #ready:
+  [ 80] pushcons 6 .............................. <"guide_tool_invite.window">
+  [ 82] setlocal 1 .............................. tLayout = "guide_tool_invite.window"
+  [ 84] pop 1 ................................... end case
+  [ 86] getprop 12 .............................. <pWindowID>
+  [ 88] getlocal 1 .............................. <tLayout>
+  [ 90] pusharglistnoret 2 ...................... <pWindowID, tLayout>
+  [ 92] extcall 36 .............................. createWindow(pWindowID, tLayout)
+  [ 94] getprop 12 .............................. <pWindowID>
+  [ 96] pusharglist 1 ........................... <pWindowID>
+  [ 98] extcall 23 .............................. <getWindow(pWindowID)>
+  [100] setlocal 2 .............................. tWndObj = getWindow(pWindowID)
+  [102] getlocal 2 .............................. <tWndObj>
+  [104] pushsymb 9 .............................. <#eventProcGuideTool>
+  [106] getparam 0 .............................. <me>
+  [108] pusharglist 1 ........................... <me>
+  [110] objcall 15 .............................. <me.getID()>
+  [112] pushsymb 37 ............................. <#mouseUp>
+  [114] pusharglistnoret 4 ...................... <tWndObj, #eventProcGuideTool, me.getID(), #mouseUp>
+  [116] objcall 38 .............................. tWndObj.registerProcedure(#eventProcGuideTool, me.getID(), #mouseUp)
+  [118] getlocal 0 .............................. <tUseDefaultLoc>
+  [120] jmpifz [157] ............................ if tUseDefaultLoc then
+  [123] pushcons 7 .............................. <"guidetool.window.loc">
+  [125] pusharglist 1 ........................... <"guidetool.window.loc">
+  [127] extcall 67 .............................. <getVariable("guidetool.window.loc")>
+  [129] pusharglist 1 ........................... <getVariable("guidetool.window.loc")>
+  [131] extcall 160 ............................. <value(getVariable("guidetool.window.loc"))>
+  [133] setlocal 3 .............................. tloc = value(getVariable("guidetool.window.loc"))
+  [135] getlocal 2 .............................. <tWndObj>
+  [137] getlocal 3 .............................. <tloc>
+  [139] pushint8 1 .............................. <1>
+  [141] pusharglist 2 ........................... <tloc, 1>
+  [143] objcall 166 ............................. <tloc[1]>
+  [145] getlocal 3 .............................. <tloc>
+  [147] pushint8 2 .............................. <2>
+  [149] pusharglist 2 ........................... <tloc, 2>
+  [151] objcall 166 ............................. <tloc[2]>
+  [153] pusharglistnoret 3 ...................... <tWndObj, tloc[1], tloc[2]>
+  [155] objcall 167 ............................. tWndObj.moveTo(tloc[1], tloc[2])
+  [157] getprop 13 .............................. <pGuideToolAnimTimeoutID>
+  [159] pusharglist 1 ........................... <pGuideToolAnimTimeoutID>
+  [161] extcall 39 .............................. <timeoutExists(pGuideToolAnimTimeoutID)>
+  [163] jmpifz [172] ............................ if timeoutExists(pGuideToolAnimTimeoutID) then
+  [166] getprop 13 .............................. <pGuideToolAnimTimeoutID>
+  [168] pusharglistnoret 1 ...................... <pGuideToolAnimTimeoutID>
+  [170] extcall 40 .............................. removeTimeout(pGuideToolAnimTimeoutID)
+  [172] getparam 1 .............................. <tstate>
+  [174] peek 0 .................................. case tstate of
+  [176] pushsymb 34 ............................. <#waiting>
+  [178] eq
+  [179] jmpifz [207] ............................ (case) #waiting:
+  [182] getprop 13 .............................. <pGuideToolAnimTimeoutID>
+  [184] pushint16 250 ........................... <250>
+  [187] pushsymb 6 .............................. <#updateGuideToolAnim>
+  [189] getparam 0 .............................. <me>
+  [191] pusharglist 1 ........................... <me>
+  [193] objcall 15 .............................. <me.getID()>
+  [195] pusharglist 0 ........................... <>
+  [197] extcall 42 .............................. <VOID>
+  [199] pushzero ................................ <0>
+  [200] pusharglistnoret 6 ...................... <pGuideToolAnimTimeoutID, 250, #updateGuideToolAnim, me.getID(), VOID, 0>
+  [202] extcall 41 .............................. createTimeout(pGuideToolAnimTimeoutID, 250, #updateGuideToolAnim, me.getID(), VOID, 0)
+  [204] jmp [302]
+  [207] peek 0
+  [209] pushsymb 35 ............................. <#ready>
+  [211] eq
+  [212] jmpifz [302] ............................ (case) #ready:
+  [215] getprop 147 ............................. <pUseAlertSound>
+  [217] jmpifz [251] ............................ if pUseAlertSound then
+  [220] pushcons 8 .............................. <"guidetool.alert.sound">
+  [222] pusharglist 1 ........................... <"guidetool.alert.sound">
+  [224] extcall 67 .............................. <getVariable("guidetool.alert.sound")>
+  [226] setlocal 4 .............................. tSoundMemName = getVariable("guidetool.alert.sound")
+  [228] getlocal 4 .............................. <tSoundMemName>
+  [230] pushsymb 154 ............................ <#cut>
+  [232] pushsymb 155 ............................ <#loopCount>
+  [234] pushint8 1 .............................. <1>
+  [236] pushsymb 156 ............................ <#infiniteloop>
+  [238] pushzero ................................ <0>
+  [239] pushsymb 157 ............................ <#volume>
+  [241] pushint16 255 ........................... <255>
+  [244] pusharglist 6 ........................... <[#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [246] pushproplist ............................ <[#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [247] pusharglistnoret 3 ...................... <tSoundMemName, #cut, [#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [249] extcall 153 ............................. playSound(tSoundMemName, #cut, [#loopCount: 1, #infiniteloop: 0, #volume: 255])
+  [251] getparam 0 .............................. <me>
+  [253] pusharglist 1 ........................... <me>
+  [255] objcall 27 .............................. <me.getComponent()>
+  [257] pusharglist 1 ........................... <me.getComponent()>
+  [259] objcall 131 ............................. <me.getComponent().getInvitation()>
+  [261] setlocal 5 .............................. tInvitationData = me.getComponent().getInvitation()
+  [263] getlocal 2 .............................. <tWndObj>
+  [265] pushcons 9 .............................. <"guide_tool_header">
+  [267] pusharglist 2 ........................... <tWndObj, "guide_tool_header">
+  [269] objcall 44 .............................. <tWndObj.elementExists("guide_tool_header")>
+  [271] jmpifz [302] ............................ if tWndObj.elementExists("guide_tool_header") then
+  [274] getlocal 5 .............................. <tInvitationData>
+  [276] pushsymb 98 ............................. <#name>
+  [278] pusharglist 2 ........................... <tInvitationData, #name>
+  [280] objcall 122 ............................. <tInvitationData.getaProp(#name)>
+  [282] setlocal 6 .............................. tName = tInvitationData.getaProp(#name)
+  [284] getlocal 2 .............................. <tWndObj>
+  [286] pushcons 9 .............................. <"guide_tool_header">
+  [288] pusharglist 2 ........................... <tWndObj, "guide_tool_header">
+  [290] objcall 45 .............................. <tWndObj.getElement("guide_tool_header")>
+  [292] setlocal 7 .............................. tElem = tWndObj.getElement("guide_tool_header")
+  [294] getlocal 7 .............................. <tElem>
+  [296] getlocal 6 .............................. <tName>
+  [298] pusharglistnoret 2 ...................... <tElem, tName>
+  [300] objcall 133 ............................. tElem.setText(tName)
+  [302] pop 1 ................................... end case
+  [304] getparam 0 .............................. <me>
+  [306] pusharglistnoret 1 ...................... <me>
+  [308] objcall 148 ............................. me.updateCheckbox()
+  [310] ret
+end
+
+on updateCheckbox me
+  [  0] getprop 12 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 22 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowID) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 16 .............................. return 0
+  [ 15] getprop 12 .............................. <pWindowID>
+  [ 17] pusharglist 1 ........................... <pWindowID>
+  [ 19] extcall 23 .............................. <getWindow(pWindowID)>
+  [ 21] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 23] getlocal 0 .............................. <tWndObj>
+  [ 25] pushcons 10 ............................. <"guide_tool_checkbox">
+  [ 27] pusharglist 2 ........................... <tWndObj, "guide_tool_checkbox">
+  [ 29] objcall 44 .............................. <tWndObj.elementExists("guide_tool_checkbox")>
+  [ 31] not ..................................... <not tWndObj.elementExists("guide_tool_checkbox")>
+  [ 32] jmpifz [ 40] ............................ if not tWndObj.elementExists("guide_tool_checkbox") then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 16 .............................. return 0
+  [ 40] pushcons 11 ............................. <"button.checkbox.on">
+  [ 42] pusharglist 1 ........................... <"button.checkbox.on">
+  [ 44] extcall 47 .............................. <memberExists("button.checkbox.on")>
+  [ 46] pushcons 12 ............................. <"button.checkbox.off">
+  [ 48] pusharglist 1 ........................... <"button.checkbox.off">
+  [ 50] extcall 47 .............................. <memberExists("button.checkbox.off")>
+  [ 52] and ..................................... <memberExists("button.checkbox.on") and memberExists("button.checkbox.off")>
+  [ 53] not ..................................... <not (memberExists("button.checkbox.on") and memberExists("button.checkbox.off"))>
+  [ 54] jmpifz [ 62] ............................ if not (memberExists("button.checkbox.on") and memberExists("button.checkbox.off")) then
+  [ 57] pushzero ................................ <0>
+  [ 58] pusharglistnoret 1 ...................... <0>
+  [ 60] extcall 16 .............................. return 0
+  [ 62] pushcons 11 ............................. <"button.checkbox.on">
+  [ 64] pusharglist 1 ........................... <"button.checkbox.on">
+  [ 66] extcall 50 .............................. <getmemnum("button.checkbox.on")>
+  [ 68] pusharglist 1 ........................... <getmemnum("button.checkbox.on")>
+  [ 70] extcall 49 .............................. <member(getmemnum("button.checkbox.on"))>
+  [ 72] getobjprop 48 ........................... <member(getmemnum("button.checkbox.on")).image>
+  [ 74] setlocal 1 .............................. tImageOn = member(getmemnum("button.checkbox.on")).image
+  [ 76] pushcons 12 ............................. <"button.checkbox.off">
+  [ 78] pusharglist 1 ........................... <"button.checkbox.off">
+  [ 80] extcall 50 .............................. <getmemnum("button.checkbox.off")>
+  [ 82] pusharglist 1 ........................... <getmemnum("button.checkbox.off")>
+  [ 84] extcall 49 .............................. <member(getmemnum("button.checkbox.off"))>
+  [ 86] getobjprop 48 ........................... <member(getmemnum("button.checkbox.off")).image>
+  [ 88] setlocal 2 .............................. tImageOff = member(getmemnum("button.checkbox.off")).image
+  [ 90] getlocal 0 .............................. <tWndObj>
+  [ 92] pushcons 10 ............................. <"guide_tool_checkbox">
+  [ 94] pusharglist 2 ........................... <tWndObj, "guide_tool_checkbox">
+  [ 96] objcall 45 .............................. <tWndObj.getElement("guide_tool_checkbox")>
+  [ 98] setlocal 3 .............................. tElem = tWndObj.getElement("guide_tool_checkbox")
+  [100] getprop 147 ............................. <pUseAlertSound>
+  [102] jmpifz [116] ............................ if pUseAlertSound then / else
+  [105] getlocal 3 .............................. <tElem>
+  [107] getlocal 1 .............................. <tImageOn>
+  [109] pusharglistnoret 2 ...................... <tElem, tImageOn>
+  [111] objcall 149 ............................. tElem.feedImage(tImageOn)
+  [113] jmp [124]
+  [116] getlocal 3 .............................. <tElem>
+  [118] getlocal 2 .............................. <tImageOff>
+  [120] pusharglistnoret 2 ...................... <tElem, tImageOff>
+  [122] objcall 149 ............................. tElem.feedImage(tImageOff)
+  [124] ret
+end
+
+on updateGuideToolAnim me
+  [  0] getprop 12 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 22 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowID) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 16 .............................. return 0
+  [ 15] getprop 12 .............................. <pWindowID>
+  [ 17] pusharglist 1 ........................... <pWindowID>
+  [ 19] extcall 23 .............................. <getWindow(pWindowID)>
+  [ 21] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 23] getlocal 0 .............................. <tWndObj>
+  [ 25] pushcons 13 ............................. <"guide_tool_progress_bar">
+  [ 27] pusharglist 2 ........................... <tWndObj, "guide_tool_progress_bar">
+  [ 29] objcall 44 .............................. <tWndObj.elementExists("guide_tool_progress_bar")>
+  [ 31] not ..................................... <not tWndObj.elementExists("guide_tool_progress_bar")>
+  [ 32] jmpifz [ 40] ............................ if not tWndObj.elementExists("guide_tool_progress_bar") then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 16 .............................. return 0
+  [ 40] getlocal 0 .............................. <tWndObj>
+  [ 42] pushcons 13 ............................. <"guide_tool_progress_bar">
+  [ 44] pusharglist 2 ........................... <tWndObj, "guide_tool_progress_bar">
+  [ 46] objcall 45 .............................. <tWndObj.getElement("guide_tool_progress_bar")>
+  [ 48] setlocal 1 .............................. tElem = tWndObj.getElement("guide_tool_progress_bar")
+  [ 50] getprop 46 .............................. <pAnimFrame>
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] add ..................................... <pAnimFrame + 1>
+  [ 55] setprop 46 .............................. pAnimFrame = pAnimFrame + 1
+  [ 57] getprop 46 .............................. <pAnimFrame>
+  [ 59] pushint8 3 .............................. <3>
+  [ 61] gt ...................................... <pAnimFrame > 3>
+  [ 62] jmpifz [ 69] ............................ if pAnimFrame > 3 then
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] setprop 46 .............................. pAnimFrame = 1
+  [ 69] pushcons 14 ............................. <"nuh_search_">
+  [ 71] getprop 46 .............................. <pAnimFrame>
+  [ 73] joinstr ................................. <"nuh_search_" & pAnimFrame>
+  [ 74] setlocal 2 .............................. tMemName = "nuh_search_" & pAnimFrame
+  [ 76] getlocal 2 .............................. <tMemName>
+  [ 78] pusharglist 1 ........................... <tMemName>
+  [ 80] extcall 47 .............................. <memberExists(tMemName)>
+  [ 82] jmpifz [105] ............................ if memberExists(tMemName) then
+  [ 85] getlocal 1 .............................. <tElem>
+  [ 87] pushsymb 48 ............................. <#image>
+  [ 89] getlocal 2 .............................. <tMemName>
+  [ 91] pusharglist 1 ........................... <tMemName>
+  [ 93] extcall 50 .............................. <getmemnum(tMemName)>
+  [ 95] pusharglist 1 ........................... <getmemnum(tMemName)>
+  [ 97] extcall 49 .............................. <member(getmemnum(tMemName))>
+  [ 99] getobjprop 48 ........................... <member(getmemnum(tMemName)).image>
+  [101] pusharglistnoret 3 ...................... <tElem, #image, member(getmemnum(tMemName)).image>
+  [103] objcall 51 .............................. tElem.setProperty(#image, member(getmemnum(tMemName)).image)
+  [105] ret
+end
+
+on closeGuideTool me
+  [  0] getprop 12 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 22 .............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 23] ............................ if windowExists(pWindowID) then
+  [  9] getprop 12 .............................. <pWindowID>
+  [ 11] pusharglist 1 ........................... <pWindowID>
+  [ 13] extcall 23 .............................. <getWindow(pWindowID)>
+  [ 15] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 17] getlocal 0 .............................. <tWndObj>
+  [ 19] pusharglistnoret 1 ...................... <tWndObj>
+  [ 21] objcall 54 .............................. tWndObj.hide()
+  [ 23] ret
+end
+
+on update me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 27 .............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 28 .............................. <me.getComponent().getState()>
+  [ 10] setlocal 0 .............................. tstate = me.getComponent().getState()
+  [ 12] getparam 0 .............................. <me>
+  [ 14] getlocal 0 .............................. <tstate>
+  [ 16] pusharglistnoret 2 ...................... <me, tstate>
+  [ 18] objcall 91 .............................. me.updateIcon(tstate)
+  [ 20] getparam 0 .............................. <me>
+  [ 22] getlocal 0 .............................. <tstate>
+  [ 24] pusharglistnoret 2 ...................... <me, tstate>
+  [ 26] objcall 92 .............................. me.updateToolWindow(tstate)
+  [ 28] ret
+end
+
+on isMinimized me
+  [  0] getprop 12 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 22 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 16] ............................ if not windowExists(pWindowID) then
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 16 .............................. return 1
+  [ 16] getprop 12 .............................. <pWindowID>
+  [ 18] pusharglist 1 ........................... <pWindowID>
+  [ 20] extcall 23 .............................. <getWindow(pWindowID)>
+  [ 22] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 24] getlocal 0 .............................. <tWndObj>
+  [ 26] pushsymb 24 ............................. <#visible>
+  [ 28] pusharglist 2 ........................... <tWndObj, #visible>
+  [ 30] objcall 25 .............................. <tWndObj.getProperty(#visible)>
+  [ 32] not ..................................... <not tWndObj.getProperty(#visible)>
+  [ 33] pusharglistnoret 1 ...................... <not tWndObj.getProperty(#visible)>
+  [ 35] extcall 16 .............................. return not tWndObj.getProperty(#visible)
+  [ 37] ret
+end
+
+on updateIcon me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] pushsymb 32 ............................. <#disabled>
+  [  4] eq ...................................... <tstate = #disabled>
+  [  5] jmpifz [ 17] ............................ if tstate = #disabled then / else
+  [  8] getprop 10 .............................. <pIcon>
+  [ 10] pusharglistnoret 1 ...................... <pIcon>
+  [ 12] objcall 54 .............................. pIcon.hide()
+  [ 14] jmp [ 23]
+  [ 17] getprop 10 .............................. <pIcon>
+  [ 19] pusharglistnoret 1 ...................... <pIcon>
+  [ 21] objcall 21 .............................. pIcon.show()
+  [ 23] getparam 1 .............................. <tstate>
+  [ 25] pushsymb 35 ............................. <#ready>
+  [ 27] eq ...................................... <tstate = #ready>
+  [ 28] jmpifz [ 42] ............................ if tstate = #ready then / else
+  [ 31] getprop 10 .............................. <pIcon>
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglistnoret 2 ...................... <pIcon, 1>
+  [ 37] objcall 94 .............................. pIcon.setFlashing(1)
+  [ 39] jmp [ 49]
+  [ 42] getprop 10 .............................. <pIcon>
+  [ 44] pushzero ................................ <0>
+  [ 45] pusharglistnoret 2 ...................... <pIcon, 0>
+  [ 47] objcall 94 .............................. pIcon.setFlashing(0)
+  [ 49] ret
+end
+
+on updateToolWindow me, tstate
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 93 .............................. <me.isMinimized()>
+  [  6] setlocal 0 .............................. tIsMinimized = me.isMinimized()
+  [  8] getparam 0 .............................. <me>
+  [ 10] getparam 1 .............................. <tstate>
+  [ 12] pusharglistnoret 2 ...................... <me, tstate>
+  [ 14] objcall 5 ............................... me.createGuideToolWindow(tstate)
+  [ 16] getlocal 0 .............................. <tIsMinimized>
+  [ 18] getprop 12 .............................. <pWindowID>
+  [ 20] pusharglist 1 ........................... <pWindowID>
+  [ 22] extcall 22 .............................. <windowExists(pWindowID)>
+  [ 24] and ..................................... <tIsMinimized and windowExists(pWindowID)>
+  [ 25] jmpifz [ 42] ............................ if tIsMinimized and windowExists(pWindowID) then
+  [ 28] getprop 12 .............................. <pWindowID>
+  [ 30] pusharglist 1 ........................... <pWindowID>
+  [ 32] extcall 23 .............................. <getWindow(pWindowID)>
+  [ 34] setlocal 1 .............................. tWndObj = getWindow(pWindowID)
+  [ 36] getlocal 1 .............................. <tWndObj>
+  [ 38] pusharglistnoret 1 ...................... <tWndObj>
+  [ 40] objcall 54 .............................. tWndObj.hide()
+  [ 42] ret
+end
+
+on eventProcGuideTool me, tEvent, tSprID, tProp
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] peek 0 .................................. case tSprID of
+  [  4] pushcons 15 ............................. <"guide_tool_start">
+  [  6] eq
+  [  7] jmpifz [ 23] ............................ (case) "guide_tool_start":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 27 .............................. <me.getComponent()>
+  [ 16] pusharglistnoret 1 ...................... <me.getComponent()>
+  [ 18] objcall 144 ............................. me.getComponent().startWaiting()
+  [ 20] jmp [148]
+  [ 23] peek 0
+  [ 25] pushcons 16 ............................. <"guide_tool_close">
+  [ 27] eq
+  [ 28] jmpifz [ 40] ............................ (case) "guide_tool_close":
+  [ 31] getparam 0 .............................. <me>
+  [ 33] pusharglistnoret 1 ...................... <me>
+  [ 35] objcall 7 ............................... me.closeGuideTool()
+  [ 37] jmp [148]
+  [ 40] peek 0
+  [ 42] pushcons 17 ............................. <"guide_tool_cancel">
+  [ 44] eq
+  [ 45] jmpifz [ 67] ............................ (case) "guide_tool_cancel":
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 27 .............................. <me.getComponent()>
+  [ 54] pusharglistnoret 1 ...................... <me.getComponent()>
+  [ 56] objcall 146 ............................. me.getComponent().cancelWaiting()
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglistnoret 1 ...................... <me>
+  [ 62] objcall 7 ............................... me.closeGuideTool()
+  [ 64] jmp [148]
+  [ 67] peek 0
+  [ 69] pushcons 18 ............................. <"guide_tool_accept">
+  [ 71] eq
+  [ 72] jmpifz [ 94] ............................ (case) "guide_tool_accept":
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pusharglist 1 ........................... <me>
+  [ 79] objcall 27 .............................. <me.getComponent()>
+  [ 81] pusharglistnoret 1 ...................... <me.getComponent()>
+  [ 83] objcall 119 ............................. me.getComponent().acceptInvitation()
+  [ 85] getparam 0 .............................. <me>
+  [ 87] pusharglistnoret 1 ...................... <me>
+  [ 89] objcall 7 ............................... me.closeGuideTool()
+  [ 91] jmp [148]
+  [ 94] peek 0
+  [ 96] pushcons 19 ............................. <"guide_tool_reject">
+  [ 98] eq
+  [ 99] jmpifz [121] ............................ (case) "guide_tool_reject":
+  [102] getparam 0 .............................. <me>
+  [104] pusharglist 1 ........................... <me>
+  [106] objcall 27 .............................. <me.getComponent()>
+  [108] pusharglistnoret 1 ...................... <me.getComponent()>
+  [110] objcall 120 ............................. me.getComponent().rejectInvitation()
+  [112] getparam 0 .............................. <me>
+  [114] pusharglistnoret 1 ...................... <me>
+  [116] objcall 7 ............................... me.closeGuideTool()
+  [118] jmp [148]
+  [121] peek 0
+  [123] pushcons 10 ............................. <"guide_tool_checkbox">
+  [125] nteq
+  [126] jmpifz [137] ............................ (case) "guide_tool_checkbox", ...
+  [129] peek 0
+  [131] pushcons 20 ............................. <"guide_tool_checkbox_text">
+  [133] eq
+  [134] jmpifz [148] ............................ (case) ..., "guide_tool_checkbox_text":
+  [137] getprop 147 ............................. <pUseAlertSound>
+  [139] not ..................................... <not pUseAlertSound>
+  [140] setprop 147 ............................. pUseAlertSound = not pUseAlertSound
+  [142] getparam 0 .............................. <me>
+  [144] pusharglistnoret 1 ...................... <me>
+  [146] objcall 148 ............................. me.updateCheckbox()
+  [148] pop 1 ................................... end case
+  [150] ret
+end

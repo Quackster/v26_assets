@@ -1,0 +1,576 @@
+property pUnicodeValues, plocalevalues, plocaleformat
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 2156 ............................ pUnicodeValues = [:]
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 2157 ............................ plocalevalues = [:]
+  [ 12] pushcons 0 .............................. <EMPTY>
+  [ 14] setprop 2158 ............................ plocaleformat = EMPTY
+  [ 17] ret
+end
+
+on defineLocale me, tlocaleformat
+  [  0] getparam 1 .............................. <tlocaleformat>
+  [  2] pushcons 1 .............................. <"sjis">
+  [  4] nteq .................................... <tlocaleformat <> "sjis">
+  [  5] getparam 1 .............................. <tlocaleformat>
+  [  7] pushcons 2 .............................. <"windows-1251">
+  [  9] nteq .................................... <tlocaleformat <> "windows-1251">
+  [ 10] and ..................................... <(tlocaleformat <> "sjis") and (tlocaleformat <> "windows-1251")>
+  [ 11] jmpifz [ 34] ............................ if (tlocaleformat <> "sjis") and (tlocaleformat <> "windows-1251") then
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pushcons 3 .............................. <"Invalid locale format:">
+  [ 18] getparam 1 .............................. <tlocaleformat>
+  [ 20] joinpadstr .............................. <"Invalid locale format:" && tlocaleformat>
+  [ 21] pushsymb 1092 ........................... <#defineLocale>
+  [ 24] pushsymb 123 ............................ <#major>
+  [ 26] pusharglist 4 ........................... <me, "Invalid locale format:" && tlocaleformat, #defineLocale, #major>
+  [ 28] extcall 122 ............................. <error(me, "Invalid locale format:" && tlocaleformat, #defineLocale, #major)>
+  [ 30] pusharglistnoret 1 ...................... <error(me, "Invalid locale format:" && tlocaleformat, #defineLocale, #major)>
+  [ 32] extcall 11 .............................. return error(me, "Invalid locale format:" && tlocaleformat, #defineLocale, #major)
+  [ 34] getparam 1 .............................. <tlocaleformat>
+  [ 36] setprop 2158 ............................ plocaleformat = tlocaleformat
+  [ 39] getparam 0 .............................. <me>
+  [ 41] getparam 1 .............................. <tlocaleformat>
+  [ 43] pusharglist 2 ........................... <me, tlocaleformat>
+  [ 45] objcall 2154 ............................ <me.createcharacterconversionarrays(tlocaleformat)>
+  [ 48] setlocal 0 .............................. tResult = me.createcharacterconversionarrays(tlocaleformat)
+  [ 50] getlocal 0 .............................. <tResult>
+  [ 52] pushcons 4 .............................. <"unicode_values">
+  [ 54] pusharglist 2 ........................... <tResult, "unicode_values">
+  [ 56] objcall 29 .............................. <tResult["unicode_values"]>
+  [ 58] setprop 2156 ............................ pUnicodeValues = tResult["unicode_values"]
+  [ 61] getlocal 0 .............................. <tResult>
+  [ 63] pushcons 5 .............................. <"locale_values">
+  [ 65] pusharglist 2 ........................... <tResult, "locale_values">
+  [ 67] objcall 29 .............................. <tResult["locale_values"]>
+  [ 69] setprop 2157 ............................ plocalevalues = tResult["locale_values"]
+  [ 72] ret
+end
+
+on convertToUnicode me, tStr
+  [  0] getprop 2156 ............................ <pUnicodeValues>
+  [  3] getobjprop 28 ........................... <pUnicodeValues.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pUnicodeValues.count = 0>
+  [  7] getprop 2157 ............................ <plocalevalues>
+  [ 10] getobjprop 28 ........................... <plocalevalues.count>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <plocalevalues.count = 0>
+  [ 14] or ...................................... <(pUnicodeValues.count = 0) or (plocalevalues.count = 0)>
+  [ 15] jmpifz [ 23] ............................ if (pUnicodeValues.count = 0) or (plocalevalues.count = 0) then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 11 .............................. return 0
+  [ 23] pusharglist 0 ........................... <[]>
+  [ 25] pushlist ................................ <[]>
+  [ 26] setlocal 0 .............................. tUnicodeData = []
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] setlocal 1
+  [ 32] getlocal 1
+  [ 34] getparam 1 .............................. <tStr>
+  [ 36] getobjprop 21 ........................... <tStr.length>
+  [ 38] lteq
+  [ 39] jmpifz [137] ............................ repeat with i = 1 to tStr.length
+  [ 42] getparam 1 .............................. <tStr>
+  [ 44] pushsymb 20 ............................. <#char>
+  [ 46] getlocal 1 .............................. <i>
+  [ 48] pusharglist 3 ........................... <tStr, #char, i>
+  [ 50] objcall 22 .............................. <tStr.char[i]>
+  [ 52] setlocal 2 .............................. tChar = tStr.char[i]
+  [ 54] getlocal 2 .............................. <tChar>
+  [ 56] pusharglist 1 ........................... <tChar>
+  [ 58] extcall 19 .............................. <charToNum(tChar)>
+  [ 60] setlocal 3 .............................. tValue = charToNum(tChar)
+  [ 62] pushzero ................................ <0>
+  [ 63] setlocal 4 .............................. tUnicodeValue = 0
+  [ 65] getlocal 3 .............................. <tValue>
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] add ..................................... <tValue + 1>
+  [ 70] setlocal 5 .............................. tIndex = tValue + 1
+  [ 72] getlocal 3 .............................. <tValue>
+  [ 74] pushint16 128 ........................... <128>
+  [ 77] lt ...................................... <tValue < 128>
+  [ 78] jmpifz [ 88] ............................ if tValue < 128 then / else
+  [ 81] getlocal 3 .............................. <tValue>
+  [ 83] setlocal 4 .............................. tUnicodeValue = tValue
+  [ 85] jmp [110]
+  [ 88] getlocal 5 .............................. <tIndex>
+  [ 90] getprop 2156 ............................ <pUnicodeValues>
+  [ 93] getobjprop 28 ........................... <pUnicodeValues.count>
+  [ 95] lteq .................................... <tIndex <= pUnicodeValues.count>
+  [ 96] jmpifz [110] ............................ if tIndex <= pUnicodeValues.count then
+  [ 99] getprop 2156 ............................ <pUnicodeValues>
+  [102] getlocal 5 .............................. <tIndex>
+  [104] pusharglist 2 ........................... <pUnicodeValues, tIndex>
+  [106] objcall 29 .............................. <pUnicodeValues[tIndex]>
+  [108] setlocal 4 .............................. tUnicodeValue = pUnicodeValues[tIndex]
+  [110] getlocal 4 .............................. <tUnicodeValue>
+  [112] pushzero ................................ <0>
+  [113] gt ...................................... <tUnicodeValue > 0>
+  [114] jmpifz [128] ............................ if tUnicodeValue > 0 then
+  [117] getlocal 0 .............................. <tUnicodeData>
+  [119] getlocal 4 .............................. <tUnicodeValue>
+  [121] pusharglistnoret 2 ...................... <tUnicodeData, tUnicodeValue>
+  [123] objcall 60 .............................. tUnicodeData.add(tUnicodeValue)
+  [125] jmp [128] ............................... next repeat
+  [128] pushint8 1
+  [130] getlocal 1
+  [132] add
+  [133] setlocal 1
+  [135] endrepeat [ 32]
+  [137] getlocal 0 .............................. <tUnicodeData>
+  [139] pusharglistnoret 1 ...................... <tUnicodeData>
+  [141] extcall 11 .............................. return tUnicodeData
+  [143] ret
+end
+
+on convertFromUnicode me, tUnicodeData
+  [  0] getprop 2156 ............................ <pUnicodeValues>
+  [  3] getobjprop 28 ........................... <pUnicodeValues.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pUnicodeValues.count = 0>
+  [  7] getprop 2157 ............................ <plocalevalues>
+  [ 10] getobjprop 28 ........................... <plocalevalues.count>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <plocalevalues.count = 0>
+  [ 14] or ...................................... <(pUnicodeValues.count = 0) or (plocalevalues.count = 0)>
+  [ 15] jmpifz [ 23] ............................ if (pUnicodeValues.count = 0) or (plocalevalues.count = 0) then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 11 .............................. return 0
+  [ 23] pushcons 0 .............................. <EMPTY>
+  [ 25] setlocal 0 .............................. tResult = EMPTY
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] setlocal 1
+  [ 31] getlocal 1
+  [ 33] getparam 1 .............................. <tUnicodeData>
+  [ 35] getobjprop 28 ........................... <tUnicodeData.count>
+  [ 37] lteq
+  [ 38] jmpifz [129] ............................ repeat with i = 1 to tUnicodeData.count
+  [ 41] getparam 1 .............................. <tUnicodeData>
+  [ 43] getlocal 1 .............................. <i>
+  [ 45] pusharglist 2 ........................... <tUnicodeData, i>
+  [ 47] objcall 29 .............................. <tUnicodeData[i]>
+  [ 49] setlocal 2 .............................. tUnicodeValue = tUnicodeData[i]
+  [ 51] pushzero ................................ <0>
+  [ 52] setlocal 3 .............................. tlocalevalue = 0
+  [ 54] getlocal 2 .............................. <tUnicodeValue>
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] add ..................................... <tUnicodeValue + 1>
+  [ 59] setlocal 4 .............................. tIndex = tUnicodeValue + 1
+  [ 61] getlocal 2 .............................. <tUnicodeValue>
+  [ 63] pushint16 128 ........................... <128>
+  [ 66] lt ...................................... <tUnicodeValue < 128>
+  [ 67] jmpifz [ 77] ............................ if tUnicodeValue < 128 then / else
+  [ 70] getlocal 2 .............................. <tUnicodeValue>
+  [ 72] setlocal 3 .............................. tlocalevalue = tUnicodeValue
+  [ 74] jmp [ 99]
+  [ 77] getlocal 4 .............................. <tIndex>
+  [ 79] getprop 2157 ............................ <plocalevalues>
+  [ 82] getobjprop 28 ........................... <plocalevalues.count>
+  [ 84] lteq .................................... <tIndex <= plocalevalues.count>
+  [ 85] jmpifz [ 99] ............................ if tIndex <= plocalevalues.count then
+  [ 88] getprop 2157 ............................ <plocalevalues>
+  [ 91] getlocal 4 .............................. <tIndex>
+  [ 93] pusharglist 2 ........................... <plocalevalues, tIndex>
+  [ 95] objcall 29 .............................. <plocalevalues[tIndex]>
+  [ 97] setlocal 3 .............................. tlocalevalue = plocalevalues[tIndex]
+  [ 99] getlocal 3 .............................. <tlocalevalue>
+  [101] pushzero ................................ <0>
+  [102] gt ...................................... <tlocalevalue > 0>
+  [103] jmpifz [120] ............................ if tlocalevalue > 0 then
+  [106] getlocal 0 .............................. <tResult>
+  [108] getlocal 3 .............................. <tlocalevalue>
+  [110] pusharglist 1 ........................... <tlocalevalue>
+  [112] extcall 33 .............................. <numToChar(tlocalevalue)>
+  [114] joinstr ................................. <tResult & numToChar(tlocalevalue)>
+  [115] setlocal 0 .............................. tResult = tResult & numToChar(tlocalevalue)
+  [117] jmp [120] ............................... next repeat
+  [120] pushint8 1
+  [122] getlocal 1
+  [124] add
+  [125] setlocal 1
+  [127] endrepeat [ 31]
+  [129] getlocal 0 .............................. <tResult>
+  [131] pusharglistnoret 1 ...................... <tResult>
+  [133] extcall 11 .............................. return tResult
+  [135] ret
+end
+
+on generateStringFromUTF8 me, tUTF8Data
+  [  0] getprop 2158 ............................ <plocaleformat>
+  [  3] pushcons 2 .............................. <"windows-1251">
+  [  5] eq ...................................... <plocaleformat = "windows-1251">
+  [  6] jmpifz [ 17] ............................ if plocaleformat = "windows-1251" then
+  [  9] pusharglist 0 ........................... <>
+  [ 11] extcall 9 ............................... <VOID>
+  [ 13] pusharglistnoret 1 ...................... <VOID>
+  [ 15] extcall 11 .............................. return VOID
+  [ 17] pushcons 0 .............................. <EMPTY>
+  [ 19] setlocal 0 .............................. tResult = EMPTY
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] setlocal 1 .............................. i = 1
+  [ 25] getlocal 1 .............................. <i>
+  [ 27] getparam 1 .............................. <tUTF8Data>
+  [ 29] getobjprop 28 ........................... <tUTF8Data.count>
+  [ 31] lteq .................................... <i <= tUTF8Data.count>
+  [ 32] jmpifz [132] ............................ repeat while i <= tUTF8Data.count
+  [ 35] getparam 1 .............................. <tUTF8Data>
+  [ 37] getlocal 1 .............................. <i>
+  [ 39] pusharglist 2 ........................... <tUTF8Data, i>
+  [ 41] objcall 29 .............................. <tUTF8Data[i]>
+  [ 43] setlocal 2 .............................. tValue = tUTF8Data[i]
+  [ 45] getlocal 1 .............................. <i>
+  [ 47] pushint8 1 .............................. <1>
+  [ 49] add ..................................... <i + 1>
+  [ 50] setlocal 1 .............................. i = i + 1
+  [ 52] getlocal 2 .............................. <tValue>
+  [ 54] pushint16 129 ........................... <129>
+  [ 57] gteq .................................... <tValue >= 129>
+  [ 58] getlocal 2 .............................. <tValue>
+  [ 60] pushint16 159 ........................... <159>
+  [ 63] lteq .................................... <tValue <= 159>
+  [ 64] and ..................................... <(tValue >= 129) and (tValue <= 159)>
+  [ 65] getlocal 2 .............................. <tValue>
+  [ 67] pushint16 224 ........................... <224>
+  [ 70] gteq .................................... <tValue >= 224>
+  [ 71] getlocal 2 .............................. <tValue>
+  [ 73] pushint16 239 ........................... <239>
+  [ 76] lteq .................................... <tValue <= 239>
+  [ 77] and ..................................... <(tValue >= 224) and (tValue <= 239)>
+  [ 78] or ...................................... <((tValue >= 129) and (tValue <= 159)) or ((tValue >= 224) and (tValue <= 239))>
+  [ 79] jmpifz [119] ............................ if ((tValue >= 129) and (tValue <= 159)) or ((tValue >= 224) and (tValue <= 239)) then
+  [ 82] getlocal 1 .............................. <i>
+  [ 84] getparam 1 .............................. <tUTF8Data>
+  [ 86] getobjprop 28 ........................... <tUTF8Data.count>
+  [ 88] lteq .................................... <i <= tUTF8Data.count>
+  [ 89] jmpifz [119] ............................ if i <= tUTF8Data.count then / else
+  [ 92] getlocal 2 .............................. <tValue>
+  [ 94] pushint16 256 ........................... <256>
+  [ 97] mul ..................................... <tValue * 256>
+  [ 98] getparam 1 .............................. <tUTF8Data>
+  [100] getlocal 1 .............................. <i>
+  [102] pusharglist 2 ........................... <tUTF8Data, i>
+  [104] objcall 29 .............................. <tUTF8Data[i]>
+  [106] add ..................................... <(tValue * 256) + tUTF8Data[i]>
+  [107] setlocal 2 .............................. tValue = (tValue * 256) + tUTF8Data[i]
+  [109] getlocal 1 .............................. <i>
+  [111] pushint8 1 .............................. <1>
+  [113] add ..................................... <i + 1>
+  [114] setlocal 1 .............................. i = i + 1
+  [116] jmp [119]
+  [119] getlocal 0 .............................. <tResult>
+  [121] getlocal 2 .............................. <tValue>
+  [123] pusharglist 1 ........................... <tValue>
+  [125] extcall 33 .............................. <numToChar(tValue)>
+  [127] joinstr ................................. <tResult & numToChar(tValue)>
+  [128] setlocal 0 .............................. tResult = tResult & numToChar(tValue)
+  [130] endrepeat [ 25]
+  [132] getlocal 0 .............................. <tResult>
+  [134] pusharglistnoret 1 ...................... <tResult>
+  [136] extcall 11 .............................. return tResult
+  [138] ret
+end
+
+on createcharacterconversionarrays me, tencodingformat
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. tUnicodeValues = []
+  [  5] pusharglist 0 ........................... <[]>
+  [  7] pushlist ................................ <[]>
+  [  8] setlocal 1 .............................. tlocalevalues = []
+  [ 10] pushcons 0 .............................. <EMPTY>
+  [ 12] setlocal 2 .............................. tText = EMPTY
+  [ 14] getparam 1 .............................. <tencodingformat>
+  [ 16] peek 0 .................................. case tencodingformat of
+  [ 18] pushcons 1 .............................. <"sjis">
+  [ 20] eq
+  [ 21] jmpifz [ 38] ............................ (case) "sjis":
+  [ 24] pushcons 6 .............................. <"Shift JIS to Unicode map">
+  [ 26] pusharglist 1 ........................... <"Shift JIS to Unicode map">
+  [ 28] extcall 125 ............................. <member("Shift JIS to Unicode map")>
+  [ 30] getobjprop 612 .......................... <member("Shift JIS to Unicode map").text>
+  [ 33] setlocal 2 .............................. tText = member("Shift JIS to Unicode map").text
+  [ 35] jmp [ 57]
+  [ 38] peek 0
+  [ 40] pushcons 2 .............................. <"windows-1251">
+  [ 42] eq
+  [ 43] jmpifz [ 57] ............................ (case) "windows-1251":
+  [ 46] pushcons 7 .............................. <"Windows-1251 to Unicode map">
+  [ 48] pusharglist 1 ........................... <"Windows-1251 to Unicode map">
+  [ 50] extcall 125 ............................. <member("Windows-1251 to Unicode map")>
+  [ 52] getobjprop 612 .......................... <member("Windows-1251 to Unicode map").text>
+  [ 55] setlocal 2 .............................. tText = member("Windows-1251 to Unicode map").text
+  [ 57] pop 1 ................................... end case
+  [ 59] getlocal 2 .............................. <tText>
+  [ 61] pusharglist 1 ........................... <tText>
+  [ 63] extcall 586 ............................. <ilk(tText)>
+  [ 66] pushsymb 13 ............................. <#string>
+  [ 68] eq ...................................... <ilk(tText) = #string>
+  [ 69] jmpifz [367] ............................ if ilk(tText) = #string then
+  [ 72] getlocal 2 .............................. <tText>
+  [ 74] pushint8 4 .............................. <4>
+  [ 76] get 1 ................................... <the number of lines in tText>
+  [ 78] setlocal 3 .............................. tLineCount = the number of lines in tText
+  [ 80] pushint8 100 ............................ <100>
+  [ 82] setlocal 4 .............................. tChunkSize = 100
+  [ 84] getlocal 3 .............................. <tLineCount>
+  [ 86] getlocal 4 .............................. <tChunkSize>
+  [ 88] div ..................................... <tLineCount / tChunkSize>
+  [ 89] setlocal 5 .............................. tChunkCount = tLineCount / tChunkSize
+  [ 91] getlocal 3 .............................. <tLineCount>
+  [ 93] getlocal 4 .............................. <tChunkSize>
+  [ 95] mod ..................................... <tLineCount mod tChunkSize>
+  [ 96] pushzero ................................ <0>
+  [ 97] nteq .................................... <(tLineCount mod tChunkSize) <> 0>
+  [ 98] jmpifz [108] ............................ if (tLineCount mod tChunkSize) <> 0 then
+  [101] getlocal 5 .............................. <tChunkCount>
+  [103] pushint8 1 .............................. <1>
+  [105] add ..................................... <tChunkCount + 1>
+  [106] setlocal 5 .............................. tChunkCount = tChunkCount + 1
+  [108] pushint8 1 .............................. <1>
+  [110] setlocal 6
+  [112] getlocal 6
+  [114] getlocal 5 .............................. <tChunkCount>
+  [116] lteq
+  [117] jmpifz [367] ............................ repeat with j = 1 to tChunkCount
+  [120] pushint8 1 .............................. <1>
+  [122] getlocal 6 .............................. <j>
+  [124] pushint8 1 .............................. <1>
+  [126] sub ..................................... <j - 1>
+  [127] getlocal 4 .............................. <tChunkSize>
+  [129] mul ..................................... <(j - 1) * tChunkSize>
+  [130] add ..................................... <1 + ((j - 1) * tChunkSize)>
+  [131] setlocal 7 .............................. tFirstLineIndex = 1 + ((j - 1) * tChunkSize)
+  [133] getlocal 7 .............................. <tFirstLineIndex>
+  [135] getlocal 4 .............................. <tChunkSize>
+  [137] add ..................................... <tFirstLineIndex + tChunkSize>
+  [138] pushint8 1 .............................. <1>
+  [140] sub ..................................... <tFirstLineIndex + tChunkSize - 1>
+  [141] setlocal 8 .............................. tLastLineIndex = tFirstLineIndex + tChunkSize - 1
+  [143] getlocal 2 .............................. <tText>
+  [145] pushsymb 694 ............................ <#line>
+  [148] getlocal 7 .............................. <tFirstLineIndex>
+  [150] getlocal 8 .............................. <tLastLineIndex>
+  [152] pusharglist 4 ........................... <tText, #line, tFirstLineIndex, tLastLineIndex>
+  [154] objcall 22 .............................. <tText.line[tFirstLineIndex..tLastLineIndex]>
+  [156] setlocal 9 .............................. tSubText = tText.line[tFirstLineIndex..tLastLineIndex]
+  [158] getlocal 9 .............................. <tSubText>
+  [160] pushint8 4 .............................. <4>
+  [162] get 1 ................................... <the number of lines in tSubText>
+  [164] setlocal 10 ............................. tSubLineCount = the number of lines in tSubText
+  [166] pushint8 1 .............................. <1>
+  [168] setlocal 11
+  [170] getlocal 11
+  [172] getlocal 10 ............................. <tSubLineCount>
+  [174] lteq
+  [175] jmpifz [358] ............................ repeat with i = 1 to tSubLineCount
+  [178] pushzero ................................ <0>
+  [179] pushzero ................................ <0>
+  [180] pushzero ................................ <0>
+  [181] pushzero ................................ <0>
+  [182] pushzero ................................ <0>
+  [183] pushzero ................................ <0>
+  [184] pushint8 1 .............................. <1>
+  [186] pushzero ................................ <0>
+  [187] getlocal 9 .............................. <tSubText>
+  [189] getchunk ................................ <line 1 of tSubText>
+  [190] setlocal 12 ............................. tLine = line 1 of tSubText
+  [192] pushzero ................................ <0>
+  [193] pushzero ................................ <0>
+  [194] pushzero ................................ <0>
+  [195] pushzero ................................ <0>
+  [196] pushzero ................................ <0>
+  [197] pushzero ................................ <0>
+  [198] pushint8 1 .............................. <1>
+  [200] pushzero ................................ <0>
+  [201] pushint8 9 .............................. <9>
+  [203] deletechunk 5 ........................... delete line 1 of tSubText
+  [205] pushzero ................................ <0>
+  [206] pushzero ................................ <0>
+  [207] pushint8 1 .............................. <1>
+  [209] pushzero ................................ <0>
+  [210] pushzero ................................ <0>
+  [211] pushzero ................................ <0>
+  [212] pushzero ................................ <0>
+  [213] pushzero ................................ <0>
+  [214] getlocal 12 ............................. <tLine>
+  [216] getchunk ................................ <word 1 of tLine>
+  [217] setlocal 13 ............................. tvaluelocale = word 1 of tLine
+  [219] getlocal 13 ............................. <tvaluelocale>
+  [221] pushsymb 20 ............................. <#char>
+  [223] pushint8 1 .............................. <1>
+  [225] pushint8 2 .............................. <2>
+  [227] pusharglist 4 ........................... <tvaluelocale, #char, 1, 2>
+  [229] objcall 22 .............................. <tvaluelocale.char[1..2]>
+  [231] pushcons 8 .............................. <"0x">
+  [233] eq ...................................... <tvaluelocale.char[1..2] = "0x">
+  [234] jmpifz [349] ............................ if tvaluelocale.char[1..2] = "0x" then
+  [237] pushzero ................................ <0>
+  [238] pushzero ................................ <0>
+  [239] pushint8 2 .............................. <2>
+  [241] pushzero ................................ <0>
+  [242] pushzero ................................ <0>
+  [243] pushzero ................................ <0>
+  [244] pushzero ................................ <0>
+  [245] pushzero ................................ <0>
+  [246] getlocal 12 ............................. <tLine>
+  [248] getchunk ................................ <word 2 of tLine>
+  [249] setlocal 14 ............................. tValueUnicode = word 2 of tLine
+  [251] getlocal 13 ............................. <tvaluelocale>
+  [253] pushsymb 20 ............................. <#char>
+  [255] pushint8 3 .............................. <3>
+  [257] getlocal 13 ............................. <tvaluelocale>
+  [259] getobjprop 21 ........................... <tvaluelocale.length>
+  [261] pusharglist 4 ........................... <tvaluelocale, #char, 3, tvaluelocale.length>
+  [263] objcall 22 .............................. <tvaluelocale.char[3..tvaluelocale.length]>
+  [265] setlocal 13 ............................. tvaluelocale = tvaluelocale.char[3..tvaluelocale.length]
+  [267] getlocal 14 ............................. <tValueUnicode>
+  [269] pushsymb 20 ............................. <#char>
+  [271] pushint8 1 .............................. <1>
+  [273] pushint8 2 .............................. <2>
+  [275] pusharglist 4 ........................... <tValueUnicode, #char, 1, 2>
+  [277] objcall 22 .............................. <tValueUnicode.char[1..2]>
+  [279] pushcons 8 .............................. <"0x">
+  [281] eq ...................................... <tValueUnicode.char[1..2] = "0x">
+  [282] jmpifz [349] ............................ if tValueUnicode.char[1..2] = "0x" then
+  [285] getlocal 14 ............................. <tValueUnicode>
+  [287] pushsymb 20 ............................. <#char>
+  [289] pushint8 3 .............................. <3>
+  [291] getlocal 14 ............................. <tValueUnicode>
+  [293] getobjprop 21 ........................... <tValueUnicode.length>
+  [295] pusharglist 4 ........................... <tValueUnicode, #char, 3, tValueUnicode.length>
+  [297] objcall 22 .............................. <tValueUnicode.char[3..tValueUnicode.length]>
+  [299] setlocal 14 ............................. tValueUnicode = tValueUnicode.char[3..tValueUnicode.length]
+  [301] getparam 0 .............................. <me>
+  [303] getlocal 14 ............................. <tValueUnicode>
+  [305] pusharglist 2 ........................... <me, tValueUnicode>
+  [307] objcall 2155 ............................ <me.hextoint(tValueUnicode)>
+  [310] setlocal 14 ............................. tValueUnicode = me.hextoint(tValueUnicode)
+  [312] getparam 0 .............................. <me>
+  [314] getlocal 13 ............................. <tvaluelocale>
+  [316] pusharglist 2 ........................... <me, tvaluelocale>
+  [318] objcall 2155 ............................ <me.hextoint(tvaluelocale)>
+  [321] setlocal 13 ............................. tvaluelocale = me.hextoint(tvaluelocale)
+  [323] getlocal 0 .............................. <tUnicodeValues>
+  [325] getlocal 13 ............................. <tvaluelocale>
+  [327] pushint8 1 .............................. <1>
+  [329] add ..................................... <tvaluelocale + 1>
+  [330] getlocal 14 ............................. <tValueUnicode>
+  [332] pusharglistnoret 3 ...................... <tUnicodeValues, tvaluelocale + 1, tValueUnicode>
+  [334] objcall 23 .............................. tUnicodeValues[tvaluelocale + 1] = tValueUnicode
+  [336] getlocal 1 .............................. <tlocalevalues>
+  [338] getlocal 14 ............................. <tValueUnicode>
+  [340] pushint8 1 .............................. <1>
+  [342] add ..................................... <tValueUnicode + 1>
+  [343] getlocal 13 ............................. <tvaluelocale>
+  [345] pusharglistnoret 3 ...................... <tlocalevalues, tValueUnicode + 1, tvaluelocale>
+  [347] objcall 23 .............................. tlocalevalues[tValueUnicode + 1] = tvaluelocale
+  [349] pushint8 1
+  [351] getlocal 11
+  [353] add
+  [354] setlocal 11
+  [356] endrepeat [170]
+  [358] pushint8 1
+  [360] getlocal 6
+  [362] add
+  [363] setlocal 6
+  [365] endrepeat [112]
+  [367] pushcons 4 .............................. <"unicode_values">
+  [369] getlocal 0 .............................. <tUnicodeValues>
+  [371] pushcons 5 .............................. <"locale_values">
+  [373] getlocal 1 .............................. <tlocalevalues>
+  [375] pusharglist 4 ........................... <["unicode_values": tUnicodeValues, "locale_values": tlocalevalues]>
+  [377] pushproplist ............................ <["unicode_values": tUnicodeValues, "locale_values": tlocalevalues]>
+  [378] pusharglistnoret 1 ...................... <["unicode_values": tUnicodeValues, "locale_values": tlocalevalues]>
+  [380] extcall 11 .............................. return ["unicode_values": tUnicodeValues, "locale_values": tlocalevalues]
+  [382] ret
+end
+
+on hextoint me, tStr
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tValue = 0
+  [  3] pushint8 1 .............................. <1>
+  [  5] setlocal 1
+  [  7] getlocal 1
+  [  9] getparam 1 .............................. <tStr>
+  [ 11] getobjprop 21 ........................... <tStr.length>
+  [ 13] lteq
+  [ 14] jmpifz [156] ............................ repeat with i = 1 to tStr.length
+  [ 17] getlocal 0 .............................. <tValue>
+  [ 19] pushint8 16 ............................. <16>
+  [ 21] mul ..................................... <tValue * 16>
+  [ 22] setlocal 0 .............................. tValue = tValue * 16
+  [ 24] getparam 1 .............................. <tStr>
+  [ 26] pushsymb 20 ............................. <#char>
+  [ 28] getlocal 1 .............................. <i>
+  [ 30] pusharglist 3 ........................... <tStr, #char, i>
+  [ 32] objcall 22 .............................. <tStr.char[i]>
+  [ 34] setlocal 2 .............................. tChar = tStr.char[i]
+  [ 36] getlocal 2 .............................. <tChar>
+  [ 38] pusharglist 1 ........................... <tChar>
+  [ 40] extcall 15 .............................. <value(tChar)>
+  [ 42] setlocal 3 .............................. tVal = value(tChar)
+  [ 44] getlocal 3 .............................. <tVal>
+  [ 46] pusharglist 1 ........................... <tVal>
+  [ 48] extcall 14 .............................. <voidp(tVal)>
+  [ 50] jmpifz [140] ............................ if voidp(tVal) then
+  [ 53] getlocal 2 .............................. <tChar>
+  [ 55] pushcons 9 .............................. <"a">
+  [ 57] eq ...................................... <tChar = "a">
+  [ 58] jmpifz [ 68] ............................ if tChar = "a" then / else
+  [ 61] pushint8 10 ............................. <10>
+  [ 63] setlocal 3 .............................. tVal = 10
+  [ 65] jmp [140]
+  [ 68] getlocal 2 .............................. <tChar>
+  [ 70] pushcons 10 ............................. <"b">
+  [ 72] eq ...................................... <tChar = "b">
+  [ 73] jmpifz [ 83] ............................ if tChar = "b" then / else
+  [ 76] pushint8 11 ............................. <11>
+  [ 78] setlocal 3 .............................. tVal = 11
+  [ 80] jmp [140]
+  [ 83] getlocal 2 .............................. <tChar>
+  [ 85] pushcons 11 ............................. <"c">
+  [ 87] eq ...................................... <tChar = "c">
+  [ 88] jmpifz [ 98] ............................ if tChar = "c" then / else
+  [ 91] pushint8 12 ............................. <12>
+  [ 93] setlocal 3 .............................. tVal = 12
+  [ 95] jmp [140]
+  [ 98] getlocal 2 .............................. <tChar>
+  [100] pushcons 12 ............................. <"d">
+  [102] eq ...................................... <tChar = "d">
+  [103] jmpifz [113] ............................ if tChar = "d" then / else
+  [106] pushint8 13 ............................. <13>
+  [108] setlocal 3 .............................. tVal = 13
+  [110] jmp [140]
+  [113] getlocal 2 .............................. <tChar>
+  [115] pushcons 13 ............................. <"e">
+  [117] eq ...................................... <tChar = "e">
+  [118] jmpifz [128] ............................ if tChar = "e" then / else
+  [121] pushint8 14 ............................. <14>
+  [123] setlocal 3 .............................. tVal = 14
+  [125] jmp [140]
+  [128] getlocal 2 .............................. <tChar>
+  [130] pushcons 14 ............................. <"f">
+  [132] eq ...................................... <tChar = "f">
+  [133] jmpifz [140] ............................ if tChar = "f" then
+  [136] pushint8 15 ............................. <15>
+  [138] setlocal 3 .............................. tVal = 15
+  [140] getlocal 0 .............................. <tValue>
+  [142] getlocal 3 .............................. <tVal>
+  [144] add ..................................... <tValue + tVal>
+  [145] setlocal 0 .............................. tValue = tValue + tVal
+  [147] pushint8 1
+  [149] getlocal 1
+  [151] add
+  [152] setlocal 1
+  [154] endrepeat [  7]
+  [156] getlocal 0 .............................. <tValue>
+  [158] pusharglistnoret 1 ...................... <tValue>
+  [160] extcall 11 .............................. return tValue
+  [162] ret
+end

@@ -1,0 +1,977 @@
+property pWindowID, pSliderEventAgentID, pSelectedColor, pSelectedLightness, pSelectedEffectID, pSelectedPresetID, pSliderValue, pMinLightnesses, pCheckboxValue, pUIShown, pPaletteColorsRGB, pPaletteColorsHSL
+
+on construct me
+  [  0] pushcons 0 .............................. <"RoomdimmerWindow">
+  [  2] setprop 21 .............................. pWindowID = "RoomdimmerWindow"
+  [  4] pusharglist 0 ........................... <>
+  [  6] extcall 23 .............................. <getUniqueID()>
+  [  8] setprop 22 .............................. pSliderEventAgentID = getUniqueID()
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pushcons 1 .............................. <0.59999999999999998>
+  [ 14] pushint8 2 .............................. <2>
+  [ 16] pushcons 2 .............................. <0.29999999999999999>
+  [ 18] pusharglist 4 ........................... <[1: 0.59999999999999998, 2: 0.29999999999999999]>
+  [ 20] pushproplist ............................ <[1: 0.59999999999999998, 2: 0.29999999999999999]>
+  [ 21] setprop 24 .............................. pMinLightnesses = [1: 0.59999999999999998, 2: 0.29999999999999999]
+  [ 23] pushzero ................................ <0>
+  [ 24] setprop 25 .............................. pUIShown = 0
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] setprop 26 .............................. pSelectedEffectID = 1
+  [ 30] pusharglist 0 ........................... <[]>
+  [ 32] pushlist ................................ <[]>
+  [ 33] setprop 27 .............................. pPaletteColorsRGB = []
+  [ 35] pusharglist 0 ........................... <[]>
+  [ 37] pushlist ................................ <[]>
+  [ 38] setprop 28 .............................. pPaletteColorsHSL = []
+  [ 40] getprop 22 .............................. <pSliderEventAgentID>
+  [ 42] pushcons 3 .............................. <"event.agent.class">
+  [ 44] pusharglist 1 ........................... <"event.agent.class">
+  [ 46] extcall 30 .............................. <getClassVariable("event.agent.class")>
+  [ 48] pusharglistnoret 2 ...................... <pSliderEventAgentID, getClassVariable("event.agent.class")>
+  [ 50] extcall 29 .............................. createObject(pSliderEventAgentID, getClassVariable("event.agent.class"))
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] pusharglistnoret 1 ...................... <1>
+  [ 56] extcall 31 .............................. return 1
+  [ 58] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 31 .............................. return 1
+  [  6] ret
+end
+
+on showControlPanel me
+  [  0] getprop 21 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 33 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 18] ............................ if not windowExists(pWindowID) then
+  [ 10] getprop 21 .............................. <pWindowID>
+  [ 12] pushcons 4 .............................. <"roomdimmer_control_panel.window">
+  [ 14] pusharglistnoret 2 ...................... <pWindowID, "roomdimmer_control_panel.window">
+  [ 16] extcall 34 .............................. createWindow(pWindowID, "roomdimmer_control_panel.window")
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] setprop 25 .............................. pUIShown = 1
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pusharglistnoret 1 ...................... <me>
+  [ 26] objcall 4 ............................... me.preparePaletteSlots()
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 35 .............................. <me.getComponent()>
+  [ 34] pusharglist 1 ........................... <me.getComponent()>
+  [ 36] objcall 36 .............................. <me.getComponent().getPresetID()>
+  [ 38] setlocal 0 .............................. tPresetID = me.getComponent().getPresetID()
+  [ 40] getparam 0 .............................. <me>
+  [ 42] getlocal 0 .............................. <tPresetID>
+  [ 44] pusharglistnoret 2 ...................... <me, tPresetID>
+  [ 46] objcall 6 ............................... me.selectPreset(tPresetID)
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 38 .............................. <me.getID()>
+  [ 54] pusharglistnoret 1 ...................... <me.getID()>
+  [ 56] extcall 199 ............................. receiveUpdate(me.getID())
+  [ 58] getprop 21 .............................. <pWindowID>
+  [ 60] pusharglist 1 ........................... <pWindowID>
+  [ 62] extcall 37 .............................. <getWindow(pWindowID)>
+  [ 64] setlocal 1 .............................. tWnd = getWindow(pWindowID)
+  [ 66] getlocal 1 .............................. <tWnd>
+  [ 68] getparam 0 .............................. <me>
+  [ 70] pusharglist 1 ........................... <me>
+  [ 72] objcall 38 .............................. <me.getID()>
+  [ 74] pusharglistnoret 2 ...................... <tWnd, me.getID()>
+  [ 76] objcall 39 .............................. tWnd.registerClient(me.getID())
+  [ 78] getlocal 1 .............................. <tWnd>
+  [ 80] pushsymb 20 ............................. <#eventProc>
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pusharglist 1 ........................... <me>
+  [ 86] objcall 38 .............................. <me.getID()>
+  [ 88] pushsymb 40 ............................. <#mouseUp>
+  [ 90] pusharglistnoret 4 ...................... <tWnd, #eventProc, me.getID(), #mouseUp>
+  [ 92] objcall 41 .............................. tWnd.registerProcedure(#eventProc, me.getID(), #mouseUp)
+  [ 94] getlocal 1 .............................. <tWnd>
+  [ 96] pushsymb 20 ............................. <#eventProc>
+  [ 98] getparam 0 .............................. <me>
+  [100] pusharglist 1 ........................... <me>
+  [102] objcall 38 .............................. <me.getID()>
+  [104] pushsymb 42 ............................. <#mouseDown>
+  [106] pusharglistnoret 4 ...................... <tWnd, #eventProc, me.getID(), #mouseDown>
+  [108] objcall 41 .............................. tWnd.registerProcedure(#eventProc, me.getID(), #mouseDown)
+  [110] ret
+end
+
+on update me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 12 .............................. me.updateInterface()
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglist 1 ........................... <me>
+  [ 10] objcall 38 .............................. <me.getID()>
+  [ 12] pusharglistnoret 1 ...................... <me.getID()>
+  [ 14] extcall 200 ............................. removeUpdate(me.getID())
+  [ 16] ret
+end
+
+on hide me
+  [  0] getprop 21 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 33 .............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pWindowID) then
+  [  9] getprop 21 .............................. <pWindowID>
+  [ 11] pusharglistnoret 1 ...................... <pWindowID>
+  [ 13] extcall 45 .............................. removeWindow(pWindowID)
+  [ 15] pushzero ................................ <0>
+  [ 16] setprop 25 .............................. pUIShown = 0
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 31 .............................. return 1
+  [ 24] ret
+end
+
+on preparePaletteSlots me
+  [  0] getprop 21 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 37 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [  8] pushcons 5 .............................. <"dimmer.color.count">
+  [ 10] pusharglist 1 ........................... <"dimmer.color.count">
+  [ 12] extcall 46 .............................. <getVariable("dimmer.color.count")>
+  [ 14] setlocal 1 .............................. tColorCount = getVariable("dimmer.color.count")
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] setlocal 2
+  [ 20] getlocal 2
+  [ 22] getlocal 1 .............................. <tColorCount>
+  [ 24] lteq
+  [ 25] jmpifz [145] ............................ repeat with tSlotNum = 1 to tColorCount
+  [ 28] getlocal 0 .............................. <tWnd>
+  [ 30] pushcons 6 .............................. <"dimmer.paletteslot.">
+  [ 32] getlocal 2 .............................. <tSlotNum>
+  [ 34] joinstr ................................. <"dimmer.paletteslot." & tSlotNum>
+  [ 35] pusharglist 2 ........................... <tWnd, "dimmer.paletteslot." & tSlotNum>
+  [ 37] objcall 47 .............................. <tWnd.getElement("dimmer.paletteslot." & tSlotNum)>
+  [ 39] setlocal 3 .............................. tSlot = tWnd.getElement("dimmer.paletteslot." & tSlotNum)
+  [ 41] getlocal 3 .............................. <tSlot>
+  [ 43] pushsymb 48 ............................. <#width>
+  [ 45] pusharglist 2 ........................... <tSlot, #width>
+  [ 47] objcall 49 .............................. <tSlot.getProperty(#width)>
+  [ 49] setlocal 4 .............................. tWidth = tSlot.getProperty(#width)
+  [ 51] getlocal 3 .............................. <tSlot>
+  [ 53] pushsymb 50 ............................. <#height>
+  [ 55] pusharglist 2 ........................... <tSlot, #height>
+  [ 57] objcall 49 .............................. <tSlot.getProperty(#height)>
+  [ 59] setlocal 5 .............................. tHeight = tSlot.getProperty(#height)
+  [ 61] getlocal 4 .............................. <tWidth>
+  [ 63] getlocal 5 .............................. <tHeight>
+  [ 65] pushint8 8 .............................. <8>
+  [ 67] pusharglist 3 ........................... <tWidth, tHeight, 8>
+  [ 69] extcall 51 .............................. <image(tWidth, tHeight, 8)>
+  [ 71] setlocal 6 .............................. tImage = image(tWidth, tHeight, 8)
+  [ 73] pushcons 7 .............................. <"dimmer.color.">
+  [ 75] getlocal 2 .............................. <tSlotNum>
+  [ 77] joinstr ................................. <"dimmer.color." & tSlotNum>
+  [ 78] pusharglist 1 ........................... <"dimmer.color." & tSlotNum>
+  [ 80] extcall 46 .............................. <getVariable("dimmer.color." & tSlotNum)>
+  [ 82] pusharglist 1 ........................... <getVariable("dimmer.color." & tSlotNum)>
+  [ 84] extcall 53 .............................. <string(getVariable("dimmer.color." & tSlotNum))>
+  [ 86] pusharglist 1 ........................... <string(getVariable("dimmer.color." & tSlotNum))>
+  [ 88] extcall 52 .............................. <rgb(string(getVariable("dimmer.color." & tSlotNum)))>
+  [ 90] setlocal 7 .............................. tColor = rgb(string(getVariable("dimmer.color." & tSlotNum)))
+  [ 92] getprop 27 .............................. <pPaletteColorsRGB>
+  [ 94] getlocal 2 .............................. <tSlotNum>
+  [ 96] getlocal 7 .............................. <tColor>
+  [ 98] pusharglistnoret 3 ...................... <pPaletteColorsRGB, tSlotNum, tColor>
+  [100] objcall 54 .............................. pPaletteColorsRGB[tSlotNum] = tColor
+  [102] getprop 28 .............................. <pPaletteColorsHSL>
+  [104] getlocal 2 .............................. <tSlotNum>
+  [106] getlocal 7 .............................. <tColor>
+  [108] pusharglist 1 ........................... <tColor>
+  [110] extcall 55 .............................. <RGBtoHSL(tColor)>
+  [112] pusharglistnoret 3 ...................... <pPaletteColorsHSL, tSlotNum, RGBtoHSL(tColor)>
+  [114] objcall 54 .............................. pPaletteColorsHSL[tSlotNum] = RGBtoHSL(tColor)
+  [116] getlocal 6 .............................. <tImage>
+  [118] getlocal 6 .............................. <tImage>
+  [120] getobjprop 56 ........................... <tImage.rect>
+  [122] getlocal 7 .............................. <tColor>
+  [124] pusharglistnoret 3 ...................... <tImage, tImage.rect, tColor>
+  [126] objcall 57 .............................. tImage.fill(tImage.rect, tColor)
+  [128] getlocal 3 .............................. <tSlot>
+  [130] getlocal 6 .............................. <tImage>
+  [132] pusharglistnoret 2 ...................... <tSlot, tImage>
+  [134] objcall 58 .............................. tSlot.feedImage(tImage)
+  [136] pushint8 1
+  [138] getlocal 2
+  [140] add
+  [141] setlocal 2
+  [143] endrepeat [ 20]
+  [145] ret
+end
+
+on selectPaletteSlot me, tSlotNum
+  [  0] pushcons 7 .............................. <"dimmer.color.">
+  [  2] getparam 1 .............................. <tSlotNum>
+  [  4] joinstr ................................. <"dimmer.color." & tSlotNum>
+  [  5] pusharglist 1 ........................... <"dimmer.color." & tSlotNum>
+  [  7] extcall 46 .............................. <getVariable("dimmer.color." & tSlotNum)>
+  [  9] pusharglist 1 ........................... <getVariable("dimmer.color." & tSlotNum)>
+  [ 11] extcall 53 .............................. <string(getVariable("dimmer.color." & tSlotNum))>
+  [ 13] pusharglist 1 ........................... <string(getVariable("dimmer.color." & tSlotNum))>
+  [ 15] extcall 52 .............................. <rgb(string(getVariable("dimmer.color." & tSlotNum)))>
+  [ 17] setlocal 0 .............................. tSlotColor = rgb(string(getVariable("dimmer.color." & tSlotNum)))
+  [ 19] getlocal 0 .............................. <tSlotColor>
+  [ 21] setprop 66 .............................. pSelectedColor = tSlotColor
+  [ 23] getparam 0 .............................. <me>
+  [ 25] getparam 1 .............................. <tSlotNum>
+  [ 27] pusharglistnoret 2 ...................... <me, tSlotNum>
+  [ 29] objcall 7 ............................... me.highlightPaletteSlot(tSlotNum)
+  [ 31] getparam 0 .............................. <me>
+  [ 33] pusharglistnoret 1 ...................... <me>
+  [ 35] objcall 18 .............................. me.updatePreview()
+  [ 37] ret
+end
+
+on selectPreset me, tPresetNum
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 35 .............................. <me.getComponent()>
+  [  6] getparam 1 .............................. <tPresetNum>
+  [  8] pusharglist 2 ........................... <me.getComponent(), tPresetNum>
+  [ 10] objcall 68 .............................. <me.getComponent().getPreset(tPresetNum)>
+  [ 12] setlocal 0 .............................. tPreset = me.getComponent().getPreset(tPresetNum)
+  [ 14] getparam 1 .............................. <tPresetNum>
+  [ 16] setprop 69 .............................. pSelectedPresetID = tPresetNum
+  [ 18] getlocal 0 .............................. <tPreset>
+  [ 20] pushsymb 70 ............................. <#effectID>
+  [ 22] pusharglist 2 ........................... <tPreset, #effectID>
+  [ 24] objcall 71 .............................. <tPreset.getaProp(#effectID)>
+  [ 26] setprop 26 .............................. pSelectedEffectID = tPreset.getaProp(#effectID)
+  [ 28] getlocal 0 .............................. <tPreset>
+  [ 30] pushsymb 72 ............................. <#color>
+  [ 32] pusharglist 2 ........................... <tPreset, #color>
+  [ 34] objcall 71 .............................. <tPreset.getaProp(#color)>
+  [ 36] setprop 66 .............................. pSelectedColor = tPreset.getaProp(#color)
+  [ 38] getlocal 0 .............................. <tPreset>
+  [ 40] pushsymb 74 ............................. <#lightness>
+  [ 42] pusharglist 2 ........................... <tPreset, #lightness>
+  [ 44] objcall 71 .............................. <tPreset.getaProp(#lightness)>
+  [ 46] setprop 73 .............................. pSelectedLightness = tPreset.getaProp(#lightness)
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglistnoret 1 ...................... <me>
+  [ 52] objcall 12 .............................. me.updateInterface()
+  [ 54] ret
+end
+
+on highlightPaletteSlot me, tSlotNum
+  [  0] getprop 21 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 37 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWnd = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWnd>
+  [ 10] pushcons 6 .............................. <"dimmer.paletteslot.">
+  [ 12] getparam 1 .............................. <tSlotNum>
+  [ 14] joinstr ................................. <"dimmer.paletteslot." & tSlotNum>
+  [ 15] pusharglist 2 ........................... <tWnd, "dimmer.paletteslot." & tSlotNum>
+  [ 17] objcall 47 .............................. <tWnd.getElement("dimmer.paletteslot." & tSlotNum)>
+  [ 19] setlocal 1 .............................. tSlot = tWnd.getElement("dimmer.paletteslot." & tSlotNum)
+  [ 21] getlocal 0 .............................. <tWnd>
+  [ 23] pushcons 8 .............................. <"dimmer.color.highlighter">
+  [ 25] pusharglist 2 ........................... <tWnd, "dimmer.color.highlighter">
+  [ 27] objcall 47 .............................. <tWnd.getElement("dimmer.color.highlighter")>
+  [ 29] setlocal 2 .............................. tHighlighter = tWnd.getElement("dimmer.color.highlighter")
+  [ 31] getlocal 1 .............................. <tSlot>
+  [ 33] pushsymb 77 ............................. <#locH>
+  [ 35] pusharglist 2 ........................... <tSlot, #locH>
+  [ 37] objcall 49 .............................. <tSlot.getProperty(#locH)>
+  [ 39] pushint8 2 .............................. <2>
+  [ 41] sub ..................................... <tSlot.getProperty(#locH) - 2>
+  [ 42] setlocal 3 .............................. tLocH = tSlot.getProperty(#locH) - 2
+  [ 44] getlocal 1 .............................. <tSlot>
+  [ 46] pushsymb 78 ............................. <#locV>
+  [ 48] pusharglist 2 ........................... <tSlot, #locV>
+  [ 50] objcall 49 .............................. <tSlot.getProperty(#locV)>
+  [ 52] pushint8 2 .............................. <2>
+  [ 54] sub ..................................... <tSlot.getProperty(#locV) - 2>
+  [ 55] setlocal 4 .............................. tLocV = tSlot.getProperty(#locV) - 2
+  [ 57] getlocal 2 .............................. <tHighlighter>
+  [ 59] getlocal 3 .............................. <tLocH>
+  [ 61] getlocal 4 .............................. <tLocV>
+  [ 63] pusharglistnoret 3 ...................... <tHighlighter, tLocH, tLocV>
+  [ 65] objcall 79 .............................. tHighlighter.moveTo(tLocH, tLocV)
+  [ 67] ret
+end
+
+on toggleEffect me
+  [  0] pushint8 3 .............................. <3>
+  [  2] getprop 26 .............................. <pSelectedEffectID>
+  [  4] sub ..................................... <3 - pSelectedEffectID>
+  [  5] setprop 26 .............................. pSelectedEffectID = 3 - pSelectedEffectID
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglistnoret 1 ...................... <me>
+  [ 11] objcall 12 .............................. me.updateInterface()
+  [ 13] ret
+end
+
+on initSliderAgent me, tBoolean
+  [  0] getprop 22 .............................. <pSliderEventAgentID>
+  [  2] pusharglist 1 ........................... <pSliderEventAgentID>
+  [  4] extcall 83 .............................. <getObject(pSliderEventAgentID)>
+  [  6] setlocal 0 .............................. tAgent = getObject(pSliderEventAgentID)
+  [  8] getparam 1 .............................. <tBoolean>
+  [ 10] jmpifz [ 40] ............................ if tBoolean then / else
+  [ 13] getlocal 0 .............................. <tAgent>
+  [ 15] getparam 0 .............................. <me>
+  [ 17] pushsymb 40 ............................. <#mouseUp>
+  [ 19] pushsymb 10 ............................. <#sliderMouseUp>
+  [ 21] pusharglistnoret 4 ...................... <tAgent, me, #mouseUp, #sliderMouseUp>
+  [ 23] objcall 84 .............................. tAgent.registerEvent(me, #mouseUp, #sliderMouseUp)
+  [ 25] getlocal 0 .............................. <tAgent>
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pushsymb 85 ............................. <#mouseWithin>
+  [ 31] pushsymb 11 ............................. <#sliderMouseWithin>
+  [ 33] pusharglistnoret 4 ...................... <tAgent, me, #mouseWithin, #sliderMouseWithin>
+  [ 35] objcall 84 .............................. tAgent.registerEvent(me, #mouseWithin, #sliderMouseWithin)
+  [ 37] jmp [ 56]
+  [ 40] getlocal 0 .............................. <tAgent>
+  [ 42] pushsymb 40 ............................. <#mouseUp>
+  [ 44] pusharglistnoret 2 ...................... <tAgent, #mouseUp>
+  [ 46] objcall 86 .............................. tAgent.unregisterEvent(#mouseUp)
+  [ 48] getlocal 0 .............................. <tAgent>
+  [ 50] pushsymb 85 ............................. <#mouseWithin>
+  [ 52] pusharglistnoret 2 ...................... <tAgent, #mouseWithin>
+  [ 54] objcall 86 .............................. tAgent.unregisterEvent(#mouseWithin)
+  [ 56] getparam 1 .............................. <tBoolean>
+  [ 58] setlocal 1 .............................. pDrag = tBoolean
+  [ 60] ret
+end
+
+on sliderMouseUp me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 9 ............................... me.initSliderAgent(0)
+  [  7] ret
+end
+
+on sliderMouseWithin me
+  [  0] getprop 21 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 37 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] pushcons 9 .............................. <"dimmer.slider.scale">
+  [ 12] pusharglist 2 ........................... <tWndObj, "dimmer.slider.scale">
+  [ 14] objcall 47 .............................. <tWndObj.getElement("dimmer.slider.scale")>
+  [ 16] setlocal 1 .............................. tScaleElem = tWndObj.getElement("dimmer.slider.scale")
+  [ 18] getlocal 1 .............................. <tScaleElem>
+  [ 20] pushsymb 56 ............................. <#rect>
+  [ 22] pusharglist 2 ........................... <tScaleElem, #rect>
+  [ 24] objcall 49 .............................. <tScaleElem.getProperty(#rect)>
+  [ 26] setlocal 2 .............................. tRect = tScaleElem.getProperty(#rect)
+  [ 28] pusharglist 0 ........................... <>
+  [ 30] thebuiltin 91 ........................... <the mouseH>
+  [ 32] getlocal 2 .............................. <tRect>
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] pusharglist 2 ........................... <tRect, 1>
+  [ 38] objcall 92 .............................. <tRect[1]>
+  [ 40] sub ..................................... <the mouseH - tRect[1]>
+  [ 41] pusharglist 1 ........................... <the mouseH - tRect[1]>
+  [ 43] extcall 90 .............................. <float(the mouseH - tRect[1])>
+  [ 45] getlocal 2 .............................. <tRect>
+  [ 47] getobjprop 48 ........................... <tRect.width>
+  [ 49] div ..................................... <float(the mouseH - tRect[1]) / tRect.width>
+  [ 50] setlocal 3 .............................. tValue = float(the mouseH - tRect[1]) / tRect.width
+  [ 52] getlocal 3 .............................. <tValue>
+  [ 54] pushzero ................................ <0>
+  [ 55] lt ...................................... <tValue < 0>
+  [ 56] jmpifz [ 65] ............................ if tValue < 0 then / else
+  [ 59] pushzero ................................ <0>
+  [ 60] setlocal 3 .............................. tValue = 0
+  [ 62] jmp [ 77]
+  [ 65] getlocal 3 .............................. <tValue>
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] gt ...................................... <tValue > 1>
+  [ 70] jmpifz [ 77] ............................ if tValue > 1 then
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] setlocal 3 .............................. tValue = 1
+  [ 77] getprop 24 .............................. <pMinLightnesses>
+  [ 79] getprop 26 .............................. <pSelectedEffectID>
+  [ 81] pusharglist 2 ........................... <pMinLightnesses, pSelectedEffectID>
+  [ 83] objcall 71 .............................. <pMinLightnesses.getaProp(pSelectedEffectID)>
+  [ 85] setlocal 4 .............................. tMinLightness = pMinLightnesses.getaProp(pSelectedEffectID)
+  [ 87] getlocal 4 .............................. <tMinLightness>
+  [ 89] pushint8 1 .............................. <1>
+  [ 91] getlocal 4 .............................. <tMinLightness>
+  [ 93] sub ..................................... <1 - tMinLightness>
+  [ 94] getlocal 3 .............................. <tValue>
+  [ 96] mul ..................................... <(1 - tMinLightness) * tValue>
+  [ 97] add ..................................... <tMinLightness + ((1 - tMinLightness) * tValue)>
+  [ 98] setlocal 5 .............................. tMappedLightness = tMinLightness + ((1 - tMinLightness) * tValue)
+  [100] getlocal 5 .............................. <tMappedLightness>
+  [102] pushint16 255 ........................... <255>
+  [105] mul ..................................... <tMappedLightness * 255>
+  [106] pusharglist 1 ........................... <tMappedLightness * 255>
+  [108] extcall 93 .............................. <integer(tMappedLightness * 255)>
+  [110] setprop 73 .............................. pSelectedLightness = integer(tMappedLightness * 255)
+  [112] getparam 0 .............................. <me>
+  [114] pusharglistnoret 1 ...................... <me>
+  [116] objcall 16 .............................. me.updateSlider()
+  [118] getparam 0 .............................. <me>
+  [120] pusharglistnoret 1 ...................... <me>
+  [122] objcall 18 .............................. me.updatePreview()
+  [124] ret
+end
+
+on updateInterface me
+  [  0] getprop 25 .............................. <pUIShown>
+  [  2] not ..................................... <not pUIShown>
+  [  3] jmpifz [ 12] ............................ if not pUIShown then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 31 .............................. return 1
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglistnoret 1 ...................... <me>
+  [ 16] objcall 13 .............................. me.updateOnOff()
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglistnoret 1 ...................... <me>
+  [ 22] objcall 14 .............................. me.updatePresetSelection()
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglistnoret 1 ...................... <me>
+  [ 28] objcall 15 .............................. me.updateColorSelection()
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglistnoret 1 ...................... <me>
+  [ 34] objcall 16 .............................. me.updateSlider()
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pusharglistnoret 1 ...................... <me>
+  [ 40] objcall 17 .............................. me.updateCheckbox()
+  [ 42] getparam 0 .............................. <me>
+  [ 44] pusharglistnoret 1 ...................... <me>
+  [ 46] objcall 18 .............................. me.updatePreview()
+  [ 48] ret
+end
+
+on updateOnOff me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 35 .............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 100 ............................. <me.getComponent().isOn()>
+  [ 10] setlocal 0 .............................. tIsOn = me.getComponent().isOn()
+  [ 12] getprop 21 .............................. <pWindowID>
+  [ 14] pusharglist 1 ........................... <pWindowID>
+  [ 16] extcall 37 .............................. <getWindow(pWindowID)>
+  [ 18] setlocal 1 .............................. tWnd = getWindow(pWindowID)
+  [ 20] getlocal 1 .............................. <tWnd>
+  [ 22] pushcons 10 ............................. <"dimmer.button.onoff.text">
+  [ 24] pusharglist 2 ........................... <tWnd, "dimmer.button.onoff.text">
+  [ 26] objcall 47 .............................. <tWnd.getElement("dimmer.button.onoff.text")>
+  [ 28] setlocal 2 .............................. tButton = tWnd.getElement("dimmer.button.onoff.text")
+  [ 30] getlocal 0 .............................. <tIsOn>
+  [ 32] jmpifz [ 50] ............................ if tIsOn then / else
+  [ 35] getlocal 2 .............................. <tButton>
+  [ 37] pushcons 11 ............................. <"dimmer_turn_off">
+  [ 39] pusharglist 1 ........................... <"dimmer_turn_off">
+  [ 41] extcall 101 ............................. <getText("dimmer_turn_off")>
+  [ 43] pusharglistnoret 2 ...................... <tButton, getText("dimmer_turn_off")>
+  [ 45] objcall 102 ............................. tButton.setText(getText("dimmer_turn_off"))
+  [ 47] jmp [ 62]
+  [ 50] getlocal 2 .............................. <tButton>
+  [ 52] pushcons 12 ............................. <"dimmer_turn_on">
+  [ 54] pusharglist 1 ........................... <"dimmer_turn_on">
+  [ 56] extcall 101 ............................. <getText("dimmer_turn_on")>
+  [ 58] pusharglistnoret 2 ...................... <tButton, getText("dimmer_turn_on")>
+  [ 60] objcall 102 ............................. tButton.setText(getText("dimmer_turn_on"))
+  [ 62] getlocal 1 .............................. <tWnd>
+  [ 64] pushcons 13 ............................. <"dimmer.disable.layer">
+  [ 66] pusharglist 2 ........................... <tWnd, "dimmer.disable.layer">
+  [ 68] objcall 47 .............................. <tWnd.getElement("dimmer.disable.layer")>
+  [ 70] setlocal 3 .............................. tElem = tWnd.getElement("dimmer.disable.layer")
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglist 1 ........................... <me>
+  [ 76] objcall 35 .............................. <me.getComponent()>
+  [ 78] pusharglist 1 ........................... <me.getComponent()>
+  [ 80] objcall 100 ............................. <me.getComponent().isOn()>
+  [ 82] jmpifz [ 94] ............................ if me.getComponent().isOn() then / else
+  [ 85] getlocal 3 .............................. <tElem>
+  [ 87] pusharglistnoret 1 ...................... <tElem>
+  [ 89] objcall 3 ............................... tElem.hide()
+  [ 91] jmp [100]
+  [ 94] getlocal 3 .............................. <tElem>
+  [ 96] pusharglistnoret 1 ...................... <tElem>
+  [ 98] objcall 103 ............................. tElem.show()
+  [100] ret
+end
+
+on updatePresetSelection me
+  [  0] getprop 69 .............................. <pSelectedPresetID>
+  [  2] setlocal 0 .............................. tPresetID = pSelectedPresetID
+  [  4] getprop 21 .............................. <pWindowID>
+  [  6] pusharglist 1 ........................... <pWindowID>
+  [  8] extcall 37 .............................. <getWindow(pWindowID)>
+  [ 10] setlocal 1 .............................. tWnd = getWindow(pWindowID)
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] setlocal 2
+  [ 16] getlocal 2
+  [ 18] pushint8 3 .............................. <3>
+  [ 20] lteq
+  [ 21] jmpifz [ 91] ............................ repeat with tNum = 1 to 3
+  [ 24] getlocal 1 .............................. <tWnd>
+  [ 26] pushcons 14 ............................. <"dimmer.button.preset.">
+  [ 28] getlocal 2 .............................. <tNum>
+  [ 30] joinstr ................................. <"dimmer.button.preset." & tNum>
+  [ 31] pusharglist 2 ........................... <tWnd, "dimmer.button.preset." & tNum>
+  [ 33] objcall 47 .............................. <tWnd.getElement("dimmer.button.preset." & tNum)>
+  [ 35] setlocal 3 .............................. tElem = tWnd.getElement("dimmer.button.preset." & tNum)
+  [ 37] getlocal 2 .............................. <tNum>
+  [ 39] getlocal 0 .............................. <tPresetID>
+  [ 41] eq ...................................... <tNum = tPresetID>
+  [ 42] jmpifz [ 60] ............................ if tNum = tPresetID then / else
+  [ 45] pushcons 15 ............................. <"dimmer.button.radio.on">
+  [ 47] pusharglist 1 ........................... <"dimmer.button.radio.on">
+  [ 49] extcall 108 ............................. <getmemnum("dimmer.button.radio.on")>
+  [ 51] pusharglist 1 ........................... <getmemnum("dimmer.button.radio.on")>
+  [ 53] extcall 107 ............................. <member(getmemnum("dimmer.button.radio.on"))>
+  [ 55] setlocal 4 .............................. tmember = member(getmemnum("dimmer.button.radio.on"))
+  [ 57] jmp [ 72]
+  [ 60] pushcons 16 ............................. <"dimmer.button.radio.off">
+  [ 62] pusharglist 1 ........................... <"dimmer.button.radio.off">
+  [ 64] extcall 108 ............................. <getmemnum("dimmer.button.radio.off")>
+  [ 66] pusharglist 1 ........................... <getmemnum("dimmer.button.radio.off")>
+  [ 68] extcall 107 ............................. <member(getmemnum("dimmer.button.radio.off"))>
+  [ 70] setlocal 4 .............................. tmember = member(getmemnum("dimmer.button.radio.off"))
+  [ 72] getlocal 3 .............................. <tElem>
+  [ 74] pushsymb 107 ............................ <#member>
+  [ 76] getlocal 4 .............................. <tmember>
+  [ 78] pusharglistnoret 3 ...................... <tElem, #member, tmember>
+  [ 80] objcall 109 ............................. tElem.setProperty(#member, tmember)
+  [ 82] pushint8 1
+  [ 84] getlocal 2
+  [ 86] add
+  [ 87] setlocal 2
+  [ 89] endrepeat [ 16]
+  [ 91] ret
+end
+
+on updateColorSelection me
+  [  0] getprop 66 .............................. <pSelectedColor>
+  [  2] setlocal 0 .............................. tColor = pSelectedColor
+  [  4] getprop 66 .............................. <pSelectedColor>
+  [  6] pusharglist 1 ........................... <pSelectedColor>
+  [  8] extcall 112 ............................. <voidp(pSelectedColor)>
+  [ 10] jmpifz [ 18] ............................ if voidp(pSelectedColor) then
+  [ 13] pushzero ................................ <0>
+  [ 14] pusharglistnoret 1 ...................... <0>
+  [ 16] extcall 31 .............................. return 0
+  [ 18] getprop 27 .............................. <pPaletteColorsRGB>
+  [ 20] getlocal 0 .............................. <tColor>
+  [ 22] pusharglist 2 ........................... <pPaletteColorsRGB, tColor>
+  [ 24] objcall 113 ............................. <pPaletteColorsRGB.findPos(tColor)>
+  [ 26] setlocal 1 .............................. tPos = pPaletteColorsRGB.findPos(tColor)
+  [ 28] getlocal 1 .............................. <tPos>
+  [ 30] pushzero ................................ <0>
+  [ 31] eq ...................................... <tPos = 0>
+  [ 32] jmpifz [134] ............................ if tPos = 0 then
+  [ 35] getlocal 0 .............................. <tColor>
+  [ 37] pusharglist 1 ........................... <tColor>
+  [ 39] extcall 55 .............................. <RGBtoHSL(tColor)>
+  [ 41] setlocal 2 .............................. tHSL = RGBtoHSL(tColor)
+  [ 43] pusharglist 0 ........................... <[]>
+  [ 45] pushlist ................................ <[]>
+  [ 46] setlocal 3 .............................. tHueDiff = []
+  [ 48] getprop 28 .............................. <pPaletteColorsHSL>
+  [ 50] peek 0
+  [ 52] pusharglist 1
+  [ 54] extcall 114
+  [ 56] pushint8 1
+  [ 58] peek 0
+  [ 60] peek 2
+  [ 62] lteq
+  [ 63] jmpifz [108] ............................ repeat with tPaletteColor in pPaletteColorsHSL
+  [ 66] peek 2
+  [ 68] peek 1
+  [ 70] pusharglist 2
+  [ 72] extcall 92
+  [ 74] setlocal 4
+  [ 76] getlocal 3 .............................. <tHueDiff>
+  [ 78] getlocal 4 .............................. <tPaletteColor>
+  [ 80] pushint8 1 .............................. <1>
+  [ 82] pusharglist 2 ........................... <tPaletteColor, 1>
+  [ 84] objcall 92 .............................. <tPaletteColor[1]>
+  [ 86] getlocal 2 .............................. <tHSL>
+  [ 88] pushint8 1 .............................. <1>
+  [ 90] pusharglist 2 ........................... <tHSL, 1>
+  [ 92] objcall 92 .............................. <tHSL[1]>
+  [ 94] sub ..................................... <tPaletteColor[1] - tHSL[1]>
+  [ 95] pusharglist 1 ........................... <tPaletteColor[1] - tHSL[1]>
+  [ 97] extcall 115 ............................. <abs(tPaletteColor[1] - tHSL[1])>
+  [ 99] pusharglistnoret 2 ...................... <tHueDiff, abs(tPaletteColor[1] - tHSL[1])>
+  [101] objcall 116 ............................. tHueDiff.add(abs(tPaletteColor[1] - tHSL[1]))
+  [103] pushint8 1
+  [105] add
+  [106] endrepeat [ 58]
+  [108] pop 3
+  [110] getlocal 3 .............................. <tHueDiff>
+  [112] getlocal 3 .............................. <tHueDiff>
+  [114] pusharglist 1 ........................... <tHueDiff>
+  [116] objcall 117 ............................. <tHueDiff.min()>
+  [118] pusharglist 2 ........................... <tHueDiff, tHueDiff.min()>
+  [120] objcall 113 ............................. <tHueDiff.findPos(tHueDiff.min())>
+  [122] setlocal 1 .............................. tPos = tHueDiff.findPos(tHueDiff.min())
+  [124] getprop 27 .............................. <pPaletteColorsRGB>
+  [126] getlocal 1 .............................. <tPos>
+  [128] pusharglist 2 ........................... <pPaletteColorsRGB, tPos>
+  [130] objcall 92 .............................. <pPaletteColorsRGB[tPos]>
+  [132] setprop 66 .............................. pSelectedColor = pPaletteColorsRGB[tPos]
+  [134] getparam 0 .............................. <me>
+  [136] getlocal 1 .............................. <tPos>
+  [138] pusharglistnoret 2 ...................... <me, tPos>
+  [140] objcall 7 ............................... me.highlightPaletteSlot(tPos)
+  [142] ret
+end
+
+on updateSlider me
+  [  0] getprop 73 .............................. <pSelectedLightness>
+  [  2] setlocal 0 .............................. tLightness = pSelectedLightness
+  [  4] getlocal 0 .............................. <tLightness>
+  [  6] pushfloat32 255.0 ....................... <255.0>
+  [ 11] div ..................................... <tLightness / 255.0>
+  [ 12] setlocal 0 .............................. tLightness = tLightness / 255.0
+  [ 14] getprop 24 .............................. <pMinLightnesses>
+  [ 16] getprop 26 .............................. <pSelectedEffectID>
+  [ 18] pusharglist 2 ........................... <pMinLightnesses, pSelectedEffectID>
+  [ 20] objcall 71 .............................. <pMinLightnesses.getaProp(pSelectedEffectID)>
+  [ 22] setlocal 1 .............................. tMinLightness = pMinLightnesses.getaProp(pSelectedEffectID)
+  [ 24] getlocal 0 .............................. <tLightness>
+  [ 26] getlocal 1 .............................. <tMinLightness>
+  [ 28] sub ..................................... <tLightness - tMinLightness>
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] getlocal 1 .............................. <tMinLightness>
+  [ 33] sub ..................................... <1 - tMinLightness>
+  [ 34] div ..................................... <(tLightness - tMinLightness) / (1 - tMinLightness)>
+  [ 35] setlocal 2 .............................. tMappedValue = (tLightness - tMinLightness) / (1 - tMinLightness)
+  [ 37] getlocal 2 .............................. <tMappedValue>
+  [ 39] pushzero ................................ <0>
+  [ 40] lt ...................................... <tMappedValue < 0>
+  [ 41] jmpifz [ 47] ............................ if tMappedValue < 0 then
+  [ 44] pushzero ................................ <0>
+  [ 45] setlocal 2 .............................. tMappedValue = 0
+  [ 47] getprop 21 .............................. <pWindowID>
+  [ 49] pusharglist 1 ........................... <pWindowID>
+  [ 51] extcall 37 .............................. <getWindow(pWindowID)>
+  [ 53] setlocal 3 .............................. tWndObj = getWindow(pWindowID)
+  [ 55] getlocal 3 .............................. <tWndObj>
+  [ 57] pushcons 9 .............................. <"dimmer.slider.scale">
+  [ 59] pusharglist 2 ........................... <tWndObj, "dimmer.slider.scale">
+  [ 61] objcall 47 .............................. <tWndObj.getElement("dimmer.slider.scale")>
+  [ 63] setlocal 4 .............................. tScale = tWndObj.getElement("dimmer.slider.scale")
+  [ 65] getlocal 3 .............................. <tWndObj>
+  [ 67] pushcons 17 ............................. <"dimmer.slider.handle">
+  [ 69] pusharglist 2 ........................... <tWndObj, "dimmer.slider.handle">
+  [ 71] objcall 47 .............................. <tWndObj.getElement("dimmer.slider.handle")>
+  [ 73] setlocal 5 .............................. tHandle = tWndObj.getElement("dimmer.slider.handle")
+  [ 75] getlocal 4 .............................. <tScale>
+  [ 77] pushsymb 56 ............................. <#rect>
+  [ 79] pusharglist 2 ........................... <tScale, #rect>
+  [ 81] objcall 49 .............................. <tScale.getProperty(#rect)>
+  [ 83] setlocal 6 .............................. tRect = tScale.getProperty(#rect)
+  [ 85] getlocal 5 .............................. <tHandle>
+  [ 87] pushsymb 78 ............................. <#locV>
+  [ 89] pusharglist 2 ........................... <tHandle, #locV>
+  [ 91] objcall 49 .............................. <tHandle.getProperty(#locV)>
+  [ 93] setlocal 7 .............................. tLocV = tHandle.getProperty(#locV)
+  [ 95] getlocal 4 .............................. <tScale>
+  [ 97] pushsymb 77 ............................. <#locH>
+  [ 99] pusharglist 2 ........................... <tScale, #locH>
+  [101] objcall 49 .............................. <tScale.getProperty(#locH)>
+  [103] getlocal 6 .............................. <tRect>
+  [105] getobjprop 48 ........................... <tRect.width>
+  [107] getlocal 2 .............................. <tMappedValue>
+  [109] mul ..................................... <tRect.width * tMappedValue>
+  [110] add ..................................... <tScale.getProperty(#locH) + (tRect.width * tMappedValue)>
+  [111] getlocal 5 .............................. <tHandle>
+  [113] pushsymb 48 ............................. <#width>
+  [115] pusharglist 2 ........................... <tHandle, #width>
+  [117] objcall 49 .............................. <tHandle.getProperty(#width)>
+  [119] pushint8 2 .............................. <2>
+  [121] div ..................................... <tHandle.getProperty(#width) / 2>
+  [122] sub ..................................... <tScale.getProperty(#locH) + (tRect.width * tMappedValue) - (tHandle.getProperty(#width) / 2)>
+  [123] setlocal 8 .............................. tLocH = tScale.getProperty(#locH) + (tRect.width * tMappedValue) - (tHandle.getProperty(#width) / 2)
+  [125] getlocal 5 .............................. <tHandle>
+  [127] getlocal 8 .............................. <tLocH>
+  [129] getlocal 7 .............................. <tLocV>
+  [131] pusharglistnoret 3 ...................... <tHandle, tLocH, tLocV>
+  [133] objcall 79 .............................. tHandle.moveTo(tLocH, tLocV)
+  [135] ret
+end
+
+on updateCheckbox me
+  [  0] getprop 26 .............................. <pSelectedEffectID>
+  [  2] setlocal 0 .............................. tEffectID = pSelectedEffectID
+  [  4] getprop 21 .............................. <pWindowID>
+  [  6] pusharglist 1 ........................... <pWindowID>
+  [  8] extcall 37 .............................. <getWindow(pWindowID)>
+  [ 10] setlocal 1 .............................. tWndObj = getWindow(pWindowID)
+  [ 12] getlocal 1 .............................. <tWndObj>
+  [ 14] pushcons 18 ............................. <"dimmer.bgonly.checkbox">
+  [ 16] pusharglist 2 ........................... <tWndObj, "dimmer.bgonly.checkbox">
+  [ 18] objcall 47 .............................. <tWndObj.getElement("dimmer.bgonly.checkbox")>
+  [ 20] setlocal 2 .............................. tElem = tWndObj.getElement("dimmer.bgonly.checkbox")
+  [ 22] getlocal 0 .............................. <tEffectID>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] eq ...................................... <tEffectID = 1>
+  [ 27] jmpifz [ 47] ............................ if tEffectID = 1 then / else
+  [ 30] getlocal 2 .............................. <tElem>
+  [ 32] pushsymb 107 ............................ <#member>
+  [ 34] pushcons 19 ............................. <"dimmer.checkbox.unchecked">
+  [ 36] pusharglist 1 ........................... <"dimmer.checkbox.unchecked">
+  [ 38] extcall 107 ............................. <member("dimmer.checkbox.unchecked")>
+  [ 40] pusharglistnoret 3 ...................... <tElem, #member, member("dimmer.checkbox.unchecked")>
+  [ 42] objcall 109 ............................. tElem.setProperty(#member, member("dimmer.checkbox.unchecked"))
+  [ 44] jmp [ 61]
+  [ 47] getlocal 2 .............................. <tElem>
+  [ 49] pushsymb 107 ............................ <#member>
+  [ 51] pushcons 20 ............................. <"dimmer.checkbox.checked">
+  [ 53] pusharglist 1 ........................... <"dimmer.checkbox.checked">
+  [ 55] extcall 107 ............................. <member("dimmer.checkbox.checked")>
+  [ 57] pusharglistnoret 3 ...................... <tElem, #member, member("dimmer.checkbox.checked")>
+  [ 59] objcall 109 ............................. tElem.setProperty(#member, member("dimmer.checkbox.checked"))
+  [ 61] getlocal 0 .............................. <tEffectID>
+  [ 63] setprop 126 ............................. pCheckboxValue = tEffectID
+  [ 65] ret
+end
+
+on updatePreview me
+  [  0] getprop 66 .............................. <pSelectedColor>
+  [  2] setlocal 0 .............................. tColor = pSelectedColor
+  [  4] getprop 73 .............................. <pSelectedLightness>
+  [  6] setlocal 1 .............................. tLightness = pSelectedLightness
+  [  8] getprop 26 .............................. <pSelectedEffectID>
+  [ 10] setlocal 2 .............................. tEffectID = pSelectedEffectID
+  [ 12] getlocal 0 .............................. <tColor>
+  [ 14] pusharglist 1 ........................... <tColor>
+  [ 16] extcall 112 ............................. <voidp(tColor)>
+  [ 18] getlocal 1 .............................. <tLightness>
+  [ 20] pusharglist 1 ........................... <tLightness>
+  [ 22] extcall 112 ............................. <voidp(tLightness)>
+  [ 24] or ...................................... <voidp(tColor) or voidp(tLightness)>
+  [ 25] getlocal 2 .............................. <tEffectID>
+  [ 27] pusharglist 1 ........................... <tEffectID>
+  [ 29] extcall 112 ............................. <voidp(tEffectID)>
+  [ 31] or ...................................... <voidp(tColor) or voidp(tLightness) or voidp(tEffectID)>
+  [ 32] jmpifz [ 40] ............................ if voidp(tColor) or voidp(tLightness) or voidp(tEffectID) then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 31 .............................. return 0
+  [ 40] getlocal 0 .............................. <tColor>
+  [ 42] pusharglist 1 ........................... <tColor>
+  [ 44] extcall 55 .............................. <RGBtoHSL(tColor)>
+  [ 46] setlocal 3 .............................. tHSL = RGBtoHSL(tColor)
+  [ 48] getlocal 3 .............................. <tHSL>
+  [ 50] pushint8 3 .............................. <3>
+  [ 52] getlocal 1 .............................. <tLightness>
+  [ 54] pusharglistnoret 3 ...................... <tHSL, 3, tLightness>
+  [ 56] objcall 54 .............................. tHSL[3] = tLightness
+  [ 58] getlocal 3 .............................. <tHSL>
+  [ 60] pusharglist 1 ........................... <tHSL>
+  [ 62] extcall 128 ............................. <HSLtoRGB(tHSL)>
+  [ 64] setlocal 0 .............................. tColor = HSLtoRGB(tHSL)
+  [ 66] pushcons 21 ............................. <"dimmer.preview.all">
+  [ 68] pusharglist 1 ........................... <"dimmer.preview.all">
+  [ 70] extcall 107 ............................. <member("dimmer.preview.all")>
+  [ 72] getchainedprop 51 ....................... <member("dimmer.preview.all").image>
+  [ 74] pusharglist 1 ........................... <member("dimmer.preview.all").image>
+  [ 76] objcall 129 ............................. <member("dimmer.preview.all").image.duplicate()>
+  [ 78] setlocal 4 .............................. tImage = member("dimmer.preview.all").image.duplicate()
+  [ 80] getlocal 4 .............................. <tImage>
+  [ 82] getobjprop 48 ........................... <tImage.width>
+  [ 84] getlocal 4 .............................. <tImage>
+  [ 86] getobjprop 50 ........................... <tImage.height>
+  [ 88] pushint8 32 ............................. <32>
+  [ 90] pusharglist 3 ........................... <tImage.width, tImage.height, 32>
+  [ 92] extcall 51 .............................. <image(tImage.width, tImage.height, 32)>
+  [ 94] setlocal 5 .............................. tNewImage = image(tImage.width, tImage.height, 32)
+  [ 96] getlocal 5 .............................. <tNewImage>
+  [ 98] getlocal 4 .............................. <tImage>
+  [100] getlocal 5 .............................. <tNewImage>
+  [102] getobjprop 56 ........................... <tNewImage.rect>
+  [104] getlocal 4 .............................. <tImage>
+  [106] getobjprop 56 ........................... <tImage.rect>
+  [108] pushsymb 130 ............................ <#ink>
+  [110] pushint8 41 ............................. <41>
+  [112] pushsymb 131 ............................ <#bgColor>
+  [114] getlocal 0 .............................. <tColor>
+  [116] pusharglist 4 ........................... <[#ink: 41, #bgColor: tColor]>
+  [118] pushproplist ............................ <[#ink: 41, #bgColor: tColor]>
+  [119] pusharglistnoret 5 ...................... <tNewImage, tImage, tNewImage.rect, tImage.rect, [#ink: 41, #bgColor: tColor]>
+  [121] objcall 132 ............................. tNewImage.copyPixels(tImage, tNewImage.rect, tImage.rect, [#ink: 41, #bgColor: tColor])
+  [123] getprop 21 .............................. <pWindowID>
+  [125] pusharglist 1 ........................... <pWindowID>
+  [127] extcall 37 .............................. <getWindow(pWindowID)>
+  [129] setlocal 6 .............................. tWnd = getWindow(pWindowID)
+  [131] getlocal 6 .............................. <tWnd>
+  [133] pushcons 22 ............................. <"dimmer.preview.bg">
+  [135] pusharglist 2 ........................... <tWnd, "dimmer.preview.bg">
+  [137] objcall 47 .............................. <tWnd.getElement("dimmer.preview.bg")>
+  [139] setlocal 7 .............................. tElem = tWnd.getElement("dimmer.preview.bg")
+  [141] getlocal 7 .............................. <tElem>
+  [143] getlocal 5 .............................. <tNewImage>
+  [145] pusharglistnoret 2 ...................... <tElem, tNewImage>
+  [147] objcall 58 .............................. tElem.feedImage(tNewImage)
+  [149] getlocal 6 .............................. <tWnd>
+  [151] pushcons 23 ............................. <"dimmer.preview.foreground">
+  [153] pusharglist 2 ........................... <tWnd, "dimmer.preview.foreground">
+  [155] objcall 47 .............................. <tWnd.getElement("dimmer.preview.foreground")>
+  [157] setlocal 8 .............................. tForeground = tWnd.getElement("dimmer.preview.foreground")
+  [159] getlocal 2 .............................. <tEffectID>
+  [161] pushint8 1 .............................. <1>
+  [163] eq ...................................... <tEffectID = 1>
+  [164] jmpifz [176] ............................ if tEffectID = 1 then / else
+  [167] getlocal 8 .............................. <tForeground>
+  [169] pusharglistnoret 1 ...................... <tForeground>
+  [171] objcall 3 ............................... tForeground.hide()
+  [173] jmp [182]
+  [176] getlocal 8 .............................. <tForeground>
+  [178] pusharglistnoret 1 ...................... <tForeground>
+  [180] objcall 103 ............................. tForeground.show()
+  [182] ret
+end
+
+on applyEffect me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tPreset = [:]
+  [  5] getlocal 0 .............................. <tPreset>
+  [  7] pushsymb 135 ............................ <#presetID>
+  [  9] getprop 69 .............................. <pSelectedPresetID>
+  [ 11] pusharglistnoret 3 ...................... <tPreset, #presetID, pSelectedPresetID>
+  [ 13] objcall 136 ............................. tPreset.setaProp(#presetID, pSelectedPresetID)
+  [ 15] getlocal 0 .............................. <tPreset>
+  [ 17] pushsymb 70 ............................. <#effectID>
+  [ 19] getprop 26 .............................. <pSelectedEffectID>
+  [ 21] pusharglistnoret 3 ...................... <tPreset, #effectID, pSelectedEffectID>
+  [ 23] objcall 136 ............................. tPreset.setaProp(#effectID, pSelectedEffectID)
+  [ 25] getlocal 0 .............................. <tPreset>
+  [ 27] pushsymb 72 ............................. <#color>
+  [ 29] getprop 66 .............................. <pSelectedColor>
+  [ 31] pusharglistnoret 3 ...................... <tPreset, #color, pSelectedColor>
+  [ 33] objcall 136 ............................. tPreset.setaProp(#color, pSelectedColor)
+  [ 35] getlocal 0 .............................. <tPreset>
+  [ 37] pushsymb 74 ............................. <#lightness>
+  [ 39] getprop 73 .............................. <pSelectedLightness>
+  [ 41] pusharglistnoret 3 ...................... <tPreset, #lightness, pSelectedLightness>
+  [ 43] objcall 136 ............................. tPreset.setaProp(#lightness, pSelectedLightness)
+  [ 45] getlocal 0 .............................. <tPreset>
+  [ 47] pushsymb 137 ............................ <#apply>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] pusharglistnoret 3 ...................... <tPreset, #apply, 1>
+  [ 53] objcall 136 ............................. tPreset.setaProp(#apply, 1)
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pusharglist 1 ........................... <me>
+  [ 59] objcall 35 .............................. <me.getComponent()>
+  [ 61] getlocal 0 .............................. <tPreset>
+  [ 63] pusharglistnoret 2 ...................... <me.getComponent(), tPreset>
+  [ 65] objcall 138 ............................. me.getComponent().savePreset(tPreset)
+  [ 67] ret
+end
+
+on eventProc me, tEvent, tElemID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 40 ............................. <#mouseUp>
+  [  4] eq ...................................... <tEvent = #mouseUp>
+  [  5] jmpifz [178] ............................ if tEvent = #mouseUp then
+  [  8] getparam 2 .............................. <tElemID>
+  [ 10] peek 0 .................................. case tElemID of
+  [ 12] pushcons 24 ............................. <"dimmer.bgonly.text">
+  [ 14] nteq
+  [ 15] jmpifz [ 26] ............................ (case) "dimmer.bgonly.text", ...
+  [ 18] peek 0
+  [ 20] pushcons 18 ............................. <"dimmer.bgonly.checkbox">
+  [ 22] eq
+  [ 23] jmpifz [ 35] ............................ (case) ..., "dimmer.bgonly.checkbox":
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglistnoret 1 ...................... <me>
+  [ 30] objcall 8 ............................... me.toggleEffect()
+  [ 32] jmp [176]
+  [ 35] peek 0
+  [ 37] pushcons 25 ............................. <"close">
+  [ 39] eq
+  [ 40] jmpifz [ 52] ............................ (case) "close":
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglistnoret 1 ...................... <me>
+  [ 47] objcall 3 ............................... me.hide()
+  [ 49] jmp [176]
+  [ 52] peek 0
+  [ 54] pushcons 26 ............................. <"dimmer.button.onoff">
+  [ 56] nteq
+  [ 57] jmpifz [ 68] ............................ (case) "dimmer.button.onoff", ...
+  [ 60] peek 0
+  [ 62] pushcons 10 ............................. <"dimmer.button.onoff.text">
+  [ 64] eq
+  [ 65] jmpifz [ 81] ............................ (case) ..., "dimmer.button.onoff.text":
+  [ 68] getparam 0 .............................. <me>
+  [ 70] pusharglist 1 ........................... <me>
+  [ 72] objcall 35 .............................. <me.getComponent()>
+  [ 74] pusharglistnoret 1 ...................... <me.getComponent()>
+  [ 76] objcall 139 ............................. me.getComponent().toggleOnoff()
+  [ 78] jmp [176]
+  [ 81] peek 0
+  [ 83] pushcons 27 ............................. <"dimmer.button.apply">
+  [ 85] nteq
+  [ 86] jmpifz [ 97] ............................ (case) "dimmer.button.apply", ...
+  [ 89] peek 0
+  [ 91] pushcons 28 ............................. <"dimmer.button.apply.text">
+  [ 93] eq
+  [ 94] jmpifz [106] ............................ (case) ..., "dimmer.button.apply.text":
+  [ 97] getparam 0 .............................. <me>
+  [ 99] pusharglistnoret 1 ...................... <me>
+  [101] objcall 19 .............................. me.applyEffect()
+  [103] jmp [176] ............................... (case) otherwise:
+  [106] getparam 2 .............................. <tElemID>
+  [108] pushcons 29 ............................. <"dimmer.paletteslot">
+  [110] containsstr ............................. <tElemID contains "dimmer.paletteslot">
+  [111] jmpifz [136] ............................ if tElemID contains "dimmer.paletteslot" then
+  [114] getparam 2 .............................. <tElemID>
+  [116] pushsymb 140 ............................ <#char>
+  [118] getparam 2 .............................. <tElemID>
+  [120] getobjprop 141 .......................... <tElemID.length>
+  [122] pusharglist 3 ........................... <tElemID, #char, tElemID.length>
+  [124] objcall 142 ............................. <tElemID.char[tElemID.length]>
+  [126] setlocal 0 .............................. tSlotNum = tElemID.char[tElemID.length]
+  [128] getparam 0 .............................. <me>
+  [130] getlocal 0 .............................. <tSlotNum>
+  [132] pusharglistnoret 2 ...................... <me, tSlotNum>
+  [134] objcall 5 ............................... me.selectPaletteSlot(tSlotNum)
+  [136] getparam 2 .............................. <tElemID>
+  [138] pushcons 30 ............................. <"dimmer.button.preset">
+  [140] containsstr ............................. <tElemID contains "dimmer.button.preset">
+  [141] jmpifz [176] ............................ if tElemID contains "dimmer.button.preset" then
+  [144] getparam 2 .............................. <tElemID>
+  [146] pushcons 31 ............................. <".">
+  [148] pusharglist 2 ........................... <tElemID, ".">
+  [150] extcall 143 ............................. <explode(tElemID, ".")>
+  [152] setlocal 1 .............................. tItems = explode(tElemID, ".")
+  [154] getlocal 1 .............................. <tItems>
+  [156] pushint8 4 .............................. <4>
+  [158] pusharglist 2 ........................... <tItems, 4>
+  [160] objcall 92 .............................. <tItems[4]>
+  [162] pusharglist 1 ........................... <tItems[4]>
+  [164] extcall 144 ............................. <value(tItems[4])>
+  [166] setlocal 2 .............................. tPresetNum = value(tItems[4])
+  [168] getparam 0 .............................. <me>
+  [170] getlocal 2 .............................. <tPresetNum>
+  [172] pusharglistnoret 2 ...................... <me, tPresetNum>
+  [174] objcall 6 ............................... me.selectPreset(tPresetNum)
+  [176] pop 1 ................................... end case
+  [178] getparam 1 .............................. <tEvent>
+  [180] pushsymb 42 ............................. <#mouseDown>
+  [182] eq ...................................... <tEvent = #mouseDown>
+  [183] getparam 2 .............................. <tElemID>
+  [185] pushcons 32 ............................. <"dimmer.slider">
+  [187] containsstr ............................. <tElemID contains "dimmer.slider">
+  [188] and ..................................... <(tEvent = #mouseDown) and (tElemID contains "dimmer.slider")>
+  [189] jmpifz [200] ............................ if (tEvent = #mouseDown) and (tElemID contains "dimmer.slider") then
+  [192] getparam 0 .............................. <me>
+  [194] pushint8 1 .............................. <1>
+  [196] pusharglistnoret 2 ...................... <me, 1>
+  [198] objcall 9 ............................... me.initSliderAgent(1)
+  [200] ret
+end

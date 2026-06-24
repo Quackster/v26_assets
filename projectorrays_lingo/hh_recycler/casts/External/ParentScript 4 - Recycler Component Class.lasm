@@ -1,0 +1,982 @@
+property pServiceEnabled, pRecyclerState, pGiveFurniPool, pGetFurniPool, pRewardProps, pREwardItems, pTimeProps, pQuarantineMinutes, pRecyclingMinutes, pIsVisible, pRecyclingTimeoutMinutes, pOpeningRequestPending
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 30 .............................. pIsVisible = 0
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 32 .............................. <VOID>
+  [  7] setprop 31 .............................. pRecyclerState = VOID
+  [  9] pusharglist 0 ........................... <[]>
+  [ 11] pushlist ................................ <[]>
+  [ 12] setprop 33 .............................. pGiveFurniPool = []
+  [ 14] pusharglist 0 ........................... <[:]>
+  [ 16] pushproplist ............................ <[:]>
+  [ 17] setprop 34 .............................. pGetFurniPool = [:]
+  [ 19] pusharglist 0 ........................... <[:]>
+  [ 21] pushproplist ............................ <[:]>
+  [ 22] setprop 35 .............................. pRewardProps = [:]
+  [ 24] pusharglist 0 ........................... <[:]>
+  [ 26] pushproplist ............................ <[:]>
+  [ 27] setprop 36 .............................. pTimeProps = [:]
+  [ 29] pusharglist 0 ........................... <[:]>
+  [ 31] pushproplist ............................ <[:]>
+  [ 32] setprop 37 .............................. pREwardItems = [:]
+  [ 34] pushzero ................................ <0>
+  [ 35] setprop 38 .............................. pServiceEnabled = 0
+  [ 37] pushzero ................................ <0>
+  [ 38] setprop 55 .............................. pOpeningRequestPending = 0
+  [ 40] pushzero ................................ <0>
+  [ 41] setprop 40 .............................. pRecyclingTimeoutMinutes = 0
+  [ 43] pushsymb 42 ............................. <#userloggedin>
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 43 .............................. <me.getID()>
+  [ 51] pushsymb 2 .............................. <#Initialize>
+  [ 53] pusharglistnoret 3 ...................... <#userloggedin, me.getID(), #Initialize>
+  [ 55] extcall 41 .............................. registerMessage(#userloggedin, me.getID(), #Initialize)
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] pusharglistnoret 1 ...................... <1>
+  [ 61] extcall 44 .............................. return 1
+  [ 63] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 42 ............................. <#userloggedin>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 43 .............................. <me.getID()>
+  [  8] pusharglistnoret 2 ...................... <#userloggedin, me.getID()>
+  [ 10] extcall 46 .............................. unregisterMessage(#userloggedin, me.getID())
+  [ 12] pushsymb 48 ............................. <#recyclingFinished>
+  [ 14] pusharglist 1 ........................... <#recyclingFinished>
+  [ 16] extcall 47 .............................. <objectExists(#recyclingFinished)>
+  [ 18] jmpifz [ 27] ............................ if objectExists(#recyclingFinished) then
+  [ 21] pushsymb 48 ............................. <#recyclingFinished>
+  [ 23] pusharglistnoret 1 ...................... <#recyclingFinished>
+  [ 25] extcall 49 .............................. removeTimeout(#recyclingFinished)
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pusharglistnoret 1 ...................... <1>
+  [ 31] extcall 44 .............................. return 1
+  [ 33] ret
+end
+
+on Initialize me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 51 .............................. <getVariableValue("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariableValue("connection.info.id")>
+  [  8] extcall 50 .............................. <getConnection(getVariableValue("connection.info.id"))>
+  [ 10] setlocal 0 .............................. tConn = getConnection(getVariableValue("connection.info.id"))
+  [ 12] getlocal 0 .............................. <tConn>
+  [ 14] pushcons 1 .............................. <"GET_FURNI_RECYCLER_CONFIGURATION">
+  [ 16] pusharglistnoret 2 ...................... <tConn, "GET_FURNI_RECYCLER_CONFIGURATION">
+  [ 18] objcall 52 .............................. tConn.send("GET_FURNI_RECYCLER_CONFIGURATION")
+  [ 20] getparam 0 .............................. <me>
+  [ 22] pusharglistnoret 1 ...................... <me>
+  [ 24] objcall 4 ............................... me.requestRecyclerState()
+  [ 26] ret
+end
+
+on enableService me, tEnabled
+  [  0] getparam 1 .............................. <tEnabled>
+  [  2] jmpifz [ 12] ............................ if tEnabled then / else
+  [  5] pushint8 1 .............................. <1>
+  [  7] setprop 38 .............................. pServiceEnabled = 1
+  [  9] jmp [ 15]
+  [ 12] pushzero ................................ <0>
+  [ 13] setprop 38 .............................. pServiceEnabled = 0
+  [ 15] ret
+end
+
+on requestRecyclerState me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 51 .............................. <getVariableValue("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariableValue("connection.info.id")>
+  [  8] extcall 50 .............................. <getConnection(getVariableValue("connection.info.id"))>
+  [ 10] setlocal 0 .............................. tConn = getConnection(getVariableValue("connection.info.id"))
+  [ 12] getlocal 0 .............................. <tConn>
+  [ 14] pushcons 2 .............................. <"GET_FURNI_RECYCLER_STATUS">
+  [ 16] pusharglistnoret 2 ...................... <tConn, "GET_FURNI_RECYCLER_STATUS">
+  [ 18] objcall 52 .............................. tConn.send("GET_FURNI_RECYCLER_STATUS")
+  [ 20] ret
+end
+
+on openRecycler me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 55 .............................. pOpeningRequestPending = 1
+  [  4] getparam 0 .............................. <me>
+  [  6] pusharglistnoret 1 ...................... <me>
+  [  8] objcall 4 ............................... me.requestRecyclerState()
+  [ 10] ret
+end
+
+on openRecyclerWithState me, tstate
+  [  0] getprop 55 .............................. <pOpeningRequestPending>
+  [  2] pushint8 1 .............................. <1>
+  [  4] eq ...................................... <pOpeningRequestPending = 1>
+  [  5] jmpifz [ 15] ............................ if pOpeningRequestPending = 1 then
+  [  8] pushint8 1 .............................. <1>
+  [ 10] setprop 30 .............................. pIsVisible = 1
+  [ 12] pushzero ................................ <0>
+  [ 13] setprop 55 .............................. pOpeningRequestPending = 0
+  [ 15] getparam 0 .............................. <me>
+  [ 17] getparam 1 .............................. <tstate>
+  [ 19] pusharglistnoret 2 ...................... <me, tstate>
+  [ 21] objcall 29 .............................. me.setStateTo(tstate)
+  [ 23] ret
+end
+
+on closeRecycler me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 30 .............................. pIsVisible = 0
+  [  3] pushzero ................................ <0>
+  [  4] setprop 55 .............................. pOpeningRequestPending = 0
+  [  6] pushsymb 58 ............................. <#room>
+  [  8] pusharglist 1 ........................... <#room>
+  [ 10] extcall 57 .............................. <threadExists(#room)>
+  [ 12] jmpifz [ 66] ............................ if threadExists(#room) then
+  [ 15] pushsymb 58 ............................. <#room>
+  [ 17] pusharglist 1 ........................... <#room>
+  [ 19] extcall 59 .............................. <getThread(#room)>
+  [ 21] pusharglist 1 ........................... <getThread(#room)>
+  [ 23] objcall 60 .............................. <getThread(#room).getInterface()>
+  [ 25] setlocal 0 .............................. tRoomInterface = getThread(#room).getInterface()
+  [ 27] getlocal 0 .............................. <tRoomInterface>
+  [ 29] pusharglist 1 ........................... <tRoomInterface>
+  [ 31] objcall 61 .............................. <tRoomInterface.getContainer()>
+  [ 33] setlocal 1 .............................. tContainer = tRoomInterface.getContainer()
+  [ 35] pusharglist 0 ........................... <[]>
+  [ 37] pushlist ................................ <[]>
+  [ 38] setprop 33 .............................. pGiveFurniPool = []
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 60 .............................. <me.getInterface()>
+  [ 46] pusharglist 0 ........................... <>
+  [ 48] extcall 32 .............................. <VOID>
+  [ 50] pusharglistnoret 2 ...................... <me.getInterface(), VOID>
+  [ 52] objcall 62 .............................. me.getInterface().setHostWindowObject(VOID)
+  [ 54] getparam 0 .............................. <me>
+  [ 56] pusharglistnoret 1 ...................... <me>
+  [ 58] objcall 11 .............................. me.clearObjectMover()
+  [ 60] getlocal 1 .............................. <tContainer>
+  [ 62] pusharglistnoret 1 ...................... <tContainer>
+  [ 64] objcall 63 .............................. tContainer.Refresh()
+  [ 66] ret
+end
+
+on startRecycling me
+  [  0] pushsymb 58 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 59 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 60 .............................. <getThread(#room).getInterface()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 12] objcall 66 .............................. <getThread(#room).getInterface().getSafeTrader()>
+  [ 14] setlocal 0 .............................. tSafeTrader = getThread(#room).getInterface().getSafeTrader()
+  [ 16] getlocal 0 .............................. <tSafeTrader>
+  [ 18] pusharglist 1 ........................... <tSafeTrader>
+  [ 20] extcall 67 .............................. <voidp(tSafeTrader)>
+  [ 22] not ..................................... <not voidp(tSafeTrader)>
+  [ 23] jmpifz [ 64] ............................ if not voidp(tSafeTrader) then
+  [ 26] getlocal 0 .............................. <tSafeTrader>
+  [ 28] pusharglist 1 ........................... <tSafeTrader>
+  [ 30] objcall 14 .............................. <tSafeTrader.getState()>
+  [ 32] pushsymb 68 ............................. <#open>
+  [ 34] eq ...................................... <tSafeTrader.getState() = #open>
+  [ 35] jmpifz [ 64] ............................ if tSafeTrader.getState() = #open then
+  [ 38] pushsymb 70 ............................. <#alert>
+  [ 40] pushsymb 71 ............................. <#Msg>
+  [ 42] pushcons 3 .............................. <"recycler_trader_open_alert">
+  [ 44] pusharglist 1 ........................... <"recycler_trader_open_alert">
+  [ 46] extcall 72 .............................. <getText("recycler_trader_open_alert")>
+  [ 48] pushsymb 73 ............................. <#modal>
+  [ 50] pushint8 1 .............................. <1>
+  [ 52] pusharglist 4 ........................... <[#Msg: getText("recycler_trader_open_alert"), #modal: 1]>
+  [ 54] pushproplist ............................ <[#Msg: getText("recycler_trader_open_alert"), #modal: 1]>
+  [ 55] pusharglistnoret 2 ...................... <#alert, [#Msg: getText("recycler_trader_open_alert"), #modal: 1]>
+  [ 57] extcall 69 .............................. executeMessage(#alert, [#Msg: getText("recycler_trader_open_alert"), #modal: 1])
+  [ 59] pushzero ................................ <0>
+  [ 60] pusharglistnoret 1 ...................... <0>
+  [ 62] extcall 44 .............................. return 0
+  [ 64] pusharglist 0 ........................... <[]>
+  [ 66] pushlist ................................ <[]>
+  [ 67] setlocal 1 .............................. tRoomItemIds = []
+  [ 69] pusharglist 0 ........................... <[]>
+  [ 71] pushlist ................................ <[]>
+  [ 72] setlocal 2 .............................. tWallItemIds = []
+  [ 74] getparam 0 .............................. <me>
+  [ 76] pusharglist 1 ........................... <me>
+  [ 78] objcall 19 .............................. <me.getRewardItemForCurrentAmount()>
+  [ 80] setlocal 3 .............................. tTargetItem = me.getRewardItemForCurrentAmount()
+  [ 82] getlocal 3 .............................. <tTargetItem>
+  [ 84] pusharglist 1 ........................... <tTargetItem>
+  [ 86] extcall 67 .............................. <voidp(tTargetItem)>
+  [ 88] getlocal 3 .............................. <tTargetItem>
+  [ 90] pusharglist 1 ........................... <tTargetItem>
+  [ 92] extcall 122 ............................. <ilk(tTargetItem)>
+  [ 94] pushsymb 123 ............................ <#propList>
+  [ 96] nteq .................................... <ilk(tTargetItem) <> #propList>
+  [ 97] or ...................................... <voidp(tTargetItem) or (ilk(tTargetItem) <> #propList)>
+  [ 98] jmpifz [106] ............................ if voidp(tTargetItem) or (ilk(tTargetItem) <> #propList) then
+  [101] pushzero ................................ <0>
+  [102] pusharglistnoret 1 ...................... <0>
+  [104] extcall 44 .............................. return 0
+  [106] getlocal 3 .............................. <tTargetItem>
+  [108] pushsymb 106 ............................ <#furniValue>
+  [110] pusharglist 2 ........................... <tTargetItem, #furniValue>
+  [112] objcall 75 .............................. <tTargetItem[#furniValue]>
+  [114] setlocal 4 .............................. tGiveAmount = tTargetItem[#furniValue]
+  [116] getlocal 4 .............................. <tGiveAmount>
+  [118] getprop 33 .............................. <pGiveFurniPool>
+  [120] getobjprop 74 ........................... <pGiveFurniPool.count>
+  [122] gt ...................................... <tGiveAmount > pGiveFurniPool.count>
+  [123] jmpifz [131] ............................ if tGiveAmount > pGiveFurniPool.count then
+  [126] pushzero ................................ <0>
+  [127] pusharglistnoret 1 ...................... <0>
+  [129] extcall 44 .............................. return 0
+  [131] pushint8 1 .............................. <1>
+  [133] setlocal 5
+  [135] getlocal 5
+  [137] getlocal 4 .............................. <tGiveAmount>
+  [139] lteq
+  [140] jmpifz [233] ............................ repeat with tIndexNo = 1 to tGiveAmount
+  [143] getprop 33 .............................. <pGiveFurniPool>
+  [145] getlocal 5 .............................. <tIndexNo>
+  [147] pusharglist 2 ........................... <pGiveFurniPool, tIndexNo>
+  [149] objcall 75 .............................. <pGiveFurniPool[tIndexNo]>
+  [151] setlocal 6 .............................. tItem = pGiveFurniPool[tIndexNo]
+  [153] getlocal 6 .............................. <tItem>
+  [155] pushsymb 76 ............................. <#props>
+  [157] pusharglist 2 ........................... <tItem, #props>
+  [159] objcall 75 .............................. <tItem[#props]>
+  [161] pushsymb 77 ............................. <#type>
+  [163] pusharglist 2 ........................... <tItem[#props], #type>
+  [165] objcall 75 .............................. <tItem[#props][#type]>
+  [167] pushcons 4 .............................. <"active">
+  [169] eq ...................................... <tItem[#props][#type] = "active">
+  [170] jmpifz [200] ............................ if tItem[#props][#type] = "active" then
+  [173] getlocal 1 .............................. <tRoomItemIds>
+  [175] getlocal 6 .............................. <tItem>
+  [177] pushsymb 76 ............................. <#props>
+  [179] pusharglist 2 ........................... <tItem, #props>
+  [181] objcall 75 .............................. <tItem[#props]>
+  [183] pushsymb 79 ............................. <#id>
+  [185] pusharglist 2 ........................... <tItem[#props], #id>
+  [187] objcall 75 .............................. <tItem[#props][#id]>
+  [189] pusharglist 1 ........................... <tItem[#props][#id]>
+  [191] extcall 78 .............................. <integer(tItem[#props][#id])>
+  [193] pusharglistnoret 2 ...................... <tRoomItemIds, integer(tItem[#props][#id])>
+  [195] objcall 80 .............................. tRoomItemIds.add(integer(tItem[#props][#id]))
+  [197] jmp [224] ............................... next repeat
+  [200] getlocal 2 .............................. <tWallItemIds>
+  [202] getlocal 6 .............................. <tItem>
+  [204] pushsymb 76 ............................. <#props>
+  [206] pusharglist 2 ........................... <tItem, #props>
+  [208] objcall 75 .............................. <tItem[#props]>
+  [210] pushsymb 79 ............................. <#id>
+  [212] pusharglist 2 ........................... <tItem[#props], #id>
+  [214] objcall 75 .............................. <tItem[#props][#id]>
+  [216] pusharglist 1 ........................... <tItem[#props][#id]>
+  [218] extcall 78 .............................. <integer(tItem[#props][#id])>
+  [220] pusharglistnoret 2 ...................... <tWallItemIds, integer(tItem[#props][#id])>
+  [222] objcall 80 .............................. tWallItemIds.add(integer(tItem[#props][#id]))
+  [224] pushint8 1
+  [226] getlocal 5
+  [228] add
+  [229] setlocal 5
+  [231] endrepeat [135]
+  [233] pusharglist 0 ........................... <[:]>
+  [235] pushproplist ............................ <[:]>
+  [236] setlocal 7 .............................. tParams = [:]
+  [238] getlocal 7 .............................. <tParams>
+  [240] pushsymb 78 ............................. <#integer>
+  [242] getlocal 1 .............................. <tRoomItemIds>
+  [244] getobjprop 74 ........................... <tRoomItemIds.count>
+  [246] pusharglistnoret 3 ...................... <tParams, #integer, tRoomItemIds.count>
+  [248] objcall 81 .............................. tParams.addProp(#integer, tRoomItemIds.count)
+  [250] getlocal 1 .............................. <tRoomItemIds>
+  [252] peek 0
+  [254] pusharglist 1
+  [256] extcall 74
+  [258] pushint8 1
+  [260] peek 0
+  [262] peek 2
+  [264] lteq
+  [265] jmpifz [293] ............................ repeat with tItem in tRoomItemIds
+  [268] peek 2
+  [270] peek 1
+  [272] pusharglist 2
+  [274] extcall 75
+  [276] setlocal 6
+  [278] getlocal 7 .............................. <tParams>
+  [280] pushsymb 78 ............................. <#integer>
+  [282] getlocal 6 .............................. <tItem>
+  [284] pusharglistnoret 3 ...................... <tParams, #integer, tItem>
+  [286] objcall 81 .............................. tParams.addProp(#integer, tItem)
+  [288] pushint8 1
+  [290] add
+  [291] endrepeat [260]
+  [293] pop 3
+  [295] getlocal 7 .............................. <tParams>
+  [297] pushsymb 78 ............................. <#integer>
+  [299] getlocal 2 .............................. <tWallItemIds>
+  [301] getobjprop 74 ........................... <tWallItemIds.count>
+  [303] pusharglistnoret 3 ...................... <tParams, #integer, tWallItemIds.count>
+  [305] objcall 81 .............................. tParams.addProp(#integer, tWallItemIds.count)
+  [307] getlocal 2 .............................. <tWallItemIds>
+  [309] peek 0
+  [311] pusharglist 1
+  [313] extcall 74
+  [315] pushint8 1
+  [317] peek 0
+  [319] peek 2
+  [321] lteq
+  [322] jmpifz [350] ............................ repeat with tItem in tWallItemIds
+  [325] peek 2
+  [327] peek 1
+  [329] pusharglist 2
+  [331] extcall 75
+  [333] setlocal 6
+  [335] getlocal 7 .............................. <tParams>
+  [337] pushsymb 78 ............................. <#integer>
+  [339] getlocal 6 .............................. <tItem>
+  [341] pusharglistnoret 3 ...................... <tParams, #integer, tItem>
+  [343] objcall 81 .............................. tParams.addProp(#integer, tItem)
+  [345] pushint8 1
+  [347] add
+  [348] endrepeat [317]
+  [350] pop 3
+  [352] pushcons 0 .............................. <"connection.info.id">
+  [354] pusharglist 1 ........................... <"connection.info.id">
+  [356] extcall 82 .............................. <getVariable("connection.info.id")>
+  [358] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [360] extcall 50 .............................. <getConnection(getVariable("connection.info.id"))>
+  [362] pushcons 5 .............................. <"START_FURNI_RECYCLING">
+  [364] getlocal 7 .............................. <tParams>
+  [366] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "START_FURNI_RECYCLING", tParams>
+  [368] objcall 52 .............................. getConnection(getVariable("connection.info.id")).send("START_FURNI_RECYCLING", tParams)
+  [370] ret
+end
+
+on acceptRecycling me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 82 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 50 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 10] setlocal 0 .............................. tConn = getConnection(getVariable("connection.info.id"))
+  [ 12] getprop 31 .............................. <pRecyclerState>
+  [ 14] pushcons 6 .............................. <"progress">
+  [ 16] eq ...................................... <pRecyclerState = "progress">
+  [ 17] jmpifz [ 38] ............................ if pRecyclerState = "progress" then / else
+  [ 20] getlocal 0 .............................. <tConn>
+  [ 22] pushcons 7 .............................. <"APPROVE_RECYCLED_FURNI">
+  [ 24] pushsymb 78 ............................. <#integer>
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglist 2 ........................... <[#integer: 1]>
+  [ 30] pushproplist ............................ <[#integer: 1]>
+  [ 31] pusharglistnoret 3 ...................... <tConn, "APPROVE_RECYCLED_FURNI", [#integer: 1]>
+  [ 33] objcall 52 .............................. tConn.send("APPROVE_RECYCLED_FURNI", [#integer: 1])
+  [ 35] jmp [ 53]
+  [ 38] getlocal 0 .............................. <tConn>
+  [ 40] pushcons 8 .............................. <"CONFIRM_FURNI_RECYCLING">
+  [ 42] pushsymb 78 ............................. <#integer>
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] pusharglist 2 ........................... <[#integer: 1]>
+  [ 48] pushproplist ............................ <[#integer: 1]>
+  [ 49] pusharglistnoret 3 ...................... <tConn, "CONFIRM_FURNI_RECYCLING", [#integer: 1]>
+  [ 51] objcall 52 .............................. tConn.send("CONFIRM_FURNI_RECYCLING", [#integer: 1])
+  [ 53] ret
+end
+
+on cancelRecycling me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 82 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 50 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 10] setlocal 0 .............................. tConn = getConnection(getVariable("connection.info.id"))
+  [ 12] getprop 31 .............................. <pRecyclerState>
+  [ 14] pushcons 6 .............................. <"progress">
+  [ 16] eq ...................................... <pRecyclerState = "progress">
+  [ 17] jmpifz [ 37] ............................ if pRecyclerState = "progress" then / else
+  [ 20] getlocal 0 .............................. <tConn>
+  [ 22] pushcons 8 .............................. <"CONFIRM_FURNI_RECYCLING">
+  [ 24] pushsymb 78 ............................. <#integer>
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglist 2 ........................... <[#integer: 0]>
+  [ 29] pushproplist ............................ <[#integer: 0]>
+  [ 30] pusharglistnoret 3 ...................... <tConn, "CONFIRM_FURNI_RECYCLING", [#integer: 0]>
+  [ 32] objcall 52 .............................. tConn.send("CONFIRM_FURNI_RECYCLING", [#integer: 0])
+  [ 34] jmp [ 84]
+  [ 37] getprop 31 .............................. <pRecyclerState>
+  [ 39] pushcons 9 .............................. <"ready">
+  [ 41] eq ...................................... <pRecyclerState = "ready">
+  [ 42] jmpifz [ 62] ............................ if pRecyclerState = "ready" then / else
+  [ 45] getlocal 0 .............................. <tConn>
+  [ 47] pushcons 8 .............................. <"CONFIRM_FURNI_RECYCLING">
+  [ 49] pushsymb 78 ............................. <#integer>
+  [ 51] pushzero ................................ <0>
+  [ 52] pusharglist 2 ........................... <[#integer: 0]>
+  [ 54] pushproplist ............................ <[#integer: 0]>
+  [ 55] pusharglistnoret 3 ...................... <tConn, "CONFIRM_FURNI_RECYCLING", [#integer: 0]>
+  [ 57] objcall 52 .............................. tConn.send("CONFIRM_FURNI_RECYCLING", [#integer: 0])
+  [ 59] jmp [ 84]
+  [ 62] getprop 31 .............................. <pRecyclerState>
+  [ 64] pushcons 10 ............................. <"timeout">
+  [ 66] eq ...................................... <pRecyclerState = "timeout">
+  [ 67] jmpifz [ 84] ............................ if pRecyclerState = "timeout" then
+  [ 70] getlocal 0 .............................. <tConn>
+  [ 72] pushcons 8 .............................. <"CONFIRM_FURNI_RECYCLING">
+  [ 74] pushsymb 78 ............................. <#integer>
+  [ 76] pushzero ................................ <0>
+  [ 77] pusharglist 2 ........................... <[#integer: 0]>
+  [ 79] pushproplist ............................ <[#integer: 0]>
+  [ 80] pusharglistnoret 3 ...................... <tConn, "CONFIRM_FURNI_RECYCLING", [#integer: 0]>
+  [ 82] objcall 52 .............................. tConn.send("CONFIRM_FURNI_RECYCLING", [#integer: 0])
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglistnoret 1 ...................... <me>
+  [ 88] objcall 11 .............................. me.clearObjectMover()
+  [ 90] ret
+end
+
+on clearObjectMover me
+  [  0] pushsymb 58 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 59 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 60 .............................. <getThread(#room).getInterface()>
+  [ 10] setlocal 0 .............................. tRoomInterface = getThread(#room).getInterface()
+  [ 12] getlocal 0 .............................. <tRoomInterface>
+  [ 14] pusharglist 1 ........................... <tRoomInterface>
+  [ 16] objcall 89 .............................. <tRoomInterface.getObjectMover()>
+  [ 18] setlocal 1 .............................. tObjMover = tRoomInterface.getObjectMover()
+  [ 20] getlocal 1 .............................. <tObjMover>
+  [ 22] pusharglist 1 ........................... <tObjMover>
+  [ 24] extcall 67 .............................. <voidp(tObjMover)>
+  [ 26] not ..................................... <not voidp(tObjMover)>
+  [ 27] jmpifz [ 36] ............................ if not voidp(tObjMover) then
+  [ 30] getlocal 1 .............................. <tObjMover>
+  [ 32] pusharglistnoret 1 ...................... <tObjMover>
+  [ 34] objcall 90 .............................. tObjMover.clear()
+  [ 36] getlocal 0 .............................. <tRoomInterface>
+  [ 38] pushsymb 91 ............................. <#clickAction>
+  [ 40] pushcons 11 ............................. <"moveHuman">
+  [ 42] pusharglistnoret 3 ...................... <tRoomInterface, #clickAction, "moveHuman">
+  [ 44] objcall 92 .............................. tRoomInterface.setProperty(#clickAction, "moveHuman")
+  [ 46] ret
+end
+
+on isRecyclerOpenAndVisible me
+  [  0] getprop 31 .............................. <pRecyclerState>
+  [  2] pushcons 12 ............................. <"open">
+  [  4] eq ...................................... <pRecyclerState = "open">
+  [  5] getprop 30 .............................. <pIsVisible>
+  [  7] and ..................................... <(pRecyclerState = "open") and pIsVisible>
+  [  8] pusharglistnoret 1 ...................... <(pRecyclerState = "open") and pIsVisible>
+  [ 10] extcall 44 .............................. return (pRecyclerState = "open") and pIsVisible
+  [ 12] ret
+end
+
+on getGiveFurniPool me
+  [  0] getprop 33 .............................. <pGiveFurniPool>
+  [  2] pusharglistnoret 1 ...................... <pGiveFurniPool>
+  [  4] extcall 44 .............................. return pGiveFurniPool
+  [  6] ret
+end
+
+on getState me
+  [  0] getprop 31 .............................. <pRecyclerState>
+  [  2] pusharglistnoret 1 ...................... <pRecyclerState>
+  [  4] extcall 44 .............................. return pRecyclerState
+  [  6] ret
+end
+
+on removeFurniFromGivePool me, tGiveFurniIndex
+  [  0] getprop 33 .............................. <pGiveFurniPool>
+  [  2] getobjprop 74 ........................... <pGiveFurniPool.count>
+  [  4] getparam 1 .............................. <tGiveFurniIndex>
+  [  6] gteq .................................... <pGiveFurniPool.count >= tGiveFurniIndex>
+  [  7] jmpifz [ 18] ............................ if pGiveFurniPool.count >= tGiveFurniIndex then
+  [ 10] getprop 33 .............................. <pGiveFurniPool>
+  [ 12] getparam 1 .............................. <tGiveFurniIndex>
+  [ 14] pusharglistnoret 2 ...................... <pGiveFurniPool, tGiveFurniIndex>
+  [ 16] objcall 94 .............................. pGiveFurniPool.deleteAt(tGiveFurniIndex)
+  [ 18] ret
+end
+
+on setRewardProps me, tObjectType, tFurniClass
+  [  0] getprop 35 .............................. <pRewardProps>
+  [  2] pushsymb 96 ............................. <#objectType>
+  [  4] getparam 1 .............................. <tObjectType>
+  [  6] pusharglistnoret 3 ...................... <pRewardProps, #objectType, tObjectType>
+  [  8] objcall 97 .............................. pRewardProps[#objectType] = tObjectType
+  [ 10] getprop 35 .............................. <pRewardProps>
+  [ 12] pushsymb 98 ............................. <#class>
+  [ 14] getparam 2 .............................. <tFurniClass>
+  [ 16] pusharglistnoret 3 ...................... <pRewardProps, #class, tFurniClass>
+  [ 18] objcall 97 .............................. pRewardProps[#class] = tFurniClass
+  [ 20] getparam 1 .............................. <tObjectType>
+  [ 22] pushsymb 99 ............................. <#roomItem>
+  [ 24] eq ...................................... <tObjectType = #roomItem>
+  [ 25] jmpifz [ 41] ............................ if tObjectType = #roomItem then / else
+  [ 28] pushcons 13 ............................. <"furni_">
+  [ 30] getparam 2 .............................. <tFurniClass>
+  [ 32] joinstr ................................. <"furni_" & tFurniClass>
+  [ 33] pushcons 14 ............................. <"_name">
+  [ 35] joinstr ................................. <"furni_" & tFurniClass & "_name">
+  [ 36] setlocal 0 .............................. tNameLocalizationKey = "furni_" & tFurniClass & "_name"
+  [ 38] jmp [ 51]
+  [ 41] pushcons 15 ............................. <"wallitem_">
+  [ 43] getparam 2 .............................. <tFurniClass>
+  [ 45] joinstr ................................. <"wallitem_" & tFurniClass>
+  [ 46] pushcons 14 ............................. <"_name">
+  [ 48] joinstr ................................. <"wallitem_" & tFurniClass & "_name">
+  [ 49] setlocal 0 .............................. tNameLocalizationKey = "wallitem_" & tFurniClass & "_name"
+  [ 51] getprop 35 .............................. <pRewardProps>
+  [ 53] pushsymb 100 ............................ <#name>
+  [ 55] getlocal 0 .............................. <tNameLocalizationKey>
+  [ 57] pusharglist 1 ........................... <tNameLocalizationKey>
+  [ 59] extcall 72 .............................. <getText(tNameLocalizationKey)>
+  [ 61] pusharglistnoret 3 ...................... <pRewardProps, #name, getText(tNameLocalizationKey)>
+  [ 63] objcall 97 .............................. pRewardProps[#name] = getText(tNameLocalizationKey)
+  [ 65] ret
+end
+
+on getRewardProps me, tProp
+  [  0] getparam 1 .............................. <tProp>
+  [  2] peek 0 .................................. case tProp of
+  [  4] pushsymb 100 ............................ <#name>
+  [  6] eq
+  [  7] jmpifz [ 27] ............................ (case) #name:
+  [ 10] pop 1
+  [ 12] getprop 35 .............................. <pRewardProps>
+  [ 14] pushsymb 100 ............................ <#name>
+  [ 16] pusharglist 2 ........................... <pRewardProps, #name>
+  [ 18] objcall 75 .............................. <pRewardProps[#name]>
+  [ 20] pusharglistnoret 1 ...................... <pRewardProps[#name]>
+  [ 22] extcall 44 .............................. return pRewardProps[#name]
+  [ 24] jmp [ 87]
+  [ 27] peek 0
+  [ 29] pushsymb 77 ............................. <#type>
+  [ 31] eq
+  [ 32] jmpifz [ 52] ............................ (case) #type:
+  [ 35] pop 1
+  [ 37] getprop 35 .............................. <pRewardProps>
+  [ 39] pushsymb 96 ............................. <#objectType>
+  [ 41] pusharglist 2 ........................... <pRewardProps, #objectType>
+  [ 43] objcall 75 .............................. <pRewardProps[#objectType]>
+  [ 45] pusharglistnoret 1 ...................... <pRewardProps[#objectType]>
+  [ 47] extcall 44 .............................. return pRewardProps[#objectType]
+  [ 49] jmp [ 87]
+  [ 52] peek 0
+  [ 54] pushsymb 98 ............................. <#class>
+  [ 56] eq
+  [ 57] jmpifz [ 77] ............................ (case) #class:
+  [ 60] pop 1
+  [ 62] getprop 35 .............................. <pRewardProps>
+  [ 64] pushsymb 98 ............................. <#class>
+  [ 66] pusharglist 2 ........................... <pRewardProps, #class>
+  [ 68] objcall 75 .............................. <pRewardProps[#class]>
+  [ 70] pusharglistnoret 1 ...................... <pRewardProps[#class]>
+  [ 72] extcall 44 .............................. return pRewardProps[#class]
+  [ 74] jmp [ 87] ............................... (case) otherwise:
+  [ 77] pop 1
+  [ 79] pusharglist 0 ........................... <>
+  [ 81] extcall 32 .............................. <VOID>
+  [ 83] pusharglistnoret 1 ...................... <VOID>
+  [ 85] extcall 44 .............................. return VOID
+  [ 87] pop 1 ................................... end case
+  [ 89] ret
+end
+
+on setRewardItems me, tItemList
+  [  0] getparam 1 .............................. <tItemList>
+  [  2] setprop 37 .............................. pREwardItems = tItemList
+  [  4] ret
+end
+
+on getRewardItemForCurrentAmount me
+  [  0] getprop 33 .............................. <pGiveFurniPool>
+  [  2] getobjprop 74 ........................... <pGiveFurniPool.count>
+  [  4] setlocal 0 .............................. tAmount = pGiveFurniPool.count
+  [  6] pusharglist 0 ........................... <>
+  [  8] extcall 32 .............................. <VOID>
+  [ 10] setlocal 1 .............................. tRewardItem = VOID
+  [ 12] pushzero ................................ <0>
+  [ 13] setlocal 2 .............................. tFurniValue = 0
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] setlocal 3
+  [ 19] getlocal 3
+  [ 21] getprop 37 .............................. <pREwardItems>
+  [ 23] getobjprop 74 ........................... <pREwardItems.count>
+  [ 25] lteq
+  [ 26] jmpifz [111] ............................ repeat with tNo = 1 to pREwardItems.count
+  [ 29] getprop 37 .............................. <pREwardItems>
+  [ 31] getlocal 3 .............................. <tNo>
+  [ 33] pusharglist 2 ........................... <pREwardItems, tNo>
+  [ 35] objcall 75 .............................. <pREwardItems[tNo]>
+  [ 37] setlocal 4 .............................. tItem = pREwardItems[tNo]
+  [ 39] getlocal 4 .............................. <tItem>
+  [ 41] pushsymb 106 ............................ <#furniValue>
+  [ 43] pusharglist 2 ........................... <tItem, #furniValue>
+  [ 45] objcall 75 .............................. <tItem[#furniValue]>
+  [ 47] getlocal 0 .............................. <tAmount>
+  [ 49] eq ...................................... <tItem[#furniValue] = tAmount>
+  [ 50] jmpifz [ 62] ............................ if tItem[#furniValue] = tAmount then
+  [ 53] getlocal 4 .............................. <tItem>
+  [ 55] pusharglistnoret 1 ...................... <tItem>
+  [ 57] extcall 44 .............................. return tItem
+  [ 59] jmp [102] ............................... next repeat
+  [ 62] getlocal 4 .............................. <tItem>
+  [ 64] pushsymb 106 ............................ <#furniValue>
+  [ 66] pusharglist 2 ........................... <tItem, #furniValue>
+  [ 68] objcall 75 .............................. <tItem[#furniValue]>
+  [ 70] getlocal 2 .............................. <tFurniValue>
+  [ 72] gt ...................................... <tItem[#furniValue] > tFurniValue>
+  [ 73] getlocal 4 .............................. <tItem>
+  [ 75] pushsymb 106 ............................ <#furniValue>
+  [ 77] pusharglist 2 ........................... <tItem, #furniValue>
+  [ 79] objcall 75 .............................. <tItem[#furniValue]>
+  [ 81] getlocal 0 .............................. <tAmount>
+  [ 83] lt ...................................... <tItem[#furniValue] < tAmount>
+  [ 84] and ..................................... <(tItem[#furniValue] > tFurniValue) and (tItem[#furniValue] < tAmount)>
+  [ 85] jmpifz [102] ............................ if (tItem[#furniValue] > tFurniValue) and (tItem[#furniValue] < tAmount) then
+  [ 88] getlocal 4 .............................. <tItem>
+  [ 90] pushsymb 106 ............................ <#furniValue>
+  [ 92] pusharglist 2 ........................... <tItem, #furniValue>
+  [ 94] objcall 75 .............................. <tItem[#furniValue]>
+  [ 96] setlocal 2 .............................. tFurniValue = tItem[#furniValue]
+  [ 98] getlocal 4 .............................. <tItem>
+  [100] setlocal 1 .............................. tRewardItem = tItem
+  [102] pushint8 1
+  [104] getlocal 3
+  [106] add
+  [107] setlocal 3
+  [109] endrepeat [ 19]
+  [111] getlocal 1 .............................. <tRewardItem>
+  [113] pusharglistnoret 1 ...................... <tRewardItem>
+  [115] extcall 44 .............................. return tRewardItem
+  [117] ret
+end
+
+on getNextRewardItemForCurrentAmount me
+  [  0] getprop 33 .............................. <pGiveFurniPool>
+  [  2] getobjprop 74 ........................... <pGiveFurniPool.count>
+  [  4] setlocal 0 .............................. tAmount = pGiveFurniPool.count
+  [  6] pusharglist 0 ........................... <>
+  [  8] extcall 32 .............................. <VOID>
+  [ 10] setlocal 1 .............................. tNextItem = VOID
+  [ 12] pushint32 1000000 ....................... <1000000>
+  [ 17] setlocal 2 .............................. tDifferenceToNext = 1000000
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] setlocal 3
+  [ 23] getlocal 3
+  [ 25] getprop 37 .............................. <pREwardItems>
+  [ 27] getobjprop 74 ........................... <pREwardItems.count>
+  [ 29] lteq
+  [ 30] jmpifz [100] ............................ repeat with tNo = 1 to pREwardItems.count
+  [ 33] getprop 37 .............................. <pREwardItems>
+  [ 35] getlocal 3 .............................. <tNo>
+  [ 37] pusharglist 2 ........................... <pREwardItems, tNo>
+  [ 39] objcall 75 .............................. <pREwardItems[tNo]>
+  [ 41] setlocal 4 .............................. tItem = pREwardItems[tNo]
+  [ 43] getlocal 4 .............................. <tItem>
+  [ 45] pushsymb 106 ............................ <#furniValue>
+  [ 47] pusharglist 2 ........................... <tItem, #furniValue>
+  [ 49] objcall 75 .............................. <tItem[#furniValue]>
+  [ 51] getlocal 0 .............................. <tAmount>
+  [ 53] gt ...................................... <tItem[#furniValue] > tAmount>
+  [ 54] jmpifz [ 91] ............................ if tItem[#furniValue] > tAmount then
+  [ 57] getlocal 4 .............................. <tItem>
+  [ 59] pushsymb 106 ............................ <#furniValue>
+  [ 61] pusharglist 2 ........................... <tItem, #furniValue>
+  [ 63] objcall 75 .............................. <tItem[#furniValue]>
+  [ 65] getlocal 0 .............................. <tAmount>
+  [ 67] sub ..................................... <tItem[#furniValue] - tAmount>
+  [ 68] getlocal 2 .............................. <tDifferenceToNext>
+  [ 70] lt ...................................... <(tItem[#furniValue] - tAmount) < tDifferenceToNext>
+  [ 71] jmpifz [ 91] ............................ if (tItem[#furniValue] - tAmount) < tDifferenceToNext then
+  [ 74] getlocal 4 .............................. <tItem>
+  [ 76] setlocal 1 .............................. tNextItem = tItem
+  [ 78] getlocal 4 .............................. <tItem>
+  [ 80] pushsymb 106 ............................ <#furniValue>
+  [ 82] pusharglist 2 ........................... <tItem, #furniValue>
+  [ 84] objcall 75 .............................. <tItem[#furniValue]>
+  [ 86] getlocal 0 .............................. <tAmount>
+  [ 88] sub ..................................... <tItem[#furniValue] - tAmount>
+  [ 89] setlocal 2 .............................. tDifferenceToNext = tItem[#furniValue] - tAmount
+  [ 91] pushint8 1
+  [ 93] getlocal 3
+  [ 95] add
+  [ 96] setlocal 3
+  [ 98] endrepeat [ 23]
+  [100] getlocal 1 .............................. <tNextItem>
+  [102] pusharglistnoret 1 ...................... <tNextItem>
+  [104] extcall 44 .............................. return tNextItem
+  [106] ret
+end
+
+on setRecyclingTimes me, tQuarantineMinutes, tRecyclingMinutes
+  [  0] getparam 1 .............................. <tQuarantineMinutes>
+  [  2] setprop 113 ............................. pQuarantineMinutes = tQuarantineMinutes
+  [  4] getparam 2 .............................. <tRecyclingMinutes>
+  [  6] setprop 114 ............................. pRecyclingMinutes = tRecyclingMinutes
+  [  8] ret
+end
+
+on setRecyclingTimeout me, tMinutesToTimeout
+  [  0] getparam 1 .............................. <tMinutesToTimeout>
+  [  2] setprop 40 .............................. pRecyclingTimeoutMinutes = tMinutesToTimeout
+  [  4] ret
+end
+
+on getQuarantineMinutes me
+  [  0] getprop 113 ............................. <pQuarantineMinutes>
+  [  2] pusharglistnoret 1 ...................... <pQuarantineMinutes>
+  [  4] extcall 44 .............................. return pQuarantineMinutes
+  [  6] ret
+end
+
+on getRecyclingMinutes me
+  [  0] getprop 114 ............................. <pRecyclingMinutes>
+  [  2] pusharglistnoret 1 ...................... <pRecyclingMinutes>
+  [  4] extcall 44 .............................. return pRecyclingMinutes
+  [  6] ret
+end
+
+on setTimeLeftProps me, tMinutesLeft
+  [  0] getprop 36 .............................. <pTimeProps>
+  [  2] pushsymb 118 ............................ <#minutesLeft>
+  [  4] getparam 1 .............................. <tMinutesLeft>
+  [  6] pusharglistnoret 3 ...................... <pTimeProps, #minutesLeft, tMinutesLeft>
+  [  8] objcall 97 .............................. pTimeProps[#minutesLeft] = tMinutesLeft
+  [ 10] getprop 36 .............................. <pTimeProps>
+  [ 12] pushsymb 119 ............................ <#timeStamp>
+  [ 14] getmovieprop 120 ........................ <the milliSeconds>
+  [ 16] pusharglistnoret 3 ...................... <pTimeProps, #timeStamp, the milliSeconds>
+  [ 18] objcall 97 .............................. pTimeProps[#timeStamp] = the milliSeconds
+  [ 20] ret
+end
+
+on getMinutesLeftToRecycle me
+  [  0] getprop 36 .............................. <pTimeProps>
+  [  2] pusharglist 1 ........................... <pTimeProps>
+  [  4] extcall 122 ............................. <ilk(pTimeProps)>
+  [  6] pushsymb 123 ............................ <#propList>
+  [  8] nteq .................................... <ilk(pTimeProps) <> #propList>
+  [  9] jmpifz [ 20] ............................ if ilk(pTimeProps) <> #propList then
+  [ 12] pusharglist 0 ........................... <>
+  [ 14] extcall 32 .............................. <VOID>
+  [ 16] pusharglistnoret 1 ...................... <VOID>
+  [ 18] extcall 44 .............................. return VOID
+  [ 20] getmovieprop 120 ........................ <the milliSeconds>
+  [ 22] getprop 36 .............................. <pTimeProps>
+  [ 24] pushsymb 119 ............................ <#timeStamp>
+  [ 26] pusharglist 2 ........................... <pTimeProps, #timeStamp>
+  [ 28] objcall 75 .............................. <pTimeProps[#timeStamp]>
+  [ 30] sub ..................................... <the milliSeconds - pTimeProps[#timeStamp]>
+  [ 31] setlocal 0 .............................. tMillisSinceStarted = the milliSeconds - pTimeProps[#timeStamp]
+  [ 33] getlocal 0 .............................. <tMillisSinceStarted>
+  [ 35] pushint16 1000 .......................... <1000>
+  [ 38] div ..................................... <tMillisSinceStarted / 1000>
+  [ 39] pushint8 60 ............................. <60>
+  [ 41] div ..................................... <tMillisSinceStarted / 1000 / 60>
+  [ 42] setlocal 1 .............................. tMinutesSinceStarted = tMillisSinceStarted / 1000 / 60
+  [ 44] getprop 36 .............................. <pTimeProps>
+  [ 46] pushsymb 118 ............................ <#minutesLeft>
+  [ 48] pusharglist 2 ........................... <pTimeProps, #minutesLeft>
+  [ 50] objcall 75 .............................. <pTimeProps[#minutesLeft]>
+  [ 52] getlocal 1 .............................. <tMinutesSinceStarted>
+  [ 54] sub ..................................... <pTimeProps[#minutesLeft] - tMinutesSinceStarted>
+  [ 55] setlocal 2 .............................. tMinutesLeft = pTimeProps[#minutesLeft] - tMinutesSinceStarted
+  [ 57] getlocal 2 .............................. <tMinutesLeft>
+  [ 59] pushzero ................................ <0>
+  [ 60] lt ...................................... <tMinutesLeft < 0>
+  [ 61] jmpifz [ 67] ............................ if tMinutesLeft < 0 then
+  [ 64] pushzero ................................ <0>
+  [ 65] setlocal 2 .............................. tMinutesLeft = 0
+  [ 67] getlocal 2 .............................. <tMinutesLeft>
+  [ 69] pusharglistnoret 1 ...................... <tMinutesLeft>
+  [ 71] extcall 44 .............................. return tMinutesLeft
+  [ 73] ret
+end
+
+on addFurnitureToGivePool me, tClass, tID, tProps
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 2 .............................. <tID>
+  [  4] pusharglist 2 ........................... <me, tID>
+  [  6] objcall 28 .............................. <me.isFurniInRecycler(tID)>
+  [  8] jmpifz [ 16] ............................ if me.isFurniInRecycler(tID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 44 .............................. return 0
+  [ 16] getprop 33 .............................. <pGiveFurniPool>
+  [ 18] pushsymb 98 ............................. <#class>
+  [ 20] getparam 1 .............................. <tClass>
+  [ 22] pushsymb 79 ............................. <#id>
+  [ 24] getparam 2 .............................. <tID>
+  [ 26] pushsymb 76 ............................. <#props>
+  [ 28] getparam 3 .............................. <tProps>
+  [ 30] pusharglist 6 ........................... <[#class: tClass, #id: tID, #props: tProps]>
+  [ 32] pushproplist ............................ <[#class: tClass, #id: tID, #props: tProps]>
+  [ 33] pusharglistnoret 2 ...................... <pGiveFurniPool, [#class: tClass, #id: tID, #props: tProps]>
+  [ 35] objcall 80 .............................. pGiveFurniPool.add([#class: tClass, #id: tID, #props: tProps])
+  [ 37] ret
+end
+
+on isFurniInRecycler me, tStripID
+  [  0] getprop 31 .............................. <pRecyclerState>
+  [  2] pushcons 12 ............................. <"open">
+  [  4] nteq .................................... <pRecyclerState <> "open">
+  [  5] getprop 33 .............................. <pGiveFurniPool>
+  [  7] getobjprop 74 ........................... <pGiveFurniPool.count>
+  [  9] pushzero ................................ <0>
+  [ 10] eq ...................................... <pGiveFurniPool.count = 0>
+  [ 11] or ...................................... <(pRecyclerState <> "open") or (pGiveFurniPool.count = 0)>
+  [ 12] jmpifz [ 20] ............................ if (pRecyclerState <> "open") or (pGiveFurniPool.count = 0) then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 44 .............................. return 0
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] setlocal 0
+  [ 24] getlocal 0
+  [ 26] getprop 33 .............................. <pGiveFurniPool>
+  [ 28] getobjprop 74 ........................... <pGiveFurniPool.count>
+  [ 30] lteq
+  [ 31] jmpifz [ 75] ............................ repeat with tNo = 1 to pGiveFurniPool.count
+  [ 34] getprop 33 .............................. <pGiveFurniPool>
+  [ 36] getlocal 0 .............................. <tNo>
+  [ 38] pusharglist 2 ........................... <pGiveFurniPool, tNo>
+  [ 40] objcall 75 .............................. <pGiveFurniPool[tNo]>
+  [ 42] pushsymb 76 ............................. <#props>
+  [ 44] pusharglist 2 ........................... <pGiveFurniPool[tNo], #props>
+  [ 46] objcall 75 .............................. <pGiveFurniPool[tNo][#props]>
+  [ 48] pushsymb 129 ............................ <#stripId>
+  [ 50] pusharglist 2 ........................... <pGiveFurniPool[tNo][#props], #stripId>
+  [ 52] objcall 75 .............................. <pGiveFurniPool[tNo][#props][#stripId]>
+  [ 54] getparam 1 .............................. <tStripID>
+  [ 56] eq ...................................... <pGiveFurniPool[tNo][#props][#stripId] = tStripID>
+  [ 57] jmpifz [ 66] ............................ if pGiveFurniPool[tNo][#props][#stripId] = tStripID then
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] pusharglistnoret 1 ...................... <1>
+  [ 64] extcall 44 .............................. return 1
+  [ 66] pushint8 1
+  [ 68] getlocal 0
+  [ 70] add
+  [ 71] setlocal 0
+  [ 73] endrepeat [ 24]
+  [ 75] pushzero ................................ <0>
+  [ 76] pusharglistnoret 1 ...................... <0>
+  [ 78] extcall 44 .............................. return 0
+  [ 80] ret
+end
+
+on setStateTo me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] setprop 31 .............................. pRecyclerState = tstate
+  [  4] pushzero ................................ <0>
+  [  5] setlocal 0 .............................. pStateRequestPending = 0
+  [  7] pushsymb 58 ............................. <#room>
+  [  9] pusharglist 1 ........................... <#room>
+  [ 11] extcall 57 .............................. <threadExists(#room)>
+  [ 13] not ..................................... <not threadExists(#room)>
+  [ 14] jmpifz [ 22] ............................ if not threadExists(#room) then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 44 .............................. return 0
+  [ 22] pushsymb 58 ............................. <#room>
+  [ 24] pusharglist 1 ........................... <#room>
+  [ 26] extcall 59 .............................. <getThread(#room)>
+  [ 28] pusharglist 1 ........................... <getThread(#room)>
+  [ 30] objcall 60 .............................. <getThread(#room).getInterface()>
+  [ 32] setlocal 1 .............................. tRoomInterface = getThread(#room).getInterface()
+  [ 34] getlocal 1 .............................. <tRoomInterface>
+  [ 36] pusharglist 1 ........................... <tRoomInterface>
+  [ 38] objcall 89 .............................. <tRoomInterface.getObjectMover()>
+  [ 40] setlocal 2 .............................. tObjMover = tRoomInterface.getObjectMover()
+  [ 42] getparam 1 .............................. <tstate>
+  [ 44] peek 0 .................................. case tstate of
+  [ 46] pushcons 12 ............................. <"open">
+  [ 48] eq
+  [ 49] jmpifz [114] ............................ (case) "open":
+  [ 52] getprop 38 .............................. <pServiceEnabled>
+  [ 54] not ..................................... <not pServiceEnabled>
+  [ 55] jmpifz [ 72] ............................ if not pServiceEnabled then
+  [ 58] pop 1
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pushcons 16 ............................. <"disabled">
+  [ 64] pusharglist 2 ........................... <me, "disabled">
+  [ 66] objcall 29 .............................. <me.setStateTo("disabled")>
+  [ 68] pusharglistnoret 1 ...................... <me.setStateTo("disabled")>
+  [ 70] extcall 44 .............................. return me.setStateTo("disabled")
+  [ 72] pusharglist 0 ........................... <[]>
+  [ 74] pushlist ................................ <[]>
+  [ 75] setprop 33 .............................. pGiveFurniPool = []
+  [ 77] pusharglist 0 ........................... <[:]>
+  [ 79] pushproplist ............................ <[:]>
+  [ 80] setprop 34 .............................. pGetFurniPool = [:]
+  [ 82] getlocal 1 .............................. <tRoomInterface>
+  [ 84] pusharglistnoret 1 ...................... <tRoomInterface>
+  [ 86] objcall 131 ............................. tRoomInterface.cancelObjectMover()
+  [ 88] getlocal 1 .............................. <tRoomInterface>
+  [ 90] pushsymb 91 ............................. <#clickAction>
+  [ 92] pushcons 17 ............................. <"tradeItem">
+  [ 94] pusharglistnoret 3 ...................... <tRoomInterface, #clickAction, "tradeItem">
+  [ 96] objcall 92 .............................. tRoomInterface.setProperty(#clickAction, "tradeItem")
+  [ 98] getlocal 2 .............................. <tObjMover>
+  [100] pushzero ................................ <0>
+  [101] nteq .................................... <tObjMover <> 0>
+  [102] jmpifz [111] ............................ if tObjMover <> 0 then
+  [105] getlocal 2 .............................. <tObjMover>
+  [107] pusharglistnoret 1 ...................... <tObjMover>
+  [109] objcall 132 ............................. tObjMover.moveTrade()
+  [111] jmp [188]
+  [114] peek 0
+  [116] pushcons 6 .............................. <"progress">
+  [118] eq
+  [119] jmpifz [131] ............................ (case) "progress":
+  [122] getparam 0 .............................. <me>
+  [124] pusharglistnoret 1 ...................... <me>
+  [126] objcall 11 .............................. me.clearObjectMover()
+  [128] jmp [188]
+  [131] peek 0
+  [133] pushcons 9 .............................. <"ready">
+  [135] eq
+  [136] jmpifz [148] ............................ (case) "ready":
+  [139] getparam 0 .............................. <me>
+  [141] pusharglistnoret 1 ...................... <me>
+  [143] objcall 11 .............................. me.clearObjectMover()
+  [145] jmp [188]
+  [148] peek 0
+  [150] pushcons 16 ............................. <"disabled">
+  [152] eq
+  [153] jmpifz [165] ............................ (case) "disabled":
+  [156] getparam 0 .............................. <me>
+  [158] pusharglistnoret 1 ...................... <me>
+  [160] objcall 11 .............................. me.clearObjectMover()
+  [162] jmp [188]
+  [165] peek 0
+  [167] pushcons 10 ............................. <"timeout">
+  [169] eq
+  [170] jmpifz [182] ............................ (case) "timeout":
+  [173] getparam 0 .............................. <me>
+  [175] pusharglistnoret 1 ...................... <me>
+  [177] objcall 11 .............................. me.clearObjectMover()
+  [179] jmp [188] ............................... (case) otherwise:
+  [182] getparam 0 .............................. <me>
+  [184] pusharglistnoret 1 ...................... <me>
+  [186] objcall 11 .............................. me.clearObjectMover()
+  [188] pop 1 ................................... end case
+  [190] pushsymb 133 ............................ <#recyclerStateChange>
+  [192] pusharglistnoret 1 ...................... <#recyclerStateChange>
+  [194] extcall 69 .............................. executeMessage(#recyclerStateChange)
+  [196] getparam 0 .............................. <me>
+  [198] pusharglist 1 ........................... <me>
+  [200] objcall 60 .............................. <me.getInterface()>
+  [202] getparam 1 .............................. <tstate>
+  [204] pusharglistnoret 2 ...................... <me.getInterface(), tstate>
+  [206] objcall 134 ............................. me.getInterface().setViewToState(tstate)
+  [208] ret
+end

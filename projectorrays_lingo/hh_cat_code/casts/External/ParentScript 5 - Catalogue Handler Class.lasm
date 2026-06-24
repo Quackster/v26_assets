@@ -1,0 +1,868 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 498 ............................. <me.regMsgList(1)>
+  [  9] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 11] extcall 27 .............................. return me.regMsgList(1)
+  [ 13] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 498 ............................. <me.regMsgList(0)>
+  [  8] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [ 10] extcall 27 .............................. return me.regMsgList(0)
+  [ 12] ret
+end
+
+on handle_purchase_ok me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 150 ............................. <me.getComponent()>
+  [  6] pushcons 0 .............................. <"OK">
+  [  8] pusharglistnoret 2 ...................... <me.getComponent(), "OK">
+  [ 10] objcall 426 ............................. me.getComponent().purchaseReady("OK")
+  [ 13] ret
+end
+
+on handle_purchase_error me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 150 ............................. <me.getComponent()>
+  [  6] pushcons 1 .............................. <"ERROR">
+  [  8] getparam 1 .............................. <tMsg>
+  [ 10] pushsymb 499 ............................ <#content>
+  [ 13] pusharglist 2 ........................... <tMsg, #content>
+  [ 15] objcall 128 ............................. <tMsg.getaProp(#content)>
+  [ 17] pusharglistnoret 3 ...................... <me.getComponent(), "ERROR", tMsg.getaProp(#content)>
+  [ 19] objcall 426 ............................. me.getComponent().purchaseReady("ERROR", tMsg.getaProp(#content))
+  [ 22] ret
+end
+
+on handle_purchase_nobalance me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 150 ............................. <me.getComponent()>
+  [  6] pushcons 2 .............................. <"NOBALANCE">
+  [  8] getparam 1 .............................. <tMsg>
+  [ 10] pushsymb 499 ............................ <#content>
+  [ 13] pusharglist 2 ........................... <tMsg, #content>
+  [ 15] objcall 128 ............................. <tMsg.getaProp(#content)>
+  [ 17] pusharglistnoret 3 ...................... <me.getComponent(), "NOBALANCE", tMsg.getaProp(#content)>
+  [ 19] objcall 426 ............................. me.getComponent().purchaseReady("NOBALANCE", tMsg.getaProp(#content))
+  [ 22] ret
+end
+
+on handle_catalogindex me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 499 ...................... <tMsg.content>
+  [  5] pushsymb 24 ............................. <#line>
+  [  7] pusharglist 2 ........................... <tMsg.content, #line>
+  [  9] objcall 25 .............................. <tMsg.content.line.count>
+  [ 11] setlocal 0 .............................. tCount = tMsg.content.line.count
+  [ 13] getmovieprop 52 ......................... <the itemDelimiter>
+  [ 15] setlocal 1 .............................. tDelim = the itemDelimiter
+  [ 17] pusharglist 0 ........................... <[:]>
+  [ 19] pushproplist ............................ <[:]>
+  [ 20] setlocal 2 .............................. tList = [:]
+  [ 22] pushcons 3 .............................. <TAB>
+  [ 24] setmovieprop 52 ......................... the itemDelimiter = TAB
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] setlocal 3
+  [ 30] getlocal 3
+  [ 32] getlocal 0 .............................. <tCount>
+  [ 34] lteq
+  [ 35] jmpifz [118] ............................ repeat with tLineNum = 1 to tCount
+  [ 38] getparam 1 .............................. <tMsg>
+  [ 40] getchainedprop 499 ...................... <tMsg.content>
+  [ 43] pushsymb 24 ............................. <#line>
+  [ 45] getlocal 3 .............................. <tLineNum>
+  [ 47] pusharglist 3 ........................... <tMsg.content, #line, tLineNum>
+  [ 49] objcall 26 .............................. <tMsg.content.line[tLineNum]>
+  [ 51] setlocal 4 .............................. tLine = tMsg.content.line[tLineNum]
+  [ 53] getlocal 4 .............................. <tLine>
+  [ 55] pushsymb 122 ............................ <#char>
+  [ 57] pusharglist 2 ........................... <tLine, #char>
+  [ 59] objcall 25 .............................. <tLine.char.count>
+  [ 61] pushint8 3 .............................. <3>
+  [ 63] gt ...................................... <tLine.char.count > 3>
+  [ 64] jmpifz [109] ............................ if tLine.char.count > 3 then
+  [ 67] getlocal 4 .............................. <tLine>
+  [ 69] pushsymb 53 ............................. <#item>
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglist 3 ........................... <tLine, #item, 1>
+  [ 75] objcall 26 .............................. <tLine.item[1]>
+  [ 77] setlocal 5 .............................. tProp = tLine.item[1]
+  [ 79] getlocal 4 .............................. <tLine>
+  [ 81] pushsymb 53 ............................. <#item>
+  [ 83] pushint8 2 .............................. <2>
+  [ 85] getlocal 4 .............................. <tLine>
+  [ 87] pushsymb 53 ............................. <#item>
+  [ 89] pusharglist 2 ........................... <tLine, #item>
+  [ 91] objcall 25 .............................. <tLine.item.count>
+  [ 93] pusharglist 4 ........................... <tLine, #item, 2, tLine.item.count>
+  [ 95] objcall 26 .............................. <tLine.item[2..tLine.item.count]>
+  [ 97] setlocal 6 .............................. tdata = tLine.item[2..tLine.item.count]
+  [ 99] getlocal 2 .............................. <tList>
+  [101] getlocal 5 .............................. <tProp>
+  [103] getlocal 6 .............................. <tdata>
+  [105] pusharglistnoret 3 ...................... <tList, tProp, tdata>
+  [107] objcall 50 .............................. tList[tProp] = tdata
+  [109] pushint8 1
+  [111] getlocal 3
+  [113] add
+  [114] setlocal 3
+  [116] endrepeat [ 30]
+  [118] getlocal 1 .............................. <tDelim>
+  [120] setmovieprop 52 ......................... the itemDelimiter = tDelim
+  [122] getparam 0 .............................. <me>
+  [124] pusharglist 1 ........................... <me>
+  [126] objcall 150 ............................. <me.getComponent()>
+  [128] getlocal 2 .............................. <tList>
+  [130] pusharglistnoret 2 ...................... <me.getComponent(), tList>
+  [132] objcall 167 ............................. me.getComponent().saveCatalogueIndex(tList)
+  [134] ret
+end
+
+on handle_catalogpage me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 499 ...................... <tMsg.content>
+  [  5] pushsymb 24 ............................. <#line>
+  [  7] pusharglist 2 ........................... <tMsg.content, #line>
+  [  9] objcall 25 .............................. <tMsg.content.line.count>
+  [ 11] setlocal 0 .............................. tCount = tMsg.content.line.count
+  [ 13] getmovieprop 52 ......................... <the itemDelimiter>
+  [ 15] setlocal 1 .............................. tDelim = the itemDelimiter
+  [ 17] pusharglist 0 ........................... <[:]>
+  [ 19] pushproplist ............................ <[:]>
+  [ 20] setlocal 2 .............................. tList = [:]
+  [ 22] pusharglist 0 ........................... <[]>
+  [ 24] pushlist ................................ <[]>
+  [ 25] setlocal 3 .............................. tProductList = []
+  [ 27] pusharglist 0 ........................... <[:]>
+  [ 29] pushproplist ............................ <[:]>
+  [ 30] setlocal 4 .............................. tTextList = [:]
+  [ 32] getlocal 4 .............................. <tTextList>
+  [ 34] pusharglistnoret 1 ...................... <tTextList>
+  [ 36] objcall 502 ............................. tTextList.sort()
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] setlocal 5 .............................. tDealNumber = 1
+  [ 43] pushint8 1 .............................. <1>
+  [ 45] setlocal 6
+  [ 47] getlocal 6
+  [ 49] getlocal 0 .............................. <tCount>
+  [ 51] lteq
+  [ 52] jmpifz [972] ............................ repeat with tLineNum = 1 to tCount
+  [ 55] pushcons 4 .............................. <":">
+  [ 57] setmovieprop 52 ......................... the itemDelimiter = ":"
+  [ 59] getparam 1 .............................. <tMsg>
+  [ 61] getchainedprop 499 ...................... <tMsg.content>
+  [ 64] pushsymb 24 ............................. <#line>
+  [ 66] getlocal 6 .............................. <tLineNum>
+  [ 68] pusharglist 3 ........................... <tMsg.content, #line, tLineNum>
+  [ 70] objcall 26 .............................. <tMsg.content.line[tLineNum]>
+  [ 72] setlocal 7 .............................. tLine = tMsg.content.line[tLineNum]
+  [ 74] getlocal 7 .............................. <tLine>
+  [ 76] pushsymb 122 ............................ <#char>
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] pusharglist 3 ........................... <tLine, #char, 1>
+  [ 82] objcall 26 .............................. <tLine.char[1]>
+  [ 84] setlocal 8 .............................. tProp = tLine.char[1]
+  [ 86] getlocal 7 .............................. <tLine>
+  [ 88] pushsymb 53 ............................. <#item>
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] pusharglist 3 ........................... <tLine, #item, 1>
+  [ 94] objcall 121 ............................. <tLine.item[1]>
+  [ 96] pushsymb 122 ............................ <#char>
+  [ 98] pushint8 2 .............................. <2>
+  [100] getlocal 7 .............................. <tLine>
+  [102] pushsymb 53 ............................. <#item>
+  [104] pushint8 1 .............................. <1>
+  [106] pusharglist 3 ........................... <tLine, #item, 1>
+  [108] objcall 121 ............................. <tLine.item[1]>
+  [110] getobjprop 308 .......................... <tLine.item[1].length>
+  [113] pusharglist 4 ........................... <tLine.item[1], #char, 2, tLine.item[1].length>
+  [115] objcall 26 .............................. <tLine.item[1].char[2..tLine.item[1].length]>
+  [117] pusharglist 1 ........................... <tLine.item[1].char[2..tLine.item[1].length]>
+  [119] extcall 47 .............................. <integer(tLine.item[1].char[2..tLine.item[1].length])>
+  [121] setlocal 9 .............................. tNum = integer(tLine.item[1].char[2..tLine.item[1].length])
+  [123] getlocal 7 .............................. <tLine>
+  [125] pushsymb 53 ............................. <#item>
+  [127] pushint8 2 .............................. <2>
+  [129] getlocal 7 .............................. <tLine>
+  [131] pushsymb 53 ............................. <#item>
+  [133] pusharglist 2 ........................... <tLine, #item>
+  [135] objcall 25 .............................. <tLine.item.count>
+  [137] pusharglist 4 ........................... <tLine, #item, 2, tLine.item.count>
+  [139] objcall 26 .............................. <tLine.item[2..tLine.item.count]>
+  [141] setlocal 10 ............................. tdata = tLine.item[2..tLine.item.count]
+  [143] getlocal 8 .............................. <tProp>
+  [145] peek 0 .................................. case tProp of
+  [147] pushcons 5 .............................. <"i">
+  [149] eq
+  [150] jmpifz [166] ............................ (case) "i":
+  [153] getlocal 2 .............................. <tList>
+  [155] pushcons 6 .............................. <"id">
+  [157] getlocal 10 ............................. <tdata>
+  [159] pusharglistnoret 3 ...................... <tList, "id", tdata>
+  [161] objcall 50 .............................. tList["id"] = tdata
+  [163] jmp [960]
+  [166] peek 0
+  [168] pushcons 7 .............................. <"n">
+  [170] eq
+  [171] jmpifz [187] ............................ (case) "n":
+  [174] getlocal 2 .............................. <tList>
+  [176] pushcons 8 .............................. <"pageName">
+  [178] getlocal 10 ............................. <tdata>
+  [180] pusharglistnoret 3 ...................... <tList, "pageName", tdata>
+  [182] objcall 50 .............................. tList["pageName"] = tdata
+  [184] jmp [960]
+  [187] peek 0
+  [189] pushcons 9 .............................. <"l">
+  [191] eq
+  [192] jmpifz [208] ............................ (case) "l":
+  [195] getlocal 2 .............................. <tList>
+  [197] pushcons 10 ............................. <"layout">
+  [199] getlocal 10 ............................. <tdata>
+  [201] pusharglistnoret 3 ...................... <tList, "layout", tdata>
+  [203] objcall 50 .............................. tList["layout"] = tdata
+  [205] jmp [960]
+  [208] peek 0
+  [210] pushcons 11 ............................. <"h">
+  [212] eq
+  [213] jmpifz [237] ............................ (case) "h":
+  [216] getlocal 2 .............................. <tList>
+  [218] pushcons 12 ............................. <"headerText">
+  [220] getlocal 10 ............................. <tdata>
+  [222] pushcons 13 ............................. <"<br>">
+  [224] pushcons 14 ............................. <RETURN>
+  [226] pusharglist 3 ........................... <tdata, "<br>", RETURN>
+  [228] extcall 239 ............................. <replaceChunks(tdata, "<br>", RETURN)>
+  [230] pusharglistnoret 3 ...................... <tList, "headerText", replaceChunks(tdata, "<br>", RETURN)>
+  [232] objcall 50 .............................. tList["headerText"] = replaceChunks(tdata, "<br>", RETURN)
+  [234] jmp [960]
+  [237] peek 0
+  [239] pushcons 15 ............................. <"g">
+  [241] eq
+  [242] jmpifz [258] ............................ (case) "g":
+  [245] getlocal 2 .............................. <tList>
+  [247] pushcons 16 ............................. <"headerImage">
+  [249] getlocal 10 ............................. <tdata>
+  [251] pusharglistnoret 3 ...................... <tList, "headerImage", tdata>
+  [253] objcall 50 .............................. tList["headerImage"] = tdata
+  [255] jmp [960]
+  [258] peek 0
+  [260] pushcons 17 ............................. <"w">
+  [262] eq
+  [263] jmpifz [287] ............................ (case) "w":
+  [266] getlocal 2 .............................. <tList>
+  [268] pushcons 18 ............................. <"teaserText">
+  [270] getlocal 10 ............................. <tdata>
+  [272] pushcons 13 ............................. <"<br>">
+  [274] pushcons 14 ............................. <RETURN>
+  [276] pusharglist 3 ........................... <tdata, "<br>", RETURN>
+  [278] extcall 239 ............................. <replaceChunks(tdata, "<br>", RETURN)>
+  [280] pusharglistnoret 3 ...................... <tList, "teaserText", replaceChunks(tdata, "<br>", RETURN)>
+  [282] objcall 50 .............................. tList["teaserText"] = replaceChunks(tdata, "<br>", RETURN)
+  [284] jmp [960]
+  [287] peek 0
+  [289] pushcons 19 ............................. <"e">
+  [291] eq
+  [292] jmpifz [387] ............................ (case) "e":
+  [295] pushcons 20 ............................. <",">
+  [297] setmovieprop 52 ......................... the itemDelimiter = ","
+  [299] pusharglist 0 ........................... <[]>
+  [301] pushlist ................................ <[]>
+  [302] setlocal 11 ............................. tTempList = []
+  [304] pushint8 1 .............................. <1>
+  [306] setlocal 12
+  [308] getlocal 12
+  [310] getlocal 10 ............................. <tdata>
+  [312] pushsymb 53 ............................. <#item>
+  [314] pusharglist 2 ........................... <tdata, #item>
+  [316] objcall 25 .............................. <tdata.item.count>
+  [318] lteq
+  [319] jmpifz [365] ............................ repeat with f = 1 to tdata.item.count
+  [322] getlocal 10 ............................. <tdata>
+  [324] pushsymb 53 ............................. <#item>
+  [326] getlocal 12 ............................. <f>
+  [328] pusharglist 3 ........................... <tdata, #item, f>
+  [330] objcall 121 ............................. <tdata.item[f]>
+  [332] getobjprop 308 .......................... <tdata.item[f].length>
+  [335] pushzero ................................ <0>
+  [336] gt ...................................... <tdata.item[f].length > 0>
+  [337] jmpifz [356] ............................ if tdata.item[f].length > 0 then
+  [340] getlocal 11 ............................. <tTempList>
+  [342] getlocal 10 ............................. <tdata>
+  [344] pushsymb 53 ............................. <#item>
+  [346] getlocal 12 ............................. <f>
+  [348] pusharglist 3 ........................... <tdata, #item, f>
+  [350] objcall 26 .............................. <tdata.item[f]>
+  [352] pusharglistnoret 2 ...................... <tTempList, tdata.item[f]>
+  [354] objcall 19 .............................. tTempList.add(tdata.item[f])
+  [356] pushint8 1
+  [358] getlocal 12
+  [360] add
+  [361] setlocal 12
+  [363] endrepeat [308]
+  [365] getlocal 11 ............................. <tTempList>
+  [367] getobjprop 25 ........................... <tTempList.count>
+  [369] pushzero ................................ <0>
+  [370] gt ...................................... <tTempList.count > 0>
+  [371] jmpifz [384] ............................ if tTempList.count > 0 then
+  [374] getlocal 2 .............................. <tList>
+  [376] pushcons 21 ............................. <"teaserImgList">
+  [378] getlocal 11 ............................. <tTempList>
+  [380] pusharglistnoret 3 ...................... <tList, "teaserImgList", tTempList>
+  [382] objcall 50 .............................. tList["teaserImgList"] = tTempList
+  [384] jmp [960]
+  [387] peek 0
+  [389] pushcons 22 ............................. <"s">
+  [391] eq
+  [392] jmpifz [416] ............................ (case) "s":
+  [395] getlocal 2 .............................. <tList>
+  [397] pushcons 23 ............................. <"teaserSpecialText">
+  [399] getlocal 10 ............................. <tdata>
+  [401] pushcons 13 ............................. <"<br>">
+  [403] pushcons 14 ............................. <RETURN>
+  [405] pusharglist 3 ........................... <tdata, "<br>", RETURN>
+  [407] extcall 239 ............................. <replaceChunks(tdata, "<br>", RETURN)>
+  [409] pusharglistnoret 3 ...................... <tList, "teaserSpecialText", replaceChunks(tdata, "<br>", RETURN)>
+  [411] objcall 50 .............................. tList["teaserSpecialText"] = replaceChunks(tdata, "<br>", RETURN)
+  [413] jmp [960]
+  [416] peek 0
+  [418] pushcons 24 ............................. <"t">
+  [420] eq
+  [421] jmpifz [456] ............................ (case) "t":
+  [424] getlocal 9 .............................. <tNum>
+  [426] pusharglist 1 ........................... <tNum>
+  [428] extcall 41 .............................. <voidp(tNum)>
+  [430] not ..................................... <not voidp(tNum)>
+  [431] jmpifz [453] ............................ if not voidp(tNum) then
+  [434] getlocal 4 .............................. <tTextList>
+  [436] getlocal 9 .............................. <tNum>
+  [438] getlocal 10 ............................. <tdata>
+  [440] pushcons 13 ............................. <"<br>">
+  [442] pushcons 14 ............................. <RETURN>
+  [444] pusharglist 3 ........................... <tdata, "<br>", RETURN>
+  [446] extcall 239 ............................. <replaceChunks(tdata, "<br>", RETURN)>
+  [448] pusharglistnoret 3 ...................... <tTextList, tNum, replaceChunks(tdata, "<br>", RETURN)>
+  [450] objcall 503 ............................. tTextList.addProp(tNum, replaceChunks(tdata, "<br>", RETURN))
+  [453] jmp [960]
+  [456] peek 0
+  [458] pushcons 25 ............................. <"u">
+  [460] eq
+  [461] jmpifz [529] ............................ (case) "u":
+  [464] pushcons 20 ............................. <",">
+  [466] setmovieprop 52 ......................... the itemDelimiter = ","
+  [468] pusharglist 0 ........................... <[]>
+  [470] pushlist ................................ <[]>
+  [471] setlocal 11 ............................. tTempList = []
+  [473] pushint8 1 .............................. <1>
+  [475] setlocal 12
+  [477] getlocal 12
+  [479] getlocal 10 ............................. <tdata>
+  [481] pushsymb 53 ............................. <#item>
+  [483] pusharglist 2 ........................... <tdata, #item>
+  [485] objcall 25 .............................. <tdata.item.count>
+  [487] lteq
+  [488] jmpifz [516] ............................ repeat with f = 1 to tdata.item.count
+  [491] getlocal 11 ............................. <tTempList>
+  [493] getlocal 10 ............................. <tdata>
+  [495] pushsymb 53 ............................. <#item>
+  [497] getlocal 12 ............................. <f>
+  [499] pusharglist 3 ........................... <tdata, #item, f>
+  [501] objcall 26 .............................. <tdata.item[f]>
+  [503] pusharglistnoret 2 ...................... <tTempList, tdata.item[f]>
+  [505] objcall 19 .............................. tTempList.add(tdata.item[f])
+  [507] pushint8 1
+  [509] getlocal 12
+  [511] add
+  [512] setlocal 12
+  [514] endrepeat [477]
+  [516] getlocal 2 .............................. <tList>
+  [518] pushcons 26 ............................. <"linkList">
+  [520] getlocal 11 ............................. <tTempList>
+  [522] pusharglistnoret 3 ...................... <tList, "linkList", tTempList>
+  [524] objcall 50 .............................. tList["linkList"] = tTempList
+  [526] jmp [960]
+  [529] peek 0
+  [531] pushcons 27 ............................. <"p">
+  [533] eq
+  [534] jmpifz [960] ............................ (case) "p":
+  [537] pushcons 3 .............................. <TAB>
+  [539] setmovieprop 52 ......................... the itemDelimiter = TAB
+  [541] pusharglist 0 ........................... <[:]>
+  [543] pushproplist ............................ <[:]>
+  [544] setlocal 13 ............................. tTemp = [:]
+  [546] getlocal 13 ............................. <tTemp>
+  [548] pushcons 28 ............................. <"name">
+  [550] getlocal 10 ............................. <tdata>
+  [552] pushsymb 53 ............................. <#item>
+  [554] pushint8 1 .............................. <1>
+  [556] pusharglist 3 ........................... <tdata, #item, 1>
+  [558] objcall 26 .............................. <tdata.item[1]>
+  [560] pusharglistnoret 3 ...................... <tTemp, "name", tdata.item[1]>
+  [562] objcall 50 .............................. tTemp["name"] = tdata.item[1]
+  [564] getlocal 13 ............................. <tTemp>
+  [566] pushcons 29 ............................. <"description">
+  [568] getlocal 10 ............................. <tdata>
+  [570] pushsymb 53 ............................. <#item>
+  [572] pushint8 2 .............................. <2>
+  [574] pusharglist 3 ........................... <tdata, #item, 2>
+  [576] objcall 26 .............................. <tdata.item[2]>
+  [578] pusharglistnoret 3 ...................... <tTemp, "description", tdata.item[2]>
+  [580] objcall 50 .............................. tTemp["description"] = tdata.item[2]
+  [582] getlocal 13 ............................. <tTemp>
+  [584] pushcons 30 ............................. <"price">
+  [586] getlocal 10 ............................. <tdata>
+  [588] pushsymb 53 ............................. <#item>
+  [590] pushint8 3 .............................. <3>
+  [592] pusharglist 3 ........................... <tdata, #item, 3>
+  [594] objcall 26 .............................. <tdata.item[3]>
+  [596] pusharglistnoret 3 ...................... <tTemp, "price", tdata.item[3]>
+  [598] objcall 50 .............................. tTemp["price"] = tdata.item[3]
+  [600] getlocal 13 ............................. <tTemp>
+  [602] pushcons 31 ............................. <"specialText">
+  [604] getlocal 10 ............................. <tdata>
+  [606] pushsymb 53 ............................. <#item>
+  [608] pushint8 4 .............................. <4>
+  [610] pusharglist 3 ........................... <tdata, #item, 4>
+  [612] objcall 26 .............................. <tdata.item[4]>
+  [614] pusharglistnoret 3 ...................... <tTemp, "specialText", tdata.item[4]>
+  [616] objcall 50 .............................. tTemp["specialText"] = tdata.item[4]
+  [618] getlocal 13 ............................. <tTemp>
+  [620] pushcons 32 ............................. <"objectType">
+  [622] getlocal 10 ............................. <tdata>
+  [624] pushsymb 53 ............................. <#item>
+  [626] pushint8 5 .............................. <5>
+  [628] pusharglist 3 ........................... <tdata, #item, 5>
+  [630] objcall 26 .............................. <tdata.item[5]>
+  [632] pusharglistnoret 3 ...................... <tTemp, "objectType", tdata.item[5]>
+  [634] objcall 50 .............................. tTemp["objectType"] = tdata.item[5]
+  [636] getlocal 13 ............................. <tTemp>
+  [638] pushcons 33 ............................. <"class">
+  [640] getlocal 10 ............................. <tdata>
+  [642] pushsymb 53 ............................. <#item>
+  [644] pushint8 6 .............................. <6>
+  [646] pusharglist 3 ........................... <tdata, #item, 6>
+  [648] objcall 26 .............................. <tdata.item[6]>
+  [650] pusharglistnoret 3 ...................... <tTemp, "class", tdata.item[6]>
+  [652] objcall 50 .............................. tTemp["class"] = tdata.item[6]
+  [654] getlocal 13 ............................. <tTemp>
+  [656] pushcons 34 ............................. <"direction">
+  [658] getlocal 10 ............................. <tdata>
+  [660] pushsymb 53 ............................. <#item>
+  [662] pushint8 7 .............................. <7>
+  [664] pusharglist 3 ........................... <tdata, #item, 7>
+  [666] objcall 26 .............................. <tdata.item[7]>
+  [668] pusharglistnoret 3 ...................... <tTemp, "direction", tdata.item[7]>
+  [670] objcall 50 .............................. tTemp["direction"] = tdata.item[7]
+  [672] getlocal 13 ............................. <tTemp>
+  [674] pushcons 35 ............................. <"dimensions">
+  [676] getlocal 10 ............................. <tdata>
+  [678] pushsymb 53 ............................. <#item>
+  [680] pushint8 8 .............................. <8>
+  [682] pusharglist 3 ........................... <tdata, #item, 8>
+  [684] objcall 26 .............................. <tdata.item[8]>
+  [686] pusharglistnoret 3 ...................... <tTemp, "dimensions", tdata.item[8]>
+  [688] objcall 50 .............................. tTemp["dimensions"] = tdata.item[8]
+  [690] getlocal 13 ............................. <tTemp>
+  [692] pushcons 36 ............................. <"purchaseCode">
+  [694] getlocal 10 ............................. <tdata>
+  [696] pushsymb 53 ............................. <#item>
+  [698] pushint8 9 .............................. <9>
+  [700] pusharglist 3 ........................... <tdata, #item, 9>
+  [702] objcall 26 .............................. <tdata.item[9]>
+  [704] pusharglistnoret 3 ...................... <tTemp, "purchaseCode", tdata.item[9]>
+  [706] objcall 50 .............................. tTemp["purchaseCode"] = tdata.item[9]
+  [708] getlocal 13 ............................. <tTemp>
+  [710] pushcons 37 ............................. <"partColors">
+  [712] getlocal 10 ............................. <tdata>
+  [714] pushsymb 53 ............................. <#item>
+  [716] pushint8 10 ............................. <10>
+  [718] pusharglist 3 ........................... <tdata, #item, 10>
+  [720] objcall 26 .............................. <tdata.item[10]>
+  [722] pusharglistnoret 3 ...................... <tTemp, "partColors", tdata.item[10]>
+  [724] objcall 50 .............................. tTemp["partColors"] = tdata.item[10]
+  [726] getlocal 10 ............................. <tdata>
+  [728] pushsymb 53 ............................. <#item>
+  [730] pusharglist 2 ........................... <tdata, #item>
+  [732] objcall 25 .............................. <tdata.item.count>
+  [734] pushint8 10 ............................. <10>
+  [736] gt ...................................... <tdata.item.count > 10>
+  [737] jmpifz [952] ............................ if tdata.item.count > 10 then
+  [740] getlocal 10 ............................. <tdata>
+  [742] pushsymb 53 ............................. <#item>
+  [744] pushint8 11 ............................. <11>
+  [746] pusharglist 3 ........................... <tdata, #item, 11>
+  [748] objcall 26 .............................. <tdata.item[11]>
+  [750] setlocal 14 ............................. tItemCount = tdata.item[11]
+  [752] getlocal 10 ............................. <tdata>
+  [754] pushsymb 53 ............................. <#item>
+  [756] pusharglist 2 ........................... <tdata, #item>
+  [758] objcall 25 .............................. <tdata.item.count>
+  [760] pushint8 11 ............................. <11>
+  [762] getlocal 14 ............................. <tItemCount>
+  [764] pushint8 3 .............................. <3>
+  [766] mul ..................................... <tItemCount * 3>
+  [767] add ..................................... <11 + (tItemCount * 3)>
+  [768] gteq .................................... <tdata.item.count >= (11 + (tItemCount * 3))>
+  [769] jmpifz [952] ............................ if tdata.item.count >= (11 + (tItemCount * 3)) then
+  [772] pusharglist 0 ........................... <[]>
+  [774] pushlist ................................ <[]>
+  [775] setlocal 15 ............................. tDealList = []
+  [777] pusharglist 0 ........................... <[:]>
+  [779] pushproplist ............................ <[:]>
+  [780] setlocal 16 ............................. tDealItem = [:]
+  [782] pushzero ................................ <0>
+  [783] setlocal 17
+  [785] getlocal 17
+  [787] getlocal 14 ............................. <tItemCount>
+  [789] pushint8 1 .............................. <1>
+  [791] sub ..................................... <tItemCount - 1>
+  [792] lteq
+  [793] jmpifz [903] ............................ repeat with i = 0 to tItemCount - 1
+  [796] getlocal 16 ............................. <tDealItem>
+  [798] pushcons 33 ............................. <"class">
+  [800] getlocal 10 ............................. <tdata>
+  [802] pushsymb 53 ............................. <#item>
+  [804] pushint8 11 ............................. <11>
+  [806] getlocal 17 ............................. <i>
+  [808] pushint8 3 .............................. <3>
+  [810] mul ..................................... <i * 3>
+  [811] add ..................................... <11 + (i * 3)>
+  [812] pushint8 1 .............................. <1>
+  [814] add ..................................... <11 + (i * 3) + 1>
+  [815] pusharglist 3 ........................... <tdata, #item, 11 + (i * 3) + 1>
+  [817] objcall 26 .............................. <tdata.item[11 + (i * 3) + 1]>
+  [819] pusharglistnoret 3 ...................... <tDealItem, "class", tdata.item[11 + (i * 3) + 1]>
+  [821] objcall 50 .............................. tDealItem["class"] = tdata.item[11 + (i * 3) + 1]
+  [823] getlocal 16 ............................. <tDealItem>
+  [825] pushcons 38 ............................. <"count">
+  [827] getlocal 10 ............................. <tdata>
+  [829] pushsymb 53 ............................. <#item>
+  [831] pushint8 11 ............................. <11>
+  [833] getlocal 17 ............................. <i>
+  [835] pushint8 3 .............................. <3>
+  [837] mul ..................................... <i * 3>
+  [838] add ..................................... <11 + (i * 3)>
+  [839] pushint8 2 .............................. <2>
+  [841] add ..................................... <11 + (i * 3) + 2>
+  [842] pusharglist 3 ........................... <tdata, #item, 11 + (i * 3) + 2>
+  [844] objcall 26 .............................. <tdata.item[11 + (i * 3) + 2]>
+  [846] pusharglistnoret 3 ...................... <tDealItem, "count", tdata.item[11 + (i * 3) + 2]>
+  [848] objcall 50 .............................. tDealItem["count"] = tdata.item[11 + (i * 3) + 2]
+  [850] getlocal 16 ............................. <tDealItem>
+  [852] pushcons 37 ............................. <"partColors">
+  [854] getlocal 10 ............................. <tdata>
+  [856] pushsymb 53 ............................. <#item>
+  [858] pushint8 11 ............................. <11>
+  [860] getlocal 17 ............................. <i>
+  [862] pushint8 3 .............................. <3>
+  [864] mul ..................................... <i * 3>
+  [865] add ..................................... <11 + (i * 3)>
+  [866] pushint8 3 .............................. <3>
+  [868] add ..................................... <11 + (i * 3) + 3>
+  [869] pusharglist 3 ........................... <tdata, #item, 11 + (i * 3) + 3>
+  [871] objcall 26 .............................. <tdata.item[11 + (i * 3) + 3]>
+  [873] pusharglistnoret 3 ...................... <tDealItem, "partColors", tdata.item[11 + (i * 3) + 3]>
+  [875] objcall 50 .............................. tDealItem["partColors"] = tdata.item[11 + (i * 3) + 3]
+  [877] getlocal 15 ............................. <tDealList>
+  [879] getlocal 17 ............................. <i>
+  [881] pushint8 1 .............................. <1>
+  [883] add ..................................... <i + 1>
+  [884] getlocal 16 ............................. <tDealItem>
+  [886] pusharglist 1 ........................... <tDealItem>
+  [888] objcall 51 .............................. <tDealItem.duplicate()>
+  [890] pusharglistnoret 3 ...................... <tDealList, i + 1, tDealItem.duplicate()>
+  [892] objcall 50 .............................. tDealList[i + 1] = tDealItem.duplicate()
+  [894] pushint8 1
+  [896] getlocal 17
+  [898] add
+  [899] setlocal 17
+  [901] endrepeat [785]
+  [903] getlocal 13 ............................. <tTemp>
+  [905] pushcons 39 ............................. <"dealList">
+  [907] getlocal 15 ............................. <tDealList>
+  [909] pusharglistnoret 3 ...................... <tTemp, "dealList", tDealList>
+  [911] objcall 50 .............................. tTemp["dealList"] = tDealList
+  [913] getlocal 15 ............................. <tDealList>
+  [915] getobjprop 25 ........................... <tDealList.count>
+  [917] pushint8 1 .............................. <1>
+  [919] gt ...................................... <tDealList.count > 1>
+  [920] jmpifz [943] ............................ if tDealList.count > 1 then / else
+  [923] getlocal 13 ............................. <tTemp>
+  [925] pushcons 40 ............................. <"dealNumber">
+  [927] getlocal 5 .............................. <tDealNumber>
+  [929] pusharglistnoret 3 ...................... <tTemp, "dealNumber", tDealNumber>
+  [931] objcall 50 .............................. tTemp["dealNumber"] = tDealNumber
+  [933] getlocal 5 .............................. <tDealNumber>
+  [935] pushint8 1 .............................. <1>
+  [937] add ..................................... <tDealNumber + 1>
+  [938] setlocal 5 .............................. tDealNumber = tDealNumber + 1
+  [940] jmp [952]
+  [943] getlocal 13 ............................. <tTemp>
+  [945] pushcons 40 ............................. <"dealNumber">
+  [947] pushzero ................................ <0>
+  [948] pusharglistnoret 3 ...................... <tTemp, "dealNumber", 0>
+  [950] objcall 50 .............................. tTemp["dealNumber"] = 0
+  [952] getlocal 3 .............................. <tProductList>
+  [954] getlocal 13 ............................. <tTemp>
+  [956] pusharglistnoret 2 ...................... <tProductList, tTemp>
+  [958] objcall 19 .............................. tProductList.add(tTemp)
+  [960] pop 1 ................................... end case
+  [962] pushint8 1
+  [964] getlocal 6
+  [966] add
+  [967] setlocal 6
+  [969] endrepeat [ 47]
+  [972] pusharglist 0 ........................... <[]>
+  [974] pushlist ................................ <[]>
+  [975] setlocal 18 ............................. tTempTextList = []
+  [977] getlocal 4 .............................. <tTextList>
+  [979] peek 0
+  [981] pusharglist 1
+  [983] extcall 25
+  [985] pushint8 1
+  [987] peek 0
+  [989] peek 2
+  [991] lteq
+  [992] jmpifz [1018] ........................... repeat with tText in tTextList
+  [995] peek 2
+  [997] peek 1
+  [999] pusharglist 2
+  [1001] extcall 40
+  [1003] setlocal 19
+  [1005] getlocal 18 ............................ <tTempTextList>
+  [1007] getlocal 19 ............................ <tText>
+  [1009] pusharglistnoret 2 ..................... <tTempTextList, tText>
+  [1011] objcall 19 ............................. tTempTextList.add(tText)
+  [1013] pushint8 1
+  [1015] add
+  [1016] endrepeat [987]
+  [1018] pop 3
+  [1020] getlocal 2 ............................. <tList>
+  [1022] pushcons 41 ............................ <"textList">
+  [1024] getlocal 18 ............................ <tTempTextList>
+  [1026] pusharglistnoret 3 ..................... <tList, "textList", tTempTextList>
+  [1028] objcall 50 ............................. tList["textList"] = tTempTextList
+  [1030] getlocal 2 ............................. <tList>
+  [1032] pushcons 42 ............................ <"productList">
+  [1034] getlocal 3 ............................. <tProductList>
+  [1036] pusharglistnoret 3 ..................... <tList, "productList", tProductList>
+  [1038] objcall 50 ............................. tList["productList"] = tProductList
+  [1040] getlocal 1 ............................. <tDelim>
+  [1042] setmovieprop 52 ........................ the itemDelimiter = tDelim
+  [1044] getparam 0 ............................. <me>
+  [1046] pusharglist 1 .......................... <me>
+  [1048] objcall 150 ............................ <me.getComponent()>
+  [1050] getlocal 2 ............................. <tList>
+  [1052] pusharglistnoret 2 ..................... <me.getComponent(), tList>
+  [1054] objcall 427 ............................ me.getComponent().saveCataloguePage(tList)
+  [1057] ret
+end
+
+on handle_purchasenotallowed me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 510 .......................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] extcall 41 .............................. <voidp(tMsg.connection)>
+  [  9] jmpifz [ 17] ............................ if voidp(tMsg.connection) then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 27 .............................. return 0
+  [ 17] getparam 1 .............................. <tMsg>
+  [ 19] getchainedprop 510 ...................... <tMsg.connection>
+  [ 22] getparam 1 .............................. <tMsg>
+  [ 24] pusharglist 2 ........................... <tMsg.connection, tMsg>
+  [ 26] objcall 511 ............................. <tMsg.connection.GetIntFrom(tMsg)>
+  [ 29] setlocal 0 .............................. tCode = tMsg.connection.GetIntFrom(tMsg)
+  [ 31] getlocal 0 .............................. <tCode>
+  [ 33] peek 0 .................................. case tCode of
+  [ 35] pushzero ................................ <0>
+  [ 36] eq
+  [ 37] jmpifz [ 43] ............................ (case) 0:
+  [ 40] jmp [ 76]
+  [ 43] peek 0
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] eq
+  [ 48] jmpifz [ 76] ............................ (case) 1:
+  [ 51] pop 1
+  [ 53] pushsymb 512 ............................ <#alert>
+  [ 56] pushsymb 513 ............................ <#Msg>
+  [ 59] pushcons 43 ............................. <"catalog_purchase_not_allowed_hc">
+  [ 61] pushsymb 245 ............................ <#modal>
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] pusharglist 4 ........................... <[#Msg: "catalog_purchase_not_allowed_hc", #modal: 1]>
+  [ 67] pushproplist ............................ <[#Msg: "catalog_purchase_not_allowed_hc", #modal: 1]>
+  [ 68] pusharglist 2 ........................... <#alert, [#Msg: "catalog_purchase_not_allowed_hc", #modal: 1]>
+  [ 70] extcall 225 ............................. <executeMessage(#alert, [#Msg: "catalog_purchase_not_allowed_hc", #modal: 1])>
+  [ 72] pusharglistnoret 1 ...................... <executeMessage(#alert, [#Msg: "catalog_purchase_not_allowed_hc", #modal: 1])>
+  [ 74] extcall 27 .............................. return executeMessage(#alert, [#Msg: "catalog_purchase_not_allowed_hc", #modal: 1])
+  [ 76] pop 1 ................................... end case
+  [ 78] pushzero ................................ <0>
+  [ 79] pusharglistnoret 1 ...................... <0>
+  [ 81] extcall 27 .............................. return 0
+  [ 83] ret
+end
+
+on handle_purse me, tMsg
+  [  0] pushsymb 237 ............................ <#session>
+  [  2] pusharglist 1 ........................... <#session>
+  [  4] extcall 228 ............................. <getObject(#session)>
+  [  6] pushcons 44 ............................. <"user_walletbalance">
+  [  8] pusharglist 2 ........................... <getObject(#session), "user_walletbalance">
+  [ 10] objcall 400 ............................. <getObject(#session).exists("user_walletbalance")>
+  [ 13] setlocal 0 .............................. tPlaySnd = getObject(#session).exists("user_walletbalance")
+  [ 15] getparam 1 .............................. <tMsg>
+  [ 17] getchainedprop 499 ...................... <tMsg.content>
+  [ 20] pushsymb 46 ............................. <#word>
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] pusharglist 3 ........................... <tMsg.content, #word, 1>
+  [ 26] objcall 26 .............................. <tMsg.content.word[1]>
+  [ 28] pusharglist 1 ........................... <tMsg.content.word[1]>
+  [ 30] extcall 515 ............................. <getLocalFloat(tMsg.content.word[1])>
+  [ 33] pusharglist 1 ........................... <getLocalFloat(tMsg.content.word[1])>
+  [ 35] extcall 47 .............................. <integer(getLocalFloat(tMsg.content.word[1]))>
+  [ 37] setlocal 1 .............................. tCredits = integer(getLocalFloat(tMsg.content.word[1]))
+  [ 39] pushsymb 237 ............................ <#session>
+  [ 41] pusharglist 1 ........................... <#session>
+  [ 43] extcall 228 ............................. <getObject(#session)>
+  [ 45] pushcons 44 ............................. <"user_walletbalance">
+  [ 47] getlocal 1 .............................. <tCredits>
+  [ 49] pusharglistnoret 3 ...................... <getObject(#session), "user_walletbalance", tCredits>
+  [ 51] objcall 516 ............................. getObject(#session).set("user_walletbalance", tCredits)
+  [ 54] getparam 0 .............................. <me>
+  [ 56] pusharglist 1 ........................... <me>
+  [ 58] objcall 38 .............................. <me.getInterface()>
+  [ 60] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 62] objcall 184 ............................. me.getInterface().updatePurseSaldo()
+  [ 64] pushsymb 517 ............................ <#updateCreditCount>
+  [ 67] getlocal 1 .............................. <tCredits>
+  [ 69] pusharglistnoret 2 ...................... <#updateCreditCount, tCredits>
+  [ 71] extcall 225 ............................. executeMessage(#updateCreditCount, tCredits)
+  [ 73] getlocal 0 .............................. <tPlaySnd>
+  [ 75] jmpifz [106] ............................ if tPlaySnd then
+  [ 78] pushcons 45 ............................. <"naw_snd_cash_cat">
+  [ 80] pushsymb 519 ............................ <#cut>
+  [ 83] pushsymb 520 ............................ <#loopCount>
+  [ 86] pushint8 1 .............................. <1>
+  [ 88] pushsymb 521 ............................ <#infiniteloop>
+  [ 91] pushzero ................................ <0>
+  [ 92] pushsymb 522 ............................ <#volume>
+  [ 95] pushint16 255 ........................... <255>
+  [ 98] pusharglist 6 ........................... <[#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [100] pushproplist ............................ <[#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [101] pusharglistnoret 3 ...................... <"naw_snd_cash_cat", #cut, [#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [103] extcall 518 ............................. playSound("naw_snd_cash_cat", #cut, [#loopCount: 1, #infiniteloop: 0, #volume: 255])
+  [106] pushint8 1 .............................. <1>
+  [108] pusharglistnoret 1 ...................... <1>
+  [110] extcall 27 .............................. return 1
+  [112] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint8 6 .............................. <6>
+  [  9] pushsymb 497 ............................ <#handle_purse>
+  [ 12] pusharglistnoret 3 ...................... <tMsgs, 6, #handle_purse>
+  [ 14] objcall 525 ............................. tMsgs.setaProp(6, #handle_purse)
+  [ 17] getlocal 0 .............................. <tMsgs>
+  [ 19] pushint8 67 ............................. <67>
+  [ 21] pushsymb 491 ............................ <#handle_purchase_ok>
+  [ 24] pusharglistnoret 3 ...................... <tMsgs, 67, #handle_purchase_ok>
+  [ 26] objcall 525 ............................. tMsgs.setaProp(67, #handle_purchase_ok)
+  [ 29] getlocal 0 .............................. <tMsgs>
+  [ 31] pushint8 65 ............................. <65>
+  [ 33] pushsymb 492 ............................ <#handle_purchase_error>
+  [ 36] pusharglistnoret 3 ...................... <tMsgs, 65, #handle_purchase_error>
+  [ 38] objcall 525 ............................. tMsgs.setaProp(65, #handle_purchase_error)
+  [ 41] getlocal 0 .............................. <tMsgs>
+  [ 43] pushint8 68 ............................. <68>
+  [ 45] pushsymb 493 ............................ <#handle_purchase_nobalance>
+  [ 48] pusharglistnoret 3 ...................... <tMsgs, 68, #handle_purchase_nobalance>
+  [ 50] objcall 525 ............................. tMsgs.setaProp(68, #handle_purchase_nobalance)
+  [ 53] getlocal 0 .............................. <tMsgs>
+  [ 55] pushint8 126 ............................ <126>
+  [ 57] pushsymb 494 ............................ <#handle_catalogindex>
+  [ 60] pusharglistnoret 3 ...................... <tMsgs, 126, #handle_catalogindex>
+  [ 62] objcall 525 ............................. tMsgs.setaProp(126, #handle_catalogindex)
+  [ 65] getlocal 0 .............................. <tMsgs>
+  [ 67] pushint8 127 ............................ <127>
+  [ 69] pushsymb 495 ............................ <#handle_catalogpage>
+  [ 72] pusharglistnoret 3 ...................... <tMsgs, 127, #handle_catalogpage>
+  [ 74] objcall 525 ............................. tMsgs.setaProp(127, #handle_catalogpage)
+  [ 77] getlocal 0 .............................. <tMsgs>
+  [ 79] pushint16 296 ........................... <296>
+  [ 82] pushsymb 496 ............................ <#handle_purchasenotallowed>
+  [ 85] pusharglistnoret 3 ...................... <tMsgs, 296, #handle_purchasenotallowed>
+  [ 87] objcall 525 ............................. tMsgs.setaProp(296, #handle_purchasenotallowed)
+  [ 90] pusharglist 0 ........................... <[:]>
+  [ 92] pushproplist ............................ <[:]>
+  [ 93] setlocal 1 .............................. tCmds = [:]
+  [ 95] getlocal 1 .............................. <tCmds>
+  [ 97] pushcons 46 ............................. <"GPRC">
+  [ 99] pushint8 100 ............................ <100>
+  [101] pusharglistnoret 3 ...................... <tCmds, "GPRC", 100>
+  [103] objcall 525 ............................. tCmds.setaProp("GPRC", 100)
+  [106] getlocal 1 .............................. <tCmds>
+  [108] pushcons 47 ............................. <"GCIX">
+  [110] pushint8 101 ............................ <101>
+  [112] pusharglistnoret 3 ...................... <tCmds, "GCIX", 101>
+  [114] objcall 525 ............................. tCmds.setaProp("GCIX", 101)
+  [117] getlocal 1 .............................. <tCmds>
+  [119] pushcons 48 ............................. <"GCAP">
+  [121] pushint8 102 ............................ <102>
+  [123] pusharglistnoret 3 ...................... <tCmds, "GCAP", 102>
+  [125] objcall 525 ............................. tCmds.setaProp("GCAP", 102)
+  [128] getparam 1 .............................. <tBool>
+  [130] jmpifz [176] ............................ if tBool then / else
+  [133] pushcons 49 ............................. <"connection.info.id">
+  [135] pusharglist 1 ........................... <"connection.info.id">
+  [137] extcall 360 ............................. <getVariable("connection.info.id")>
+  [140] getparam 0 .............................. <me>
+  [142] pusharglist 1 ........................... <me>
+  [144] objcall 208 ............................. <me.getID()>
+  [146] getlocal 0 .............................. <tMsgs>
+  [148] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [150] extcall 526 ............................. registerListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [153] pushcons 49 ............................. <"connection.info.id">
+  [155] pusharglist 1 ........................... <"connection.info.id">
+  [157] extcall 360 ............................. <getVariable("connection.info.id")>
+  [160] getparam 0 .............................. <me>
+  [162] pusharglist 1 ........................... <me>
+  [164] objcall 208 ............................. <me.getID()>
+  [166] getlocal 1 .............................. <tCmds>
+  [168] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [170] extcall 527 ............................. registerCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [173] jmp [216]
+  [176] pushcons 49 ............................. <"connection.info.id">
+  [178] pusharglist 1 ........................... <"connection.info.id">
+  [180] extcall 360 ............................. <getVariable("connection.info.id")>
+  [183] getparam 0 .............................. <me>
+  [185] pusharglist 1 ........................... <me>
+  [187] objcall 208 ............................. <me.getID()>
+  [189] getlocal 0 .............................. <tMsgs>
+  [191] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [193] extcall 528 ............................. unregisterListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [196] pushcons 49 ............................. <"connection.info.id">
+  [198] pusharglist 1 ........................... <"connection.info.id">
+  [200] extcall 360 ............................. <getVariable("connection.info.id")>
+  [203] getparam 0 .............................. <me>
+  [205] pusharglist 1 ........................... <me>
+  [207] objcall 208 ............................. <me.getID()>
+  [209] getlocal 1 .............................. <tCmds>
+  [211] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [213] extcall 529 ............................. unregisterCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [216] pushint8 1 .............................. <1>
+  [218] pusharglistnoret 1 ...................... <1>
+  [220] extcall 27 .............................. return 1
+  [222] ret
+end

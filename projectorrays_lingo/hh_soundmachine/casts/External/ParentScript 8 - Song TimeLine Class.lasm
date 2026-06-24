@@ -1,0 +1,1888 @@
+property pSongData, pTimeLineData, pReady, pDataReady, pSongID, pSongName, pSongLength, pChanged, pSongControllerID, pChannelCount, pSlotCount, pSlotDuration, pSampleNameBase
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 639 ............................. pReady = 0
+  [  4] pushzero ................................ <0>
+  [  5] setprop 640 ............................. pChanged = 0
+  [  8] pushint8 4 .............................. <4>
+  [ 10] setprop 641 ............................. pChannelCount = 4
+  [ 13] pushint16 150 ........................... <150>
+  [ 16] setprop 642 ............................. pSlotCount = 150
+  [ 19] pushint16 2000 .......................... <2000>
+  [ 22] setprop 643 ............................. pSlotDuration = 2000
+  [ 25] pushcons 0 .............................. <"sound_machine_sample_">
+  [ 27] setprop 644 ............................. pSampleNameBase = "sound_machine_sample_"
+  [ 30] pushcons 1 .............................. <"song controller">
+  [ 32] setprop 372 ............................. pSongControllerID = "song controller"
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglistnoret 1 ...................... <me>
+  [ 39] objcall 326 ............................. me.clearTimeLine()
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglistnoret 1 ...................... <1>
+  [ 46] extcall 87 .............................. return 1
+  [ 48] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 87 .............................. return 1
+  [  6] ret
+end
+
+on resetChanged me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 640 ............................. pChanged = 0
+  [  4] ret
+end
+
+on reset me, tWaitForData
+  [  0] getparam 1 .............................. <tWaitForData>
+  [  2] not ..................................... <not tWaitForData>
+  [  3] setprop 645 ............................. pDataReady = not tWaitForData
+  [  6] pushzero ................................ <0>
+  [  7] setprop 646 ............................. pSongID = 0
+  [ 10] pushcons 2 .............................. <EMPTY>
+  [ 12] setprop 647 ............................. pSongName = EMPTY
+  [ 15] pushzero ................................ <0>
+  [ 16] setprop 648 ............................. pSongLength = 0
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglistnoret 1 ...................... <me>
+  [ 23] objcall 326 ............................. me.clearTimeLine()
+  [ 26] ret
+end
+
+on updateSongID me, tNewID
+  [  0] getparam 1 .............................. <tNewID>
+  [  2] setprop 646 ............................. pSongID = tNewID
+  [  5] ret
+end
+
+on updateSongName me, tNewName
+  [  0] getparam 1 .............................. <tNewName>
+  [  2] setprop 647 ............................. pSongName = tNewName
+  [  5] ret
+end
+
+on soundSetRemoved me, tID
+  [  0] getprop 651 ............................. <pTimeLineData>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 115
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [127] ............................ repeat with tChannel in pTimeLineData
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 116
+  [ 27] setlocal 0
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] setlocal 1
+  [ 33] getlocal 1
+  [ 35] getlocal 0 .............................. <tChannel>
+  [ 37] getobjprop 115 .......................... <tChannel.count>
+  [ 39] lteq
+  [ 40] jmpifz [122] ............................ repeat with tSlot = 1 to tChannel.count
+  [ 43] getlocal 0 .............................. <tChannel>
+  [ 45] getlocal 1 .............................. <tSlot>
+  [ 47] pusharglist 2 ........................... <tChannel, tSlot>
+  [ 49] objcall 116 ............................. <tChannel[tSlot]>
+  [ 51] pusharglist 1 ........................... <tChannel[tSlot]>
+  [ 53] extcall 161 ............................. <voidp(tChannel[tSlot])>
+  [ 55] not ..................................... <not voidp(tChannel[tSlot])>
+  [ 56] jmpifz [113] ............................ if not voidp(tChannel[tSlot]) then
+  [ 59] getlocal 0 .............................. <tChannel>
+  [ 61] getlocal 1 .............................. <tSlot>
+  [ 63] pusharglist 2 ........................... <tChannel, tSlot>
+  [ 65] objcall 116 ............................. <tChannel[tSlot]>
+  [ 67] setlocal 2 .............................. tSampleID = tChannel[tSlot]
+  [ 69] getlocal 2 .............................. <tSampleID>
+  [ 71] pushzero ................................ <0>
+  [ 72] lt ...................................... <tSampleID < 0>
+  [ 73] jmpifz [ 81] ............................ if tSampleID < 0 then
+  [ 76] getlocal 2 .............................. <tSampleID>
+  [ 78] inv ..................................... <-tSampleID>
+  [ 79] setlocal 2 .............................. tSampleID = -tSampleID
+  [ 81] getparam 0 .............................. <me>
+  [ 83] getlocal 2 .............................. <tSampleID>
+  [ 85] pusharglist 2 ........................... <me, tSampleID>
+  [ 87] objcall 638 ............................. <me.getSampleSetID(tSampleID)>
+  [ 90] getparam 1 .............................. <tID>
+  [ 92] eq ...................................... <me.getSampleSetID(tSampleID) = tID>
+  [ 93] jmpifz [113] ............................ if me.getSampleSetID(tSampleID) = tID then
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] setprop 640 ............................. pChanged = 1
+  [101] getlocal 0 .............................. <tChannel>
+  [103] getlocal 1 .............................. <tSlot>
+  [105] pusharglist 0 ........................... <>
+  [107] extcall 111 ............................. <VOID>
+  [109] pusharglistnoret 3 ...................... <tChannel, tSlot, VOID>
+  [111] objcall 150 ............................. tChannel[tSlot] = VOID
+  [113] pushint8 1
+  [115] getlocal 1
+  [117] add
+  [118] setlocal 1
+  [120] endrepeat [ 33]
+  [122] pushint8 1
+  [124] add
+  [125] endrepeat [ 11]
+  [127] pop 3
+  [129] getprop 652 ............................. <pSongData>
+  [132] peek 0
+  [134] pusharglist 1
+  [136] extcall 115
+  [138] pushint8 1
+  [140] peek 0
+  [142] peek 2
+  [144] lteq
+  [145] jmpifz [249] ............................ repeat with tChannel in pSongData
+  [148] peek 2
+  [150] peek 1
+  [152] pusharglist 2
+  [154] extcall 116
+  [156] setlocal 0
+  [158] pushint8 1 .............................. <1>
+  [160] setlocal 1
+  [162] getlocal 1
+  [164] getlocal 0 .............................. <tChannel>
+  [166] getobjprop 115 .......................... <tChannel.count>
+  [168] lteq
+  [169] jmpifz [244] ............................ repeat with tSlot = 1 to tChannel.count
+  [172] getlocal 0 .............................. <tChannel>
+  [174] getlocal 1 .............................. <tSlot>
+  [176] pusharglist 2 ........................... <tChannel, tSlot>
+  [178] objcall 116 ............................. <tChannel[tSlot]>
+  [180] setlocal 3 .............................. tSample = tChannel[tSlot]
+  [182] getlocal 3 .............................. <tSample>
+  [184] pusharglist 1 ........................... <tSample>
+  [186] extcall 161 ............................. <voidp(tSample)>
+  [188] not ..................................... <not voidp(tSample)>
+  [189] jmpifz [235] ............................ if not voidp(tSample) then
+  [192] getlocal 3 .............................. <tSample>
+  [194] pushsymb 425 ............................ <#id>
+  [197] pusharglist 2 ........................... <tSample, #id>
+  [199] objcall 116 ............................. <tSample[#id]>
+  [201] setlocal 2 .............................. tSampleID = tSample[#id]
+  [203] getparam 0 .............................. <me>
+  [205] getlocal 2 .............................. <tSampleID>
+  [207] pusharglist 2 ........................... <me, tSampleID>
+  [209] objcall 638 ............................. <me.getSampleSetID(tSampleID)>
+  [212] getparam 1 .............................. <tID>
+  [214] eq ...................................... <me.getSampleSetID(tSampleID) = tID>
+  [215] jmpifz [235] ............................ if me.getSampleSetID(tSampleID) = tID then
+  [218] pushint8 1 .............................. <1>
+  [220] setprop 640 ............................. pChanged = 1
+  [223] getlocal 0 .............................. <tChannel>
+  [225] getlocal 1 .............................. <tSlot>
+  [227] pusharglist 0 ........................... <>
+  [229] extcall 111 ............................. <VOID>
+  [231] pusharglistnoret 3 ...................... <tChannel, tSlot, VOID>
+  [233] objcall 150 ............................. tChannel[tSlot] = VOID
+  [235] pushint8 1
+  [237] getlocal 1
+  [239] add
+  [240] setlocal 1
+  [242] endrepeat [162]
+  [244] pushint8 1
+  [246] add
+  [247] endrepeat [140]
+  [249] pop 3
+  [251] ret
+end
+
+on checkSoundSetReferences me, tID
+  [  0] getprop 651 ............................. <pTimeLineData>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 115
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [116] ............................ repeat with tChannel in pTimeLineData
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 116
+  [ 27] setlocal 0
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] setlocal 1
+  [ 33] getlocal 1
+  [ 35] getlocal 0 .............................. <tChannel>
+  [ 37] getobjprop 115 .......................... <tChannel.count>
+  [ 39] lteq
+  [ 40] jmpifz [111] ............................ repeat with tSlot = 1 to tChannel.count
+  [ 43] getlocal 0 .............................. <tChannel>
+  [ 45] getlocal 1 .............................. <tSlot>
+  [ 47] pusharglist 2 ........................... <tChannel, tSlot>
+  [ 49] objcall 116 ............................. <tChannel[tSlot]>
+  [ 51] pusharglist 1 ........................... <tChannel[tSlot]>
+  [ 53] extcall 161 ............................. <voidp(tChannel[tSlot])>
+  [ 55] not ..................................... <not voidp(tChannel[tSlot])>
+  [ 56] jmpifz [102] ............................ if not voidp(tChannel[tSlot]) then
+  [ 59] getlocal 0 .............................. <tChannel>
+  [ 61] getlocal 1 .............................. <tSlot>
+  [ 63] pusharglist 2 ........................... <tChannel, tSlot>
+  [ 65] objcall 116 ............................. <tChannel[tSlot]>
+  [ 67] setlocal 2 .............................. tSampleID = tChannel[tSlot]
+  [ 69] getlocal 2 .............................. <tSampleID>
+  [ 71] pushzero ................................ <0>
+  [ 72] lt ...................................... <tSampleID < 0>
+  [ 73] jmpifz [ 81] ............................ if tSampleID < 0 then
+  [ 76] getlocal 2 .............................. <tSampleID>
+  [ 78] inv ..................................... <-tSampleID>
+  [ 79] setlocal 2 .............................. tSampleID = -tSampleID
+  [ 81] getparam 0 .............................. <me>
+  [ 83] getlocal 2 .............................. <tSampleID>
+  [ 85] pusharglist 2 ........................... <me, tSampleID>
+  [ 87] objcall 638 ............................. <me.getSampleSetID(tSampleID)>
+  [ 90] getparam 1 .............................. <tID>
+  [ 92] eq ...................................... <me.getSampleSetID(tSampleID) = tID>
+  [ 93] jmpifz [102] ............................ if me.getSampleSetID(tSampleID) = tID then
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] pusharglistnoret 1 ...................... <1>
+  [100] extcall 87 .............................. return 1
+  [102] pushint8 1
+  [104] getlocal 1
+  [106] add
+  [107] setlocal 1
+  [109] endrepeat [ 33]
+  [111] pushint8 1
+  [113] add
+  [114] endrepeat [ 11]
+  [116] pop 3
+  [118] getprop 652 ............................. <pSongData>
+  [121] peek 0
+  [123] pusharglist 1
+  [125] extcall 115
+  [127] pushint8 1
+  [129] peek 0
+  [131] peek 2
+  [133] lteq
+  [134] jmpifz [229] ............................ repeat with tChannel in pSongData
+  [137] peek 2
+  [139] peek 1
+  [141] pusharglist 2
+  [143] extcall 116
+  [145] setlocal 0
+  [147] getlocal 0 .............................. <tChannel>
+  [149] peek 0
+  [151] pusharglist 1
+  [153] extcall 115
+  [155] pushint8 1
+  [157] peek 0
+  [159] peek 2
+  [161] lteq
+  [162] jmpifz [222] ............................ repeat with tSample in tChannel
+  [165] peek 2
+  [167] peek 1
+  [169] pusharglist 2
+  [171] extcall 116
+  [173] setlocal 3
+  [175] getlocal 3 .............................. <tSample>
+  [177] pusharglist 1 ........................... <tSample>
+  [179] extcall 161 ............................. <voidp(tSample)>
+  [181] not ..................................... <not voidp(tSample)>
+  [182] jmpifz [217] ............................ if not voidp(tSample) then
+  [185] getlocal 3 .............................. <tSample>
+  [187] pushsymb 425 ............................ <#id>
+  [190] pusharglist 2 ........................... <tSample, #id>
+  [192] objcall 116 ............................. <tSample[#id]>
+  [194] setlocal 2 .............................. tSampleID = tSample[#id]
+  [196] getparam 0 .............................. <me>
+  [198] getlocal 2 .............................. <tSampleID>
+  [200] pusharglist 2 ........................... <me, tSampleID>
+  [202] objcall 638 ............................. <me.getSampleSetID(tSampleID)>
+  [205] getparam 1 .............................. <tID>
+  [207] eq ...................................... <me.getSampleSetID(tSampleID) = tID>
+  [208] jmpifz [217] ............................ if me.getSampleSetID(tSampleID) = tID then
+  [211] pushint8 1 .............................. <1>
+  [213] pusharglistnoret 1 ...................... <1>
+  [215] extcall 87 .............................. return 1
+  [217] pushint8 1
+  [219] add
+  [220] endrepeat [157]
+  [222] pop 3
+  [224] pushint8 1
+  [226] add
+  [227] endrepeat [129]
+  [229] pop 3
+  [231] pushzero ................................ <0>
+  [232] pusharglistnoret 1 ...................... <0>
+  [234] extcall 87 .............................. return 0
+  [236] ret
+end
+
+on getSongID me
+  [  0] getprop 646 ............................. <pSongID>
+  [  3] pusharglistnoret 1 ...................... <pSongID>
+  [  5] extcall 87 .............................. return pSongID
+  [  7] ret
+end
+
+on getSongName me
+  [  0] getprop 647 ............................. <pSongName>
+  [  3] pusharglistnoret 1 ...................... <pSongName>
+  [  5] extcall 87 .............................. return pSongName
+  [  7] ret
+end
+
+on getChannelCount me
+  [  0] getprop 641 ............................. <pChannelCount>
+  [  3] pusharglistnoret 1 ...................... <pChannelCount>
+  [  5] extcall 87 .............................. return pChannelCount
+  [  7] ret
+end
+
+on getSlotCount me
+  [  0] getprop 642 ............................. <pSlotCount>
+  [  3] pusharglistnoret 1 ...................... <pSlotCount>
+  [  5] extcall 87 .............................. return pSlotCount
+  [  7] ret
+end
+
+on getChanged me
+  [  0] getprop 640 ............................. <pChanged>
+  [  3] pusharglistnoret 1 ...................... <pChanged>
+  [  5] extcall 87 .............................. return pChanged
+  [  7] ret
+end
+
+on getReady me
+  [  0] getprop 639 ............................. <pReady>
+  [  3] pusharglistnoret 1 ...................... <pReady>
+  [  5] extcall 87 .............................. return pReady
+  [  7] ret
+end
+
+on getDataReady me
+  [  0] getprop 645 ............................. <pDataReady>
+  [  3] pusharglistnoret 1 ...................... <pDataReady>
+  [  5] extcall 87 .............................. return pDataReady
+  [  7] ret
+end
+
+on getSlotDuration me
+  [  0] getprop 643 ............................. <pSlotDuration>
+  [  3] pusharglistnoret 1 ...................... <pSlotDuration>
+  [  5] extcall 87 .............................. return pSlotDuration
+  [  7] ret
+end
+
+on getTimeLineData me
+  [  0] getprop 651 ............................. <pTimeLineData>
+  [  3] pusharglistnoret 1 ...................... <pTimeLineData>
+  [  5] extcall 87 .............................. return pTimeLineData
+  [  7] ret
+end
+
+on clearTimeLine me, tSongLength
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 651 ............................. pTimeLineData = []
+  [  6] pusharglist 0 ........................... <[]>
+  [  8] pushlist ................................ <[]>
+  [  9] setprop 652 ............................. pSongData = []
+  [ 12] getparam 1 .............................. <tSongLength>
+  [ 14] pusharglist 1 ........................... <tSongLength>
+  [ 16] extcall 161 ............................. <voidp(tSongLength)>
+  [ 18] jmpifz [ 26] ............................ if voidp(tSongLength) then
+  [ 21] getprop 642 ............................. <pSlotCount>
+  [ 24] setparam 1 .............................. tSongLength = pSlotCount
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] setlocal 0
+  [ 30] getlocal 0
+  [ 32] getprop 641 ............................. <pChannelCount>
+  [ 35] lteq
+  [ 36] jmpifz [147] ............................ repeat with i = 1 to pChannelCount
+  [ 39] pusharglist 0 ........................... <[]>
+  [ 41] pushlist ................................ <[]>
+  [ 42] setlocal 1 .............................. tChannel = []
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] setlocal 2
+  [ 48] getlocal 2
+  [ 50] getprop 642 ............................. <pSlotCount>
+  [ 53] lteq
+  [ 54] jmpifz [ 78] ............................ repeat with j = 1 to pSlotCount
+  [ 57] getlocal 1 .............................. <tChannel>
+  [ 59] getlocal 2 .............................. <j>
+  [ 61] pusharglist 0 ........................... <>
+  [ 63] extcall 111 ............................. <VOID>
+  [ 65] pusharglistnoret 3 ...................... <tChannel, j, VOID>
+  [ 67] objcall 150 ............................. tChannel[j] = VOID
+  [ 69] pushint8 1
+  [ 71] getlocal 2
+  [ 73] add
+  [ 74] setlocal 2
+  [ 76] endrepeat [ 48]
+  [ 78] pusharglist 0 ........................... <[]>
+  [ 80] pushlist ................................ <[]>
+  [ 81] setlocal 3 .............................. tChannelSong = []
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] setlocal 2
+  [ 87] getlocal 2
+  [ 89] getparam 1 .............................. <tSongLength>
+  [ 91] lteq
+  [ 92] jmpifz [116] ............................ repeat with j = 1 to tSongLength
+  [ 95] getlocal 3 .............................. <tChannelSong>
+  [ 97] getlocal 2 .............................. <j>
+  [ 99] pusharglist 0 ........................... <>
+  [101] extcall 111 ............................. <VOID>
+  [103] pusharglistnoret 3 ...................... <tChannelSong, j, VOID>
+  [105] objcall 150 ............................. tChannelSong[j] = VOID
+  [107] pushint8 1
+  [109] getlocal 2
+  [111] add
+  [112] setlocal 2
+  [114] endrepeat [ 87]
+  [116] getprop 651 ............................. <pTimeLineData>
+  [119] getlocal 0 .............................. <i>
+  [121] getlocal 1 .............................. <tChannel>
+  [123] pusharglistnoret 3 ...................... <pTimeLineData, i, tChannel>
+  [125] objcall 150 ............................. pTimeLineData[i] = tChannel
+  [127] getprop 652 ............................. <pSongData>
+  [130] getlocal 0 .............................. <i>
+  [132] getlocal 3 .............................. <tChannelSong>
+  [134] pusharglistnoret 3 ...................... <pSongData, i, tChannelSong>
+  [136] objcall 150 ............................. pSongData[i] = tChannelSong
+  [138] pushint8 1
+  [140] getlocal 0
+  [142] add
+  [143] setlocal 0
+  [145] endrepeat [ 30]
+  [147] pushint8 1 .............................. <1>
+  [149] setprop 639 ............................. pReady = 1
+  [152] pushzero ................................ <0>
+  [153] setlocal 4 .............................. pPlayHeadPosX = 0
+  [155] pushint8 1 .............................. <1>
+  [157] setprop 640 ............................. pChanged = 1
+  [160] ret
+end
+
+on parseSongData me, tdata, tSongID, tSongName
+  [  0] getparam 2 .............................. <tSongID>
+  [  2] setprop 646 ............................. pSongID = tSongID
+  [  5] getparam 3 .............................. <tSongName>
+  [  7] setprop 647 ............................. pSongName = tSongName
+  [ 10] pushzero ................................ <0>
+  [ 11] setlocal 0 .............................. tSongLength = 0
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] setlocal 1
+  [ 17] getlocal 1
+  [ 19] getparam 1 .............................. <tdata>
+  [ 21] getobjprop 115 .......................... <tdata.count>
+  [ 23] lteq
+  [ 24] jmpifz [121] ............................ repeat with i = 1 to tdata.count
+  [ 27] getparam 1 .............................. <tdata>
+  [ 29] getlocal 1 .............................. <i>
+  [ 31] pusharglist 2 ........................... <tdata, i>
+  [ 33] objcall 116 ............................. <tdata[i]>
+  [ 35] setlocal 2 .............................. tChannel = tdata[i]
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] setlocal 3 .............................. tSlot = 1
+  [ 41] getlocal 2 .............................. <tChannel>
+  [ 43] peek 0
+  [ 45] pusharglist 1
+  [ 47] extcall 115
+  [ 49] pushint8 1
+  [ 51] peek 0
+  [ 53] peek 2
+  [ 55] lteq
+  [ 56] jmpifz [ 92] ............................ repeat with tSample in tChannel
+  [ 59] peek 2
+  [ 61] peek 1
+  [ 63] pusharglist 2
+  [ 65] extcall 116
+  [ 67] setlocal 4
+  [ 69] getlocal 4 .............................. <tSample>
+  [ 71] pushsymb 267 ............................ <#length>
+  [ 74] pusharglist 2 ........................... <tSample, #length>
+  [ 76] objcall 116 ............................. <tSample[#length]>
+  [ 78] setlocal 5 .............................. tLength = tSample[#length]
+  [ 80] getlocal 3 .............................. <tSlot>
+  [ 82] getlocal 5 .............................. <tLength>
+  [ 84] add ..................................... <tSlot + tLength>
+  [ 85] setlocal 3 .............................. tSlot = tSlot + tLength
+  [ 87] pushint8 1
+  [ 89] add
+  [ 90] endrepeat [ 51]
+  [ 92] pop 3
+  [ 94] getlocal 3 .............................. <tSlot>
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] sub ..................................... <tSlot - 1>
+  [ 99] getlocal 0 .............................. <tSongLength>
+  [101] gt ...................................... <(tSlot - 1) > tSongLength>
+  [102] jmpifz [112] ............................ if (tSlot - 1) > tSongLength then
+  [105] getlocal 3 .............................. <tSlot>
+  [107] pushint8 1 .............................. <1>
+  [109] sub ..................................... <tSlot - 1>
+  [110] setlocal 0 .............................. tSongLength = tSlot - 1
+  [112] pushint8 1
+  [114] getlocal 1
+  [116] add
+  [117] setlocal 1
+  [119] endrepeat [ 17]
+  [121] getparam 0 .............................. <me>
+  [123] getlocal 0 .............................. <tSongLength>
+  [125] pusharglistnoret 2 ...................... <me, tSongLength>
+  [127] objcall 326 ............................. me.clearTimeLine(tSongLength)
+  [130] pushzero ................................ <0>
+  [131] setprop 640 ............................. pChanged = 0
+  [134] pushint8 1 .............................. <1>
+  [136] setlocal 1
+  [138] getlocal 1
+  [140] getparam 1 .............................. <tdata>
+  [142] getobjprop 115 .......................... <tdata.count>
+  [144] lteq
+  [145] jmpifz [289] ............................ repeat with i = 1 to tdata.count
+  [148] getparam 1 .............................. <tdata>
+  [150] getlocal 1 .............................. <i>
+  [152] pusharglist 2 ........................... <tdata, i>
+  [154] objcall 116 ............................. <tdata[i]>
+  [156] setlocal 2 .............................. tChannel = tdata[i]
+  [158] getlocal 1 .............................. <i>
+  [160] getprop 652 ............................. <pSongData>
+  [163] getobjprop 115 .......................... <pSongData.count>
+  [165] lteq .................................... <i <= pSongData.count>
+  [166] jmpifz [280] ............................ if i <= pSongData.count then
+  [169] getprop 652 ............................. <pSongData>
+  [172] getlocal 1 .............................. <i>
+  [174] pusharglist 2 ........................... <pSongData, i>
+  [176] objcall 116 ............................. <pSongData[i]>
+  [178] setlocal 6 .............................. tSongChannel = pSongData[i]
+  [180] pushint8 1 .............................. <1>
+  [182] setlocal 3 .............................. tSlot = 1
+  [184] getlocal 2 .............................. <tChannel>
+  [186] peek 0
+  [188] pusharglist 1
+  [190] extcall 115
+  [192] pushint8 1
+  [194] peek 0
+  [196] peek 2
+  [198] lteq
+  [199] jmpifz [278] ............................ repeat with tSample in tChannel
+  [202] peek 2
+  [204] peek 1
+  [206] pusharglist 2
+  [208] extcall 116
+  [210] setlocal 4
+  [212] getlocal 4 .............................. <tSample>
+  [214] pushsymb 425 ............................ <#id>
+  [217] pusharglist 2 ........................... <tSample, #id>
+  [219] objcall 116 ............................. <tSample[#id]>
+  [221] setlocal 7 .............................. tID = tSample[#id]
+  [223] getlocal 4 .............................. <tSample>
+  [225] pushsymb 267 ............................ <#length>
+  [228] pusharglist 2 ........................... <tSample, #length>
+  [230] objcall 116 ............................. <tSample[#length]>
+  [232] setlocal 5 .............................. tLength = tSample[#length]
+  [234] getlocal 3 .............................. <tSlot>
+  [236] getlocal 6 .............................. <tSongChannel>
+  [238] getobjprop 115 .......................... <tSongChannel.count>
+  [240] lteq .................................... <tSlot <= tSongChannel.count>
+  [241] jmpifz [266] ............................ if tSlot <= tSongChannel.count then
+  [244] getprop 652 ............................. <pSongData>
+  [247] getlocal 1 .............................. <i>
+  [249] pusharglist 2 ........................... <pSongData, i>
+  [251] objcall 116 ............................. <pSongData[i]>
+  [253] getlocal 3 .............................. <tSlot>
+  [255] getlocal 4 .............................. <tSample>
+  [257] pusharglist 1 ........................... <tSample>
+  [259] objcall 466 ............................. <tSample.duplicate()>
+  [262] pusharglistnoret 3 ...................... <pSongData[i], tSlot, tSample.duplicate()>
+  [264] objcall 150 ............................. pSongData[i][tSlot] = tSample.duplicate()
+  [266] getlocal 3 .............................. <tSlot>
+  [268] getlocal 5 .............................. <tLength>
+  [270] add ..................................... <tSlot + tLength>
+  [271] setlocal 3 .............................. tSlot = tSlot + tLength
+  [273] pushint8 1
+  [275] add
+  [276] endrepeat [194]
+  [278] pop 3
+  [280] pushint8 1
+  [282] getlocal 1
+  [284] add
+  [285] setlocal 1
+  [287] endrepeat [138]
+  [289] pushzero ................................ <0>
+  [290] setprop 639 ............................. pReady = 0
+  [293] pushint8 1 .............................. <1>
+  [295] setprop 645 ............................. pDataReady = 1
+  [298] pushint8 1 .............................. <1>
+  [300] pusharglistnoret 1 ...................... <1>
+  [302] extcall 87 .............................. return 1
+  [304] ret
+end
+
+on processSongData me
+  [  0] getprop 639 ............................. <pReady>
+  [  3] jmpifz [ 12] ............................ if pReady then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 87 .............................. return 1
+  [ 12] getprop 645 ............................. <pDataReady>
+  [ 15] not ..................................... <not pDataReady>
+  [ 16] jmpifz [ 24] ............................ if not pDataReady then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 87 .............................. return 0
+  [ 24] getprop 652 ............................. <pSongData>
+  [ 27] getobjprop 115 .......................... <pSongData.count>
+  [ 29] getprop 651 ............................. <pTimeLineData>
+  [ 32] getobjprop 115 .......................... <pTimeLineData.count>
+  [ 34] pusharglist 2 ........................... <pSongData.count, pTimeLineData.count>
+  [ 36] extcall 187 ............................. <min(pSongData.count, pTimeLineData.count)>
+  [ 38] setlocal 0
+  [ 40] getlocal 0
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] gteq
+  [ 45] jmpifz [141] ............................ repeat with i = min(pSongData.count, pTimeLineData.count) down to 1
+  [ 48] getprop 651 ............................. <pTimeLineData>
+  [ 51] getlocal 0 .............................. <i>
+  [ 53] pusharglist 2 ........................... <pTimeLineData, i>
+  [ 55] objcall 116 ............................. <pTimeLineData[i]>
+  [ 57] getobjprop 115 .......................... <pTimeLineData[i].count>
+  [ 59] getprop 652 ............................. <pSongData>
+  [ 62] getlocal 0 .............................. <i>
+  [ 64] pusharglist 2 ........................... <pSongData, i>
+  [ 66] objcall 116 ............................. <pSongData[i]>
+  [ 68] getobjprop 115 .......................... <pSongData[i].count>
+  [ 70] pusharglist 2 ........................... <pTimeLineData[i].count, pSongData[i].count>
+  [ 72] extcall 187 ............................. <min(pTimeLineData[i].count, pSongData[i].count)>
+  [ 74] setlocal 1
+  [ 76] getlocal 1
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] gteq
+  [ 81] jmpifz [132] ............................ repeat with j = min(pTimeLineData[i].count, pSongData[i].count) down to 1
+  [ 84] getprop 651 ............................. <pTimeLineData>
+  [ 87] getlocal 0 .............................. <i>
+  [ 89] pusharglist 2 ........................... <pTimeLineData, i>
+  [ 91] objcall 116 ............................. <pTimeLineData[i]>
+  [ 93] getlocal 1 .............................. <j>
+  [ 95] pusharglist 2 ........................... <pTimeLineData[i], j>
+  [ 97] objcall 116 ............................. <pTimeLineData[i][j]>
+  [ 99] pushzero ................................ <0>
+  [100] lt ...................................... <pTimeLineData[i][j] < 0>
+  [101] jmpifz [123] ............................ if pTimeLineData[i][j] < 0 then
+  [104] getprop 651 ............................. <pTimeLineData>
+  [107] getlocal 0 .............................. <i>
+  [109] pusharglist 2 ........................... <pTimeLineData, i>
+  [111] objcall 116 ............................. <pTimeLineData[i]>
+  [113] getlocal 1 .............................. <j>
+  [115] pusharglist 0 ........................... <>
+  [117] extcall 111 ............................. <VOID>
+  [119] pusharglistnoret 3 ...................... <pTimeLineData[i], j, VOID>
+  [121] objcall 150 ............................. pTimeLineData[i][j] = VOID
+  [123] pushint8 -1
+  [125] getlocal 1
+  [127] add
+  [128] setlocal 1
+  [130] endrepeat [ 76]
+  [132] pushint8 -1
+  [134] getlocal 0
+  [136] add
+  [137] setlocal 0
+  [139] endrepeat [ 40]
+  [141] pushint8 1 .............................. <1>
+  [143] setlocal 2 .............................. tReady = 1
+  [145] pusharglist 0 ........................... <[:]>
+  [147] pushproplist ............................ <[:]>
+  [148] setlocal 3 .............................. tLengthCache = [:]
+  [150] pushint8 1 .............................. <1>
+  [152] setlocal 0
+  [154] getlocal 0
+  [156] getprop 652 ............................. <pSongData>
+  [159] getobjprop 115 .......................... <pSongData.count>
+  [161] getprop 651 ............................. <pTimeLineData>
+  [164] getobjprop 115 .......................... <pTimeLineData.count>
+  [166] pusharglist 2 ........................... <pSongData.count, pTimeLineData.count>
+  [168] extcall 187 ............................. <min(pSongData.count, pTimeLineData.count)>
+  [170] lteq
+  [171] jmpifz [484] ............................ repeat with i = 1 to min(pSongData.count, pTimeLineData.count)
+  [174] getprop 652 ............................. <pSongData>
+  [177] getlocal 0 .............................. <i>
+  [179] pusharglist 2 ........................... <pSongData, i>
+  [181] objcall 116 ............................. <pSongData[i]>
+  [183] setlocal 4 .............................. tSongChannel = pSongData[i]
+  [185] getprop 651 ............................. <pTimeLineData>
+  [188] getlocal 0 .............................. <i>
+  [190] pusharglist 2 ........................... <pTimeLineData, i>
+  [192] objcall 116 ............................. <pTimeLineData[i]>
+  [194] setlocal 5 .............................. tTimeLineChannel = pTimeLineData[i]
+  [196] pushint8 1 .............................. <1>
+  [198] setlocal 1
+  [200] getlocal 1
+  [202] getlocal 4 .............................. <tSongChannel>
+  [204] getobjprop 115 .......................... <tSongChannel.count>
+  [206] lteq
+  [207] jmpifz [474] ............................ repeat with j = 1 to tSongChannel.count
+  [210] getlocal 4 .............................. <tSongChannel>
+  [212] getlocal 1 .............................. <j>
+  [214] pusharglist 2 ........................... <tSongChannel, j>
+  [216] objcall 116 ............................. <tSongChannel[j]>
+  [218] setlocal 6 .............................. tSample = tSongChannel[j]
+  [220] getlocal 6 .............................. <tSample>
+  [222] pusharglist 1 ........................... <tSample>
+  [224] extcall 161 ............................. <voidp(tSample)>
+  [226] not ..................................... <not voidp(tSample)>
+  [227] jmpifz [464] ............................ if not voidp(tSample) then
+  [230] getlocal 6 .............................. <tSample>
+  [232] pushsymb 425 ............................ <#id>
+  [235] pusharglist 2 ........................... <tSample, #id>
+  [237] objcall 116 ............................. <tSample[#id]>
+  [239] setlocal 7 .............................. tID = tSample[#id]
+  [241] getlocal 6 .............................. <tSample>
+  [243] pushsymb 267 ............................ <#length>
+  [246] pusharglist 2 ........................... <tSample, #length>
+  [248] objcall 116 ............................. <tSample[#length]>
+  [250] setlocal 8 .............................. tLength = tSample[#length]
+  [252] getlocal 3 .............................. <tLengthCache>
+  [254] getlocal 7 .............................. <tID>
+  [256] pusharglist 2 ........................... <tLengthCache, tID>
+  [258] objcall 621 ............................. <tLengthCache.findPos(tID)>
+  [261] pushzero ................................ <0>
+  [262] gt ...................................... <tLengthCache.findPos(tID) > 0>
+  [263] jmpifz [280] ............................ if tLengthCache.findPos(tID) > 0 then / else
+  [266] getlocal 3 .............................. <tLengthCache>
+  [268] getlocal 7 .............................. <tID>
+  [270] pusharglist 2 ........................... <tLengthCache, tID>
+  [272] objcall 268 ............................. <tLengthCache.getProp(tID)>
+  [275] setlocal 9 .............................. tSampleLength = tLengthCache.getProp(tID)
+  [277] jmp [302]
+  [280] getparam 0 .............................. <me>
+  [282] getlocal 7 .............................. <tID>
+  [284] pusharglist 2 ........................... <me, tID>
+  [286] objcall 489 ............................. <me.getSampleLength(tID)>
+  [289] setlocal 9 .............................. tSampleLength = me.getSampleLength(tID)
+  [291] getlocal 3 .............................. <tLengthCache>
+  [293] getlocal 7 .............................. <tID>
+  [295] getlocal 9 .............................. <tSampleLength>
+  [297] pusharglistnoret 3 ...................... <tLengthCache, tID, tSampleLength>
+  [299] objcall 448 ............................. tLengthCache.addProp(tID, tSampleLength)
+  [302] pushint8 1 .............................. <1>
+  [304] setlocal 10 ............................. tWasReady = 1
+  [306] getlocal 9 .............................. <tSampleLength>
+  [308] pushzero ................................ <0>
+  [309] eq ...................................... <tSampleLength = 0>
+  [310] jmpifz [328] ............................ if tSampleLength = 0 then
+  [313] pushint8 1 .............................. <1>
+  [315] setlocal 9 .............................. tSampleLength = 1
+  [317] getlocal 7 .............................. <tID>
+  [319] inv ..................................... <-tID>
+  [320] setlocal 7 .............................. tID = -tID
+  [322] pushzero ................................ <0>
+  [323] setlocal 2 .............................. tReady = 0
+  [325] pushzero ................................ <0>
+  [326] setlocal 10 ............................. tWasReady = 0
+  [328] getlocal 7 .............................. <tID>
+  [330] pushzero ................................ <0>
+  [331] nteq .................................... <tID <> 0>
+  [332] jmpifz [447] ............................ if tID <> 0 then
+  [335] pushint8 1 .............................. <1>
+  [337] setlocal 11 ............................. tIsFree = 1
+  [339] getparam 0 .............................. <me>
+  [341] getlocal 1 .............................. <j>
+  [343] getlocal 0 .............................. <i>
+  [345] getlocal 8 .............................. <tLength>
+  [347] pusharglist 4 ........................... <me, j, i, tLength>
+  [349] objcall 637 ............................. <me.getIsFreeBlock(j, i, tLength)>
+  [352] not ..................................... <not me.getIsFreeBlock(j, i, tLength)>
+  [353] jmpifz [359] ............................ if not me.getIsFreeBlock(j, i, tLength) then
+  [356] pushzero ................................ <0>
+  [357] setlocal 11 ............................. tIsFree = 0
+  [359] getlocal 8 .............................. <tLength>
+  [361] getlocal 9 .............................. <tSampleLength>
+  [363] div ..................................... <tLength / tSampleLength>
+  [364] setlocal 12 ............................. tRepeats = tLength / tSampleLength
+  [366] pushint8 1 .............................. <1>
+  [368] setlocal 13
+  [370] getlocal 13
+  [372] getlocal 12 ............................. <tRepeats>
+  [374] lteq
+  [375] jmpifz [447] ............................ repeat with k = 1 to tRepeats
+  [378] getlocal 11 ............................. <tIsFree>
+  [380] jmpifz [390] ............................ if tIsFree then / else
+  [383] pushint8 1 .............................. <1>
+  [385] setlocal 14 ............................. tCanInsert = 1
+  [387] jmp [414]
+  [390] getparam 0 .............................. <me>
+  [392] getlocal 1 .............................. <j>
+  [394] getlocal 13 ............................. <k>
+  [396] pushint8 1 .............................. <1>
+  [398] sub ..................................... <k - 1>
+  [399] getlocal 9 .............................. <tSampleLength>
+  [401] mul ..................................... <(k - 1) * tSampleLength>
+  [402] add ..................................... <j + ((k - 1) * tSampleLength)>
+  [403] getlocal 0 .............................. <i>
+  [405] getlocal 7 .............................. <tID>
+  [407] pusharglist 4 ........................... <me, j + ((k - 1) * tSampleLength), i, tID>
+  [409] objcall 325 ............................. <me.getCanInsertSample(j + ((k - 1) * tSampleLength), i, tID)>
+  [412] setlocal 14 ............................. tCanInsert = me.getCanInsertSample(j + ((k - 1) * tSampleLength), i, tID)
+  [414] getlocal 14 ............................. <tCanInsert>
+  [416] jmpifz [438] ............................ if tCanInsert then
+  [419] getlocal 5 .............................. <tTimeLineChannel>
+  [421] getlocal 1 .............................. <j>
+  [423] getlocal 13 ............................. <k>
+  [425] pushint8 1 .............................. <1>
+  [427] sub ..................................... <k - 1>
+  [428] getlocal 9 .............................. <tSampleLength>
+  [430] mul ..................................... <(k - 1) * tSampleLength>
+  [431] add ..................................... <j + ((k - 1) * tSampleLength)>
+  [432] getlocal 7 .............................. <tID>
+  [434] pusharglistnoret 3 ...................... <tTimeLineChannel, j + ((k - 1) * tSampleLength), tID>
+  [436] objcall 150 ............................. tTimeLineChannel[j + ((k - 1) * tSampleLength)] = tID
+  [438] pushint8 1
+  [440] getlocal 13
+  [442] add
+  [443] setlocal 13
+  [445] endrepeat [370]
+  [447] getlocal 10 ............................. <tWasReady>
+  [449] jmpifz [464] ............................ if tWasReady then
+  [452] getlocal 4 .............................. <tSongChannel>
+  [454] getlocal 1 .............................. <j>
+  [456] pusharglist 0 ........................... <>
+  [458] extcall 111 ............................. <VOID>
+  [460] pusharglistnoret 3 ...................... <tSongChannel, j, VOID>
+  [462] objcall 150 ............................. tSongChannel[j] = VOID
+  [464] pushint8 1
+  [466] getlocal 1
+  [468] add
+  [469] setlocal 1
+  [471] endrepeat [200]
+  [474] pushint8 1
+  [476] getlocal 0
+  [478] add
+  [479] setlocal 0
+  [481] endrepeat [154]
+  [484] getlocal 2 .............................. <tReady>
+  [486] setprop 639 ............................. pReady = tReady
+  [489] getlocal 2 .............................. <tReady>
+  [491] pusharglistnoret 1 ...................... <tReady>
+  [493] extcall 87 .............................. return tReady
+  [495] ret
+end
+
+on resolveSongLength me
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tLength = 0
+  [  3] pushint8 1 .............................. <1>
+  [  5] setlocal 1
+  [  7] getlocal 1
+  [  9] getprop 651 ............................. <pTimeLineData>
+  [ 12] getobjprop 115 .......................... <pTimeLineData.count>
+  [ 14] lteq
+  [ 15] jmpifz [232] ............................ repeat with tChannel = 1 to pTimeLineData.count
+  [ 18] getprop 651 ............................. <pTimeLineData>
+  [ 21] getlocal 1 .............................. <tChannel>
+  [ 23] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [ 25] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [ 27] setlocal 2 .............................. tChannelData = pTimeLineData[tChannel]
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] setlocal 3 .............................. tSlot = 1
+  [ 33] getlocal 3 .............................. <tSlot>
+  [ 35] getlocal 2 .............................. <tChannelData>
+  [ 37] getobjprop 115 .......................... <tChannelData.count>
+  [ 39] lteq .................................... <tSlot <= tChannelData.count>
+  [ 40] jmpifz [223] ............................ repeat while tSlot <= tChannelData.count
+  [ 43] getlocal 2 .............................. <tChannelData>
+  [ 45] getlocal 3 .............................. <tSlot>
+  [ 47] pusharglist 2 ........................... <tChannelData, tSlot>
+  [ 49] objcall 116 ............................. <tChannelData[tSlot]>
+  [ 51] pusharglist 1 ........................... <tChannelData[tSlot]>
+  [ 53] extcall 161 ............................. <voidp(tChannelData[tSlot])>
+  [ 55] not ..................................... <not voidp(tChannelData[tSlot])>
+  [ 56] jmpifz [184] ............................ if not voidp(tChannelData[tSlot]) then
+  [ 59] getlocal 2 .............................. <tChannelData>
+  [ 61] getlocal 3 .............................. <tSlot>
+  [ 63] pusharglist 2 ........................... <tChannelData, tSlot>
+  [ 65] objcall 116 ............................. <tChannelData[tSlot]>
+  [ 67] setlocal 4 .............................. tSampleID = tChannelData[tSlot]
+  [ 69] getparam 0 .............................. <me>
+  [ 71] getlocal 4 .............................. <tSampleID>
+  [ 73] pusharglist 2 ........................... <me, tSampleID>
+  [ 75] objcall 489 ............................. <me.getSampleLength(tSampleID)>
+  [ 78] setlocal 5 .............................. tSampleLength = me.getSampleLength(tSampleID)
+  [ 80] getlocal 5 .............................. <tSampleLength>
+  [ 82] pushzero ................................ <0>
+  [ 83] nteq .................................... <tSampleLength <> 0>
+  [ 84] getlocal 4 .............................. <tSampleID>
+  [ 86] pushzero ................................ <0>
+  [ 87] gteq .................................... <tSampleID >= 0>
+  [ 88] and ..................................... <(tSampleLength <> 0) and (tSampleID >= 0)>
+  [ 89] jmpifz [149] ............................ if (tSampleLength <> 0) and (tSampleID >= 0) then / else
+  [ 92] getlocal 2 .............................. <tChannelData>
+  [ 94] getlocal 3 .............................. <tSlot>
+  [ 96] pusharglist 2 ........................... <tChannelData, tSlot>
+  [ 98] objcall 116 ............................. <tChannelData[tSlot]>
+  [100] getlocal 4 .............................. <tSampleID>
+  [102] eq ...................................... <tChannelData[tSlot] = tSampleID>
+  [103] jmpifz [146] ............................ repeat while tChannelData[tSlot] = tSampleID
+  [106] getlocal 3 .............................. <tSlot>
+  [108] getlocal 5 .............................. <tSampleLength>
+  [110] add ..................................... <tSlot + tSampleLength>
+  [111] setlocal 3 .............................. tSlot = tSlot + tSampleLength
+  [113] getlocal 3 .............................. <tSlot>
+  [115] pushint8 1 .............................. <1>
+  [117] sub ..................................... <tSlot - 1>
+  [118] getlocal 0 .............................. <tLength>
+  [120] gt ...................................... <(tSlot - 1) > tLength>
+  [121] jmpifz [131] ............................ if (tSlot - 1) > tLength then
+  [124] getlocal 3 .............................. <tSlot>
+  [126] pushint8 1 .............................. <1>
+  [128] sub ..................................... <tSlot - 1>
+  [129] setlocal 0 .............................. tLength = tSlot - 1
+  [131] getlocal 3 .............................. <tSlot>
+  [133] getlocal 2 .............................. <tChannelData>
+  [135] getobjprop 115 .......................... <tChannelData.count>
+  [137] gt ...................................... <tSlot > tChannelData.count>
+  [138] jmpifz [144] ............................ if tSlot > tChannelData.count then
+  [141] jmp [146] ............................... exit repeat
+  [144] endrepeat [ 92]
+  [146] jmp [181]
+  [149] getlocal 3 .............................. <tSlot>
+  [151] pushint8 1 .............................. <1>
+  [153] add ..................................... <tSlot + 1>
+  [154] setlocal 3 .............................. tSlot = tSlot + 1
+  [156] getlocal 4 .............................. <tSampleID>
+  [158] pushzero ................................ <0>
+  [159] lt ...................................... <tSampleID < 0>
+  [160] jmpifz [181] ............................ if tSampleID < 0 then
+  [163] getlocal 3 .............................. <tSlot>
+  [165] pushint8 1 .............................. <1>
+  [167] sub ..................................... <tSlot - 1>
+  [168] getlocal 0 .............................. <tLength>
+  [170] gt ...................................... <(tSlot - 1) > tLength>
+  [171] jmpifz [181] ............................ if (tSlot - 1) > tLength then
+  [174] getlocal 3 .............................. <tSlot>
+  [176] pushint8 1 .............................. <1>
+  [178] sub ..................................... <tSlot - 1>
+  [179] setlocal 0 .............................. tLength = tSlot - 1
+  [181] jmp [221] ............................... next repeat
+  [184] getlocal 2 .............................. <tChannelData>
+  [186] getlocal 3 .............................. <tSlot>
+  [188] pusharglist 2 ........................... <tChannelData, tSlot>
+  [190] objcall 116 ............................. <tChannelData[tSlot]>
+  [192] pusharglist 1 ........................... <tChannelData[tSlot]>
+  [194] extcall 161 ............................. <voidp(tChannelData[tSlot])>
+  [196] jmpifz [221] ............................ repeat while voidp(tChannelData[tSlot])
+  [199] getlocal 3 .............................. <tSlot>
+  [201] pushint8 1 .............................. <1>
+  [203] add ..................................... <tSlot + 1>
+  [204] setlocal 3 .............................. tSlot = tSlot + 1
+  [206] getlocal 3 .............................. <tSlot>
+  [208] getlocal 2 .............................. <tChannelData>
+  [210] getobjprop 115 .......................... <tChannelData.count>
+  [212] gt ...................................... <tSlot > tChannelData.count>
+  [213] jmpifz [219] ............................ if tSlot > tChannelData.count then
+  [216] jmp [221] ............................... exit repeat
+  [219] endrepeat [184]
+  [221] endrepeat [ 33]
+  [223] pushint8 1
+  [225] getlocal 1
+  [227] add
+  [228] setlocal 1
+  [230] endrepeat [  7]
+  [232] getlocal 0 .............................. <tLength>
+  [234] pusharglistnoret 1 ...................... <tLength>
+  [236] extcall 87 .............................. return tLength
+  [238] ret
+end
+
+on getCanInsertSample me, tX, tY, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 3 .............................. <tID>
+  [  4] pusharglist 2 ........................... <me, tID>
+  [  6] objcall 489 ............................. <me.getSampleLength(tID)>
+  [  9] setlocal 0 .............................. tLength = me.getSampleLength(tID)
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getparam 1 .............................. <tX>
+  [ 15] getparam 2 .............................. <tY>
+  [ 17] getlocal 0 .............................. <tLength>
+  [ 19] pusharglist 4 ........................... <me, tX, tY, tLength>
+  [ 21] objcall 637 ............................. <me.getIsFreeBlock(tX, tY, tLength)>
+  [ 24] pusharglistnoret 1 ...................... <me.getIsFreeBlock(tX, tY, tLength)>
+  [ 26] extcall 87 .............................. return me.getIsFreeBlock(tX, tY, tLength)
+  [ 28] ret
+end
+
+on getIsFreeBlock me, tX, tY, tLength
+  [  0] getparam 3 .............................. <tLength>
+  [  2] pushzero ................................ <0>
+  [  3] nteq .................................... <tLength <> 0>
+  [  4] jmpifz [193] ............................ if tLength <> 0 then
+  [  7] getparam 1 .............................. <tX>
+  [  9] pushint8 1 .............................. <1>
+  [ 11] gteq .................................... <tX >= 1>
+  [ 12] getparam 1 .............................. <tX>
+  [ 14] getparam 3 .............................. <tLength>
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] sub ..................................... <tLength - 1>
+  [ 19] add ..................................... <tX + (tLength - 1)>
+  [ 20] getprop 642 ............................. <pSlotCount>
+  [ 23] lteq .................................... <(tX + (tLength - 1)) <= pSlotCount>
+  [ 24] and ..................................... <(tX >= 1) and ((tX + (tLength - 1)) <= pSlotCount)>
+  [ 25] getparam 2 .............................. <tY>
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] gteq .................................... <tY >= 1>
+  [ 30] and ..................................... <(tX >= 1) and ((tX + (tLength - 1)) <= pSlotCount) and (tY >= 1)>
+  [ 31] getparam 2 .............................. <tY>
+  [ 33] getprop 651 ............................. <pTimeLineData>
+  [ 36] getobjprop 115 .......................... <pTimeLineData.count>
+  [ 38] lteq .................................... <tY <= pTimeLineData.count>
+  [ 39] and ..................................... <(tX >= 1) and ((tX + (tLength - 1)) <= pSlotCount) and (tY >= 1) and (tY <= pTimeLineData.count)>
+  [ 40] jmpifz [193] ............................ if (tX >= 1) and ((tX + (tLength - 1)) <= pSlotCount) and (tY >= 1) and (tY <= pTimeLineData.count) then
+  [ 43] getprop 651 ............................. <pTimeLineData>
+  [ 46] getparam 2 .............................. <tY>
+  [ 48] pusharglist 2 ........................... <pTimeLineData, tY>
+  [ 50] objcall 116 ............................. <pTimeLineData[tY]>
+  [ 52] setlocal 0 .............................. tChannel = pTimeLineData[tY]
+  [ 54] getparam 1 .............................. <tX>
+  [ 56] setlocal 1
+  [ 58] getlocal 1
+  [ 60] getparam 1 .............................. <tX>
+  [ 62] getparam 3 .............................. <tLength>
+  [ 64] add ..................................... <tX + tLength>
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] sub ..................................... <tX + tLength - 1>
+  [ 68] lteq
+  [ 69] jmpifz [102] ............................ repeat with i = tX to tX + tLength - 1
+  [ 72] getlocal 0 .............................. <tChannel>
+  [ 74] getlocal 1 .............................. <i>
+  [ 76] pusharglist 2 ........................... <tChannel, i>
+  [ 78] objcall 116 ............................. <tChannel[i]>
+  [ 80] pusharglist 1 ........................... <tChannel[i]>
+  [ 82] extcall 161 ............................. <voidp(tChannel[i])>
+  [ 84] not ..................................... <not voidp(tChannel[i])>
+  [ 85] jmpifz [ 93] ............................ if not voidp(tChannel[i]) then
+  [ 88] pushzero ................................ <0>
+  [ 89] pusharglistnoret 1 ...................... <0>
+  [ 91] extcall 87 .............................. return 0
+  [ 93] pushint8 1
+  [ 95] getlocal 1
+  [ 97] add
+  [ 98] setlocal 1
+  [100] endrepeat [ 58]
+  [102] getparam 1 .............................. <tX>
+  [104] pushint8 1 .............................. <1>
+  [106] sub ..................................... <tX - 1>
+  [107] setlocal 1
+  [109] getlocal 1
+  [111] pushint8 1 .............................. <1>
+  [113] gteq
+  [114] jmpifz [187] ............................ repeat with i = tX - 1 down to 1
+  [117] getlocal 0 .............................. <tChannel>
+  [119] getlocal 1 .............................. <i>
+  [121] pusharglist 2 ........................... <tChannel, i>
+  [123] objcall 116 ............................. <tChannel[i]>
+  [125] pusharglist 1 ........................... <tChannel[i]>
+  [127] extcall 161 ............................. <voidp(tChannel[i])>
+  [129] not ..................................... <not voidp(tChannel[i])>
+  [130] jmpifz [178] ............................ if not voidp(tChannel[i]) then
+  [133] getlocal 0 .............................. <tChannel>
+  [135] getlocal 1 .............................. <i>
+  [137] pusharglist 2 ........................... <tChannel, i>
+  [139] objcall 116 ............................. <tChannel[i]>
+  [141] setlocal 2 .............................. tNumber = tChannel[i]
+  [143] getlocal 1 .............................. <i>
+  [145] getparam 0 .............................. <me>
+  [147] getlocal 2 .............................. <tNumber>
+  [149] pusharglist 2 ........................... <me, tNumber>
+  [151] objcall 489 ............................. <me.getSampleLength(tNumber)>
+  [154] pushint8 1 .............................. <1>
+  [156] sub ..................................... <me.getSampleLength(tNumber) - 1>
+  [157] add ..................................... <i + (me.getSampleLength(tNumber) - 1)>
+  [158] getparam 1 .............................. <tX>
+  [160] gteq .................................... <(i + (me.getSampleLength(tNumber) - 1)) >= tX>
+  [161] jmpifz [172] ............................ if (i + (me.getSampleLength(tNumber) - 1)) >= tX then
+  [164] pushzero ................................ <0>
+  [165] pusharglistnoret 1 ...................... <0>
+  [167] extcall 87 .............................. return 0
+  [169] jmp [178] ............................... next repeat
+  [172] pushint8 1 .............................. <1>
+  [174] pusharglistnoret 1 ...................... <1>
+  [176] extcall 87 .............................. return 1
+  [178] pushint8 -1
+  [180] getlocal 1
+  [182] add
+  [183] setlocal 1
+  [185] endrepeat [109]
+  [187] pushint8 1 .............................. <1>
+  [189] pusharglistnoret 1 ...................... <1>
+  [191] extcall 87 .............................. return 1
+  [193] pushzero ................................ <0>
+  [194] pusharglistnoret 1 ...................... <0>
+  [196] extcall 87 .............................. return 0
+  [198] ret
+end
+
+on getSongData me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 540 ............................. <me.resolveSongLength()>
+  [  7] setprop 648 ............................. pSongLength = me.resolveSongLength()
+  [ 10] getprop 648 ............................. <pSongLength>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <pSongLength = 0>
+  [ 15] jmpifz [ 23] ............................ if pSongLength = 0 then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 87 .............................. return 0
+  [ 23] pushsymb 264 ............................ <#offset>
+  [ 26] pushzero ................................ <0>
+  [ 27] pushsymb 664 ............................ <#sounds>
+  [ 30] pusharglist 0 ........................... <[]>
+  [ 32] pushlist ................................ <[]>
+  [ 33] pusharglist 4 ........................... <[#offset: 0, #sounds: []]>
+  [ 35] pushproplist ............................ <[#offset: 0, #sounds: []]>
+  [ 36] setlocal 0 .............................. tSongData = [#offset: 0, #sounds: []]
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] setlocal 1
+  [ 42] getlocal 1
+  [ 44] getprop 651 ............................. <pTimeLineData>
+  [ 47] getobjprop 115 .......................... <pTimeLineData.count>
+  [ 49] lteq
+  [ 50] jmpifz [475] ............................ repeat with tChannel = 1 to pTimeLineData.count
+  [ 53] getprop 651 ............................. <pTimeLineData>
+  [ 56] getlocal 1 .............................. <tChannel>
+  [ 58] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [ 60] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [ 62] setlocal 2 .............................. tChannelData = pTimeLineData[tChannel]
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] setlocal 3 .............................. tEmpty = 1
+  [ 68] pushint8 1 .............................. <1>
+  [ 70] setlocal 4
+  [ 72] getlocal 4
+  [ 74] getprop 648 ............................. <pSongLength>
+  [ 77] lteq
+  [ 78] jmpifz [112] ............................ repeat with i = 1 to pSongLength
+  [ 81] getlocal 2 .............................. <tChannelData>
+  [ 83] getlocal 4 .............................. <i>
+  [ 85] pusharglist 2 ........................... <tChannelData, i>
+  [ 87] objcall 116 ............................. <tChannelData[i]>
+  [ 89] pusharglist 1 ........................... <tChannelData[i]>
+  [ 91] extcall 161 ............................. <voidp(tChannelData[i])>
+  [ 93] not ..................................... <not voidp(tChannelData[i])>
+  [ 94] jmpifz [103] ............................ if not voidp(tChannelData[i]) then
+  [ 97] pushzero ................................ <0>
+  [ 98] setlocal 3 .............................. tEmpty = 0
+  [100] jmp [112] ............................... exit repeat
+  [103] pushint8 1
+  [105] getlocal 4
+  [107] add
+  [108] setlocal 4
+  [110] endrepeat [ 72]
+  [112] getlocal 3 .............................. <tEmpty>
+  [114] not ..................................... <not tEmpty>
+  [115] jmpifz [465] ............................ if not tEmpty then
+  [118] pushint8 1 .............................. <1>
+  [120] setlocal 5 .............................. tSlot = 1
+  [122] getlocal 5 .............................. <tSlot>
+  [124] getprop 648 ............................. <pSongLength>
+  [127] lteq .................................... <tSlot <= pSongLength>
+  [128] jmpifz [465] ............................ repeat while tSlot <= pSongLength
+  [131] getlocal 2 .............................. <tChannelData>
+  [133] getlocal 5 .............................. <tSlot>
+  [135] pusharglist 2 ........................... <tChannelData, tSlot>
+  [137] objcall 116 ............................. <tChannelData[tSlot]>
+  [139] pusharglist 1 ........................... <tChannelData[tSlot]>
+  [141] extcall 161 ............................. <voidp(tChannelData[tSlot])>
+  [143] not ..................................... <not voidp(tChannelData[tSlot])>
+  [144] jmpifz [357] ............................ if not voidp(tChannelData[tSlot]) then
+  [147] getlocal 2 .............................. <tChannelData>
+  [149] getlocal 5 .............................. <tSlot>
+  [151] pusharglist 2 ........................... <tChannelData, tSlot>
+  [153] objcall 116 ............................. <tChannelData[tSlot]>
+  [155] setlocal 6 .............................. tSampleID = tChannelData[tSlot]
+  [157] getparam 0 .............................. <me>
+  [159] getlocal 6 .............................. <tSampleID>
+  [161] pusharglist 2 ........................... <me, tSampleID>
+  [163] objcall 489 ............................. <me.getSampleLength(tSampleID)>
+  [166] setlocal 7 .............................. tSampleLength = me.getSampleLength(tSampleID)
+  [168] getlocal 7 .............................. <tSampleLength>
+  [170] pushzero ................................ <0>
+  [171] nteq .................................... <tSampleLength <> 0>
+  [172] getlocal 6 .............................. <tSampleID>
+  [174] pushzero ................................ <0>
+  [175] gteq .................................... <tSampleID >= 0>
+  [176] and ..................................... <(tSampleLength <> 0) and (tSampleID >= 0)>
+  [177] jmpifz [288] ............................ if (tSampleLength <> 0) and (tSampleID >= 0) then / else
+  [180] pushzero ................................ <0>
+  [181] setlocal 8 .............................. tCount = 0
+  [183] getlocal 2 .............................. <tChannelData>
+  [185] getlocal 5 .............................. <tSlot>
+  [187] pusharglist 2 ........................... <tChannelData, tSlot>
+  [189] objcall 116 ............................. <tChannelData[tSlot]>
+  [191] getlocal 6 .............................. <tSampleID>
+  [193] eq ...................................... <tChannelData[tSlot] = tSampleID>
+  [194] jmpifz [225] ............................ repeat while tChannelData[tSlot] = tSampleID
+  [197] getlocal 8 .............................. <tCount>
+  [199] pushint8 1 .............................. <1>
+  [201] add ..................................... <tCount + 1>
+  [202] setlocal 8 .............................. tCount = tCount + 1
+  [204] getlocal 5 .............................. <tSlot>
+  [206] getlocal 7 .............................. <tSampleLength>
+  [208] add ..................................... <tSlot + tSampleLength>
+  [209] setlocal 5 .............................. tSlot = tSlot + tSampleLength
+  [211] getlocal 5 .............................. <tSlot>
+  [213] getprop 648 ............................. <pSongLength>
+  [216] gt ...................................... <tSlot > pSongLength>
+  [217] jmpifz [223] ............................ if tSlot > pSongLength then
+  [220] jmp [225] ............................... exit repeat
+  [223] endrepeat [183]
+  [225] getparam 0 .............................. <me>
+  [227] getlocal 6 .............................. <tSampleID>
+  [229] pusharglist 2 ........................... <me, tSampleID>
+  [231] objcall 534 ............................. <me.getSampleName(tSampleID)>
+  [234] setlocal 9 .............................. tSampleName = me.getSampleName(tSampleID)
+  [236] pushsymb 509 ............................ <#name>
+  [239] getlocal 9 .............................. <tSampleName>
+  [241] pushsymb 665 ............................ <#loops>
+  [244] getlocal 8 .............................. <tCount>
+  [246] pushsymb 666 ............................ <#channel>
+  [249] getlocal 1 .............................. <tChannel>
+  [251] pusharglist 6 ........................... <[#name: tSampleName, #loops: tCount, #channel: tChannel]>
+  [253] pushproplist ............................ <[#name: tSampleName, #loops: tCount, #channel: tChannel]>
+  [254] setlocal 10 ............................. tSampleData = [#name: tSampleName, #loops: tCount, #channel: tChannel]
+  [256] getlocal 0 .............................. <tSongData>
+  [258] pushsymb 664 ............................ <#sounds>
+  [261] pusharglist 2 ........................... <tSongData, #sounds>
+  [263] objcall 116 ............................. <tSongData[#sounds]>
+  [265] getlocal 0 .............................. <tSongData>
+  [267] pushsymb 664 ............................ <#sounds>
+  [270] pusharglist 2 ........................... <tSongData, #sounds>
+  [272] objcall 116 ............................. <tSongData[#sounds]>
+  [274] getobjprop 115 .......................... <tSongData[#sounds].count>
+  [276] pushint8 1 .............................. <1>
+  [278] add ..................................... <tSongData[#sounds].count + 1>
+  [279] getlocal 10 ............................. <tSampleData>
+  [281] pusharglistnoret 3 ...................... <tSongData[#sounds], tSongData[#sounds].count + 1, tSampleData>
+  [283] objcall 150 ............................. tSongData[#sounds][tSongData[#sounds].count + 1] = tSampleData
+  [285] jmp [354]
+  [288] getparam 0 .............................. <me>
+  [290] pushzero ................................ <0>
+  [291] pusharglist 2 ........................... <me, 0>
+  [293] objcall 534 ............................. <me.getSampleName(0)>
+  [296] setlocal 9 .............................. tSampleName = me.getSampleName(0)
+  [298] pushsymb 509 ............................ <#name>
+  [301] getlocal 9 .............................. <tSampleName>
+  [303] pushsymb 665 ............................ <#loops>
+  [306] pushint8 1 .............................. <1>
+  [308] pushsymb 666 ............................ <#channel>
+  [311] getlocal 1 .............................. <tChannel>
+  [313] pusharglist 6 ........................... <[#name: tSampleName, #loops: 1, #channel: tChannel]>
+  [315] pushproplist ............................ <[#name: tSampleName, #loops: 1, #channel: tChannel]>
+  [316] setlocal 10 ............................. tSampleData = [#name: tSampleName, #loops: 1, #channel: tChannel]
+  [318] getlocal 0 .............................. <tSongData>
+  [320] pushsymb 664 ............................ <#sounds>
+  [323] pusharglist 2 ........................... <tSongData, #sounds>
+  [325] objcall 116 ............................. <tSongData[#sounds]>
+  [327] getlocal 0 .............................. <tSongData>
+  [329] pushsymb 664 ............................ <#sounds>
+  [332] pusharglist 2 ........................... <tSongData, #sounds>
+  [334] objcall 116 ............................. <tSongData[#sounds]>
+  [336] getobjprop 115 .......................... <tSongData[#sounds].count>
+  [338] pushint8 1 .............................. <1>
+  [340] add ..................................... <tSongData[#sounds].count + 1>
+  [341] getlocal 10 ............................. <tSampleData>
+  [343] pusharglistnoret 3 ...................... <tSongData[#sounds], tSongData[#sounds].count + 1, tSampleData>
+  [345] objcall 150 ............................. tSongData[#sounds][tSongData[#sounds].count + 1] = tSampleData
+  [347] getlocal 5 .............................. <tSlot>
+  [349] pushint8 1 .............................. <1>
+  [351] add ..................................... <tSlot + 1>
+  [352] setlocal 5 .............................. tSlot = tSlot + 1
+  [354] jmp [462] ............................... next repeat
+  [357] pushzero ................................ <0>
+  [358] setlocal 8 .............................. tCount = 0
+  [360] getlocal 2 .............................. <tChannelData>
+  [362] getlocal 5 .............................. <tSlot>
+  [364] pusharglist 2 ........................... <tChannelData, tSlot>
+  [366] objcall 116 ............................. <tChannelData[tSlot]>
+  [368] pusharglist 1 ........................... <tChannelData[tSlot]>
+  [370] extcall 161 ............................. <voidp(tChannelData[tSlot])>
+  [372] jmpifz [403] ............................ repeat while voidp(tChannelData[tSlot])
+  [375] getlocal 8 .............................. <tCount>
+  [377] pushint8 1 .............................. <1>
+  [379] add ..................................... <tCount + 1>
+  [380] setlocal 8 .............................. tCount = tCount + 1
+  [382] getlocal 5 .............................. <tSlot>
+  [384] pushint8 1 .............................. <1>
+  [386] add ..................................... <tSlot + 1>
+  [387] setlocal 5 .............................. tSlot = tSlot + 1
+  [389] getlocal 5 .............................. <tSlot>
+  [391] getprop 648 ............................. <pSongLength>
+  [394] gt ...................................... <tSlot > pSongLength>
+  [395] jmpifz [401] ............................ if tSlot > pSongLength then
+  [398] jmp [403] ............................... exit repeat
+  [401] endrepeat [360]
+  [403] getparam 0 .............................. <me>
+  [405] pushzero ................................ <0>
+  [406] pusharglist 2 ........................... <me, 0>
+  [408] objcall 534 ............................. <me.getSampleName(0)>
+  [411] setlocal 9 .............................. tSampleName = me.getSampleName(0)
+  [413] pushsymb 509 ............................ <#name>
+  [416] getlocal 9 .............................. <tSampleName>
+  [418] pushsymb 665 ............................ <#loops>
+  [421] getlocal 8 .............................. <tCount>
+  [423] pushsymb 666 ............................ <#channel>
+  [426] getlocal 1 .............................. <tChannel>
+  [428] pusharglist 6 ........................... <[#name: tSampleName, #loops: tCount, #channel: tChannel]>
+  [430] pushproplist ............................ <[#name: tSampleName, #loops: tCount, #channel: tChannel]>
+  [431] setlocal 10 ............................. tSampleData = [#name: tSampleName, #loops: tCount, #channel: tChannel]
+  [433] getlocal 0 .............................. <tSongData>
+  [435] pushsymb 664 ............................ <#sounds>
+  [438] pusharglist 2 ........................... <tSongData, #sounds>
+  [440] objcall 116 ............................. <tSongData[#sounds]>
+  [442] getlocal 0 .............................. <tSongData>
+  [444] pushsymb 664 ............................ <#sounds>
+  [447] pusharglist 2 ........................... <tSongData, #sounds>
+  [449] objcall 116 ............................. <tSongData[#sounds]>
+  [451] getobjprop 115 .......................... <tSongData[#sounds].count>
+  [453] pushint8 1 .............................. <1>
+  [455] add ..................................... <tSongData[#sounds].count + 1>
+  [456] getlocal 10 ............................. <tSampleData>
+  [458] pusharglistnoret 3 ...................... <tSongData[#sounds], tSongData[#sounds].count + 1, tSampleData>
+  [460] objcall 150 ............................. tSongData[#sounds][tSongData[#sounds].count + 1] = tSampleData
+  [462] endrepeat [122]
+  [465] pushint8 1
+  [467] getlocal 1
+  [469] add
+  [470] setlocal 1
+  [472] endrepeat [ 42]
+  [475] getlocal 0 .............................. <tSongData>
+  [477] pusharglistnoret 1 ...................... <tSongData>
+  [479] extcall 87 .............................. return tSongData
+  [481] ret
+end
+
+on getSilentSongData me
+  [  0] pushsymb 264 ............................ <#offset>
+  [  3] pushzero ................................ <0>
+  [  4] pushsymb 664 ............................ <#sounds>
+  [  7] pushsymb 509 ............................ <#name>
+  [ 10] pushcons 3 .............................. <"sound_machine_sample_0">
+  [ 12] pushsymb 665 ............................ <#loops>
+  [ 15] pushint8 10 ............................. <10>
+  [ 17] pushsymb 666 ............................ <#channel>
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglist 6 ........................... <[#name: "sound_machine_sample_0", #loops: 10, #channel: 1]>
+  [ 24] pushproplist ............................ <[#name: "sound_machine_sample_0", #loops: 10, #channel: 1]>
+  [ 25] pusharglist 1 ........................... <[[#name: "sound_machine_sample_0", #loops: 10, #channel: 1]]>
+  [ 27] pushlist ................................ <[[#name: "sound_machine_sample_0", #loops: 10, #channel: 1]]>
+  [ 28] pusharglist 4 ........................... <[#offset: 0, #sounds: [[#name: "sound_machine_sample_0", #loops: 10, #channel: 1]]]>
+  [ 30] pushproplist ............................ <[#offset: 0, #sounds: [[#name: "sound_machine_sample_0", #loops: 10, #channel: 1]]]>
+  [ 31] pusharglistnoret 1 ...................... <[#offset: 0, #sounds: [[#name: "sound_machine_sample_0", #loops: 10, #channel: 1]]]>
+  [ 33] extcall 87 .............................. return [#offset: 0, #sounds: [[#name: "sound_machine_sample_0", #loops: 10, #channel: 1]]]
+  [ 35] ret
+end
+
+on insertSample me, tSlot, tChannel, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tSlot>
+  [  4] getparam 2 .............................. <tChannel>
+  [  6] getparam 3 .............................. <tID>
+  [  8] pusharglist 4 ........................... <me, tSlot, tChannel, tID>
+  [ 10] objcall 325 ............................. <me.getCanInsertSample(tSlot, tChannel, tID)>
+  [ 13] setlocal 0 .............................. tInsert = me.getCanInsertSample(tSlot, tChannel, tID)
+  [ 15] getlocal 0 .............................. <tInsert>
+  [ 17] jmpifz [ 48] ............................ if tInsert then
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] setprop 640 ............................. pChanged = 1
+  [ 25] getprop 651 ............................. <pTimeLineData>
+  [ 28] getparam 2 .............................. <tChannel>
+  [ 30] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [ 32] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [ 34] getparam 1 .............................. <tSlot>
+  [ 36] getparam 3 .............................. <tID>
+  [ 38] pusharglistnoret 3 ...................... <pTimeLineData[tChannel], tSlot, tID>
+  [ 40] objcall 150 ............................. pTimeLineData[tChannel][tSlot] = tID
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglistnoret 1 ...................... <1>
+  [ 46] extcall 87 .............................. return 1
+  [ 48] pushzero ................................ <0>
+  [ 49] pusharglistnoret 1 ...................... <0>
+  [ 51] extcall 87 .............................. return 0
+  [ 53] ret
+end
+
+on removeSample me, tSlot, tChannel
+  [  0] getparam 2 .............................. <tChannel>
+  [  2] pushint8 1 .............................. <1>
+  [  4] gteq .................................... <tChannel >= 1>
+  [  5] getparam 2 .............................. <tChannel>
+  [  7] getprop 651 ............................. <pTimeLineData>
+  [ 10] getobjprop 115 .......................... <pTimeLineData.count>
+  [ 12] lteq .................................... <tChannel <= pTimeLineData.count>
+  [ 13] and ..................................... <(tChannel >= 1) and (tChannel <= pTimeLineData.count)>
+  [ 14] jmpifz [239] ............................ if (tChannel >= 1) and (tChannel <= pTimeLineData.count) then
+  [ 17] getparam 1 .............................. <tSlot>
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] gteq .................................... <tSlot >= 1>
+  [ 22] getparam 1 .............................. <tSlot>
+  [ 24] getprop 651 ............................. <pTimeLineData>
+  [ 27] getparam 2 .............................. <tChannel>
+  [ 29] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [ 31] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [ 33] getobjprop 115 .......................... <pTimeLineData[tChannel].count>
+  [ 35] lteq .................................... <tSlot <= pTimeLineData[tChannel].count>
+  [ 36] and ..................................... <(tSlot >= 1) and (tSlot <= pTimeLineData[tChannel].count)>
+  [ 37] jmpifz [239] ............................ if (tSlot >= 1) and (tSlot <= pTimeLineData[tChannel].count) then
+  [ 40] getprop 651 ............................. <pTimeLineData>
+  [ 43] getparam 2 .............................. <tChannel>
+  [ 45] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [ 47] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [ 49] getparam 1 .............................. <tSlot>
+  [ 51] pusharglist 2 ........................... <pTimeLineData[tChannel], tSlot>
+  [ 53] objcall 116 ............................. <pTimeLineData[tChannel][tSlot]>
+  [ 55] pusharglist 1 ........................... <pTimeLineData[tChannel][tSlot]>
+  [ 57] extcall 161 ............................. <voidp(pTimeLineData[tChannel][tSlot])>
+  [ 59] not ..................................... <not voidp(pTimeLineData[tChannel][tSlot])>
+  [ 60] jmpifz [ 91] ............................ if not voidp(pTimeLineData[tChannel][tSlot]) then / else
+  [ 63] getprop 651 ............................. <pTimeLineData>
+  [ 66] getparam 2 .............................. <tChannel>
+  [ 68] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [ 70] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [ 72] getparam 1 .............................. <tSlot>
+  [ 74] pusharglist 2 ........................... <pTimeLineData[tChannel], tSlot>
+  [ 76] objcall 116 ............................. <pTimeLineData[tChannel][tSlot]>
+  [ 78] pushzero ................................ <0>
+  [ 79] lt ...................................... <pTimeLineData[tChannel][tSlot] < 0>
+  [ 80] jmpifz [ 88] ............................ if pTimeLineData[tChannel][tSlot] < 0 then
+  [ 83] pushzero ................................ <0>
+  [ 84] pusharglistnoret 1 ...................... <0>
+  [ 86] extcall 87 .............................. return 0
+  [ 88] jmp [209]
+  [ 91] getparam 1 .............................. <tSlot>
+  [ 93] pushint8 1 .............................. <1>
+  [ 95] sub ..................................... <tSlot - 1>
+  [ 96] setlocal 0
+  [ 98] getlocal 0
+  [100] pushint8 1 .............................. <1>
+  [102] gteq
+  [103] jmpifz [209] ............................ repeat with i = tSlot - 1 down to 1
+  [106] getprop 651 ............................. <pTimeLineData>
+  [109] getparam 2 .............................. <tChannel>
+  [111] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [113] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [115] getlocal 0 .............................. <i>
+  [117] pusharglist 2 ........................... <pTimeLineData[tChannel], i>
+  [119] objcall 116 ............................. <pTimeLineData[tChannel][i]>
+  [121] pusharglist 1 ........................... <pTimeLineData[tChannel][i]>
+  [123] extcall 161 ............................. <voidp(pTimeLineData[tChannel][i])>
+  [125] not ..................................... <not voidp(pTimeLineData[tChannel][i])>
+  [126] jmpifz [200] ............................ if not voidp(pTimeLineData[tChannel][i]) then
+  [129] getprop 651 ............................. <pTimeLineData>
+  [132] getparam 2 .............................. <tChannel>
+  [134] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [136] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [138] getlocal 0 .............................. <i>
+  [140] pusharglist 2 ........................... <pTimeLineData[tChannel], i>
+  [142] objcall 116 ............................. <pTimeLineData[tChannel][i]>
+  [144] setlocal 1 .............................. tSampleID = pTimeLineData[tChannel][i]
+  [146] getlocal 1 .............................. <tSampleID>
+  [148] pushzero ................................ <0>
+  [149] gteq .................................... <tSampleID >= 0>
+  [150] jmpifz [200] ............................ if tSampleID >= 0 then
+  [153] getparam 0 .............................. <me>
+  [155] getlocal 1 .............................. <tSampleID>
+  [157] pusharglist 2 ........................... <me, tSampleID>
+  [159] objcall 489 ............................. <me.getSampleLength(tSampleID)>
+  [162] setlocal 2 .............................. tSampleLength = me.getSampleLength(tSampleID)
+  [164] getlocal 2 .............................. <tSampleLength>
+  [166] pushzero ................................ <0>
+  [167] nteq .................................... <tSampleLength <> 0>
+  [168] jmpifz [200] ............................ if tSampleLength <> 0 then
+  [171] getlocal 0 .............................. <i>
+  [173] getlocal 2 .............................. <tSampleLength>
+  [175] pushint8 1 .............................. <1>
+  [177] sub ..................................... <tSampleLength - 1>
+  [178] add ..................................... <i + (tSampleLength - 1)>
+  [179] getparam 1 .............................. <tSlot>
+  [181] gteq .................................... <(i + (tSampleLength - 1)) >= tSlot>
+  [182] jmpifz [195] ............................ if (i + (tSampleLength - 1)) >= tSlot then
+  [185] getlocal 0 .............................. <i>
+  [187] setparam 1 .............................. tSlot = i
+  [189] jmp [209] ............................... exit repeat
+  [192] jmp [200] ............................... next repeat
+  [195] pushzero ................................ <0>
+  [196] pusharglistnoret 1 ...................... <0>
+  [198] extcall 87 .............................. return 0
+  [200] pushint8 -1
+  [202] getlocal 0
+  [204] add
+  [205] setlocal 0
+  [207] endrepeat [ 98]
+  [209] pushint8 1 .............................. <1>
+  [211] setprop 640 ............................. pChanged = 1
+  [214] getprop 651 ............................. <pTimeLineData>
+  [217] getparam 2 .............................. <tChannel>
+  [219] pusharglist 2 ........................... <pTimeLineData, tChannel>
+  [221] objcall 116 ............................. <pTimeLineData[tChannel]>
+  [223] getparam 1 .............................. <tSlot>
+  [225] pusharglist 0 ........................... <>
+  [227] extcall 111 ............................. <VOID>
+  [229] pusharglistnoret 3 ...................... <pTimeLineData[tChannel], tSlot, VOID>
+  [231] objcall 150 ............................. pTimeLineData[tChannel][tSlot] = VOID
+  [233] pushint8 1 .............................. <1>
+  [235] pusharglistnoret 1 ...................... <1>
+  [237] extcall 87 .............................. return 1
+  [239] pushzero ................................ <0>
+  [240] pusharglistnoret 1 ...................... <0>
+  [242] extcall 87 .............................. return 0
+  [244] ret
+end
+
+on encodeTimeLineData me
+  [  0] getprop 639 ............................. <pReady>
+  [  3] not ..................................... <not pReady>
+  [  4] getprop 645 ............................. <pDataReady>
+  [  7] not ..................................... <not pDataReady>
+  [  8] or ...................................... <not pReady or not pDataReady>
+  [  9] jmpifz [ 17] ............................ if not pReady or not pDataReady then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 87 .............................. return 0
+  [ 17] pushcons 2 .............................. <EMPTY>
+  [ 19] setlocal 0 .............................. tStr = EMPTY
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglist 1 ........................... <me>
+  [ 25] objcall 540 ............................. <me.resolveSongLength()>
+  [ 28] setlocal 1 .............................. tSongLength = me.resolveSongLength()
+  [ 30] getlocal 1 .............................. <tSongLength>
+  [ 32] pushzero ................................ <0>
+  [ 33] gt ...................................... <tSongLength > 0>
+  [ 34] jmpifz [457] ............................ if tSongLength > 0 then
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] setlocal 2
+  [ 41] getlocal 2
+  [ 43] getprop 651 ............................. <pTimeLineData>
+  [ 46] getobjprop 115 .......................... <pTimeLineData.count>
+  [ 48] lteq
+  [ 49] jmpifz [457] ............................ repeat with i = 1 to pTimeLineData.count
+  [ 52] getprop 651 ............................. <pTimeLineData>
+  [ 55] getlocal 2 .............................. <i>
+  [ 57] pusharglist 2 ........................... <pTimeLineData, i>
+  [ 59] objcall 116 ............................. <pTimeLineData[i]>
+  [ 61] setlocal 3 .............................. tChannel = pTimeLineData[i]
+  [ 63] getlocal 0 .............................. <tStr>
+  [ 65] getlocal 2 .............................. <i>
+  [ 67] joinstr ................................. <tStr & i>
+  [ 68] pushcons 4 .............................. <":">
+  [ 70] joinstr ................................. <tStr & i & ":">
+  [ 71] setlocal 0 .............................. tStr = tStr & i & ":"
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] setlocal 4 .............................. j = 1
+  [ 77] pusharglist 0 ........................... <[]>
+  [ 79] pushlist ................................ <[]>
+  [ 80] setlocal 5 .............................. tChannelData = []
+  [ 82] getlocal 4 .............................. <j>
+  [ 84] getlocal 1 .............................. <tSongLength>
+  [ 86] lteq .................................... <j <= tSongLength>
+  [ 87] jmpifz [232] ............................ repeat while j <= tSongLength
+  [ 90] getlocal 3 .............................. <tChannel>
+  [ 92] getlocal 4 .............................. <j>
+  [ 94] pusharglist 2 ........................... <tChannel, j>
+  [ 96] objcall 116 ............................. <tChannel[j]>
+  [ 98] pusharglist 1 ........................... <tChannel[j]>
+  [100] extcall 161 ............................. <voidp(tChannel[j])>
+  [102] jmpifz [129] ............................ if voidp(tChannel[j]) then / else
+  [105] pushsymb 425 ............................ <#id>
+  [108] pushzero ................................ <0>
+  [109] pushsymb 267 ............................ <#length>
+  [112] pushint8 1 .............................. <1>
+  [114] pusharglist 4 ........................... <[#id: 0, #length: 1]>
+  [116] pushproplist ............................ <[#id: 0, #length: 1]>
+  [117] setlocal 6 .............................. tSample = [#id: 0, #length: 1]
+  [119] getlocal 4 .............................. <j>
+  [121] pushint8 1 .............................. <1>
+  [123] add ..................................... <j + 1>
+  [124] setlocal 4 .............................. j = j + 1
+  [126] jmp [215]
+  [129] getlocal 3 .............................. <tChannel>
+  [131] getlocal 4 .............................. <j>
+  [133] pusharglist 2 ........................... <tChannel, j>
+  [135] objcall 116 ............................. <tChannel[j]>
+  [137] setlocal 7 .............................. tSampleID = tChannel[j]
+  [139] getparam 0 .............................. <me>
+  [141] getlocal 7 .............................. <tSampleID>
+  [143] pusharglist 2 ........................... <me, tSampleID>
+  [145] objcall 489 ............................. <me.getSampleLength(tSampleID)>
+  [148] setlocal 8 .............................. tSampleLength = me.getSampleLength(tSampleID)
+  [150] getlocal 7 .............................. <tSampleID>
+  [152] pushzero ................................ <0>
+  [153] lt ...................................... <tSampleID < 0>
+  [154] jmpifz [162] ............................ if tSampleID < 0 then
+  [157] getlocal 7 .............................. <tSampleID>
+  [159] inv ..................................... <-tSampleID>
+  [160] setlocal 7 .............................. tSampleID = -tSampleID
+  [162] getlocal 8 .............................. <tSampleLength>
+  [164] pushzero ................................ <0>
+  [165] eq ...................................... <tSampleLength = 0>
+  [166] jmpifz [186] ............................ if tSampleLength = 0 then / else
+  [169] pushsymb 425 ............................ <#id>
+  [172] pushzero ................................ <0>
+  [173] pushsymb 267 ............................ <#length>
+  [176] pushint8 1 .............................. <1>
+  [178] pusharglist 4 ........................... <[#id: 0, #length: 1]>
+  [180] pushproplist ............................ <[#id: 0, #length: 1]>
+  [181] setlocal 6 .............................. tSample = [#id: 0, #length: 1]
+  [183] jmp [201]
+  [186] pushsymb 425 ............................ <#id>
+  [189] getlocal 7 .............................. <tSampleID>
+  [191] pushsymb 267 ............................ <#length>
+  [194] getlocal 8 .............................. <tSampleLength>
+  [196] pusharglist 4 ........................... <[#id: tSampleID, #length: tSampleLength]>
+  [198] pushproplist ............................ <[#id: tSampleID, #length: tSampleLength]>
+  [199] setlocal 6 .............................. tSample = [#id: tSampleID, #length: tSampleLength]
+  [201] getlocal 4 .............................. <j>
+  [203] getlocal 6 .............................. <tSample>
+  [205] pushsymb 267 ............................ <#length>
+  [208] pusharglist 2 ........................... <tSample, #length>
+  [210] objcall 116 ............................. <tSample[#length]>
+  [212] add ..................................... <j + tSample[#length]>
+  [213] setlocal 4 .............................. j = j + tSample[#length]
+  [215] getlocal 5 .............................. <tChannelData>
+  [217] getlocal 5 .............................. <tChannelData>
+  [219] getobjprop 115 .......................... <tChannelData.count>
+  [221] pushint8 1 .............................. <1>
+  [223] add ..................................... <tChannelData.count + 1>
+  [224] getlocal 6 .............................. <tSample>
+  [226] pusharglistnoret 3 ...................... <tChannelData, tChannelData.count + 1, tSample>
+  [228] objcall 150 ............................. tChannelData[tChannelData.count + 1] = tSample
+  [230] endrepeat [ 82]
+  [232] pushint8 1 .............................. <1>
+  [234] setlocal 4 .............................. j = 1
+  [236] getlocal 4 .............................. <j>
+  [238] getlocal 5 .............................. <tChannelData>
+  [240] getobjprop 115 .......................... <tChannelData.count>
+  [242] lt ...................................... <j < tChannelData.count>
+  [243] jmpifz [356] ............................ repeat while j < tChannelData.count
+  [246] getlocal 5 .............................. <tChannelData>
+  [248] getlocal 4 .............................. <j>
+  [250] pusharglist 2 ........................... <tChannelData, j>
+  [252] objcall 116 ............................. <tChannelData[j]>
+  [254] pushsymb 425 ............................ <#id>
+  [257] pusharglist 2 ........................... <tChannelData[j], #id>
+  [259] objcall 116 ............................. <tChannelData[j][#id]>
+  [261] getlocal 5 .............................. <tChannelData>
+  [263] getlocal 4 .............................. <j>
+  [265] pushint8 1 .............................. <1>
+  [267] add ..................................... <j + 1>
+  [268] pusharglist 2 ........................... <tChannelData, j + 1>
+  [270] objcall 116 ............................. <tChannelData[j + 1]>
+  [272] pushsymb 425 ............................ <#id>
+  [275] pusharglist 2 ........................... <tChannelData[j + 1], #id>
+  [277] objcall 116 ............................. <tChannelData[j + 1][#id]>
+  [279] eq ...................................... <tChannelData[j][#id] = tChannelData[j + 1][#id]>
+  [280] jmpifz [347] ............................ if tChannelData[j][#id] = tChannelData[j + 1][#id] then
+  [283] getlocal 5 .............................. <tChannelData>
+  [285] getlocal 4 .............................. <j>
+  [287] pusharglist 2 ........................... <tChannelData, j>
+  [289] objcall 116 ............................. <tChannelData[j]>
+  [291] pushsymb 267 ............................ <#length>
+  [294] getlocal 5 .............................. <tChannelData>
+  [296] getlocal 4 .............................. <j>
+  [298] pusharglist 2 ........................... <tChannelData, j>
+  [300] objcall 116 ............................. <tChannelData[j]>
+  [302] pushsymb 267 ............................ <#length>
+  [305] pusharglist 2 ........................... <tChannelData[j], #length>
+  [307] objcall 116 ............................. <tChannelData[j][#length]>
+  [309] getlocal 5 .............................. <tChannelData>
+  [311] getlocal 4 .............................. <j>
+  [313] pushint8 1 .............................. <1>
+  [315] add ..................................... <j + 1>
+  [316] pusharglist 2 ........................... <tChannelData, j + 1>
+  [318] objcall 116 ............................. <tChannelData[j + 1]>
+  [320] pushsymb 267 ............................ <#length>
+  [323] pusharglist 2 ........................... <tChannelData[j + 1], #length>
+  [325] objcall 116 ............................. <tChannelData[j + 1][#length]>
+  [327] add ..................................... <tChannelData[j][#length] + tChannelData[j + 1][#length]>
+  [328] pusharglistnoret 3 ...................... <tChannelData[j], #length, tChannelData[j][#length] + tChannelData[j + 1][#length]>
+  [330] objcall 150 ............................. tChannelData[j][#length] = tChannelData[j][#length] + tChannelData[j + 1][#length]
+  [332] getlocal 5 .............................. <tChannelData>
+  [334] getlocal 4 .............................. <j>
+  [336] pushint8 1 .............................. <1>
+  [338] add ..................................... <j + 1>
+  [339] pusharglistnoret 2 ...................... <tChannelData, j + 1>
+  [341] objcall 514 ............................. tChannelData.deleteAt(j + 1)
+  [344] jmp [354] ............................... next repeat
+  [347] getlocal 4 .............................. <j>
+  [349] pushint8 1 .............................. <1>
+  [351] add ..................................... <j + 1>
+  [352] setlocal 4 .............................. j = j + 1
+  [354] endrepeat [236]
+  [356] pushcons 2 .............................. <EMPTY>
+  [358] setlocal 9 .............................. tChannelStr = EMPTY
+  [360] getlocal 5 .............................. <tChannelData>
+  [362] peek 0
+  [364] pusharglist 1
+  [366] extcall 115
+  [368] pushint8 1
+  [370] peek 0
+  [372] peek 2
+  [374] lteq
+  [375] jmpifz [435] ............................ repeat with tSample in tChannelData
+  [378] peek 2
+  [380] peek 1
+  [382] pusharglist 2
+  [384] extcall 116
+  [386] setlocal 6
+  [388] getlocal 9 .............................. <tChannelStr>
+  [390] pushcons 2 .............................. <EMPTY>
+  [392] nteq .................................... <tChannelStr <> EMPTY>
+  [393] jmpifz [403] ............................ if tChannelStr <> EMPTY then
+  [396] getlocal 9 .............................. <tChannelStr>
+  [398] pushcons 5 .............................. <";">
+  [400] joinstr ................................. <tChannelStr & ";">
+  [401] setlocal 9 .............................. tChannelStr = tChannelStr & ";"
+  [403] getlocal 9 .............................. <tChannelStr>
+  [405] getlocal 6 .............................. <tSample>
+  [407] pushsymb 425 ............................ <#id>
+  [410] pusharglist 2 ........................... <tSample, #id>
+  [412] objcall 116 ............................. <tSample[#id]>
+  [414] joinstr ................................. <tChannelStr & tSample[#id]>
+  [415] pushcons 6 .............................. <",">
+  [417] joinstr ................................. <tChannelStr & tSample[#id] & ",">
+  [418] getlocal 6 .............................. <tSample>
+  [420] pushsymb 267 ............................ <#length>
+  [423] pusharglist 2 ........................... <tSample, #length>
+  [425] objcall 116 ............................. <tSample[#length]>
+  [427] joinstr ................................. <tChannelStr & tSample[#id] & "," & tSample[#length]>
+  [428] setlocal 9 .............................. tChannelStr = tChannelStr & tSample[#id] & "," & tSample[#length]
+  [430] pushint8 1
+  [432] add
+  [433] endrepeat [370]
+  [435] pop 3
+  [437] getlocal 0 .............................. <tStr>
+  [439] getlocal 9 .............................. <tChannelStr>
+  [441] joinstr ................................. <tStr & tChannelStr>
+  [442] pushcons 4 .............................. <":">
+  [444] joinstr ................................. <tStr & tChannelStr & ":">
+  [445] setlocal 0 .............................. tStr = tStr & tChannelStr & ":"
+  [447] pushint8 1
+  [449] getlocal 2
+  [451] add
+  [452] setlocal 2
+  [454] endrepeat [ 41]
+  [457] getlocal 0 .............................. <tStr>
+  [459] pusharglistnoret 1 ...................... <tStr>
+  [461] extcall 87 .............................. return tStr
+  [463] ret
+end
+
+on getSampleLength me, tSampleID
+  [  0] getparam 1 .............................. <tSampleID>
+  [  2] pushzero ................................ <0>
+  [  3] lt ...................................... <tSampleID < 0>
+  [  4] jmpifz [ 13] ............................ if tSampleID < 0 then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 87 .............................. return 1
+  [ 13] pushzero ................................ <0>
+  [ 14] setlocal 0 .............................. tLength = 0
+  [ 16] getparam 0 .............................. <me>
+  [ 18] getparam 1 .............................. <tSampleID>
+  [ 20] pusharglist 2 ........................... <me, tSampleID>
+  [ 22] objcall 534 ............................. <me.getSampleName(tSampleID)>
+  [ 25] setlocal 1 .............................. tSampleName = me.getSampleName(tSampleID)
+  [ 27] getprop 372 ............................. <pSongControllerID>
+  [ 30] pusharglist 1 ........................... <pSongControllerID>
+  [ 32] extcall 216 ............................. <getObject(pSongControllerID)>
+  [ 34] setlocal 2 .............................. tSongController = getObject(pSongControllerID)
+  [ 36] getlocal 2 .............................. <tSongController>
+  [ 38] pushzero ................................ <0>
+  [ 39] nteq .................................... <tSongController <> 0>
+  [ 40] jmpifz [170] ............................ if tSongController <> 0 then
+  [ 43] getlocal 2 .............................. <tSongController>
+  [ 45] getlocal 1 .............................. <tSampleName>
+  [ 47] pusharglist 2 ........................... <tSongController, tSampleName>
+  [ 49] objcall 670 ............................. <tSongController.getSampleLoadingStatus(tSampleName)>
+  [ 52] setlocal 3 .............................. tReady = tSongController.getSampleLoadingStatus(tSampleName)
+  [ 54] getlocal 3 .............................. <tReady>
+  [ 56] not ..................................... <not tReady>
+  [ 57] jmpifz [144] ............................ if not tReady then / else
+  [ 60] getmovieprop 553 ........................ <the itemDelimiter>
+  [ 63] setlocal 4 .............................. tDelim = the itemDelimiter
+  [ 65] pushcons 7 .............................. <"_">
+  [ 67] setmovieprop 553 ........................ the itemDelimiter = "_"
+  [ 70] getlocal 1 .............................. <tSampleName>
+  [ 72] pushsymb 555 ............................ <#item>
+  [ 75] pushint8 4 .............................. <4>
+  [ 77] pusharglist 3 ........................... <tSampleName, #item, 4>
+  [ 79] objcall 268 ............................. <tSampleName.item[4]>
+  [ 82] pushint8 1 .............................. <1>
+  [ 84] sub ..................................... <tSampleName.item[4] - 1>
+  [ 85] setlocal 5 .............................. tSampleno = tSampleName.item[4] - 1
+  [ 87] pushint8 9 .............................. <9>
+  [ 89] setlocal 6 .............................. tSamplesPerSEt = 9
+  [ 91] getlocal 5 .............................. <tSampleno>
+  [ 93] pusharglist 1 ........................... <tSampleno>
+  [ 95] extcall 522 ............................. <integer(tSampleno)>
+  [ 98] getlocal 6 .............................. <tSamplesPerSEt>
+  [100] div ..................................... <integer(tSampleno) / tSamplesPerSEt>
+  [101] pushint8 1 .............................. <1>
+  [103] add ..................................... <(integer(tSampleno) / tSamplesPerSEt) + 1>
+  [104] setlocal 7 .............................. tParentNo = (integer(tSampleno) / tSamplesPerSEt) + 1
+  [106] pushcons 8 .............................. <"sound_set_">
+  [108] getlocal 7 .............................. <tParentNo>
+  [110] joinstr ................................. <"sound_set_" & tParentNo>
+  [111] setlocal 8 .............................. tParentId = "sound_set_" & tParentNo
+  [113] getlocal 4 .............................. <tDelim>
+  [115] setmovieprop 553 ........................ the itemDelimiter = tDelim
+  [118] getlocal 2 .............................. <tSongController>
+  [120] pushsymb 671 ............................ <#sound>
+  [123] getlocal 1 .............................. <tSampleName>
+  [125] pushsymb 672 ............................ <#parent>
+  [128] getlocal 8 .............................. <tParentId>
+  [130] pusharglist 4 ........................... <[#sound: tSampleName, #parent: tParentId]>
+  [132] pushproplist ............................ <[#sound: tSampleName, #parent: tParentId]>
+  [133] pusharglist 1 ........................... <[[#sound: tSampleName, #parent: tParentId]]>
+  [135] pushlist ................................ <[[#sound: tSampleName, #parent: tParentId]]>
+  [136] pusharglistnoret 2 ...................... <tSongController, [[#sound: tSampleName, #parent: tParentId]]>
+  [138] objcall 673 ............................. tSongController.preloadSounds([[#sound: tSampleName, #parent: tParentId]])
+  [141] jmp [170]
+  [144] getlocal 2 .............................. <tSongController>
+  [146] getlocal 1 .............................. <tSampleName>
+  [148] pusharglist 2 ........................... <tSongController, tSampleName>
+  [150] objcall 489 ............................. <tSongController.getSampleLength(tSampleName)>
+  [153] setlocal 0 .............................. tLength = tSongController.getSampleLength(tSampleName)
+  [155] getlocal 0 .............................. <tLength>
+  [157] getprop 643 ............................. <pSlotDuration>
+  [160] pushint8 1 .............................. <1>
+  [162] sub ..................................... <pSlotDuration - 1>
+  [163] add ..................................... <tLength + (pSlotDuration - 1)>
+  [164] getprop 643 ............................. <pSlotDuration>
+  [167] div ..................................... <(tLength + (pSlotDuration - 1)) / pSlotDuration>
+  [168] setlocal 0 .............................. tLength = (tLength + (pSlotDuration - 1)) / pSlotDuration
+  [170] getlocal 0 .............................. <tLength>
+  [172] pusharglistnoret 1 ...................... <tLength>
+  [174] extcall 87 .............................. return tLength
+  [176] ret
+end
+
+on getSampleName me, tSampleID
+  [  0] getprop 644 ............................. <pSampleNameBase>
+  [  3] getparam 1 .............................. <tSampleID>
+  [  5] joinstr ................................. <pSampleNameBase & tSampleID>
+  [  6] setlocal 0 .............................. tName = pSampleNameBase & tSampleID
+  [  8] getlocal 0 .............................. <tName>
+  [ 10] pusharglistnoret 1 ...................... <tName>
+  [ 12] extcall 87 .............................. return tName
+  [ 14] ret
+end
+
+on getSampleSetID me, tSampleID
+  [  0] pushint8 1 .............................. <1>
+  [  2] getparam 1 .............................. <tSampleID>
+  [  4] pushint8 1 .............................. <1>
+  [  6] sub ..................................... <tSampleID - 1>
+  [  7] pushint8 9 .............................. <9>
+  [  9] div ..................................... <(tSampleID - 1) / 9>
+  [ 10] add ..................................... <1 + ((tSampleID - 1) / 9)>
+  [ 11] pusharglistnoret 1 ...................... <1 + ((tSampleID - 1) / 9)>
+  [ 13] extcall 87 .............................. return 1 + ((tSampleID - 1) / 9)
+  [ 15] ret
+end

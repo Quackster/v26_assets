@@ -1,0 +1,160 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 485 ............................. <me.regMsgList(1)>
+  [  9] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 11] extcall 41 .............................. return me.regMsgList(1)
+  [ 13] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 485 ............................. <me.regMsgList(0)>
+  [  8] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [ 10] extcall 41 .............................. return me.regMsgList(0)
+  [ 12] ret
+end
+
+on handle_get_pending_response me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 445 ............................ <#connection>
+  [  5] pusharglist 2 ........................... <tMsg, #connection>
+  [  7] objcall 149 ............................. <tMsg.getaProp(#connection)>
+  [  9] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 11] getlocal 0 .............................. <tConn>
+  [ 13] pusharglist 1 ........................... <tConn>
+  [ 15] objcall 486 ............................. <tConn.GetIntFrom()>
+  [ 18] setlocal 1 .............................. tCount = tConn.GetIntFrom()
+  [ 20] getlocal 1 .............................. <tCount>
+  [ 22] pushzero ................................ <0>
+  [ 23] eq ...................................... <tCount = 0>
+  [ 24] jmpifz [ 41] ............................ if tCount = 0 then / else
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglist 1 ........................... <me>
+  [ 31] objcall 59 .............................. <me.getComponent()>
+  [ 33] pusharglistnoret 1 ...................... <me.getComponent()>
+  [ 35] objcall 355 ............................. me.getComponent().openCfhWindow()
+  [ 38] jmp [ 54]
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglist 1 ........................... <me>
+  [ 45] objcall 59 .............................. <me.getComponent()>
+  [ 47] getparam 1 .............................. <tMsg>
+  [ 49] pusharglistnoret 2 ...................... <me.getComponent(), tMsg>
+  [ 51] objcall 356 ............................. me.getComponent().openPendingCFHWindow(tMsg)
+  [ 54] ret
+end
+
+on handle_pending_CFHs_deleted me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 59 .............................. <me.getComponent()>
+  [  6] pusharglistnoret 1 ...................... <me.getComponent()>
+  [  8] objcall 355 ............................. me.getComponent().openCfhWindow()
+  [ 11] ret
+end
+
+on handle_cfh_sending_response me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 445 ............................ <#connection>
+  [  5] pusharglist 2 ........................... <tMsg, #connection>
+  [  7] objcall 149 ............................. <tMsg.getaProp(#connection)>
+  [  9] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 11] getlocal 0 .............................. <tConn>
+  [ 13] pusharglist 1 ........................... <tConn>
+  [ 15] objcall 486 ............................. <tConn.GetIntFrom()>
+  [ 18] setlocal 1 .............................. tStatus = tConn.GetIntFrom()
+  [ 20] getlocal 1 .............................. <tStatus>
+  [ 22] pushzero ................................ <0>
+  [ 23] eq ...................................... <tStatus = 0>
+  [ 24] jmpifz [ 38] ............................ if tStatus = 0 then
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglist 1 ........................... <me>
+  [ 31] objcall 59 .............................. <me.getComponent()>
+  [ 33] pusharglistnoret 1 ...................... <me.getComponent()>
+  [ 35] objcall 354 ............................. me.getComponent().showAlertSentWindow()
+  [ 38] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 319 ........................... <319>
+  [ 10] pushsymb 482 ............................ <#handle_get_pending_response>
+  [ 13] pusharglistnoret 3 ...................... <tMsgs, 319, #handle_get_pending_response>
+  [ 15] objcall 394 ............................. tMsgs.setaProp(319, #handle_get_pending_response)
+  [ 18] getlocal 0 .............................. <tMsgs>
+  [ 20] pushint16 320 ........................... <320>
+  [ 23] pushsymb 483 ............................ <#handle_pending_CFHs_deleted>
+  [ 26] pusharglistnoret 3 ...................... <tMsgs, 320, #handle_pending_CFHs_deleted>
+  [ 28] objcall 394 ............................. tMsgs.setaProp(320, #handle_pending_CFHs_deleted)
+  [ 31] getlocal 0 .............................. <tMsgs>
+  [ 33] pushint16 321 ........................... <321>
+  [ 36] pushsymb 484 ............................ <#handle_cfh_sending_response>
+  [ 39] pusharglistnoret 3 ...................... <tMsgs, 321, #handle_cfh_sending_response>
+  [ 41] objcall 394 ............................. tMsgs.setaProp(321, #handle_cfh_sending_response)
+  [ 44] pusharglist 0 ........................... <[:]>
+  [ 46] pushproplist ............................ <[:]>
+  [ 47] setlocal 1 .............................. tCmds = [:]
+  [ 49] getlocal 1 .............................. <tCmds>
+  [ 51] pushcons 0 .............................. <"GET_PENDING_CALLS_FOR_HELP">
+  [ 53] pushint16 237 ........................... <237>
+  [ 56] pusharglistnoret 3 ...................... <tCmds, "GET_PENDING_CALLS_FOR_HELP", 237>
+  [ 58] objcall 394 ............................. tCmds.setaProp("GET_PENDING_CALLS_FOR_HELP", 237)
+  [ 61] getlocal 1 .............................. <tCmds>
+  [ 63] pushcons 1 .............................. <"DELETE_PENDING_CALLS_FOR_HELP">
+  [ 65] pushint16 238 ........................... <238>
+  [ 68] pusharglistnoret 3 ...................... <tCmds, "DELETE_PENDING_CALLS_FOR_HELP", 238>
+  [ 70] objcall 394 ............................. tCmds.setaProp("DELETE_PENDING_CALLS_FOR_HELP", 238)
+  [ 73] getparam 1 .............................. <tBool>
+  [ 75] jmpifz [125] ............................ if tBool then / else
+  [ 78] pushcons 2 .............................. <"connection.info.id">
+  [ 80] pushsymb 489 ............................ <#Info>
+  [ 83] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [ 85] extcall 25 .............................. <getVariable("connection.info.id", #Info)>
+  [ 87] getparam 0 .............................. <me>
+  [ 89] pusharglist 1 ........................... <me>
+  [ 91] objcall 39 .............................. <me.getID()>
+  [ 93] getlocal 0 .............................. <tMsgs>
+  [ 95] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), tMsgs>
+  [ 97] extcall 488 ............................. registerListener(getVariable("connection.info.id", #Info), me.getID(), tMsgs)
+  [100] pushcons 2 .............................. <"connection.info.id">
+  [102] pushsymb 489 ............................ <#Info>
+  [105] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [107] extcall 25 .............................. <getVariable("connection.info.id", #Info)>
+  [109] getparam 0 .............................. <me>
+  [111] pusharglist 1 ........................... <me>
+  [113] objcall 39 .............................. <me.getID()>
+  [115] getlocal 1 .............................. <tCmds>
+  [117] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), tCmds>
+  [119] extcall 490 ............................. registerCommands(getVariable("connection.info.id", #Info), me.getID(), tCmds)
+  [122] jmp [169]
+  [125] pushcons 2 .............................. <"connection.info.id">
+  [127] pushsymb 489 ............................ <#Info>
+  [130] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [132] extcall 25 .............................. <getVariable("connection.info.id", #Info)>
+  [134] getparam 0 .............................. <me>
+  [136] pusharglist 1 ........................... <me>
+  [138] objcall 39 .............................. <me.getID()>
+  [140] getlocal 0 .............................. <tMsgs>
+  [142] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), tMsgs>
+  [144] extcall 491 ............................. unregisterListener(getVariable("connection.info.id", #Info), me.getID(), tMsgs)
+  [147] pushcons 2 .............................. <"connection.info.id">
+  [149] pushsymb 489 ............................ <#Info>
+  [152] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [154] extcall 25 .............................. <getVariable("connection.info.id", #Info)>
+  [156] getparam 0 .............................. <me>
+  [158] pusharglist 1 ........................... <me>
+  [160] objcall 39 .............................. <me.getID()>
+  [162] getlocal 1 .............................. <tCmds>
+  [164] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), tCmds>
+  [166] extcall 492 ............................. unregisterCommands(getVariable("connection.info.id", #Info), me.getID(), tCmds)
+  [169] pushint8 1 .............................. <1>
+  [171] pusharglistnoret 1 ...................... <1>
+  [173] extcall 41 .............................. return 1
+  [175] ret
+end

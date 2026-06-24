@@ -1,0 +1,357 @@
+property pActiveLayer, pActiveLayerNew, pCounter, pAnimLength, pCrossFadeLength, pBlendSpriteList
+
+on define me, tProps
+  [  0] pushint8 20 ............................. <20>
+  [  2] setprop 731 ............................. pAnimLength = 20
+  [  5] getprop 731 ............................. <pAnimLength>
+  [  8] pushint8 2 .............................. <2>
+  [ 10] div ..................................... <pAnimLength / 2>
+  [ 11] setprop 732 ............................. pCrossFadeLength = pAnimLength / 2
+  [ 14] pushsymb 1 .............................. <#define>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <[me]>
+  [ 20] pushlist ................................ <[me]>
+  [ 21] getparam 1 .............................. <tProps>
+  [ 23] pusharglist 3 ........................... <#define, [me], tProps>
+  [ 25] extcall 2 ............................... <callAncestor(#define, [me], tProps)>
+  [ 27] setlocal 0 .............................. tRetVal = callAncestor(#define, [me], tProps)
+  [ 29] pusharglist 0 ........................... <[]>
+  [ 31] pushlist ................................ <[]>
+  [ 32] setprop 733 ............................. pBlendSpriteList = []
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setlocal 1
+  [ 39] getlocal 1
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pushsymb 288 ............................ <#pLayerDataList>
+  [ 46] pusharglist 2 ........................... <me, #pLayerDataList>
+  [ 48] objcall 60 .............................. <me.pLayerDataList.count>
+  [ 50] lteq
+  [ 51] jmpifz [ 91] ............................ repeat with i = 1 to me.pLayerDataList.count
+  [ 54] getparam 0 .............................. <me>
+  [ 56] pushsymb 288 ............................ <#pLayerDataList>
+  [ 59] getlocal 1 .............................. <i>
+  [ 61] pusharglist 3 ........................... <me, #pLayerDataList, i>
+  [ 63] objcall 15 .............................. <me.pLayerDataList[i]>
+  [ 65] getobjprop 60 ........................... <me.pLayerDataList[i].count>
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] gt ...................................... <me.pLayerDataList[i].count > 1>
+  [ 70] jmpifz [ 82] ............................ if me.pLayerDataList[i].count > 1 then
+  [ 73] getprop 733 ............................. <pBlendSpriteList>
+  [ 76] getlocal 1 .............................. <i>
+  [ 78] pusharglistnoret 2 ...................... <pBlendSpriteList, i>
+  [ 80] objcall 147 ............................. pBlendSpriteList.add(i)
+  [ 82] pushint8 1
+  [ 84] getlocal 1
+  [ 86] add
+  [ 87] setlocal 1
+  [ 89] endrepeat [ 39]
+  [ 91] getlocal 0 .............................. <tRetVal>
+  [ 93] pusharglistnoret 1 ...................... <tRetVal>
+  [ 95] extcall 9 ............................... return tRetVal
+  [ 97] ret
+end
+
+on update me
+  [  0] getprop 734 ............................. <pActiveLayer>
+  [  3] pusharglist 1 ........................... <pActiveLayer>
+  [  5] extcall 97 .............................. <voidp(pActiveLayer)>
+  [  7] not ..................................... <not voidp(pActiveLayer)>
+  [  8] getprop 735 ............................. <pActiveLayerNew>
+  [ 11] pusharglist 1 ........................... <pActiveLayerNew>
+  [ 13] extcall 97 .............................. <voidp(pActiveLayerNew)>
+  [ 15] not ..................................... <not voidp(pActiveLayerNew)>
+  [ 16] and ..................................... <not voidp(pActiveLayer) and not voidp(pActiveLayerNew)>
+  [ 17] jmpifz [260] ............................ if not voidp(pActiveLayer) and not voidp(pActiveLayerNew) then
+  [ 20] getprop 736 ............................. <pCounter>
+  [ 23] getprop 731 ............................. <pAnimLength>
+  [ 26] getprop 732 ............................. <pCrossFadeLength>
+  [ 29] sub ..................................... <pAnimLength - pCrossFadeLength>
+  [ 30] gt ...................................... <pCounter > (pAnimLength - pCrossFadeLength)>
+  [ 31] jmpifz [125] ............................ if pCounter > (pAnimLength - pCrossFadeLength) then
+  [ 34] getprop 736 ............................. <pCounter>
+  [ 37] getprop 731 ............................. <pAnimLength>
+  [ 40] getprop 732 ............................. <pCrossFadeLength>
+  [ 43] sub ..................................... <pAnimLength - pCrossFadeLength>
+  [ 44] sub ..................................... <pCounter - (pAnimLength - pCrossFadeLength)>
+  [ 45] setlocal 0 .............................. tDelta = pCounter - (pAnimLength - pCrossFadeLength)
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pushsymb 14 ............................. <#pSprList>
+  [ 51] pusharglist 2 ........................... <me, #pSprList>
+  [ 53] objcall 60 .............................. <me.pSprList.count>
+  [ 55] getprop 734 ............................. <pActiveLayer>
+  [ 58] gteq .................................... <me.pSprList.count >= pActiveLayer>
+  [ 59] jmpifz [ 88] ............................ if me.pSprList.count >= pActiveLayer then
+  [ 62] getparam 0 .............................. <me>
+  [ 64] pushsymb 14 ............................. <#pSprList>
+  [ 66] getprop 734 ............................. <pActiveLayer>
+  [ 69] pusharglist 3 ........................... <me, #pSprList, pActiveLayer>
+  [ 71] objcall 15 .............................. <me.pSprList[pActiveLayer]>
+  [ 73] getprop 732 ............................. <pCrossFadeLength>
+  [ 76] getlocal 0 .............................. <tDelta>
+  [ 78] sub ..................................... <pCrossFadeLength - tDelta>
+  [ 79] pushint8 100 ............................ <100>
+  [ 81] mul ..................................... <(pCrossFadeLength - tDelta) * 100>
+  [ 82] getprop 732 ............................. <pCrossFadeLength>
+  [ 85] div ..................................... <(pCrossFadeLength - tDelta) * 100 / pCrossFadeLength>
+  [ 86] setobjprop 139 .......................... me.pSprList[pActiveLayer].blend = (pCrossFadeLength - tDelta) * 100 / pCrossFadeLength
+  [ 88] getparam 0 .............................. <me>
+  [ 90] pushsymb 14 ............................. <#pSprList>
+  [ 92] pusharglist 2 ........................... <me, #pSprList>
+  [ 94] objcall 60 .............................. <me.pSprList.count>
+  [ 96] getprop 735 ............................. <pActiveLayerNew>
+  [ 99] gteq .................................... <me.pSprList.count >= pActiveLayerNew>
+  [100] jmpifz [125] ............................ if me.pSprList.count >= pActiveLayerNew then
+  [103] getparam 0 .............................. <me>
+  [105] pushsymb 14 ............................. <#pSprList>
+  [107] getprop 735 ............................. <pActiveLayerNew>
+  [110] pusharglist 3 ........................... <me, #pSprList, pActiveLayerNew>
+  [112] objcall 15 .............................. <me.pSprList[pActiveLayerNew]>
+  [114] getlocal 0 .............................. <tDelta>
+  [116] pushint8 100 ............................ <100>
+  [118] mul ..................................... <tDelta * 100>
+  [119] getprop 732 ............................. <pCrossFadeLength>
+  [122] div ..................................... <tDelta * 100 / pCrossFadeLength>
+  [123] setobjprop 139 .......................... me.pSprList[pActiveLayerNew].blend = tDelta * 100 / pCrossFadeLength
+  [125] getprop 736 ............................. <pCounter>
+  [128] getprop 731 ............................. <pAnimLength>
+  [131] eq ...................................... <pCounter = pAnimLength>
+  [132] jmpifz [251] ............................ if pCounter = pAnimLength then / else
+  [135] pushint8 1 .............................. <1>
+  [137] setprop 736 ............................. pCounter = 1
+  [140] getprop 733 ............................. <pBlendSpriteList>
+  [143] pusharglist 1 ........................... <pBlendSpriteList>
+  [145] objcall 215 ............................. <pBlendSpriteList.duplicate()>
+  [147] setlocal 1 .............................. tList = pBlendSpriteList.duplicate()
+  [149] getprop 735 ............................. <pActiveLayerNew>
+  [152] setprop 734 ............................. pActiveLayer = pActiveLayerNew
+  [155] getlocal 1 .............................. <tList>
+  [157] getprop 734 ............................. <pActiveLayer>
+  [160] pusharglistnoret 2 ...................... <tList, pActiveLayer>
+  [162] objcall 737 ............................. tList.deleteOne(pActiveLayer)
+  [165] getparam 0 .............................. <me>
+  [167] pushsymb 288 ............................ <#pLayerDataList>
+  [170] getprop 734 ............................. <pActiveLayer>
+  [173] pusharglist 3 ........................... <me, #pLayerDataList, pActiveLayer>
+  [175] objcall 15 .............................. <me.pLayerDataList[pActiveLayer]>
+  [177] pushint8 2 .............................. <2>
+  [179] pusharglist 2 ........................... <me.pLayerDataList[pActiveLayer], 2>
+  [181] objcall 61 .............................. <me.pLayerDataList[pActiveLayer][2]>
+  [183] setlocal 2 .............................. tAnimData = me.pLayerDataList[pActiveLayer][2]
+  [185] getlocal 2 .............................. <tAnimData>
+  [187] pushsymb 321 ............................ <#delay>
+  [190] pusharglist 2 ........................... <tAnimData, #delay>
+  [192] objcall 61 .............................. <tAnimData[#delay]>
+  [194] pusharglist 1 ........................... <tAnimData[#delay]>
+  [196] extcall 97 .............................. <voidp(tAnimData[#delay])>
+  [198] not ..................................... <not voidp(tAnimData[#delay])>
+  [199] jmpifz [223] ............................ if not voidp(tAnimData[#delay]) then
+  [202] getlocal 2 .............................. <tAnimData>
+  [204] pushsymb 321 ............................ <#delay>
+  [207] pusharglist 2 ........................... <tAnimData, #delay>
+  [209] objcall 61 .............................. <tAnimData[#delay]>
+  [211] setprop 731 ............................. pAnimLength = tAnimData[#delay]
+  [214] getprop 731 ............................. <pAnimLength>
+  [217] pushint8 2 .............................. <2>
+  [219] div ..................................... <pAnimLength / 2>
+  [220] setprop 732 ............................. pCrossFadeLength = pAnimLength / 2
+  [223] getlocal 1 .............................. <tList>
+  [225] getlocal 1 .............................. <tList>
+  [227] getobjprop 60 ........................... <tList.count>
+  [229] pusharglist 1 ........................... <tList.count>
+  [231] extcall 322 ............................. <random(tList.count)>
+  [234] pusharglist 2 ........................... <tList, random(tList.count)>
+  [236] objcall 61 .............................. <tList[random(tList.count)]>
+  [238] setprop 735 ............................. pActiveLayerNew = tList[random(tList.count)]
+  [241] getparam 0 .............................. <me>
+  [243] pusharglistnoret 1 ...................... <me>
+  [245] objcall 730 ............................. me.initBlends()
+  [248] jmp [260]
+  [251] getprop 736 ............................. <pCounter>
+  [254] pushint8 1 .............................. <1>
+  [256] add ..................................... <pCounter + 1>
+  [257] setprop 736 ............................. pCounter = pCounter + 1
+  [260] pushsymb 276 ............................ <#update>
+  [263] getparam 0 .............................. <me>
+  [265] pusharglist 1 ........................... <[me]>
+  [267] pushlist ................................ <[me]>
+  [268] pusharglist 2 ........................... <#update, [me]>
+  [270] extcall 2 ............................... <callAncestor(#update, [me])>
+  [272] pusharglistnoret 1 ...................... <callAncestor(#update, [me])>
+  [274] extcall 9 ............................... return callAncestor(#update, [me])
+  [276] ret
+end
+
+on setState me, tNewState
+  [  0] getparam 1 .............................. <tNewState>
+  [  2] pusharglist 1 ........................... <tNewState>
+  [  4] extcall 149 ............................. <value(tNewState)>
+  [  6] setparam 1 .............................. tNewState = value(tNewState)
+  [  8] getparam 1 .............................. <tNewState>
+  [ 10] pushint8 2 .............................. <2>
+  [ 12] eq ...................................... <tNewState = 2>
+  [ 13] jmpifz [216] ............................ if tNewState = 2 then
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] setprop 736 ............................. pCounter = 1
+  [ 21] getprop 733 ............................. <pBlendSpriteList>
+  [ 24] pusharglist 1 ........................... <pBlendSpriteList>
+  [ 26] extcall 97 .............................. <voidp(pBlendSpriteList)>
+  [ 28] jmpifz [ 93] ............................ if voidp(pBlendSpriteList) then
+  [ 31] pusharglist 0 ........................... <[]>
+  [ 33] pushlist ................................ <[]>
+  [ 34] setprop 733 ............................. pBlendSpriteList = []
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] setlocal 0
+  [ 41] getlocal 0
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pushsymb 288 ............................ <#pLayerDataList>
+  [ 48] pusharglist 2 ........................... <me, #pLayerDataList>
+  [ 50] objcall 60 .............................. <me.pLayerDataList.count>
+  [ 52] lteq
+  [ 53] jmpifz [ 93] ............................ repeat with i = 1 to me.pLayerDataList.count
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pushsymb 288 ............................ <#pLayerDataList>
+  [ 61] getlocal 0 .............................. <i>
+  [ 63] pusharglist 3 ........................... <me, #pLayerDataList, i>
+  [ 65] objcall 15 .............................. <me.pLayerDataList[i]>
+  [ 67] getobjprop 60 ........................... <me.pLayerDataList[i].count>
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] gt ...................................... <me.pLayerDataList[i].count > 1>
+  [ 72] jmpifz [ 84] ............................ if me.pLayerDataList[i].count > 1 then
+  [ 75] getprop 733 ............................. <pBlendSpriteList>
+  [ 78] getlocal 0 .............................. <i>
+  [ 80] pusharglistnoret 2 ...................... <pBlendSpriteList, i>
+  [ 82] objcall 147 ............................. pBlendSpriteList.add(i)
+  [ 84] pushint8 1
+  [ 86] getlocal 0
+  [ 88] add
+  [ 89] setlocal 0
+  [ 91] endrepeat [ 41]
+  [ 93] getprop 733 ............................. <pBlendSpriteList>
+  [ 96] pusharglist 1 ........................... <pBlendSpriteList>
+  [ 98] objcall 215 ............................. <pBlendSpriteList.duplicate()>
+  [100] setlocal 1 .............................. tList = pBlendSpriteList.duplicate()
+  [102] getlocal 1 .............................. <tList>
+  [104] getobjprop 60 ........................... <tList.count>
+  [106] pushint8 2 .............................. <2>
+  [108] gteq .................................... <tList.count >= 2>
+  [109] jmpifz [216] ............................ if tList.count >= 2 then
+  [112] getlocal 1 .............................. <tList>
+  [114] getlocal 1 .............................. <tList>
+  [116] getobjprop 60 ........................... <tList.count>
+  [118] pusharglist 1 ........................... <tList.count>
+  [120] extcall 322 ............................. <random(tList.count)>
+  [123] pusharglist 2 ........................... <tList, random(tList.count)>
+  [125] objcall 61 .............................. <tList[random(tList.count)]>
+  [127] setprop 734 ............................. pActiveLayer = tList[random(tList.count)]
+  [130] getlocal 1 .............................. <tList>
+  [132] getprop 734 ............................. <pActiveLayer>
+  [135] pusharglistnoret 2 ...................... <tList, pActiveLayer>
+  [137] objcall 737 ............................. tList.deleteOne(pActiveLayer)
+  [140] getparam 0 .............................. <me>
+  [142] pushsymb 288 ............................ <#pLayerDataList>
+  [145] getprop 734 ............................. <pActiveLayer>
+  [148] pusharglist 3 ........................... <me, #pLayerDataList, pActiveLayer>
+  [150] objcall 15 .............................. <me.pLayerDataList[pActiveLayer]>
+  [152] pushint8 2 .............................. <2>
+  [154] pusharglist 2 ........................... <me.pLayerDataList[pActiveLayer], 2>
+  [156] objcall 61 .............................. <me.pLayerDataList[pActiveLayer][2]>
+  [158] setlocal 2 .............................. tAnimData = me.pLayerDataList[pActiveLayer][2]
+  [160] getlocal 2 .............................. <tAnimData>
+  [162] pushsymb 321 ............................ <#delay>
+  [165] pusharglist 2 ........................... <tAnimData, #delay>
+  [167] objcall 61 .............................. <tAnimData[#delay]>
+  [169] pusharglist 1 ........................... <tAnimData[#delay]>
+  [171] extcall 97 .............................. <voidp(tAnimData[#delay])>
+  [173] not ..................................... <not voidp(tAnimData[#delay])>
+  [174] jmpifz [198] ............................ if not voidp(tAnimData[#delay]) then
+  [177] getlocal 2 .............................. <tAnimData>
+  [179] pushsymb 321 ............................ <#delay>
+  [182] pusharglist 2 ........................... <tAnimData, #delay>
+  [184] objcall 61 .............................. <tAnimData[#delay]>
+  [186] setprop 731 ............................. pAnimLength = tAnimData[#delay]
+  [189] getprop 731 ............................. <pAnimLength>
+  [192] pushint8 2 .............................. <2>
+  [194] div ..................................... <pAnimLength / 2>
+  [195] setprop 732 ............................. pCrossFadeLength = pAnimLength / 2
+  [198] getlocal 1 .............................. <tList>
+  [200] getlocal 1 .............................. <tList>
+  [202] getobjprop 60 ........................... <tList.count>
+  [204] pusharglist 1 ........................... <tList.count>
+  [206] extcall 322 ............................. <random(tList.count)>
+  [209] pusharglist 2 ........................... <tList, random(tList.count)>
+  [211] objcall 61 .............................. <tList[random(tList.count)]>
+  [213] setprop 735 ............................. pActiveLayerNew = tList[random(tList.count)]
+  [216] pushsymb 220 ............................ <#setState>
+  [218] getparam 0 .............................. <me>
+  [220] pusharglist 1 ........................... <[me]>
+  [222] pushlist ................................ <[me]>
+  [223] getparam 1 .............................. <tNewState>
+  [225] pusharglist 3 ........................... <#setState, [me], tNewState>
+  [227] extcall 2 ............................... <callAncestor(#setState, [me], tNewState)>
+  [229] setlocal 3 .............................. tRetVal = callAncestor(#setState, [me], tNewState)
+  [231] getparam 0 .............................. <me>
+  [233] pusharglistnoret 1 ...................... <me>
+  [235] objcall 730 ............................. me.initBlends()
+  [238] getlocal 3 .............................. <tRetVal>
+  [240] pusharglistnoret 1 ...................... <tRetVal>
+  [242] extcall 9 ............................... return tRetVal
+  [244] ret
+end
+
+on initBlends me
+  [  0] getprop 733 ............................. <pBlendSpriteList>
+  [  3] pusharglist 1 ........................... <pBlendSpriteList>
+  [  5] extcall 97 .............................. <voidp(pBlendSpriteList)>
+  [  7] jmpifz [ 15] ............................ if voidp(pBlendSpriteList) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 9 ............................... return 0
+  [ 15] getprop 733 ............................. <pBlendSpriteList>
+  [ 18] peek 0
+  [ 20] pusharglist 1
+  [ 22] extcall 60
+  [ 24] pushint8 1
+  [ 26] peek 0
+  [ 28] peek 2
+  [ 30] lteq
+  [ 31] jmpifz [102] ............................ repeat with i in pBlendSpriteList
+  [ 34] peek 2
+  [ 36] peek 1
+  [ 38] pusharglist 2
+  [ 40] extcall 61
+  [ 42] setlocal 0
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pushsymb 14 ............................. <#pSprList>
+  [ 48] pusharglist 2 ........................... <me, #pSprList>
+  [ 50] objcall 60 .............................. <me.pSprList.count>
+  [ 52] getlocal 0 .............................. <i>
+  [ 54] gteq .................................... <me.pSprList.count >= i>
+  [ 55] jmpifz [ 97] ............................ if me.pSprList.count >= i then
+  [ 58] getlocal 0 .............................. <i>
+  [ 60] getprop 734 ............................. <pActiveLayer>
+  [ 63] eq ...................................... <i = pActiveLayer>
+  [ 64] jmpifz [ 84] ............................ if i = pActiveLayer then
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pushsymb 14 ............................. <#pSprList>
+  [ 71] getlocal 0 .............................. <i>
+  [ 73] pusharglist 3 ........................... <me, #pSprList, i>
+  [ 75] objcall 15 .............................. <me.pSprList[i]>
+  [ 77] pushint8 100 ............................ <100>
+  [ 79] setobjprop 139 .......................... me.pSprList[i].blend = 100
+  [ 81] jmp [ 97] ............................... next repeat
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pushsymb 14 ............................. <#pSprList>
+  [ 88] getlocal 0 .............................. <i>
+  [ 90] pusharglist 3 ........................... <me, #pSprList, i>
+  [ 92] objcall 15 .............................. <me.pSprList[i]>
+  [ 94] pushzero ................................ <0>
+  [ 95] setobjprop 139 .......................... me.pSprList[i].blend = 0
+  [ 97] pushint8 1
+  [ 99] add
+  [100] endrepeat [ 26]
+  [102] pop 3
+  [104] pushint8 1 .............................. <1>
+  [106] pusharglistnoret 1 ...................... <1>
+  [108] extcall 9 ............................... return 1
+  [110] ret
+end

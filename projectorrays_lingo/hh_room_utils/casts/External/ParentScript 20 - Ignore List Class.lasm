@@ -1,0 +1,306 @@
+property pUserNamesPending, pIgnoreList
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 992 ............................. pUserNamesPending = []
+  [  6] pushsymb 993 ............................ <#userlogin>
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglist 1 ........................... <me>
+  [ 13] objcall 39 .............................. <me.getID()>
+  [ 15] pushsymb 983 ............................ <#initIgnoreList>
+  [ 18] pusharglistnoret 3 ...................... <#userlogin, me.getID(), #initIgnoreList>
+  [ 20] extcall 37 .............................. registerMessage(#userlogin, me.getID(), #initIgnoreList)
+  [ 22] pushsymb 994 ............................ <#ignore_user_result>
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglist 1 ........................... <me>
+  [ 29] objcall 39 .............................. <me.getID()>
+  [ 31] pushsymb 987 ............................ <#saveIgnoreResult>
+  [ 34] pusharglistnoret 3 ...................... <#ignore_user_result, me.getID(), #saveIgnoreResult>
+  [ 36] extcall 37 .............................. registerMessage(#ignore_user_result, me.getID(), #saveIgnoreResult)
+  [ 38] pushsymb 995 ............................ <#save_ignore_list>
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglist 1 ........................... <me>
+  [ 45] objcall 39 .............................. <me.getID()>
+  [ 47] pushsymb 986 ............................ <#saveIgnoreList>
+  [ 50] pusharglistnoret 3 ...................... <#save_ignore_list, me.getID(), #saveIgnoreList>
+  [ 52] extcall 37 .............................. registerMessage(#save_ignore_list, me.getID(), #saveIgnoreList)
+  [ 54] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 993 ............................ <#userlogin>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 39 .............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#userlogin, me.getID()>
+  [ 11] extcall 50 .............................. unregisterMessage(#userlogin, me.getID())
+  [ 13] pushsymb 994 ............................ <#ignore_user_result>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 39 .............................. <me.getID()>
+  [ 22] pusharglistnoret 2 ...................... <#ignore_user_result, me.getID()>
+  [ 24] extcall 50 .............................. unregisterMessage(#ignore_user_result, me.getID())
+  [ 26] pushsymb 995 ............................ <#save_ignore_list>
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pusharglist 1 ........................... <me>
+  [ 33] objcall 39 .............................. <me.getID()>
+  [ 35] pusharglistnoret 2 ...................... <#save_ignore_list, me.getID()>
+  [ 37] extcall 50 .............................. unregisterMessage(#save_ignore_list, me.getID())
+  [ 39] ret
+end
+
+on initIgnoreList me
+  [  0] pushsymb 489 ............................ <#Info>
+  [  3] pusharglist 1 ........................... <#Info>
+  [  5] extcall 297 ............................. <getConnection(#Info)>
+  [  8] setlocal 0 .............................. tConnection = getConnection(#Info)
+  [ 10] getlocal 0 .............................. <tConnection>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tConnection = 0>
+  [ 14] jmpifz [ 31] ............................ if tConnection = 0 then
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pushcons 0 .............................. <"Info connection not available.">
+  [ 21] pushsymb 0 .............................. <#construct>
+  [ 23] pusharglist 3 ........................... <me, "Info connection not available.", #construct>
+  [ 25] extcall 67 .............................. <error(me, "Info connection not available.", #construct)>
+  [ 27] pusharglistnoret 1 ...................... <error(me, "Info connection not available.", #construct)>
+  [ 29] extcall 41 .............................. return error(me, "Info connection not available.", #construct)
+  [ 31] getlocal 0 .............................. <tConnection>
+  [ 33] pushcons 1 .............................. <"GET_IGNORE_LIST">
+  [ 35] pusharglistnoret 2 ...................... <tConnection, "GET_IGNORE_LIST">
+  [ 37] objcall 119 ............................. tConnection.send("GET_IGNORE_LIST")
+  [ 39] pushsymb 993 ............................ <#userlogin>
+  [ 42] getparam 0 .............................. <me>
+  [ 44] pusharglist 1 ........................... <me>
+  [ 46] objcall 39 .............................. <me.getID()>
+  [ 48] pusharglistnoret 2 ...................... <#userlogin, me.getID()>
+  [ 50] extcall 50 .............................. unregisterMessage(#userlogin, me.getID())
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] pusharglistnoret 1 ...................... <1>
+  [ 56] extcall 41 .............................. return 1
+  [ 58] ret
+end
+
+on getIgnoreStatus me, tUserName
+  [  0] getprop 996 ............................. <pIgnoreList>
+  [  3] pusharglist 1 ........................... <pIgnoreList>
+  [  5] extcall 134 ............................. <voidp(pIgnoreList)>
+  [  7] jmpifz [ 17] ............................ if voidp(pIgnoreList) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 991 ............................. me.reset()
+  [ 17] getprop 996 ............................. <pIgnoreList>
+  [ 20] pusharglist 0 ........................... <[]>
+  [ 22] pushlist ................................ <[]>
+  [ 23] eq ...................................... <pIgnoreList = []>
+  [ 24] jmpifz [ 32] ............................ if pIgnoreList = [] then
+  [ 27] pushzero ................................ <0>
+  [ 28] pusharglistnoret 1 ...................... <0>
+  [ 30] extcall 41 .............................. return 0
+  [ 32] getprop 996 ............................. <pIgnoreList>
+  [ 35] getparam 1 .............................. <tUserName>
+  [ 37] pusharglist 2 ........................... <pIgnoreList, tUserName>
+  [ 39] objcall 126 ............................. <pIgnoreList.findPos(tUserName)>
+  [ 41] pusharglistnoret 1 ...................... <pIgnoreList.findPos(tUserName)>
+  [ 43] extcall 41 .............................. return pIgnoreList.findPos(tUserName)
+  [ 45] ret
+end
+
+on setIgnoreStatus me, tUserName, tStatus
+  [  0] getprop 996 ............................. <pIgnoreList>
+  [  3] pusharglist 1 ........................... <pIgnoreList>
+  [  5] extcall 134 ............................. <voidp(pIgnoreList)>
+  [  7] jmpifz [ 17] ............................ if voidp(pIgnoreList) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 991 ............................. me.reset()
+  [ 17] pushsymb 489 ............................ <#Info>
+  [ 20] pusharglist 1 ........................... <#Info>
+  [ 22] extcall 297 ............................. <getConnection(#Info)>
+  [ 25] setlocal 0 .............................. tConnection = getConnection(#Info)
+  [ 27] getlocal 0 .............................. <tConnection>
+  [ 29] pushzero ................................ <0>
+  [ 30] eq ...................................... <tConnection = 0>
+  [ 31] jmpifz [ 48] ............................ if tConnection = 0 then
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pushcons 0 .............................. <"Info connection not available.">
+  [ 38] pushsymb 0 .............................. <#construct>
+  [ 40] pusharglist 3 ........................... <me, "Info connection not available.", #construct>
+  [ 42] extcall 67 .............................. <error(me, "Info connection not available.", #construct)>
+  [ 44] pusharglistnoret 1 ...................... <error(me, "Info connection not available.", #construct)>
+  [ 46] extcall 41 .............................. return error(me, "Info connection not available.", #construct)
+  [ 48] getparam 1 .............................. <tUserName>
+  [ 50] pusharglist 0 ........................... <>
+  [ 52] extcall 243 ............................. <VOID>
+  [ 54] eq ...................................... <tUserName = VOID>
+  [ 55] jmpifz [ 63] ............................ if tUserName = VOID then
+  [ 58] pushzero ................................ <0>
+  [ 59] pusharglistnoret 1 ...................... <0>
+  [ 61] extcall 41 .............................. return 0
+  [ 63] getprop 992 ............................. <pUserNamesPending>
+  [ 66] getparam 1 .............................. <tUserName>
+  [ 68] pusharglistnoret 2 ...................... <pUserNamesPending, tUserName>
+  [ 70] objcall 709 ............................. pUserNamesPending.append(tUserName)
+  [ 73] getparam 2 .............................. <tStatus>
+  [ 75] jmpifz [ 96] ............................ if tStatus then / else
+  [ 78] getlocal 0 .............................. <tConnection>
+  [ 80] pushcons 2 .............................. <"IGNOREUSER">
+  [ 82] pushsymb 117 ............................ <#string>
+  [ 84] getparam 1 .............................. <tUserName>
+  [ 86] pusharglist 2 ........................... <[#string: tUserName]>
+  [ 88] pushproplist ............................ <[#string: tUserName]>
+  [ 89] pusharglistnoret 3 ...................... <tConnection, "IGNOREUSER", [#string: tUserName]>
+  [ 91] objcall 119 ............................. tConnection.send("IGNOREUSER", [#string: tUserName])
+  [ 93] jmp [111]
+  [ 96] getlocal 0 .............................. <tConnection>
+  [ 98] pushcons 3 .............................. <"UNIGNORE_USER">
+  [100] pushsymb 117 ............................ <#string>
+  [102] getparam 1 .............................. <tUserName>
+  [104] pusharglist 2 ........................... <[#string: tUserName]>
+  [106] pushproplist ............................ <[#string: tUserName]>
+  [107] pusharglistnoret 3 ...................... <tConnection, "UNIGNORE_USER", [#string: tUserName]>
+  [109] objcall 119 ............................. tConnection.send("UNIGNORE_USER", [#string: tUserName])
+  [111] pushint8 1 .............................. <1>
+  [113] pusharglistnoret 1 ...................... <1>
+  [115] extcall 41 .............................. return 1
+  [117] ret
+end
+
+on saveIgnoreList me, tList
+  [  0] getparam 1 .............................. <tList>
+  [  2] setprop 996 ............................. pIgnoreList = tList
+  [  5] pushint8 1 .............................. <1>
+  [  7] pusharglistnoret 1 ...................... <1>
+  [  9] extcall 41 .............................. return 1
+  [ 11] ret
+end
+
+on saveIgnoreResult me, tResult
+  [  0] getprop 992 ............................. <pUserNamesPending>
+  [  3] getobjprop 47 ........................... <pUserNamesPending.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pUserNamesPending.count = 0>
+  [  7] jmpifz [ 15] ............................ if pUserNamesPending.count = 0 then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 41 .............................. return 0
+  [ 15] getprop 992 ............................. <pUserNamesPending>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglist 2 ........................... <pUserNamesPending, 1>
+  [ 22] objcall 49 .............................. <pUserNamesPending[1]>
+  [ 24] setlocal 0 .............................. tUserName = pUserNamesPending[1]
+  [ 26] getprop 992 ............................. <pUserNamesPending>
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] pusharglistnoret 2 ...................... <pUserNamesPending, 1>
+  [ 33] objcall 158 ............................. pUserNamesPending.deleteAt(1)
+  [ 35] getparam 1 .............................. <tResult>
+  [ 37] peek 0 .................................. case tResult of
+  [ 39] pushzero ................................ <0>
+  [ 40] eq
+  [ 41] jmpifz [ 64] ............................ (case) 0:
+  [ 44] pop 1
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pushcons 4 .............................. <"Ignore user failed.">
+  [ 50] pushsymb 987 ............................ <#saveIgnoreResult>
+  [ 53] pusharglist 3 ........................... <me, "Ignore user failed.", #saveIgnoreResult>
+  [ 55] extcall 67 .............................. <error(me, "Ignore user failed.", #saveIgnoreResult)>
+  [ 57] pusharglistnoret 1 ...................... <error(me, "Ignore user failed.", #saveIgnoreResult)>
+  [ 59] extcall 41 .............................. return error(me, "Ignore user failed.", #saveIgnoreResult)
+  [ 61] jmp [151]
+  [ 64] peek 0
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] eq
+  [ 69] jmpifz [ 84] ............................ (case) 1:
+  [ 72] getparam 0 .............................. <me>
+  [ 74] getlocal 0 .............................. <tUserName>
+  [ 76] pusharglistnoret 2 ...................... <me, tUserName>
+  [ 78] objcall 988 ............................. me.addUserToIgnoreList(tUserName)
+  [ 81] jmp [151]
+  [ 84] peek 0
+  [ 86] pushint8 2 .............................. <2>
+  [ 88] eq
+  [ 89] jmpifz [111] ............................ (case) 2:
+  [ 92] getparam 0 .............................. <me>
+  [ 94] getlocal 0 .............................. <tUserName>
+  [ 96] pusharglistnoret 2 ...................... <me, tUserName>
+  [ 98] objcall 988 ............................. me.addUserToIgnoreList(tUserName)
+  [101] getparam 0 .............................. <me>
+  [103] pusharglistnoret 1 ...................... <me>
+  [105] objcall 990 ............................. me.removeOldestIgnore()
+  [108] jmp [151]
+  [111] peek 0
+  [113] pushint8 3 .............................. <3>
+  [115] eq
+  [116] jmpifz [131] ............................ (case) 3:
+  [119] getparam 0 .............................. <me>
+  [121] getlocal 0 .............................. <tUserName>
+  [123] pusharglistnoret 2 ...................... <me, tUserName>
+  [125] objcall 989 ............................. me.removeUserFromIgnoreList(tUserName)
+  [128] jmp [151] ............................... (case) otherwise:
+  [131] pop 1
+  [133] getparam 0 .............................. <me>
+  [135] pushcons 5 .............................. <"Unsupported result for ignore user:">
+  [137] getparam 1 .............................. <tResult>
+  [139] joinpadstr .............................. <"Unsupported result for ignore user:" && tResult>
+  [140] pushsymb 987 ............................ <#saveIgnoreResult>
+  [143] pusharglist 3 ........................... <me, "Unsupported result for ignore user:" && tResult, #saveIgnoreResult>
+  [145] extcall 67 .............................. <error(me, "Unsupported result for ignore user:" && tResult, #saveIgnoreResult)>
+  [147] pusharglistnoret 1 ...................... <error(me, "Unsupported result for ignore user:" && tResult, #saveIgnoreResult)>
+  [149] extcall 41 .............................. return error(me, "Unsupported result for ignore user:" && tResult, #saveIgnoreResult)
+  [151] pop 1 ................................... end case
+  [153] pushint8 1 .............................. <1>
+  [155] pusharglistnoret 1 ...................... <1>
+  [157] extcall 41 .............................. return 1
+  [159] ret
+end
+
+on addUserToIgnoreList me, tUserName
+  [  0] getprop 996 ............................. <pIgnoreList>
+  [  3] getparam 1 .............................. <tUserName>
+  [  5] pusharglist 2 ........................... <pIgnoreList, tUserName>
+  [  7] objcall 126 ............................. <pIgnoreList.findPos(tUserName)>
+  [  9] not ..................................... <not pIgnoreList.findPos(tUserName)>
+  [ 10] jmpifz [ 22] ............................ if not pIgnoreList.findPos(tUserName) then
+  [ 13] getprop 996 ............................. <pIgnoreList>
+  [ 16] getparam 1 .............................. <tUserName>
+  [ 18] pusharglistnoret 2 ...................... <pIgnoreList, tUserName>
+  [ 20] objcall 87 .............................. pIgnoreList.add(tUserName)
+  [ 22] ret
+end
+
+on removeUserFromIgnoreList me, tUserName
+  [  0] getprop 996 ............................. <pIgnoreList>
+  [  3] getparam 1 .............................. <tUserName>
+  [  5] pusharglistnoret 2 ...................... <pIgnoreList, tUserName>
+  [  7] objcall 143 ............................. pIgnoreList.deleteOne(tUserName)
+  [  9] ret
+end
+
+on removeOldestIgnore me
+  [  0] getprop 996 ............................. <pIgnoreList>
+  [  3] pusharglist 1 ........................... <pIgnoreList>
+  [  5] extcall 134 ............................. <voidp(pIgnoreList)>
+  [  7] jmpifz [ 15] ............................ if voidp(pIgnoreList) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 41 .............................. return 0
+  [ 15] getprop 996 ............................. <pIgnoreList>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 2 ...................... <pIgnoreList, 1>
+  [ 22] objcall 158 ............................. pIgnoreList.deleteAt(1)
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglistnoret 1 ...................... <1>
+  [ 28] extcall 41 .............................. return 1
+  [ 30] ret
+end
+
+on reset me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 996 ............................. pIgnoreList = []
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 41 .............................. return 1
+  [ 12] ret
+end

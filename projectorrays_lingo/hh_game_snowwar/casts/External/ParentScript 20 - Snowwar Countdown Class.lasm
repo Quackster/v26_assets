@@ -1,0 +1,467 @@
+property pWindowID, pTimeOutID, pCountdownMember, pDuration, pEndTime
+
+on construct me
+  [  0] pushcons 0 .............................. <"gs_title_countdown">
+  [  2] pusharglist 1 ........................... <"gs_title_countdown">
+  [  4] extcall 757 ............................. <getText("gs_title_countdown")>
+  [  7] setprop 812 ............................. pWindowID = getText("gs_title_countdown")
+  [ 10] pushcons 1 .............................. <"game_countdown_timeout">
+  [ 12] setprop 733 ............................. pTimeOutID = "game_countdown_timeout"
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 35 .............................. return 1
+  [ 21] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 810 ............................. <me.removeGameCountdown()>
+  [  7] pusharglistnoret 1 ...................... <me.removeGameCountdown()>
+  [  9] extcall 35 .............................. return me.removeGameCountdown()
+  [ 11] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 499 ............................ <#gamereset>
+  [  7] eq
+  [  8] jmpifz [ 37] ............................ (case) #gamereset:
+  [ 11] pop 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] getparam 2 .............................. <tdata>
+  [ 17] pushsymb 498 ............................ <#time_until_game_start>
+  [ 20] pusharglist 2 ........................... <tdata, #time_until_game_start>
+  [ 22] objcall 44 .............................. <tdata[#time_until_game_start]>
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglist 3 ........................... <me, tdata[#time_until_game_start], 0>
+  [ 27] objcall 808 ............................. <me.startGameCountdown(tdata[#time_until_game_start], 0)>
+  [ 30] pusharglistnoret 1 ...................... <me.startGameCountdown(tdata[#time_until_game_start], 0)>
+  [ 32] extcall 35 .............................. return me.startGameCountdown(tdata[#time_until_game_start], 0)
+  [ 34] jmp [160]
+  [ 37] peek 0
+  [ 39] pushsymb 481 ............................ <#fullgamestatus_time>
+  [ 42] eq
+  [ 43] jmpifz [119] ............................ (case) #fullgamestatus_time:
+  [ 46] getparam 2 .............................. <tdata>
+  [ 48] pushsymb 463 ............................ <#state>
+  [ 51] pusharglist 2 ........................... <tdata, #state>
+  [ 53] objcall 44 .............................. <tdata[#state]>
+  [ 55] pushsymb 456 ............................ <#started>
+  [ 58] eq ...................................... <tdata[#state] = #started>
+  [ 59] jmpifz [ 75] ............................ if tdata[#state] = #started then
+  [ 62] pop 1
+  [ 64] getparam 0 .............................. <me>
+  [ 66] pusharglist 1 ........................... <me>
+  [ 68] objcall 810 ............................. <me.removeGameCountdown()>
+  [ 71] pusharglistnoret 1 ...................... <me.removeGameCountdown()>
+  [ 73] extcall 35 .............................. return me.removeGameCountdown()
+  [ 75] pop 1
+  [ 77] getparam 0 .............................. <me>
+  [ 79] getparam 2 .............................. <tdata>
+  [ 81] pushsymb 475 ............................ <#time_to_next_state>
+  [ 84] pusharglist 2 ........................... <tdata, #time_to_next_state>
+  [ 86] objcall 44 .............................. <tdata[#time_to_next_state]>
+  [ 88] getparam 2 .............................. <tdata>
+  [ 90] pushsymb 476 ............................ <#state_duration>
+  [ 93] pusharglist 2 ........................... <tdata, #state_duration>
+  [ 95] objcall 44 .............................. <tdata[#state_duration]>
+  [ 97] getparam 2 .............................. <tdata>
+  [ 99] pushsymb 475 ............................ <#time_to_next_state>
+  [102] pusharglist 2 ........................... <tdata, #time_to_next_state>
+  [104] objcall 44 .............................. <tdata[#time_to_next_state]>
+  [106] sub ..................................... <tdata[#state_duration] - tdata[#time_to_next_state]>
+  [107] pusharglist 3 ........................... <me, tdata[#time_to_next_state], tdata[#state_duration] - tdata[#time_to_next_state]>
+  [109] objcall 808 ............................. <me.startGameCountdown(tdata[#time_to_next_state], tdata[#state_duration] - tdata[#time_to_next_state])>
+  [112] pusharglistnoret 1 ...................... <me.startGameCountdown(tdata[#time_to_next_state], tdata[#state_duration] - tdata[#time_to_next_state])>
+  [114] extcall 35 .............................. return me.startGameCountdown(tdata[#time_to_next_state], tdata[#state_duration] - tdata[#time_to_next_state])
+  [116] jmp [160]
+  [119] peek 0
+  [121] pushsymb 488 ............................ <#gamestart>
+  [124] eq
+  [125] jmpifz [160] ............................ (case) #gamestart:
+  [128] pushcons 2 .............................. <"LS-C64-draw-1">
+  [130] pusharglist 0 ........................... <>
+  [132] extcall 55 .............................. <VOID>
+  [134] pushsymb 813 ............................ <#volume>
+  [137] pushint16 170 ........................... <170>
+  [140] pusharglist 2 ........................... <[#volume: 170]>
+  [142] pushproplist ............................ <[#volume: 170]>
+  [143] pusharglistnoret 3 ...................... <"LS-C64-draw-1", VOID, [#volume: 170]>
+  [145] extcall 236 ............................. playSound("LS-C64-draw-1", VOID, [#volume: 170])
+  [147] pop 1
+  [149] getparam 0 .............................. <me>
+  [151] pusharglist 1 ........................... <me>
+  [153] objcall 810 ............................. <me.removeGameCountdown()>
+  [156] pusharglistnoret 1 ...................... <me.removeGameCountdown()>
+  [158] extcall 35 .............................. return me.removeGameCountdown()
+  [160] pop 1 ................................... end case
+  [162] pushint8 1 .............................. <1>
+  [164] pusharglistnoret 1 ...................... <1>
+  [166] extcall 35 .............................. return 1
+  [168] ret
+end
+
+on startGameCountdown me, tSecondsLeft, tSecondsNowElapsed
+  [  0] getparam 1 .............................. <tSecondsLeft>
+  [  2] pushint16 1000 .......................... <1000>
+  [  5] mul ..................................... <tSecondsLeft * 1000>
+  [  6] setlocal 0 .............................. tMSecLeft = tSecondsLeft * 1000
+  [  8] getparam 1 .............................. <tSecondsLeft>
+  [ 10] getparam 2 .............................. <tSecondsNowElapsed>
+  [ 12] add ..................................... <tSecondsLeft + tSecondsNowElapsed>
+  [ 13] pushint16 1000 .......................... <1000>
+  [ 16] mul ..................................... <(tSecondsLeft + tSecondsNowElapsed) * 1000>
+  [ 17] setlocal 1 .............................. tDuration = (tSecondsLeft + tSecondsNowElapsed) * 1000
+  [ 19] getlocal 0 .............................. <tMSecLeft>
+  [ 21] pushzero ................................ <0>
+  [ 22] lteq .................................... <tMSecLeft <= 0>
+  [ 23] jmpifz [ 31] ............................ if tMSecLeft <= 0 then
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 35 .............................. return 0
+  [ 31] getlocal 1 .............................. <tDuration>
+  [ 33] setprop 814 ............................. pDuration = tDuration
+  [ 36] getmovieprop 100 ........................ <the milliSeconds>
+  [ 38] getlocal 0 .............................. <tMSecLeft>
+  [ 40] add ..................................... <the milliSeconds + tMSecLeft>
+  [ 41] setprop 815 ............................. pEndTime = the milliSeconds + tMSecLeft
+  [ 44] getprop 812 ............................. <pWindowID>
+  [ 47] pushcons 3 .............................. <"sw_cdown.window">
+  [ 49] pusharglist 2 ........................... <pWindowID, "sw_cdown.window">
+  [ 51] extcall 759 ............................. <createWindow(pWindowID, "sw_cdown.window")>
+  [ 54] jmpifz [455] ............................ if createWindow(pWindowID, "sw_cdown.window") then / else
+  [ 57] getprop 812 ............................. <pWindowID>
+  [ 60] pusharglist 1 ........................... <pWindowID>
+  [ 62] extcall 747 ............................. <getWindow(pWindowID)>
+  [ 65] setlocal 2 .............................. tWndObj = getWindow(pWindowID)
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglist 1 ........................... <me>
+  [ 71] objcall 228 ............................. <me.getGameSystem()>
+  [ 73] pusharglist 1 ........................... <me.getGameSystem()>
+  [ 75] objcall 60 .............................. <me.getGameSystem().getSpectatorModeFlag()>
+  [ 77] jmpifz [ 97] ............................ if me.getGameSystem().getSpectatorModeFlag() then / else
+  [ 80] getlocal 2 .............................. <tWndObj>
+  [ 82] pushcons 4 .............................. <"gs_button_leavegame">
+  [ 84] pusharglist 2 ........................... <tWndObj, "gs_button_leavegame">
+  [ 86] objcall 748 ............................. <tWndObj.getElement("gs_button_leavegame")>
+  [ 89] pusharglistnoret 1 ...................... <tWndObj.getElement("gs_button_leavegame")>
+  [ 91] objcall 282 ............................. tWndObj.getElement("gs_button_leavegame").hide()
+  [ 94] jmp [ 97]
+  [ 97] getlocal 2 .............................. <tWndObj>
+  [ 99] pusharglistnoret 1 ...................... <tWndObj>
+  [101] objcall 816 ............................. tWndObj.center()
+  [104] getparam 0 .............................. <me>
+  [106] pusharglist 1 ........................... <me>
+  [108] objcall 228 ............................. <me.getGameSystem()>
+  [110] pusharglist 1 ........................... <me.getGameSystem()>
+  [112] objcall 817 ............................. <me.getGameSystem().getTournamentFlag()>
+  [115] getparam 0 .............................. <me>
+  [117] pusharglist 1 ........................... <me>
+  [119] objcall 228 ............................. <me.getGameSystem()>
+  [121] pusharglist 1 ........................... <me.getGameSystem()>
+  [123] objcall 1208 ............................ <me.getGameSystem().getGameTicketsNotUsedFlag()>
+  [126] or ...................................... <me.getGameSystem().getTournamentFlag() or me.getGameSystem().getGameTicketsNotUsedFlag()>
+  [127] jmpifz [182] ............................ if me.getGameSystem().getTournamentFlag() or me.getGameSystem().getGameTicketsNotUsedFlag() then
+  [130] getlocal 2 .............................. <tWndObj>
+  [132] pushcons 5 .............................. <"sw_gameprice">
+  [134] pusharglist 2 ........................... <tWndObj, "sw_gameprice">
+  [136] objcall 818 ............................. <tWndObj.elementExists("sw_gameprice")>
+  [139] jmpifz [156] ............................ if tWndObj.elementExists("sw_gameprice") then
+  [142] getlocal 2 .............................. <tWndObj>
+  [144] pushcons 5 .............................. <"sw_gameprice">
+  [146] pusharglist 2 ........................... <tWndObj, "sw_gameprice">
+  [148] objcall 748 ............................. <tWndObj.getElement("sw_gameprice")>
+  [151] pusharglistnoret 1 ...................... <tWndObj.getElement("sw_gameprice")>
+  [153] objcall 282 ............................. tWndObj.getElement("sw_gameprice").hide()
+  [156] getlocal 2 .............................. <tWndObj>
+  [158] pushcons 6 .............................. <"bb_win_gameList">
+  [160] pusharglist 2 ........................... <tWndObj, "bb_win_gameList">
+  [162] objcall 818 ............................. <tWndObj.elementExists("bb_win_gameList")>
+  [165] jmpifz [182] ............................ if tWndObj.elementExists("bb_win_gameList") then
+  [168] getlocal 2 .............................. <tWndObj>
+  [170] pushcons 6 .............................. <"bb_win_gameList">
+  [172] pusharglist 2 ........................... <tWndObj, "bb_win_gameList">
+  [174] objcall 748 ............................. <tWndObj.getElement("bb_win_gameList")>
+  [177] pusharglistnoret 1 ...................... <tWndObj.getElement("bb_win_gameList")>
+  [179] objcall 282 ............................. tWndObj.getElement("bb_win_gameList").hide()
+  [182] getlocal 2 .............................. <tWndObj>
+  [184] pushcons 7 .............................. <"gs_bar_cntDwn">
+  [186] pusharglist 2 ........................... <tWndObj, "gs_bar_cntDwn">
+  [188] objcall 748 ............................. <tWndObj.getElement("gs_bar_cntDwn")>
+  [191] setlocal 3 .............................. tElem = tWndObj.getElement("gs_bar_cntDwn")
+  [193] getlocal 3 .............................. <tElem>
+  [195] pushsymb 122 ............................ <#member>
+  [197] pushcons 8 .............................. <"sw_scrbar_4">
+  [199] pusharglist 1 ........................... <"sw_scrbar_4">
+  [201] extcall 141 ............................. <getmemnum("sw_scrbar_4")>
+  [203] pusharglist 1 ........................... <getmemnum("sw_scrbar_4")>
+  [205] extcall 122 ............................. <member(getmemnum("sw_scrbar_4"))>
+  [207] pusharglistnoret 3 ...................... <tElem, #member, member(getmemnum("sw_scrbar_4"))>
+  [209] objcall 763 ............................. tElem.setProperty(#member, member(getmemnum("sw_scrbar_4")))
+  [212] getlocal 3 .............................. <tElem>
+  [214] pushint16 159 ........................... <159>
+  [217] pushint8 13 ............................. <13>
+  [219] pusharglistnoret 3 ...................... <tElem, 159, 13>
+  [221] objcall 819 ............................. tElem.resizeTo(159, 13)
+  [224] getparam 0 .............................. <me>
+  [226] pushzero ................................ <0>
+  [227] pusharglistnoret 2 ...................... <me, 0>
+  [229] objcall 809 ............................. me.setBar(0)
+  [232] getlocal 2 .............................. <tWndObj>
+  [234] pusharglistnoret 1 ...................... <tWndObj>
+  [236] objcall 761 ............................. tWndObj.lock()
+  [239] getlocal 2 .............................. <tWndObj>
+  [241] pushsymb 811 ............................ <#eventProc>
+  [244] getparam 0 .............................. <me>
+  [246] pusharglist 1 ........................... <me>
+  [248] objcall 197 ............................. <me.getID()>
+  [250] pushsymb 357 ............................ <#mouseUp>
+  [253] pusharglistnoret 4 ...................... <tWndObj, #eventProc, me.getID(), #mouseUp>
+  [255] objcall 79 .............................. tWndObj.registerProcedure(#eventProc, me.getID(), #mouseUp)
+  [257] getprop 733 ............................. <pTimeOutID>
+  [260] pusharglist 1 ........................... <pTimeOutID>
+  [262] extcall 738 ............................. <timeoutExists(pTimeOutID)>
+  [265] jmpifz [276] ............................ if timeoutExists(pTimeOutID) then
+  [268] getprop 733 ............................. <pTimeOutID>
+  [271] pusharglistnoret 1 ...................... <pTimeOutID>
+  [273] extcall 739 ............................. removeTimeout(pTimeOutID)
+  [276] getprop 733 ............................. <pTimeOutID>
+  [279] pushint16 300 ........................... <300>
+  [282] pushsymb 809 ............................ <#setBar>
+  [285] getparam 0 .............................. <me>
+  [287] pusharglist 1 ........................... <me>
+  [289] objcall 197 ............................. <me.getID()>
+  [291] pusharglistnoret 4 ...................... <pTimeOutID, 300, #setBar, me.getID()>
+  [293] extcall 740 ............................. createTimeout(pTimeOutID, 300, #setBar, me.getID())
+  [296] getlocal 2 .............................. <tWndObj>
+  [298] pushcons 9 .............................. <"gs_numtickets">
+  [300] pusharglist 2 ........................... <tWndObj, "gs_numtickets">
+  [302] objcall 748 ............................. <tWndObj.getElement("gs_numtickets")>
+  [305] setlocal 3 .............................. tElem = tWndObj.getElement("gs_numtickets")
+  [307] getlocal 3 .............................. <tElem>
+  [309] pushzero ................................ <0>
+  [310] eq ...................................... <tElem = 0>
+  [311] jmpifz [319] ............................ if tElem = 0 then
+  [314] pushzero ................................ <0>
+  [315] pusharglistnoret 1 ...................... <0>
+  [317] extcall 35 .............................. return 0
+  [319] getparam 0 .............................. <me>
+  [321] pusharglist 1 ........................... <me>
+  [323] objcall 228 ............................. <me.getGameSystem()>
+  [325] pushzero ................................ <0>
+  [326] eq ...................................... <me.getGameSystem() = 0>
+  [327] jmpifz [335] ............................ if me.getGameSystem() = 0 then
+  [330] pushzero ................................ <0>
+  [331] pusharglistnoret 1 ...................... <0>
+  [333] extcall 35 .............................. return 0
+  [335] getparam 0 .............................. <me>
+  [337] pusharglist 1 ........................... <me>
+  [339] objcall 228 ............................. <me.getGameSystem()>
+  [341] pusharglist 1 ........................... <me.getGameSystem()>
+  [343] objcall 1208 ............................ <me.getGameSystem().getGameTicketsNotUsedFlag()>
+  [346] jmpifz [384] ............................ if me.getGameSystem().getGameTicketsNotUsedFlag() then / else
+  [349] getlocal 3 .............................. <tElem>
+  [351] pusharglistnoret 1 ...................... <tElem>
+  [353] objcall 282 ............................. tElem.hide()
+  [356] getlocal 2 .............................. <tWndObj>
+  [358] pushcons 10 ............................. <"gs_amount_tickets_bg">
+  [360] pusharglist 2 ........................... <tWndObj, "gs_amount_tickets_bg">
+  [362] objcall 748 ............................. <tWndObj.getElement("gs_amount_tickets_bg")>
+  [365] setlocal 3 .............................. tElem = tWndObj.getElement("gs_amount_tickets_bg")
+  [367] getlocal 3 .............................. <tElem>
+  [369] pushzero ................................ <0>
+  [370] nteq .................................... <tElem <> 0>
+  [371] jmpifz [381] ............................ if tElem <> 0 then
+  [374] getlocal 3 .............................. <tElem>
+  [376] pusharglistnoret 1 ...................... <tElem>
+  [378] objcall 282 ............................. tElem.hide()
+  [381] jmp [446]
+  [384] getparam 0 .............................. <me>
+  [386] pusharglist 1 ........................... <me>
+  [388] objcall 228 ............................. <me.getGameSystem()>
+  [390] pusharglist 1 ........................... <me.getGameSystem()>
+  [392] objcall 820 ............................. <me.getGameSystem().getNumTickets()>
+  [395] pusharglist 1 ........................... <me.getGameSystem().getNumTickets()>
+  [397] extcall 42 .............................. <string(me.getGameSystem().getNumTickets())>
+  [399] setlocal 4 .............................. tNumTickets = string(me.getGameSystem().getNumTickets())
+  [401] getlocal 4 .............................. <tNumTickets>
+  [403] getobjprop 430 .......................... <tNumTickets.length>
+  [406] pushint8 1 .............................. <1>
+  [408] eq ...................................... <tNumTickets.length = 1>
+  [409] jmpifz [419] ............................ if tNumTickets.length = 1 then
+  [412] pushcons 11 ............................. <"00">
+  [414] getlocal 4 .............................. <tNumTickets>
+  [416] joinstr ................................. <"00" & tNumTickets>
+  [417] setlocal 4 .............................. tNumTickets = "00" & tNumTickets
+  [419] getlocal 4 .............................. <tNumTickets>
+  [421] getobjprop 430 .......................... <tNumTickets.length>
+  [424] pushint8 2 .............................. <2>
+  [426] eq ...................................... <tNumTickets.length = 2>
+  [427] jmpifz [437] ............................ if tNumTickets.length = 2 then
+  [430] pushcons 12 ............................. <"0">
+  [432] getlocal 4 .............................. <tNumTickets>
+  [434] joinstr ................................. <"0" & tNumTickets>
+  [435] setlocal 4 .............................. tNumTickets = "0" & tNumTickets
+  [437] getlocal 3 .............................. <tElem>
+  [439] getlocal 4 .............................. <tNumTickets>
+  [441] pusharglistnoret 2 ...................... <tElem, tNumTickets>
+  [443] objcall 749 ............................. tElem.setText(tNumTickets)
+  [446] pushint8 1 .............................. <1>
+  [448] pusharglistnoret 1 ...................... <1>
+  [450] extcall 35 .............................. return 1
+  [452] jmp [460]
+  [455] pushzero ................................ <0>
+  [456] pusharglistnoret 1 ...................... <0>
+  [458] extcall 35 .............................. return 0
+  [460] ret
+end
+
+on setBar me
+  [  0] getprop 812 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 747 ............................. <getWindow(pWindowID)>
+  [  8] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 10] getlocal 0 .............................. <tWndObj>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tWndObj = 0>
+  [ 14] jmpifz [ 28] ............................ if tWndObj = 0 then
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglist 1 ........................... <me>
+  [ 21] objcall 810 ............................. <me.removeGameCountdown()>
+  [ 24] pusharglistnoret 1 ...................... <me.removeGameCountdown()>
+  [ 26] extcall 35 .............................. return me.removeGameCountdown()
+  [ 28] getlocal 0 .............................. <tWndObj>
+  [ 30] pushcons 7 .............................. <"gs_bar_cntDwn">
+  [ 32] pusharglist 2 ........................... <tWndObj, "gs_bar_cntDwn">
+  [ 34] objcall 748 ............................. <tWndObj.getElement("gs_bar_cntDwn")>
+  [ 37] setlocal 1 .............................. tElem = tWndObj.getElement("gs_bar_cntDwn")
+  [ 39] getmovieprop 100 ........................ <the milliSeconds>
+  [ 41] getprop 815 ............................. <pEndTime>
+  [ 44] gteq .................................... <the milliSeconds >= pEndTime>
+  [ 45] jmpifz [ 59] ............................ if the milliSeconds >= pEndTime then
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 810 ............................. <me.removeGameCountdown()>
+  [ 55] pusharglistnoret 1 ...................... <me.removeGameCountdown()>
+  [ 57] extcall 35 .............................. return me.removeGameCountdown()
+  [ 59] getprop 815 ............................. <pEndTime>
+  [ 62] getmovieprop 100 ........................ <the milliSeconds>
+  [ 64] sub ..................................... <pEndTime - the milliSeconds>
+  [ 65] getprop 814 ............................. <pDuration>
+  [ 68] pusharglist 1 ........................... <pDuration>
+  [ 70] extcall 133 ............................. <float(pDuration)>
+  [ 72] div ..................................... <(pEndTime - the milliSeconds) / float(pDuration)>
+  [ 73] setlocal 2 .............................. tProc = (pEndTime - the milliSeconds) / float(pDuration)
+  [ 75] pushint16 159 ........................... <159>
+  [ 78] getlocal 2 .............................. <tProc>
+  [ 80] mul ..................................... <159 * tProc>
+  [ 81] setlocal 3 .............................. tNextWidth = 159 * tProc
+  [ 83] getlocal 1 .............................. <tElem>
+  [ 85] pushsymb 152 ............................ <#width>
+  [ 87] pusharglist 2 ........................... <tElem, #width>
+  [ 89] objcall 351 ............................. <tElem.getProperty(#width)>
+  [ 92] setlocal 4 .............................. tCurrWidth = tElem.getProperty(#width)
+  [ 94] getlocal 3 .............................. <tNextWidth>
+  [ 96] pushint8 80 ............................. <80>
+  [ 98] lt ...................................... <tNextWidth < 80>
+  [ 99] jmpifz [124] ............................ if tNextWidth < 80 then / else
+  [102] getlocal 3 .............................. <tNextWidth>
+  [104] pushint8 39 ............................. <39>
+  [106] lt ...................................... <tNextWidth < 39>
+  [107] jmpifz [117] ............................ if tNextWidth < 39 then / else
+  [110] pushcons 13 ............................. <"sw_scrbar_1">
+  [112] setlocal 5 .............................. tmember = "sw_scrbar_1"
+  [114] jmp [121]
+  [117] pushcons 14 ............................. <"sw_scrbar_3">
+  [119] setlocal 5 .............................. tmember = "sw_scrbar_3"
+  [121] jmp [128]
+  [124] pushcons 8 .............................. <"sw_scrbar_4">
+  [126] setlocal 5 .............................. tmember = "sw_scrbar_4"
+  [128] getlocal 1 .............................. <tElem>
+  [130] pushsymb 76 ............................. <#sprite>
+  [132] pusharglist 2 ........................... <tElem, #sprite>
+  [134] objcall 351 ............................. <tElem.getProperty(#sprite)>
+  [137] setlocal 6 .............................. tSpr = tElem.getProperty(#sprite)
+  [139] getprop 826 ............................. <pCountdownMember>
+  [142] getlocal 5 .............................. <tmember>
+  [144] nteq .................................... <pCountdownMember <> tmember>
+  [145] jmpifz [172] ............................ if pCountdownMember <> tmember then
+  [148] getlocal 5 .............................. <tmember>
+  [150] setprop 826 ............................. pCountdownMember = tmember
+  [153] getlocal 1 .............................. <tElem>
+  [155] pushsymb 122 ............................ <#member>
+  [157] getlocal 5 .............................. <tmember>
+  [159] pusharglist 1 ........................... <tmember>
+  [161] extcall 141 ............................. <getmemnum(tmember)>
+  [163] pusharglist 1 ........................... <getmemnum(tmember)>
+  [165] extcall 122 ............................. <member(getmemnum(tmember))>
+  [167] pusharglistnoret 3 ...................... <tElem, #member, member(getmemnum(tmember))>
+  [169] objcall 763 ............................. tElem.setProperty(#member, member(getmemnum(tmember)))
+  [172] getlocal 1 .............................. <tElem>
+  [174] getlocal 3 .............................. <tNextWidth>
+  [176] pusharglist 1 ........................... <tNextWidth>
+  [178] extcall 89 .............................. <integer(tNextWidth)>
+  [180] getlocal 4 .............................. <tCurrWidth>
+  [182] sub ..................................... <integer(tNextWidth) - tCurrWidth>
+  [183] pushzero ................................ <0>
+  [184] pusharglistnoret 3 ...................... <tElem, integer(tNextWidth) - tCurrWidth, 0>
+  [186] objcall 786 ............................. tElem.resizeBy(integer(tNextWidth) - tCurrWidth, 0)
+  [189] pushint8 1 .............................. <1>
+  [191] pusharglistnoret 1 ...................... <1>
+  [193] extcall 35 .............................. return 1
+  [195] ret
+end
+
+on removeGameCountdown me
+  [  0] getprop 733 ............................. <pTimeOutID>
+  [  3] pusharglist 1 ........................... <pTimeOutID>
+  [  5] extcall 738 ............................. <timeoutExists(pTimeOutID)>
+  [  8] jmpifz [ 19] ............................ if timeoutExists(pTimeOutID) then
+  [ 11] getprop 733 ............................. <pTimeOutID>
+  [ 14] pusharglistnoret 1 ...................... <pTimeOutID>
+  [ 16] extcall 739 ............................. removeTimeout(pTimeOutID)
+  [ 19] getprop 812 ............................. <pWindowID>
+  [ 22] pusharglist 1 ........................... <pWindowID>
+  [ 24] extcall 758 ............................. <windowExists(pWindowID)>
+  [ 27] jmpifz [ 38] ............................ if windowExists(pWindowID) then
+  [ 30] getprop 812 ............................. <pWindowID>
+  [ 33] pusharglistnoret 1 ...................... <pWindowID>
+  [ 35] extcall 765 ............................. removeWindow(pWindowID)
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] pusharglistnoret 1 ...................... <1>
+  [ 42] extcall 35 .............................. return 1
+  [ 44] ret
+end
+
+on eventProc me, tEvent, tSprID, tParam
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] peek 0 .................................. case tSprID of
+  [  4] pushcons 4 .............................. <"gs_button_leavegame">
+  [  6] eq
+  [  7] jmpifz [ 52] ............................ (case) "gs_button_leavegame":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 228 ............................. <me.getGameSystem()>
+  [ 16] pushzero ................................ <0>
+  [ 17] eq ...................................... <me.getGameSystem() = 0>
+  [ 18] jmpifz [ 28] ............................ if me.getGameSystem() = 0 then
+  [ 21] pop 1
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 35 .............................. return 0
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglistnoret 1 ...................... <me>
+  [ 32] objcall 810 ............................. me.removeGameCountdown()
+  [ 35] pop 1
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pusharglist 1 ........................... <me>
+  [ 41] objcall 228 ............................. <me.getGameSystem()>
+  [ 43] pusharglist 1 ........................... <me.getGameSystem()>
+  [ 45] objcall 830 ............................. <me.getGameSystem().enterLounge()>
+  [ 48] pusharglistnoret 1 ...................... <me.getGameSystem().enterLounge()>
+  [ 50] extcall 35 .............................. return me.getGameSystem().enterLounge()
+  [ 52] pop 1
+  [ 54] ret
+end

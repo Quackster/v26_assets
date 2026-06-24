@@ -1,0 +1,247 @@
+property pSpriteA, pSpriteB, pPause, pmode, pTopLimit, pBottomLimit, pFloors, pCurrentFloor, pTargetFloor, pContinueTime
+
+on define me, tSpriteA
+  [  0] getparam 1 .............................. <tSpriteA>
+  [  2] setprop 244 ............................. pSpriteA = tSpriteA
+  [  4] pushsymb 316 ............................ <#entry>
+  [  7] pusharglist 1 ........................... <#entry>
+  [  9] extcall 145 ............................. <getThread(#entry)>
+  [ 11] pusharglist 1 ........................... <getThread(#entry)>
+  [ 13] objcall 165 ............................. <getThread(#entry).getInterface()>
+  [ 15] getobjprop 28 ........................... <getThread(#entry).getInterface().pEntryVisual>
+  [ 17] setlocal 0 .............................. tVisual = getThread(#entry).getInterface().pEntryVisual
+  [ 19] getlocal 0 .............................. <tVisual>
+  [ 21] pusharglist 1 ........................... <tVisual>
+  [ 23] extcall 51 .............................. <getVisualizer(tVisual)>
+  [ 25] pushcons 0 .............................. <"elevator_shadow">
+  [ 27] pusharglist 2 ........................... <getVisualizer(tVisual), "elevator_shadow">
+  [ 29] objcall 52 .............................. <getVisualizer(tVisual).getSprById("elevator_shadow")>
+  [ 31] setprop 245 ............................. pSpriteB = getVisualizer(tVisual).getSprById("elevator_shadow")
+  [ 33] pushsymb 233 ............................ <#up>
+  [ 35] setprop 232 ............................. pmode = #up
+  [ 37] pushzero ................................ <0>
+  [ 38] setprop 234 ............................. pPause = 0
+  [ 40] pushint16 296 ........................... <296>
+  [ 43] setprop 235 ............................. pTopLimit = 296
+  [ 45] pushint16 431 ........................... <431>
+  [ 48] setprop 236 ............................. pBottomLimit = 431
+  [ 50] pushint8 8 .............................. <8>
+  [ 52] setprop 237 ............................. pFloors = 8
+  [ 54] getprop 237 ............................. <pFloors>
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] sub ..................................... <pFloors - 1>
+  [ 59] pusharglist 1 ........................... <pFloors - 1>
+  [ 61] extcall 180 ............................. <random(pFloors - 1)>
+  [ 63] setprop 238 ............................. pCurrentFloor = random(pFloors - 1)
+  [ 65] getmovieprop 61 ......................... <the milliSeconds>
+  [ 67] setprop 239 ............................. pContinueTime = the milliSeconds
+  [ 69] getprop 244 ............................. <pSpriteA>
+  [ 71] getprop 236 ............................. <pBottomLimit>
+  [ 73] getprop 236 ............................. <pBottomLimit>
+  [ 75] getprop 235 ............................. <pTopLimit>
+  [ 77] sub ..................................... <pBottomLimit - pTopLimit>
+  [ 78] getprop 237 ............................. <pFloors>
+  [ 80] div ..................................... <(pBottomLimit - pTopLimit) / pFloors>
+  [ 81] getprop 238 ............................. <pCurrentFloor>
+  [ 83] mul ..................................... <(pBottomLimit - pTopLimit) / pFloors * pCurrentFloor>
+  [ 84] sub ..................................... <pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pCurrentFloor)>
+  [ 85] setobjprop 55 ........................... pSpriteA.locV = pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pCurrentFloor)
+  [ 87] getprop 245 ............................. <pSpriteB>
+  [ 89] getprop 244 ............................. <pSpriteA>
+  [ 91] getobjprop 55 ........................... <pSpriteA.locV>
+  [ 93] setobjprop 55 ........................... pSpriteB.locV = pSpriteA.locV
+  [ 95] ret
+end
+
+on update me
+  [  0] getprop 239 ............................. <pContinueTime>
+  [  2] getmovieprop 61 ......................... <the milliSeconds>
+  [  4] lt ...................................... <pContinueTime < the milliSeconds>
+  [  5] jmpifz [147] ............................ if pContinueTime < the milliSeconds then
+  [  8] getprop 244 ............................. <pSpriteA>
+  [ 10] getobjprop 55 ........................... <pSpriteA.locV>
+  [ 12] getprop 236 ............................. <pBottomLimit>
+  [ 14] getprop 236 ............................. <pBottomLimit>
+  [ 16] getprop 235 ............................. <pTopLimit>
+  [ 18] sub ..................................... <pBottomLimit - pTopLimit>
+  [ 19] getprop 237 ............................. <pFloors>
+  [ 21] div ..................................... <(pBottomLimit - pTopLimit) / pFloors>
+  [ 22] getprop 240 ............................. <pTargetFloor>
+  [ 24] mul ..................................... <(pBottomLimit - pTopLimit) / pFloors * pTargetFloor>
+  [ 25] sub ..................................... <pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor)>
+  [ 26] gt ...................................... <pSpriteA.locV > (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor))>
+  [ 27] jmpifz [ 49] ............................ if pSpriteA.locV > (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor)) then
+  [ 30] getprop 244 ............................. <pSpriteA>
+  [ 32] getprop 244 ............................. <pSpriteA>
+  [ 34] getobjprop 55 ........................... <pSpriteA.locV>
+  [ 36] pushint8 2 .............................. <2>
+  [ 38] sub ..................................... <pSpriteA.locV - 2>
+  [ 39] setobjprop 55 ........................... pSpriteA.locV = pSpriteA.locV - 2
+  [ 41] getprop 245 ............................. <pSpriteB>
+  [ 43] getprop 244 ............................. <pSpriteA>
+  [ 45] getobjprop 55 ........................... <pSpriteA.locV>
+  [ 47] setobjprop 55 ........................... pSpriteB.locV = pSpriteA.locV
+  [ 49] getprop 244 ............................. <pSpriteA>
+  [ 51] getobjprop 55 ........................... <pSpriteA.locV>
+  [ 53] getprop 236 ............................. <pBottomLimit>
+  [ 55] getprop 236 ............................. <pBottomLimit>
+  [ 57] getprop 235 ............................. <pTopLimit>
+  [ 59] sub ..................................... <pBottomLimit - pTopLimit>
+  [ 60] getprop 237 ............................. <pFloors>
+  [ 62] div ..................................... <(pBottomLimit - pTopLimit) / pFloors>
+  [ 63] getprop 240 ............................. <pTargetFloor>
+  [ 65] mul ..................................... <(pBottomLimit - pTopLimit) / pFloors * pTargetFloor>
+  [ 66] sub ..................................... <pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor)>
+  [ 67] lt ...................................... <pSpriteA.locV < (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor))>
+  [ 68] jmpifz [ 90] ............................ if pSpriteA.locV < (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor)) then
+  [ 71] getprop 244 ............................. <pSpriteA>
+  [ 73] getprop 244 ............................. <pSpriteA>
+  [ 75] getobjprop 55 ........................... <pSpriteA.locV>
+  [ 77] pushint8 2 .............................. <2>
+  [ 79] add ..................................... <pSpriteA.locV + 2>
+  [ 80] setobjprop 55 ........................... pSpriteA.locV = pSpriteA.locV + 2
+  [ 82] getprop 245 ............................. <pSpriteB>
+  [ 84] getprop 244 ............................. <pSpriteA>
+  [ 86] getobjprop 55 ........................... <pSpriteA.locV>
+  [ 88] setobjprop 55 ........................... pSpriteB.locV = pSpriteA.locV
+  [ 90] getprop 244 ............................. <pSpriteA>
+  [ 92] getobjprop 55 ........................... <pSpriteA.locV>
+  [ 94] getprop 236 ............................. <pBottomLimit>
+  [ 96] getprop 236 ............................. <pBottomLimit>
+  [ 98] getprop 235 ............................. <pTopLimit>
+  [100] sub ..................................... <pBottomLimit - pTopLimit>
+  [101] getprop 237 ............................. <pFloors>
+  [103] div ..................................... <(pBottomLimit - pTopLimit) / pFloors>
+  [104] getprop 240 ............................. <pTargetFloor>
+  [106] mul ..................................... <(pBottomLimit - pTopLimit) / pFloors * pTargetFloor>
+  [107] sub ..................................... <pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor)>
+  [108] sub ..................................... <pSpriteA.locV - (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor))>
+  [109] pusharglist 1 ........................... <pSpriteA.locV - (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor))>
+  [111] extcall 113 ............................. <abs(pSpriteA.locV - (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor)))>
+  [113] pushint8 2 .............................. <2>
+  [115] lt ...................................... <abs(pSpriteA.locV - (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor))) < 2>
+  [116] jmpifz [147] ............................ if abs(pSpriteA.locV - (pBottomLimit - ((pBottomLimit - pTopLimit) / pFloors * pTargetFloor))) < 2 then
+  [119] getmovieprop 61 ......................... <the milliSeconds>
+  [121] pushint8 5 .............................. <5>
+  [123] pusharglist 1 ........................... <5>
+  [125] extcall 180 ............................. <random(5)>
+  [127] pushint8 2 .............................. <2>
+  [129] add ..................................... <random(5) + 2>
+  [130] pushint16 1000 .......................... <1000>
+  [133] mul ..................................... <(random(5) + 2) * 1000>
+  [134] add ..................................... <the milliSeconds + ((random(5) + 2) * 1000)>
+  [135] setprop 239 ............................. pContinueTime = the milliSeconds + ((random(5) + 2) * 1000)
+  [137] getprop 240 ............................. <pTargetFloor>
+  [139] setprop 238 ............................. pCurrentFloor = pTargetFloor
+  [141] getparam 0 .............................. <me>
+  [143] pusharglistnoret 1 ...................... <me>
+  [145] objcall 208 ............................. me.modechange()
+  [147] ret
+end
+
+on modechange me
+  [  0] getprop 232 ............................. <pmode>
+  [  2] peek 0 .................................. case pmode of
+  [  4] pushsymb 233 ............................ <#up>
+  [  6] eq
+  [  7] jmpifz [ 70] ............................ (case) #up:
+  [ 10] getprop 238 ............................. <pCurrentFloor>
+  [ 12] getprop 237 ............................. <pFloors>
+  [ 14] eq ...................................... <pCurrentFloor = pFloors>
+  [ 15] jmpifz [ 31] ............................ if pCurrentFloor = pFloors then / else
+  [ 18] pushsymb 241 ............................ <#down>
+  [ 20] setlocal 0 .............................. mode = #down
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pusharglistnoret 1 ...................... <me>
+  [ 26] objcall 209 ............................. me.goDownRandom()
+  [ 28] jmp [ 67]
+  [ 31] pushint8 4 .............................. <4>
+  [ 33] pusharglist 1 ........................... <4>
+  [ 35] extcall 180 ............................. <random(4)>
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] eq ...................................... <random(4) = 1>
+  [ 40] getprop 238 ............................. <pCurrentFloor>
+  [ 42] pushzero ................................ <0>
+  [ 43] nteq .................................... <pCurrentFloor <> 0>
+  [ 44] and ..................................... <(random(4) = 1) and (pCurrentFloor <> 0)>
+  [ 45] jmpifz [ 61] ............................ if (random(4) = 1) and (pCurrentFloor <> 0) then / else
+  [ 48] pushsymb 241 ............................ <#down>
+  [ 50] setlocal 0 .............................. mode = #down
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pusharglistnoret 1 ...................... <me>
+  [ 56] objcall 209 ............................. me.goDownRandom()
+  [ 58] jmp [ 67]
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglistnoret 1 ...................... <me>
+  [ 65] objcall 210 ............................. me.goUpRandom()
+  [ 67] jmp [132]
+  [ 70] peek 0
+  [ 72] pushsymb 241 ............................ <#down>
+  [ 74] eq
+  [ 75] jmpifz [132] ............................ (case) #down:
+  [ 78] getprop 238 ............................. <pCurrentFloor>
+  [ 80] pushzero ................................ <0>
+  [ 81] eq ...................................... <pCurrentFloor = 0>
+  [ 82] jmpifz [ 98] ............................ if pCurrentFloor = 0 then / else
+  [ 85] pushsymb 233 ............................ <#up>
+  [ 87] setlocal 0 .............................. mode = #up
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglistnoret 1 ...................... <me>
+  [ 93] objcall 210 ............................. me.goUpRandom()
+  [ 95] jmp [132]
+  [ 98] pushint8 10 ............................. <10>
+  [100] pusharglist 1 ........................... <10>
+  [102] extcall 180 ............................. <random(10)>
+  [104] pushint8 1 .............................. <1>
+  [106] eq ...................................... <random(10) = 1>
+  [107] getprop 238 ............................. <pCurrentFloor>
+  [109] getprop 237 ............................. <pFloors>
+  [111] nteq .................................... <pCurrentFloor <> pFloors>
+  [112] and ..................................... <(random(10) = 1) and (pCurrentFloor <> pFloors)>
+  [113] jmpifz [126] ............................ if (random(10) = 1) and (pCurrentFloor <> pFloors) then
+  [116] pushsymb 233 ............................ <#up>
+  [118] setlocal 0 .............................. mode = #up
+  [120] getparam 0 .............................. <me>
+  [122] pusharglistnoret 1 ...................... <me>
+  [124] objcall 210 ............................. me.goUpRandom()
+  [126] getparam 0 .............................. <me>
+  [128] pusharglistnoret 1 ...................... <me>
+  [130] objcall 209 ............................. me.goDownRandom()
+  [132] pop 1 ................................... end case
+  [134] ret
+end
+
+on goDownRandom me
+  [  0] pushint8 2 .............................. <2>
+  [  2] pusharglist 1 ........................... <2>
+  [  4] extcall 180 ............................. <random(2)>
+  [  6] pushint8 1 .............................. <1>
+  [  8] eq ...................................... <random(2) = 1>
+  [  9] jmpifz [ 22] ............................ if random(2) = 1 then / else
+  [ 12] pushzero ................................ <0>
+  [ 13] setprop 240 ............................. pTargetFloor = 0
+  [ 15] pushsymb 233 ............................ <#up>
+  [ 17] setprop 232 ............................. pmode = #up
+  [ 19] jmp [ 36]
+  [ 22] getprop 238 ............................. <pCurrentFloor>
+  [ 24] getprop 238 ............................. <pCurrentFloor>
+  [ 26] pusharglist 1 ........................... <pCurrentFloor>
+  [ 28] extcall 180 ............................. <random(pCurrentFloor)>
+  [ 30] sub ..................................... <pCurrentFloor - random(pCurrentFloor)>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] add ..................................... <pCurrentFloor - random(pCurrentFloor) + 1>
+  [ 34] setprop 240 ............................. pTargetFloor = pCurrentFloor - random(pCurrentFloor) + 1
+  [ 36] ret
+end
+
+on goUpRandom me
+  [  0] getprop 237 ............................. <pFloors>
+  [  2] getprop 238 ............................. <pCurrentFloor>
+  [  4] sub ..................................... <pFloors - pCurrentFloor>
+  [  5] pusharglist 1 ........................... <pFloors - pCurrentFloor>
+  [  7] extcall 180 ............................. <random(pFloors - pCurrentFloor)>
+  [  9] getprop 238 ............................. <pCurrentFloor>
+  [ 11] add ..................................... <random(pFloors - pCurrentFloor) + pCurrentFloor>
+  [ 12] setprop 240 ............................. pTargetFloor = random(pFloors - pCurrentFloor) + pCurrentFloor
+  [ 14] ret
+end

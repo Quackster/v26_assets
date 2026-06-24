@@ -1,0 +1,240 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 104 ............................. <me.regMsgList(1)>
+  [  8] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 10] extcall 10 .............................. return me.regMsgList(1)
+  [ 12] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 104 ............................. <me.regMsgList(0)>
+  [  7] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [  9] extcall 10 .............................. return me.regMsgList(0)
+  [ 11] ret
+end
+
+on handle_cannot_enter_bus me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 105 ............................. <me.getInterface()>
+  [  6] getparam 1 .............................. <tMsg>
+  [  8] getchainedprop 106 ...................... <tMsg.content>
+  [ 10] pushsymb 107 ............................ <#line>
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] getparam 1 .............................. <tMsg>
+  [ 16] getchainedprop 106 ...................... <tMsg.content>
+  [ 18] pushsymb 107 ............................ <#line>
+  [ 20] pusharglist 2 ........................... <tMsg.content, #line>
+  [ 22] objcall 30 .............................. <tMsg.content.line.count>
+  [ 24] pusharglist 4 ........................... <tMsg.content, #line, 1, tMsg.content.line.count>
+  [ 26] objcall 37 .............................. <tMsg.content.line[1..tMsg.content.line.count]>
+  [ 28] pusharglistnoret 2 ...................... <me.getInterface(), tMsg.content.line[1..tMsg.content.line.count]>
+  [ 30] objcall 2 ............................... me.getInterface().showBusClosed(tMsg.content.line[1..tMsg.content.line.count])
+  [ 32] ret
+end
+
+on handle_vote_question me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 106 ...................... <tMsg.content>
+  [  4] pushsymb 107 ............................ <#line>
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglist 3 ........................... <tMsg.content, #line, 1>
+  [ 10] objcall 37 .............................. <tMsg.content.line[1]>
+  [ 12] setlocal 0 .............................. tQuestion = tMsg.content.line[1]
+  [ 14] pusharglist 0 ........................... <[]>
+  [ 16] pushlist ................................ <[]>
+  [ 17] setlocal 1 .............................. tChoices = []
+  [ 19] pushint8 2 .............................. <2>
+  [ 21] setlocal 2
+  [ 23] getlocal 2
+  [ 25] getparam 1 .............................. <tMsg>
+  [ 27] getchainedprop 106 ...................... <tMsg.content>
+  [ 29] pushsymb 107 ............................ <#line>
+  [ 31] pusharglist 2 ........................... <tMsg.content, #line>
+  [ 33] objcall 30 .............................. <tMsg.content.line.count>
+  [ 35] lteq
+  [ 36] jmpifz [ 96] ............................ repeat with i = 2 to tMsg.content.line.count
+  [ 39] getparam 1 .............................. <tMsg>
+  [ 41] getchainedprop 106 ...................... <tMsg.content>
+  [ 43] pushsymb 107 ............................ <#line>
+  [ 45] getlocal 2 .............................. <i>
+  [ 47] pusharglist 3 ........................... <tMsg.content, #line, i>
+  [ 49] objcall 37 .............................. <tMsg.content.line[i]>
+  [ 51] setlocal 3 .............................. tLine = tMsg.content.line[i]
+  [ 53] getlocal 3 .............................. <tLine>
+  [ 55] pusharglist 1 ........................... <tLine>
+  [ 57] extcall 34 .............................. <length(tLine)>
+  [ 59] pushint8 2 .............................. <2>
+  [ 61] gt ...................................... <length(tLine) > 2>
+  [ 62] jmpifz [ 87] ............................ if length(tLine) > 2 then
+  [ 65] getlocal 1 .............................. <tChoices>
+  [ 67] getlocal 3 .............................. <tLine>
+  [ 69] pushsymb 70 ............................. <#char>
+  [ 71] pushint8 3 .............................. <3>
+  [ 73] getlocal 3 .............................. <tLine>
+  [ 75] pusharglist 1 ........................... <tLine>
+  [ 77] extcall 34 .............................. <length(tLine)>
+  [ 79] pusharglist 4 ........................... <tLine, #char, 3, length(tLine)>
+  [ 81] objcall 37 .............................. <tLine.char[3..length(tLine)]>
+  [ 83] pusharglistnoret 2 ...................... <tChoices, tLine.char[3..length(tLine)]>
+  [ 85] objcall 108 ............................. tChoices.add(tLine.char[3..length(tLine)])
+  [ 87] pushint8 1
+  [ 89] getlocal 2
+  [ 91] add
+  [ 92] setlocal 2
+  [ 94] endrepeat [ 23]
+  [ 96] getparam 0 .............................. <me>
+  [ 98] pusharglist 1 ........................... <me>
+  [100] objcall 105 ............................. <me.getInterface()>
+  [102] getlocal 0 .............................. <tQuestion>
+  [104] getlocal 1 .............................. <tChoices>
+  [106] pusharglistnoret 3 ...................... <me.getInterface(), tQuestion, tChoices>
+  [108] objcall 3 ............................... me.getInterface().showVoteQuestion(tQuestion, tChoices)
+  [110] ret
+end
+
+on handle_vote_results me, tMsg
+  [  0] getmovieprop 111 ........................ <the itemDelimiter>
+  [  2] setlocal 0 .............................. tDelim = the itemDelimiter
+  [  4] getparam 1 .............................. <tMsg>
+  [  6] getchainedprop 106 ...................... <tMsg.content>
+  [  8] pushsymb 107 ............................ <#line>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglist 3 ........................... <tMsg.content, #line, 1>
+  [ 14] objcall 37 .............................. <tMsg.content.line[1]>
+  [ 16] setlocal 1 .............................. tLine = tMsg.content.line[1]
+  [ 18] pushcons 0 .............................. <"/">
+  [ 20] setmovieprop 111 ........................ the itemDelimiter = "/"
+  [ 22] getlocal 1 .............................. <tLine>
+  [ 24] pushsymb 113 ............................ <#item>
+  [ 26] pushint8 2 .............................. <2>
+  [ 28] pusharglist 3 ........................... <tLine, #item, 2>
+  [ 30] objcall 37 .............................. <tLine.item[2]>
+  [ 32] pusharglist 1 ........................... <tLine.item[2]>
+  [ 34] extcall 112 ............................. <value(tLine.item[2])>
+  [ 36] setlocal 2 .............................. tTotalVotes = value(tLine.item[2])
+  [ 38] pusharglist 0 ........................... <[]>
+  [ 40] pushlist ................................ <[]>
+  [ 41] setlocal 3 .............................. tChoiceVotes = []
+  [ 43] pushint8 3 .............................. <3>
+  [ 45] setlocal 4
+  [ 47] getlocal 4
+  [ 49] getlocal 1 .............................. <tLine>
+  [ 51] pushsymb 113 ............................ <#item>
+  [ 53] pusharglist 2 ........................... <tLine, #item>
+  [ 55] objcall 30 .............................. <tLine.item.count>
+  [ 57] lteq
+  [ 58] jmpifz [ 90] ............................ repeat with i = 3 to tLine.item.count
+  [ 61] getlocal 3 .............................. <tChoiceVotes>
+  [ 63] getlocal 1 .............................. <tLine>
+  [ 65] pushsymb 113 ............................ <#item>
+  [ 67] getlocal 4 .............................. <i>
+  [ 69] pusharglist 3 ........................... <tLine, #item, i>
+  [ 71] objcall 37 .............................. <tLine.item[i]>
+  [ 73] pusharglist 1 ........................... <tLine.item[i]>
+  [ 75] extcall 112 ............................. <value(tLine.item[i])>
+  [ 77] pusharglistnoret 2 ...................... <tChoiceVotes, value(tLine.item[i])>
+  [ 79] objcall 108 ............................. tChoiceVotes.add(value(tLine.item[i]))
+  [ 81] pushint8 1
+  [ 83] getlocal 4
+  [ 85] add
+  [ 86] setlocal 4
+  [ 88] endrepeat [ 47]
+  [ 90] getlocal 0 .............................. <tDelim>
+  [ 92] setmovieprop 111 ........................ the itemDelimiter = tDelim
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pusharglist 1 ........................... <me>
+  [ 98] objcall 105 ............................. <me.getInterface()>
+  [100] getlocal 2 .............................. <tTotalVotes>
+  [102] getlocal 3 .............................. <tChoiceVotes>
+  [104] pusharglistnoret 3 ...................... <me.getInterface(), tTotalVotes, tChoiceVotes>
+  [106] objcall 5 ............................... me.getInterface().showVoteResults(tTotalVotes, tChoiceVotes)
+  [108] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint8 79 ............................. <79>
+  [  9] pushsymb 102 ............................ <#handle_vote_question>
+  [ 11] pusharglistnoret 3 ...................... <tMsgs, 79, #handle_vote_question>
+  [ 13] objcall 116 ............................. tMsgs.setaProp(79, #handle_vote_question)
+  [ 15] getlocal 0 .............................. <tMsgs>
+  [ 17] pushint8 80 ............................. <80>
+  [ 19] pushsymb 103 ............................ <#handle_vote_results>
+  [ 21] pusharglistnoret 3 ...................... <tMsgs, 80, #handle_vote_results>
+  [ 23] objcall 116 ............................. tMsgs.setaProp(80, #handle_vote_results)
+  [ 25] getlocal 0 .............................. <tMsgs>
+  [ 27] pushint8 81 ............................. <81>
+  [ 29] pushsymb 101 ............................ <#handle_cannot_enter_bus>
+  [ 31] pusharglistnoret 3 ...................... <tMsgs, 81, #handle_cannot_enter_bus>
+  [ 33] objcall 116 ............................. tMsgs.setaProp(81, #handle_cannot_enter_bus)
+  [ 35] pusharglist 0 ........................... <[:]>
+  [ 37] pushproplist ............................ <[:]>
+  [ 38] setlocal 1 .............................. tCmds = [:]
+  [ 40] getlocal 1 .............................. <tCmds>
+  [ 42] pushcons 1 .............................. <"CHANGEWORLD">
+  [ 44] pushint8 111 ............................ <111>
+  [ 46] pusharglistnoret 3 ...................... <tCmds, "CHANGEWORLD", 111>
+  [ 48] objcall 116 ............................. tCmds.setaProp("CHANGEWORLD", 111)
+  [ 50] getlocal 1 .............................. <tCmds>
+  [ 52] pushcons 2 .............................. <"VOTE">
+  [ 54] pushint8 112 ............................ <112>
+  [ 56] pusharglistnoret 3 ...................... <tCmds, "VOTE", 112>
+  [ 58] objcall 116 ............................. tCmds.setaProp("VOTE", 112)
+  [ 60] getlocal 1 .............................. <tCmds>
+  [ 62] pushcons 3 .............................. <"TRYBUS">
+  [ 64] pushint8 113 ............................ <113>
+  [ 66] pusharglistnoret 3 ...................... <tCmds, "TRYBUS", 113>
+  [ 68] objcall 116 ............................. tCmds.setaProp("TRYBUS", 113)
+  [ 70] getparam 1 .............................. <tBool>
+  [ 72] jmpifz [114] ............................ if tBool then / else
+  [ 75] pushcons 4 .............................. <"connection.room.id">
+  [ 77] pusharglist 1 ........................... <"connection.room.id">
+  [ 79] extcall 118 ............................. <getVariable("connection.room.id")>
+  [ 81] getparam 0 .............................. <me>
+  [ 83] pusharglist 1 ........................... <me>
+  [ 85] objcall 13 .............................. <me.getID()>
+  [ 87] getlocal 0 .............................. <tMsgs>
+  [ 89] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tMsgs>
+  [ 91] extcall 117 ............................. registerListener(getVariable("connection.room.id"), me.getID(), tMsgs)
+  [ 93] pushcons 4 .............................. <"connection.room.id">
+  [ 95] pusharglist 1 ........................... <"connection.room.id">
+  [ 97] extcall 118 ............................. <getVariable("connection.room.id")>
+  [ 99] getparam 0 .............................. <me>
+  [101] pusharglist 1 ........................... <me>
+  [103] objcall 13 .............................. <me.getID()>
+  [105] getlocal 1 .............................. <tCmds>
+  [107] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tCmds>
+  [109] extcall 119 ............................. registerCommands(getVariable("connection.room.id"), me.getID(), tCmds)
+  [111] jmp [150]
+  [114] pushcons 4 .............................. <"connection.room.id">
+  [116] pusharglist 1 ........................... <"connection.room.id">
+  [118] extcall 118 ............................. <getVariable("connection.room.id")>
+  [120] getparam 0 .............................. <me>
+  [122] pusharglist 1 ........................... <me>
+  [124] objcall 13 .............................. <me.getID()>
+  [126] getlocal 0 .............................. <tMsgs>
+  [128] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tMsgs>
+  [130] extcall 120 ............................. unregisterListener(getVariable("connection.room.id"), me.getID(), tMsgs)
+  [132] pushcons 4 .............................. <"connection.room.id">
+  [134] pusharglist 1 ........................... <"connection.room.id">
+  [136] extcall 118 ............................. <getVariable("connection.room.id")>
+  [138] getparam 0 .............................. <me>
+  [140] pusharglist 1 ........................... <me>
+  [142] objcall 13 .............................. <me.getID()>
+  [144] getlocal 1 .............................. <tCmds>
+  [146] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tCmds>
+  [148] extcall 121 ............................. unregisterCommands(getVariable("connection.room.id"), me.getID(), tCmds)
+  [150] pushint8 1 .............................. <1>
+  [152] pusharglistnoret 1 ...................... <1>
+  [154] extcall 10 .............................. return 1
+  [156] ret
+end

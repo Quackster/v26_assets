@@ -1,0 +1,1097 @@
+property pLandscapeBgMngr, pLandscapeAnimMngr, pWallMaskMngr, pHasAnimation, pLandscapeMem, pwidth, pheight, pWideScreenOffset, pRemoveUpdate, pWallStruct, pTurnPointList
+
+on construct me
+  [  0] pushcons 0 .............................. <"landscape_background_manager">
+  [  2] pushcons 1 .............................. <"Landscape Background Manager">
+  [  4] pusharglist 2 ........................... <"landscape_background_manager", "Landscape Background Manager">
+  [  6] extcall 11 .............................. <createObject("landscape_background_manager", "Landscape Background Manager")>
+  [  8] setprop 10 .............................. pLandscapeBgMngr = createObject("landscape_background_manager", "Landscape Background Manager")
+  [ 10] pushcons 2 .............................. <"landscape_animation_manager">
+  [ 12] pushcons 3 .............................. <"Landscape Animation Manager">
+  [ 14] pusharglist 2 ........................... <"landscape_animation_manager", "Landscape Animation Manager">
+  [ 16] extcall 11 .............................. <createObject("landscape_animation_manager", "Landscape Animation Manager")>
+  [ 18] setprop 12 .............................. pLandscapeAnimMngr = createObject("landscape_animation_manager", "Landscape Animation Manager")
+  [ 20] pushcons 4 .............................. <"wall_mask_manager">
+  [ 22] pushcons 5 .............................. <"Wall Mask Manager">
+  [ 24] pusharglist 2 ........................... <"wall_mask_manager", "Wall Mask Manager">
+  [ 26] extcall 11 .............................. <createObject("wall_mask_manager", "Wall Mask Manager")>
+  [ 28] setprop 13 .............................. pWallMaskMngr = createObject("wall_mask_manager", "Wall Mask Manager")
+  [ 30] pushzero ................................ <0>
+  [ 31] setprop 15 .............................. pWideScreenOffset = 0
+  [ 33] pushzero ................................ <0>
+  [ 34] setprop 38 .............................. pRemoveUpdate = 0
+  [ 36] pushsymb 17 ............................. <#room>
+  [ 38] pusharglist 1 ........................... <#room>
+  [ 40] extcall 16 .............................. <threadExists(#room)>
+  [ 42] jmpifz [ 63] ............................ if threadExists(#room) then
+  [ 45] pushsymb 17 ............................. <#room>
+  [ 47] pusharglist 1 ........................... <#room>
+  [ 49] extcall 18 .............................. <getThread(#room)>
+  [ 51] pusharglist 1 ........................... <getThread(#room)>
+  [ 53] objcall 19 .............................. <getThread(#room).getInterface()>
+  [ 55] pushsymb 20 ............................. <#widescreenoffset>
+  [ 57] pusharglist 2 ........................... <getThread(#room).getInterface(), #widescreenoffset>
+  [ 59] objcall 21 .............................. <getThread(#room).getInterface().getProperty(#widescreenoffset)>
+  [ 61] setprop 15 .............................. pWideScreenOffset = getThread(#room).getInterface().getProperty(#widescreenoffset)
+  [ 63] pusharglist 0 ........................... <>
+  [ 65] thebuiltin 23 ........................... <the stageRight>
+  [ 67] pusharglist 0 ........................... <>
+  [ 69] thebuiltin 24 ........................... <the stageLeft>
+  [ 71] sub ..................................... <the stageRight - the stageLeft>
+  [ 72] setprop 22 .............................. pwidth = the stageRight - the stageLeft
+  [ 74] pushcons 6 .............................. <"landscape.height">
+  [ 76] pushint16 400 ........................... <400>
+  [ 79] pusharglist 2 ........................... <"landscape.height", 400>
+  [ 81] extcall 27 .............................. <getVariable("landscape.height", 400)>
+  [ 83] pusharglist 1 ........................... <getVariable("landscape.height", 400)>
+  [ 85] extcall 26 .............................. <integer(getVariable("landscape.height", 400))>
+  [ 87] setprop 25 .............................. pheight = integer(getVariable("landscape.height", 400))
+  [ 89] pushcons 7 .............................. <"room_landscape">
+  [ 91] setlocal 0 .............................. tMemberName = "room_landscape"
+  [ 93] getlocal 0 .............................. <tMemberName>
+  [ 95] pusharglist 1 ........................... <tMemberName>
+  [ 97] extcall 28 .............................. <memberExists(tMemberName)>
+  [ 99] jmpifz [113] ............................ if memberExists(tMemberName) then / else
+  [102] getlocal 0 .............................. <tMemberName>
+  [104] pusharglist 1 ........................... <tMemberName>
+  [106] extcall 30 .............................. <getMember(tMemberName)>
+  [108] setprop 29 .............................. pLandscapeMem = getMember(tMemberName)
+  [110] jmp [143]
+  [113] getlocal 0 .............................. <tMemberName>
+  [115] pushsymb 32 ............................. <#bitmap>
+  [117] pusharglistnoret 2 ...................... <tMemberName, #bitmap>
+  [119] extcall 31 .............................. createMember(tMemberName, #bitmap)
+  [121] getlocal 0 .............................. <tMemberName>
+  [123] pusharglist 1 ........................... <tMemberName>
+  [125] extcall 30 .............................. <getMember(tMemberName)>
+  [127] setprop 29 .............................. pLandscapeMem = getMember(tMemberName)
+  [129] getprop 29 .............................. <pLandscapeMem>
+  [131] getprop 22 .............................. <pwidth>
+  [133] getprop 25 .............................. <pheight>
+  [135] pushint8 32 ............................. <32>
+  [137] pusharglist 3 ........................... <pwidth, pheight, 32>
+  [139] extcall 33 .............................. <image(pwidth, pheight, 32)>
+  [141] setobjprop 33 ........................... pLandscapeMem.image = image(pwidth, pheight, 32)
+  [143] pushint8 1 .............................. <1>
+  [145] pusharglistnoret 1 ...................... <1>
+  [147] extcall 36 .............................. return 1
+  [149] ret
+end
+
+on deconstruct me
+  [  0] pushcons 0 .............................. <"landscape_background_manager">
+  [  2] pusharglist 1 ........................... <"landscape_background_manager">
+  [  4] extcall 41 .............................. <objectExists("landscape_background_manager")>
+  [  6] jmpifz [ 15] ............................ if objectExists("landscape_background_manager") then
+  [  9] pushcons 0 .............................. <"landscape_background_manager">
+  [ 11] pusharglistnoret 1 ...................... <"landscape_background_manager">
+  [ 13] extcall 42 .............................. removeObject("landscape_background_manager")
+  [ 15] pushcons 2 .............................. <"landscape_animation_manager">
+  [ 17] pusharglist 1 ........................... <"landscape_animation_manager">
+  [ 19] extcall 41 .............................. <objectExists("landscape_animation_manager")>
+  [ 21] jmpifz [ 30] ............................ if objectExists("landscape_animation_manager") then
+  [ 24] pushcons 2 .............................. <"landscape_animation_manager">
+  [ 26] pusharglistnoret 1 ...................... <"landscape_animation_manager">
+  [ 28] extcall 42 .............................. removeObject("landscape_animation_manager")
+  [ 30] pushcons 4 .............................. <"wall_mask_manager">
+  [ 32] pusharglist 1 ........................... <"wall_mask_manager">
+  [ 34] extcall 41 .............................. <objectExists("wall_mask_manager")>
+  [ 36] jmpifz [ 45] ............................ if objectExists("wall_mask_manager") then
+  [ 39] pushcons 4 .............................. <"wall_mask_manager">
+  [ 41] pusharglistnoret 1 ...................... <"wall_mask_manager">
+  [ 43] extcall 42 .............................. removeObject("wall_mask_manager")
+  [ 45] pushcons 7 .............................. <"room_landscape">
+  [ 47] setlocal 0 .............................. tMemberName = "room_landscape"
+  [ 49] getlocal 0 .............................. <tMemberName>
+  [ 51] pusharglist 1 ........................... <tMemberName>
+  [ 53] extcall 28 .............................. <memberExists(tMemberName)>
+  [ 55] jmpifz [ 64] ............................ if memberExists(tMemberName) then
+  [ 58] getlocal 0 .............................. <tMemberName>
+  [ 60] pusharglistnoret 1 ...................... <tMemberName>
+  [ 62] extcall 43 .............................. removeMember(tMemberName)
+  [ 64] pusharglist 0 ........................... <>
+  [ 66] extcall 135 ............................. <VOID>
+  [ 68] setprop 460 ............................. pWallStruct = VOID
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglistnoret 1 ...................... <1>
+  [ 75] extcall 36 .............................. return 1
+  [ 77] ret
+end
+
+on insertWallMaskItem me, tID, tClassID, tloc, tdir, tSize
+  [  0] getparam 3 .............................. <tloc>
+  [  2] getobjprop 63 ........................... <tloc.locV>
+  [  4] pushint16 1000 .......................... <1000>
+  [  7] inv ..................................... <-1000>
+  [  8] eq ...................................... <tloc.locV = -1000>
+  [  9] jmpifz [ 17] ............................ if tloc.locV = -1000 then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 36 .............................. return 0
+  [ 17] getprop 13 .............................. <pWallMaskMngr>
+  [ 19] getparam 1 .............................. <tID>
+  [ 21] getparam 2 .............................. <tClassID>
+  [ 23] getparam 3 .............................. <tloc>
+  [ 25] getparam 4 .............................. <tdir>
+  [ 27] getparam 5 .............................. <tSize>
+  [ 29] pusharglistnoret 6 ...................... <pWallMaskMngr, tID, tClassID, tloc, tdir, tSize>
+  [ 31] objcall 2 ............................... pWallMaskMngr.insertWallMaskItem(tID, tClassID, tloc, tdir, tSize)
+  [ 33] getprop 13 .............................. <pWallMaskMngr>
+  [ 35] pusharglist 1 ........................... <pWallMaskMngr>
+  [ 37] objcall 46 .............................. <pWallMaskMngr.getItemCount()>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] eq ...................................... <pWallMaskMngr.getItemCount() = 1>
+  [ 42] jmpifz [ 53] ............................ if pWallMaskMngr.getItemCount() = 1 then
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pushint8 1 .............................. <1>
+  [ 49] pusharglistnoret 2 ...................... <me, 1>
+  [ 51] objcall 4 ............................... me.setActivate(1)
+  [ 53] getparam 0 .............................. <me>
+  [ 55] pusharglistnoret 1 ...................... <me>
+  [ 57] objcall 9 ............................... me.update()
+  [ 59] ret
+end
+
+on removeWallMaskItem me, tID
+  [  0] getprop 13 .............................. <pWallMaskMngr>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglistnoret 2 ...................... <pWallMaskMngr, tID>
+  [  6] objcall 3 ............................... pWallMaskMngr.removeWallMaskItem(tID)
+  [  8] getprop 13 .............................. <pWallMaskMngr>
+  [ 10] pusharglist 1 ........................... <pWallMaskMngr>
+  [ 12] objcall 46 .............................. <pWallMaskMngr.getItemCount()>
+  [ 14] pushzero ................................ <0>
+  [ 15] eq ...................................... <pWallMaskMngr.getItemCount() = 0>
+  [ 16] jmpifz [ 26] ............................ if pWallMaskMngr.getItemCount() = 0 then
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 2 ...................... <me, 0>
+  [ 24] objcall 4 ............................... me.setActivate(0)
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglistnoret 1 ...................... <me>
+  [ 30] objcall 9 ............................... me.update()
+  [ 32] ret
+end
+
+on setActivate me, tActive
+  [  0] getparam 1 .............................. <tActive>
+  [  2] jmpifz [105] ............................ if tActive then / else
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglist 1 ........................... <me>
+  [  9] objcall 7 ............................... <me.getRoomVisualizer()>
+  [ 11] setlocal 0 .............................. tViz = me.getRoomVisualizer()
+  [ 13] getlocal 0 .............................. <tViz>
+  [ 15] pusharglist 1 ........................... <tViz>
+  [ 17] extcall 54 .............................. <objectp(tViz)>
+  [ 19] jmpifz [ 88] ............................ if objectp(tViz) then
+  [ 22] getlocal 0 .............................. <tViz>
+  [ 24] pushcons 8 .............................. <"landscape">
+  [ 26] pusharglist 2 ........................... <tViz, "landscape">
+  [ 28] objcall 55 .............................. <tViz.getSprById("landscape")>
+  [ 30] setlocal 1 .............................. tSpr = tViz.getSprById("landscape")
+  [ 32] getlocal 1 .............................. <tSpr>
+  [ 34] pusharglist 1 ........................... <tSpr>
+  [ 36] extcall 56 .............................. <ilk(tSpr)>
+  [ 38] pushsymb 57 ............................. <#sprite>
+  [ 40] eq ...................................... <ilk(tSpr) = #sprite>
+  [ 41] jmpifz [ 88] ............................ if ilk(tSpr) = #sprite then
+  [ 44] getlocal 1 .............................. <tSpr>
+  [ 46] getprop 29 .............................. <pLandscapeMem>
+  [ 48] setobjprop 58 ........................... tSpr.member = pLandscapeMem
+  [ 50] getlocal 1 .............................. <tSpr>
+  [ 52] pushint8 100 ............................ <100>
+  [ 54] setobjprop 59 ........................... tSpr.blend = 100
+  [ 56] getlocal 1 .............................. <tSpr>
+  [ 58] getprop 22 .............................. <pwidth>
+  [ 60] setobjprop 60 ........................... tSpr.width = pwidth
+  [ 62] getlocal 1 .............................. <tSpr>
+  [ 64] getprop 25 .............................. <pheight>
+  [ 66] setobjprop 61 ........................... tSpr.height = pheight
+  [ 68] getlocal 1 .............................. <tSpr>
+  [ 70] pushzero ................................ <0>
+  [ 71] setobjprop 62 ........................... tSpr.locH = 0
+  [ 73] getlocal 1 .............................. <tSpr>
+  [ 75] pushzero ................................ <0>
+  [ 76] setobjprop 63 ........................... tSpr.locV = 0
+  [ 78] getprop 29 .............................. <pLandscapeMem>
+  [ 80] pushzero ................................ <0>
+  [ 81] pushzero ................................ <0>
+  [ 82] pusharglist 2 ........................... <0, 0>
+  [ 84] extcall 64 .............................. <point(0, 0)>
+  [ 86] setobjprop 65 ........................... pLandscapeMem.regPoint = point(0, 0)
+  [ 88] getprop 534 ............................. <pHasAnimation>
+  [ 91] jmpifz [102] ............................ if pHasAnimation then
+  [ 94] getprop 12 .............................. <pLandscapeAnimMngr>
+  [ 96] pushzero ................................ <0>
+  [ 97] pusharglistnoret 2 ...................... <pLandscapeAnimMngr, 0>
+  [ 99] objcall 321 ............................. pLandscapeAnimMngr.setStopped(0)
+  [102] jmp [114]
+  [105] getprop 12 .............................. <pLandscapeAnimMngr>
+  [107] pushint8 1 .............................. <1>
+  [109] pusharglistnoret 2 ...................... <pLandscapeAnimMngr, 1>
+  [111] objcall 321 ............................. pLandscapeAnimMngr.setStopped(1)
+  [114] ret
+end
+
+on setLandscape me, tLandscapeType, tRoomType
+  [  0] getmovieprop 69 ......................... <the itemDelimiter>
+  [  2] setlocal 0 .............................. tDelim = the itemDelimiter
+  [  4] pushcons 9 .............................. <"_">
+  [  6] setmovieprop 69 ......................... the itemDelimiter = "_"
+  [  8] getparam 2 .............................. <tRoomType>
+  [ 10] pushsymb 70 ............................. <#item>
+  [ 12] pushint8 2 .............................. <2>
+  [ 14] pusharglist 3 ........................... <tRoomType, #item, 2>
+  [ 16] objcall 71 .............................. <tRoomType.item[2]>
+  [ 18] setlocal 1 .............................. tRoomTypeID = tRoomType.item[2]
+  [ 20] getlocal 0 .............................. <tDelim>
+  [ 22] setmovieprop 69 ......................... the itemDelimiter = tDelim
+  [ 24] getlocal 1 .............................. <tRoomTypeID>
+  [ 26] pushcons 10 ............................. <EMPTY>
+  [ 28] eq ...................................... <tRoomTypeID = EMPTY>
+  [ 29] jmpifz [ 37] ............................ if tRoomTypeID = EMPTY then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 36 .............................. return 0
+  [ 37] getmovieprop 69 ......................... <the itemDelimiter>
+  [ 39] setlocal 2 .............................. tLimiter = the itemDelimiter
+  [ 41] pushcons 11 ............................. <".">
+  [ 43] setmovieprop 69 ......................... the itemDelimiter = "."
+  [ 45] pusharglist 0 ........................... <[:]>
+  [ 47] pushproplist ............................ <[:]>
+  [ 48] setlocal 3 .............................. tdata = [:]
+  [ 50] getlocal 3 .............................. <tdata>
+  [ 52] pushsymb 60 ............................. <#width>
+  [ 54] getprop 22 .............................. <pwidth>
+  [ 56] pusharglistnoret 3 ...................... <tdata, #width, pwidth>
+  [ 58] objcall 72 .............................. tdata[#width] = pwidth
+  [ 60] getlocal 3 .............................. <tdata>
+  [ 62] pushsymb 61 ............................. <#height>
+  [ 64] getprop 25 .............................. <pheight>
+  [ 66] pusharglistnoret 3 ...................... <tdata, #height, pheight>
+  [ 68] objcall 72 .............................. tdata[#height] = pheight
+  [ 70] getlocal 3 .............................. <tdata>
+  [ 72] pushsymb 329 ............................ <#gradient>
+  [ 75] getparam 1 .............................. <tLandscapeType>
+  [ 77] pushsymb 70 ............................. <#item>
+  [ 79] pushint8 1 .............................. <1>
+  [ 81] pusharglist 3 ........................... <tLandscapeType, #item, 1>
+  [ 83] objcall 71 .............................. <tLandscapeType.item[1]>
+  [ 85] pusharglistnoret 3 ...................... <tdata, #gradient, tLandscapeType.item[1]>
+  [ 87] objcall 72 .............................. tdata[#gradient] = tLandscapeType.item[1]
+  [ 89] getlocal 3 .............................. <tdata>
+  [ 91] pushsymb 238 ............................ <#type>
+  [ 93] getparam 1 .............................. <tLandscapeType>
+  [ 95] pushsymb 70 ............................. <#item>
+  [ 97] pushint8 2 .............................. <2>
+  [ 99] pusharglist 3 ........................... <tLandscapeType, #item, 2>
+  [101] objcall 71 .............................. <tLandscapeType.item[2]>
+  [103] pusharglistnoret 3 ...................... <tdata, #type, tLandscapeType.item[2]>
+  [105] objcall 72 .............................. tdata[#type] = tLandscapeType.item[2]
+  [107] getlocal 3 .............................. <tdata>
+  [109] pushsymb 74 ............................. <#roomtypeid>
+  [111] getlocal 1 .............................. <tRoomTypeID>
+  [113] pusharglistnoret 3 ...................... <tdata, #roomtypeid, tRoomTypeID>
+  [115] objcall 72 .............................. tdata[#roomtypeid] = tRoomTypeID
+  [117] getlocal 3 .............................. <tdata>
+  [119] pushsymb 75 ............................. <#offset>
+  [121] getprop 15 .............................. <pWideScreenOffset>
+  [123] pusharglistnoret 3 ...................... <tdata, #offset, pWideScreenOffset>
+  [125] objcall 72 .............................. tdata[#offset] = pWideScreenOffset
+  [127] getlocal 2 .............................. <tLimiter>
+  [129] setmovieprop 69 ......................... the itemDelimiter = tLimiter
+  [131] getparam 0 .............................. <me>
+  [133] getparam 2 .............................. <tRoomType>
+  [135] pusharglist 2 ........................... <me, tRoomType>
+  [137] objcall 461 ............................. <me.getRoomWallStruct(tRoomType)>
+  [140] setlocal 4 .............................. tRoomWallStruct = me.getRoomWallStruct(tRoomType)
+  [142] getlocal 4 .............................. <tRoomWallStruct>
+  [144] pushsymb 336 ............................ <#factorx>
+  [147] pusharglist 2 ........................... <tRoomWallStruct, #factorx>
+  [149] objcall 282 ............................. <tRoomWallStruct.getaProp(#factorx)>
+  [152] setlocal 5 .............................. tFactorX = tRoomWallStruct.getaProp(#factorx)
+  [154] getparam 0 .............................. <me>
+  [156] getlocal 3 .............................. <tdata>
+  [158] pushsymb 238 ............................ <#type>
+  [160] pusharglist 2 ........................... <tdata, #type>
+  [162] objcall 151 ............................. <tdata[#type]>
+  [164] getlocal 5 .............................. <tFactorX>
+  [166] pusharglist 3 ........................... <me, tdata[#type], tFactorX>
+  [168] objcall 474 ............................. <me.getLandscapeProps(tdata[#type], tFactorX)>
+  [171] setlocal 6 .............................. tLandscapeProps = me.getLandscapeProps(tdata[#type], tFactorX)
+  [173] getprop 10 .............................. <pLandscapeBgMngr>
+  [175] getlocal 3 .............................. <tdata>
+  [177] getlocal 4 .............................. <tRoomWallStruct>
+  [179] getlocal 6 .............................. <tLandscapeProps>
+  [181] pusharglistnoret 4 ...................... <pLandscapeBgMngr, tdata, tRoomWallStruct, tLandscapeProps>
+  [183] objcall 76 .............................. pLandscapeBgMngr.define(tdata, tRoomWallStruct, tLandscapeProps)
+  [185] getlocal 6 .............................. <tLandscapeProps>
+  [187] pushzero ................................ <0>
+  [188] nteq .................................... <tLandscapeProps <> 0>
+  [189] jmpifz [250] ............................ if tLandscapeProps <> 0 then
+  [192] getlocal 6 .............................. <tLandscapeProps>
+  [194] pushsymb 476 ............................ <#clouds>
+  [197] pusharglist 2 ........................... <tLandscapeProps, #clouds>
+  [199] objcall 282 ............................. <tLandscapeProps.getaProp(#clouds)>
+  [202] setlocal 7 .............................. tCloudFlag = tLandscapeProps.getaProp(#clouds)
+  [204] getlocal 7 .............................. <tCloudFlag>
+  [206] pusharglist 1 ........................... <tCloudFlag>
+  [208] extcall 341 ............................. <voidp(tCloudFlag)>
+  [211] getlocal 7 .............................. <tCloudFlag>
+  [213] pushint8 1 .............................. <1>
+  [215] eq ...................................... <tCloudFlag = 1>
+  [216] or ...................................... <voidp(tCloudFlag) or (tCloudFlag = 1)>
+  [217] jmpifz [246] ............................ if voidp(tCloudFlag) or (tCloudFlag = 1) then / else
+  [220] pushint8 1 .............................. <1>
+  [222] setprop 534 ............................. pHasAnimation = 1
+  [225] getparam 0 .............................. <me>
+  [227] pushint8 1 .............................. <1>
+  [229] getparam 2 .............................. <tRoomType>
+  [231] getlocal 3 .............................. <tdata>
+  [233] pushsymb 238 ............................ <#type>
+  [235] pusharglist 2 ........................... <tdata, #type>
+  [237] objcall 151 ............................. <tdata[#type]>
+  [239] pusharglistnoret 4 ...................... <me, 1, tRoomType, tdata[#type]>
+  [241] objcall 6 ............................... me.setLandscapeAnimation(1, tRoomType, tdata[#type])
+  [243] jmp [250]
+  [246] pushzero ................................ <0>
+  [247] setprop 534 ............................. pHasAnimation = 0
+  [250] getparam 0 .............................. <me>
+  [252] pusharglistnoret 1 ...................... <me>
+  [254] objcall 8 ............................... me.updateLandscape()
+  [256] getparam 0 .............................. <me>
+  [258] pusharglist 1 ........................... <me>
+  [260] objcall 45 .............................. <me.getID()>
+  [262] pusharglistnoret 1 ...................... <me.getID()>
+  [264] extcall 53 .............................. receiveUpdate(me.getID())
+  [266] ret
+end
+
+on setLandscapeAnimation me, tAnimationID, tRoomType, tLandscapeType
+  [  0] getmovieprop 69 ......................... <the itemDelimiter>
+  [  2] setlocal 0 .............................. tDelim = the itemDelimiter
+  [  4] pushcons 9 .............................. <"_">
+  [  6] setmovieprop 69 ......................... the itemDelimiter = "_"
+  [  8] getparam 2 .............................. <tRoomType>
+  [ 10] pushsymb 70 ............................. <#item>
+  [ 12] pushint8 2 .............................. <2>
+  [ 14] pusharglist 3 ........................... <tRoomType, #item, 2>
+  [ 16] objcall 71 .............................. <tRoomType.item[2]>
+  [ 18] setlocal 1 .............................. tRoomTypeID = tRoomType.item[2]
+  [ 20] getlocal 0 .............................. <tDelim>
+  [ 22] setmovieprop 69 ......................... the itemDelimiter = tDelim
+  [ 24] getlocal 1 .............................. <tRoomTypeID>
+  [ 26] pushcons 10 ............................. <EMPTY>
+  [ 28] eq ...................................... <tRoomTypeID = EMPTY>
+  [ 29] jmpifz [ 37] ............................ if tRoomTypeID = EMPTY then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 36 .............................. return 0
+  [ 37] getparam 0 .............................. <me>
+  [ 39] getparam 2 .............................. <tRoomType>
+  [ 41] pusharglist 2 ........................... <me, tRoomType>
+  [ 43] objcall 461 ............................. <me.getRoomWallStruct(tRoomType)>
+  [ 46] setlocal 2 .............................. tStruct = me.getRoomWallStruct(tRoomType)
+  [ 48] getlocal 2 .............................. <tStruct>
+  [ 50] pusharglist 0 ........................... <>
+  [ 52] extcall 135 ............................. <VOID>
+  [ 54] eq ...................................... <tStruct = VOID>
+  [ 55] jmpifz [ 63] ............................ if tStruct = VOID then
+  [ 58] pushzero ................................ <0>
+  [ 59] pusharglistnoret 1 ...................... <0>
+  [ 61] extcall 36 .............................. return 0
+  [ 63] pusharglist 0 ........................... <[:]>
+  [ 65] pushproplist ............................ <[:]>
+  [ 66] setlocal 3 .............................. tdata = [:]
+  [ 68] getlocal 3 .............................. <tdata>
+  [ 70] pushsymb 60 ............................. <#width>
+  [ 72] getprop 22 .............................. <pwidth>
+  [ 74] pusharglistnoret 3 ...................... <tdata, #width, pwidth>
+  [ 76] objcall 72 .............................. tdata[#width] = pwidth
+  [ 78] getlocal 3 .............................. <tdata>
+  [ 80] pushsymb 61 ............................. <#height>
+  [ 82] getprop 25 .............................. <pheight>
+  [ 84] pusharglistnoret 3 ...................... <tdata, #height, pheight>
+  [ 86] objcall 72 .............................. tdata[#height] = pheight
+  [ 88] getlocal 3 .............................. <tdata>
+  [ 90] pushsymb 507 ............................ <#wallheight>
+  [ 93] getlocal 2 .............................. <tStruct>
+  [ 95] pushsymb 61 ............................. <#height>
+  [ 97] pusharglist 2 ........................... <tStruct, #height>
+  [ 99] objcall 282 ............................. <tStruct.getaProp(#height)>
+  [102] pusharglistnoret 3 ...................... <tdata, #wallheight, tStruct.getaProp(#height)>
+  [104] objcall 72 .............................. tdata[#wallheight] = tStruct.getaProp(#height)
+  [106] getlocal 3 .............................. <tdata>
+  [108] pushsymb 73 ............................. <#id>
+  [110] getparam 1 .............................. <tAnimationID>
+  [112] pusharglistnoret 3 ...................... <tdata, #id, tAnimationID>
+  [114] objcall 72 .............................. tdata[#id] = tAnimationID
+  [116] getlocal 3 .............................. <tdata>
+  [118] pushsymb 74 ............................. <#roomtypeid>
+  [120] getlocal 1 .............................. <tRoomTypeID>
+  [122] pusharglistnoret 3 ...................... <tdata, #roomtypeid, tRoomTypeID>
+  [124] objcall 72 .............................. tdata[#roomtypeid] = tRoomTypeID
+  [126] getlocal 3 .............................. <tdata>
+  [128] pushsymb 75 ............................. <#offset>
+  [130] getprop 15 .............................. <pWideScreenOffset>
+  [132] pusharglistnoret 3 ...................... <tdata, #offset, pWideScreenOffset>
+  [134] objcall 72 .............................. tdata[#offset] = pWideScreenOffset
+  [136] getlocal 3 .............................. <tdata>
+  [138] pushsymb 478 ............................ <#landscape>
+  [141] getparam 3 .............................. <tLandscapeType>
+  [143] pusharglistnoret 3 ...................... <tdata, #landscape, tLandscapeType>
+  [145] objcall 72 .............................. tdata[#landscape] = tLandscapeType
+  [147] getprop 12 .............................. <pLandscapeAnimMngr>
+  [149] getlocal 3 .............................. <tdata>
+  [151] getparam 0 .............................. <me>
+  [153] getparam 2 .............................. <tRoomType>
+  [155] pusharglist 2 ........................... <me, tRoomType>
+  [157] objcall 488 ............................. <me.getRoomTurnPointList(tRoomType)>
+  [160] pusharglistnoret 3 ...................... <pLandscapeAnimMngr, tdata, me.getRoomTurnPointList(tRoomType)>
+  [162] objcall 76 .............................. pLandscapeAnimMngr.define(tdata, me.getRoomTurnPointList(tRoomType))
+  [164] getprop 13 .............................. <pWallMaskMngr>
+  [166] pusharglist 1 ........................... <pWallMaskMngr>
+  [168] objcall 46 .............................. <pWallMaskMngr.getItemCount()>
+  [170] pushzero ................................ <0>
+  [171] gt ...................................... <pWallMaskMngr.getItemCount() > 0>
+  [172] jmpifz [183] ............................ if pWallMaskMngr.getItemCount() > 0 then
+  [175] getparam 0 .............................. <me>
+  [177] pushint8 1 .............................. <1>
+  [179] pusharglistnoret 2 ...................... <me, 1>
+  [181] objcall 4 ............................... me.setActivate(1)
+  [183] getparam 0 .............................. <me>
+  [185] pusharglistnoret 1 ...................... <me>
+  [187] objcall 8 ............................... me.updateLandscape()
+  [189] ret
+end
+
+on getRoomVisualizer me
+  [  0] pushsymb 17 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 16 .............................. <threadExists(#room)>
+  [  6] jmpifz [ 76] ............................ if threadExists(#room) then
+  [  9] pushsymb 17 ............................. <#room>
+  [ 11] pusharglist 1 ........................... <#room>
+  [ 13] extcall 18 .............................. <getThread(#room)>
+  [ 15] pusharglist 1 ........................... <getThread(#room)>
+  [ 17] objcall 19 .............................. <getThread(#room).getInterface()>
+  [ 19] setlocal 0 .............................. tInterface = getThread(#room).getInterface()
+  [ 21] pushsymb 17 ............................. <#room>
+  [ 23] pusharglist 1 ........................... <#room>
+  [ 25] extcall 18 .............................. <getThread(#room)>
+  [ 27] pusharglist 1 ........................... <getThread(#room)>
+  [ 29] objcall 34 .............................. <getThread(#room).getComponent()>
+  [ 31] setlocal 1 .............................. tComponent = getThread(#room).getComponent()
+  [ 33] getlocal 1 .............................. <tComponent>
+  [ 35] pusharglist 1 ........................... <tComponent>
+  [ 37] objcall 84 .............................. <tComponent.getRoomID()>
+  [ 39] pushcons 12 ............................. <"private">
+  [ 41] eq ...................................... <tComponent.getRoomID() = "private">
+  [ 42] jmpifz [ 76] ............................ if tComponent.getRoomID() = "private" then
+  [ 45] pushsymb 17 ............................. <#room>
+  [ 47] pusharglist 1 ........................... <#room>
+  [ 49] extcall 18 .............................. <getThread(#room)>
+  [ 51] pusharglist 1 ........................... <getThread(#room)>
+  [ 53] objcall 19 .............................. <getThread(#room).getInterface()>
+  [ 55] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 57] objcall 7 ............................... <getThread(#room).getInterface().getRoomVisualizer()>
+  [ 59] setlocal 2 .............................. tVisualizer = getThread(#room).getInterface().getRoomVisualizer()
+  [ 61] getlocal 2 .............................. <tVisualizer>
+  [ 63] pusharglist 1 ........................... <tVisualizer>
+  [ 65] extcall 54 .............................. <objectp(tVisualizer)>
+  [ 67] jmpifz [ 76] ............................ if objectp(tVisualizer) then
+  [ 70] getlocal 2 .............................. <tVisualizer>
+  [ 72] pusharglistnoret 1 ...................... <tVisualizer>
+  [ 74] extcall 36 .............................. return tVisualizer
+  [ 76] pushzero ................................ <0>
+  [ 77] pusharglistnoret 1 ...................... <0>
+  [ 79] extcall 36 .............................. return 0
+  [ 81] ret
+end
+
+on updateLandscape me
+  [  0] getprop 10 .............................. <pLandscapeBgMngr>
+  [  2] pusharglist 1 ........................... <pLandscapeBgMngr>
+  [  4] objcall 88 .............................. <pLandscapeBgMngr.getImage()>
+  [  6] setlocal 0 .............................. tBgImg = pLandscapeBgMngr.getImage()
+  [  8] getlocal 0 .............................. <tBgImg>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tBgImg = 0>
+  [ 12] jmpifz [ 20] ............................ if tBgImg = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 36 .............................. return 0
+  [ 20] getprop 13 .............................. <pWallMaskMngr>
+  [ 22] pusharglist 1 ........................... <pWallMaskMngr>
+  [ 24] objcall 89 .............................. <pWallMaskMngr.getMask()>
+  [ 26] setlocal 1 .............................. tMask = pWallMaskMngr.getMask()
+  [ 28] getprop 29 .............................. <pLandscapeMem>
+  [ 30] getobjprop 33 ........................... <pLandscapeMem.image>
+  [ 32] setlocal 2 .............................. tLandscapeImg = pLandscapeMem.image
+  [ 34] getlocal 2 .............................. <tLandscapeImg>
+  [ 36] pushzero ................................ <0>
+  [ 37] pushzero ................................ <0>
+  [ 38] getprop 22 .............................. <pwidth>
+  [ 40] getprop 25 .............................. <pheight>
+  [ 42] pushint16 255 ........................... <255>
+  [ 45] pushint16 255 ........................... <255>
+  [ 48] pushint16 255 ........................... <255>
+  [ 51] pusharglist 3 ........................... <255, 255, 255>
+  [ 53] extcall 93 .............................. <color(255, 255, 255)>
+  [ 55] pusharglistnoret 6 ...................... <tLandscapeImg, 0, 0, pwidth, pheight, color(255, 255, 255)>
+  [ 57] objcall 218 ............................. tLandscapeImg.fill(0, 0, pwidth, pheight, color(255, 255, 255))
+  [ 59] getlocal 2 .............................. <tLandscapeImg>
+  [ 61] getlocal 0 .............................. <tBgImg>
+  [ 63] getlocal 0 .............................. <tBgImg>
+  [ 65] getobjprop 90 ........................... <tBgImg.rect>
+  [ 67] getlocal 0 .............................. <tBgImg>
+  [ 69] getobjprop 90 ........................... <tBgImg.rect>
+  [ 71] pushsymb 95 ............................. <#maskImage>
+  [ 73] getlocal 1 .............................. <tMask>
+  [ 75] pusharglist 2 ........................... <[#maskImage: tMask]>
+  [ 77] pushproplist ............................ <[#maskImage: tMask]>
+  [ 78] pusharglistnoret 5 ...................... <tLandscapeImg, tBgImg, tBgImg.rect, tBgImg.rect, [#maskImage: tMask]>
+  [ 80] objcall 94 .............................. tLandscapeImg.copyPixels(tBgImg, tBgImg.rect, tBgImg.rect, [#maskImage: tMask])
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pusharglist 1 ........................... <me>
+  [ 86] objcall 7 ............................... <me.getRoomVisualizer()>
+  [ 88] setlocal 3 .............................. tViz = me.getRoomVisualizer()
+  [ 90] getlocal 3 .............................. <tViz>
+  [ 92] pusharglist 1 ........................... <tViz>
+  [ 94] extcall 54 .............................. <objectp(tViz)>
+  [ 96] jmpifz [130] ............................ if objectp(tViz) then
+  [ 99] getlocal 3 .............................. <tViz>
+  [101] pushcons 8 .............................. <"landscape">
+  [103] pusharglist 2 ........................... <tViz, "landscape">
+  [105] objcall 55 .............................. <tViz.getSprById("landscape")>
+  [107] setlocal 4 .............................. tSpr = tViz.getSprById("landscape")
+  [109] getlocal 4 .............................. <tSpr>
+  [111] getobjprop 56 ........................... <tSpr.ilk>
+  [113] pushsymb 57 ............................. <#sprite>
+  [115] eq ...................................... <tSpr.ilk = #sprite>
+  [116] jmpifz [130] ............................ if tSpr.ilk = #sprite then
+  [119] getprop 12 .............................. <pLandscapeAnimMngr>
+  [121] getlocal 4 .............................. <tSpr>
+  [123] getlocal 1 .............................. <tMask>
+  [125] pusharglistnoret 3 ...................... <pLandscapeAnimMngr, tSpr, tMask>
+  [127] objcall 469 ............................. pLandscapeAnimMngr.resetSprite(tSpr, tMask)
+  [130] ret
+end
+
+on update me
+  [  0] getprop 10 .............................. <pLandscapeBgMngr>
+  [  2] pusharglist 1 ........................... <pLandscapeBgMngr>
+  [  4] objcall 100 ............................. <pLandscapeBgMngr.requiresUpdate()>
+  [  6] getprop 13 .............................. <pWallMaskMngr>
+  [  8] pusharglist 1 ........................... <pWallMaskMngr>
+  [ 10] objcall 100 ............................. <pWallMaskMngr.requiresUpdate()>
+  [ 12] or ...................................... <pLandscapeBgMngr.requiresUpdate() or pWallMaskMngr.requiresUpdate()>
+  [ 13] jmpifz [ 63] ............................ if pLandscapeBgMngr.requiresUpdate() or pWallMaskMngr.requiresUpdate() then
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglistnoret 1 ...................... <me>
+  [ 20] objcall 8 ............................... me.updateLandscape()
+  [ 22] getprop 38 .............................. <pRemoveUpdate>
+  [ 24] getprop 13 .............................. <pWallMaskMngr>
+  [ 26] pusharglist 1 ........................... <pWallMaskMngr>
+  [ 28] objcall 100 ............................. <pWallMaskMngr.requiresUpdate()>
+  [ 30] not ..................................... <not pWallMaskMngr.requiresUpdate()>
+  [ 31] and ..................................... <pRemoveUpdate and not pWallMaskMngr.requiresUpdate()>
+  [ 32] getprop 10 .............................. <pLandscapeBgMngr>
+  [ 34] pusharglist 1 ........................... <pLandscapeBgMngr>
+  [ 36] objcall 100 ............................. <pLandscapeBgMngr.requiresUpdate()>
+  [ 38] not ..................................... <not pLandscapeBgMngr.requiresUpdate()>
+  [ 39] and ..................................... <pRemoveUpdate and not pWallMaskMngr.requiresUpdate() and not pLandscapeBgMngr.requiresUpdate()>
+  [ 40] jmpifz [ 59] ............................ if pRemoveUpdate and not pWallMaskMngr.requiresUpdate() and not pLandscapeBgMngr.requiresUpdate() then / else
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglist 1 ........................... <me>
+  [ 47] objcall 45 .............................. <me.getID()>
+  [ 49] pusharglistnoret 1 ...................... <me.getID()>
+  [ 51] extcall 44 .............................. removeUpdate(me.getID())
+  [ 53] pushzero ................................ <0>
+  [ 54] setprop 38 .............................. pRemoveUpdate = 0
+  [ 56] jmp [ 63]
+  [ 59] pushint8 1 .............................. <1>
+  [ 61] setprop 38 .............................. pRemoveUpdate = 1
+  [ 63] ret
+end
+
+on getRoomWallStruct me, tRoomType
+  [  0] getprop 460 ............................. <pWallStruct>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 135 ............................. <VOID>
+  [  7] eq ...................................... <pWallStruct = VOID>
+  [  8] jmpifz [ 20] ............................ if pWallStruct = VOID then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getparam 1 .............................. <tRoomType>
+  [ 15] pusharglistnoret 2 ...................... <me, tRoomType>
+  [ 17] objcall 483 ............................. me.parseRoomLayout(tRoomType)
+  [ 20] getprop 460 ............................. <pWallStruct>
+  [ 23] pusharglistnoret 1 ...................... <pWallStruct>
+  [ 25] extcall 36 .............................. return pWallStruct
+  [ 27] ret
+end
+
+on getRoomTurnPointList me, tRoomType
+  [  0] getprop 465 ............................. <pTurnPointList>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 135 ............................. <VOID>
+  [  7] eq ...................................... <pTurnPointList = VOID>
+  [  8] jmpifz [ 20] ............................ if pTurnPointList = VOID then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getparam 1 .............................. <tRoomType>
+  [ 15] pusharglistnoret 2 ...................... <me, tRoomType>
+  [ 17] objcall 483 ............................. me.parseRoomLayout(tRoomType)
+  [ 20] getprop 465 ............................. <pTurnPointList>
+  [ 23] pusharglistnoret 1 ...................... <pTurnPointList>
+  [ 25] extcall 36 .............................. return pTurnPointList
+  [ 27] ret
+end
+
+on parseRoomLayout me, tRoomType
+  [  0] getparam 1 .............................. <tRoomType>
+  [  2] pushcons 13 ............................. <".room">
+  [  4] joinstr ................................. <tRoomType & ".room">
+  [  5] setlocal 0 .............................. tRoomField = tRoomType & ".room"
+  [  7] pushsymb 386 ............................ <#layout_parser>
+  [ 10] pusharglist 1 ........................... <#layout_parser>
+  [ 12] extcall 318 ............................. <getObject(#layout_parser)>
+  [ 15] setlocal 1 .............................. tParser = getObject(#layout_parser)
+  [ 17] getlocal 1 .............................. <tParser>
+  [ 19] pushzero ................................ <0>
+  [ 20] eq ...................................... <tParser = 0>
+  [ 21] jmpifz [ 29] ............................ if tParser = 0 then
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 1 ...................... <0>
+  [ 27] extcall 36 .............................. return 0
+  [ 29] getlocal 1 .............................. <tParser>
+  [ 31] getlocal 0 .............................. <tRoomField>
+  [ 33] pusharglist 2 ........................... <tParser, tRoomField>
+  [ 35] objcall 387 ............................. <tParser.parse(tRoomField)>
+  [ 38] setlocal 2 .............................. tFieldData = tParser.parse(tRoomField)
+  [ 40] getlocal 2 .............................. <tFieldData>
+  [ 42] pushzero ................................ <0>
+  [ 43] eq ...................................... <tFieldData = 0>
+  [ 44] jmpifz [ 52] ............................ if tFieldData = 0 then
+  [ 47] pushzero ................................ <0>
+  [ 48] pusharglistnoret 1 ...................... <0>
+  [ 50] extcall 36 .............................. return 0
+  [ 52] getlocal 2 .............................. <tFieldData>
+  [ 54] pushsymb 388 ............................ <#roomdata>
+  [ 57] pusharglist 2 ........................... <tFieldData, #roomdata>
+  [ 59] objcall 282 ............................. <tFieldData.getaProp(#roomdata)>
+  [ 62] pushint8 1 .............................. <1>
+  [ 64] pusharglist 2 ........................... <tFieldData.getaProp(#roomdata), 1>
+  [ 66] objcall 151 ............................. <tFieldData.getaProp(#roomdata)[1]>
+  [ 68] setlocal 3 .............................. tRoomData = tFieldData.getaProp(#roomdata)[1]
+  [ 70] getlocal 2 .............................. <tFieldData>
+  [ 72] pushsymb 389 ............................ <#elements>
+  [ 75] pusharglist 2 ........................... <tFieldData, #elements>
+  [ 77] objcall 282 ............................. <tFieldData.getaProp(#elements)>
+  [ 80] setlocal 4 .............................. tElements = tFieldData.getaProp(#elements)
+  [ 82] getlocal 4 .............................. <tElements>
+  [ 84] pushzero ................................ <0>
+  [ 85] eq ...................................... <tElements = 0>
+  [ 86] jmpifz [ 94] ............................ if tElements = 0 then
+  [ 89] pushzero ................................ <0>
+  [ 90] pusharglistnoret 1 ...................... <0>
+  [ 92] extcall 36 .............................. return 0
+  [ 94] pusharglist 0 ........................... <[:]>
+  [ 96] pushproplist ............................ <[:]>
+  [ 97] setprop 460 ............................. pWallStruct = [:]
+  [100] pusharglist 0 ........................... <[]>
+  [102] pushlist ................................ <[]>
+  [103] setlocal 5 .............................. tWallPieceStruct = []
+  [105] pusharglist 0 ........................... <[:]>
+  [107] pushproplist ............................ <[:]>
+  [108] setprop 465 ............................. pTurnPointList = [:]
+  [111] pushzero ................................ <0>
+  [112] setlocal 6 .............................. tLeft = 0
+  [114] pushzero ................................ <0>
+  [115] setlocal 7 .............................. tRight = 0
+  [117] pushzero ................................ <0>
+  [118] setlocal 8 .............................. tWallHeight = 0
+  [120] pushzero ................................ <0>
+  [121] setlocal 9 .............................. tMaxPieceHeight = 0
+  [123] getlocal 3 .............................. <tRoomData>
+  [125] pushsymb 390 ............................ <#offsetx>
+  [128] pusharglist 2 ........................... <tRoomData, #offsetx>
+  [130] objcall 282 ............................. <tRoomData.getaProp(#offsetx)>
+  [133] setlocal 10 ............................. tOffsetX = tRoomData.getaProp(#offsetx)
+  [135] getlocal 3 .............................. <tRoomData>
+  [137] pushsymb 391 ............................ <#offsety>
+  [140] pusharglist 2 ........................... <tRoomData, #offsety>
+  [142] objcall 282 ............................. <tRoomData.getaProp(#offsety)>
+  [145] setlocal 11 ............................. tOffsetY = tRoomData.getaProp(#offsety)
+  [147] getlocal 3 .............................. <tRoomData>
+  [149] pushsymb 336 ............................ <#factorx>
+  [152] pusharglist 2 ........................... <tRoomData, #factorx>
+  [154] objcall 282 ............................. <tRoomData.getaProp(#factorx)>
+  [157] setlocal 12 ............................. tFactorX = tRoomData.getaProp(#factorx)
+  [159] getlocal 4 .............................. <tElements>
+  [161] peek 0
+  [163] pusharglist 1
+  [165] extcall 150
+  [167] pushint8 1
+  [169] peek 0
+  [171] peek 2
+  [173] lteq
+  [174] jmpifz [469] ............................ repeat with tElement in tElements
+  [177] peek 2
+  [179] peek 1
+  [181] pusharglist 2
+  [183] extcall 151
+  [185] setlocal 13
+  [187] getlocal 13 ............................. <tElement>
+  [189] pushsymb 392 ............................ <#wrapperID>
+  [192] pusharglist 2 ........................... <tElement, #wrapperID>
+  [194] objcall 282 ............................. <tElement.getaProp(#wrapperID)>
+  [197] setlocal 14 ............................. tWrapperId = tElement.getaProp(#wrapperID)
+  [199] getlocal 13 ............................. <tElement>
+  [201] pushsymb 58 ............................. <#member>
+  [203] pusharglist 2 ........................... <tElement, #member>
+  [205] objcall 282 ............................. <tElement.getaProp(#member)>
+  [208] setlocal 15 ............................. tmember = tElement.getaProp(#member)
+  [210] getlocal 15 ............................. <tmember>
+  [212] pushcons 14 ............................. <"wallpart">
+  [214] containsstr ............................. <tmember contains "wallpart">
+  [215] getlocal 15 ............................. <tmember>
+  [217] pushcons 15 ............................. <"wallmask">
+  [219] containsstr ............................. <tmember contains "wallmask">
+  [220] or ...................................... <(tmember contains "wallpart") or (tmember contains "wallmask")>
+  [221] getlocal 15 ............................. <tmember>
+  [223] pushcons 16 ............................. <"stairs">
+  [225] containsstr ............................. <tmember contains "stairs">
+  [226] or ...................................... <(tmember contains "wallpart") or (tmember contains "wallmask") or (tmember contains "stairs")>
+  [227] jmpifz [463] ............................ if (tmember contains "wallpart") or (tmember contains "wallmask") or (tmember contains "stairs") then
+  [230] pusharglist 0 ........................... <[:]>
+  [232] pushproplist ............................ <[:]>
+  [233] setlocal 16 ............................. tItem = [:]
+  [235] getlocal 13 ............................. <tElement>
+  [237] pushsymb 58 ............................. <#member>
+  [239] pusharglist 2 ........................... <tElement, #member>
+  [241] objcall 282 ............................. <tElement.getaProp(#member)>
+  [244] setlocal 17 ............................. tMemName = tElement.getaProp(#member)
+  [246] getlocal 13 ............................. <tElement>
+  [248] pushsymb 62 ............................. <#locH>
+  [250] pusharglist 2 ........................... <tElement, #locH>
+  [252] objcall 282 ............................. <tElement.getaProp(#locH)>
+  [255] setlocal 18 ............................. tLocH = tElement.getaProp(#locH)
+  [257] getlocal 13 ............................. <tElement>
+  [259] pushsymb 61 ............................. <#height>
+  [261] pusharglist 2 ........................... <tElement, #height>
+  [263] objcall 282 ............................. <tElement.getaProp(#height)>
+  [266] setlocal 19 ............................. tHeight = tElement.getaProp(#height)
+  [268] getlocal 13 ............................. <tElement>
+  [270] pushsymb 60 ............................. <#width>
+  [272] pusharglist 2 ........................... <tElement, #width>
+  [274] objcall 282 ............................. <tElement.getaProp(#width)>
+  [277] setlocal 20 ............................. tWidth = tElement.getaProp(#width)
+  [279] getlocal 16 ............................. <tItem>
+  [281] pushsymb 58 ............................. <#member>
+  [283] getlocal 17 ............................. <tMemName>
+  [285] pusharglistnoret 3 ...................... <tItem, #member, tMemName>
+  [287] objcall 239 ............................. tItem.setaProp(#member, tMemName)
+  [289] getlocal 16 ............................. <tItem>
+  [291] pushsymb 62 ............................. <#locH>
+  [293] getlocal 18 ............................. <tLocH>
+  [295] pusharglistnoret 3 ...................... <tItem, #locH, tLocH>
+  [297] objcall 239 ............................. tItem.setaProp(#locH, tLocH)
+  [299] getlocal 16 ............................. <tItem>
+  [301] pushsymb 63 ............................. <#locV>
+  [303] getlocal 13 ............................. <tElement>
+  [305] pushsymb 63 ............................. <#locV>
+  [307] pusharglist 2 ........................... <tElement, #locV>
+  [309] objcall 282 ............................. <tElement.getaProp(#locV)>
+  [312] pusharglistnoret 3 ...................... <tItem, #locV, tElement.getaProp(#locV)>
+  [314] objcall 239 ............................. tItem.setaProp(#locV, tElement.getaProp(#locV))
+  [316] getlocal 16 ............................. <tItem>
+  [318] pushsymb 60 ............................. <#width>
+  [320] getlocal 20 ............................. <tWidth>
+  [322] pusharglistnoret 3 ...................... <tItem, #width, tWidth>
+  [324] objcall 239 ............................. tItem.setaProp(#width, tWidth)
+  [326] getlocal 16 ............................. <tItem>
+  [328] pushsymb 61 ............................. <#height>
+  [330] getlocal 19 ............................. <tHeight>
+  [332] pusharglistnoret 3 ...................... <tItem, #height, tHeight>
+  [334] objcall 239 ............................. tItem.setaProp(#height, tHeight)
+  [336] getlocal 16 ............................. <tItem>
+  [338] pushsymb 393 ............................ <#locX>
+  [341] getlocal 13 ............................. <tElement>
+  [343] pushsymb 393 ............................ <#locX>
+  [346] pusharglist 2 ........................... <tElement, #locX>
+  [348] objcall 282 ............................. <tElement.getaProp(#locX)>
+  [351] pusharglistnoret 3 ...................... <tItem, #locX, tElement.getaProp(#locX)>
+  [353] objcall 239 ............................. tItem.setaProp(#locX, tElement.getaProp(#locX))
+  [355] getlocal 16 ............................. <tItem>
+  [357] pushsymb 394 ............................ <#locY>
+  [360] getlocal 13 ............................. <tElement>
+  [362] pushsymb 394 ............................ <#locY>
+  [365] pusharglist 2 ........................... <tElement, #locY>
+  [367] objcall 282 ............................. <tElement.getaProp(#locY)>
+  [370] pusharglistnoret 3 ...................... <tItem, #locY, tElement.getaProp(#locY)>
+  [372] objcall 239 ............................. tItem.setaProp(#locY, tElement.getaProp(#locY))
+  [374] getlocal 6 .............................. <tLeft>
+  [376] pusharglist 1 ........................... <tLeft>
+  [378] extcall 341 ............................. <voidp(tLeft)>
+  [381] getlocal 6 .............................. <tLeft>
+  [383] getlocal 18 ............................. <tLocH>
+  [385] gt ...................................... <tLeft > tLocH>
+  [386] or ...................................... <voidp(tLeft) or (tLeft > tLocH)>
+  [387] jmpifz [394] ............................ if voidp(tLeft) or (tLeft > tLocH) then
+  [390] getlocal 18 ............................. <tLocH>
+  [392] setlocal 6 .............................. tLeft = tLocH
+  [394] getlocal 7 .............................. <tRight>
+  [396] pusharglist 1 ........................... <tRight>
+  [398] extcall 341 ............................. <voidp(tRight)>
+  [401] getlocal 7 .............................. <tRight>
+  [403] getlocal 18 ............................. <tLocH>
+  [405] getlocal 20 ............................. <tWidth>
+  [407] add ..................................... <tLocH + tWidth>
+  [408] lt ...................................... <tRight < (tLocH + tWidth)>
+  [409] or ...................................... <voidp(tRight) or (tRight < (tLocH + tWidth))>
+  [410] jmpifz [420] ............................ if voidp(tRight) or (tRight < (tLocH + tWidth)) then
+  [413] getlocal 18 ............................. <tLocH>
+  [415] getlocal 20 ............................. <tWidth>
+  [417] add ..................................... <tLocH + tWidth>
+  [418] setlocal 7 .............................. tRight = tLocH + tWidth
+  [420] getlocal 19 ............................. <tHeight>
+  [422] getlocal 9 .............................. <tMaxPieceHeight>
+  [424] gt ...................................... <tHeight > tMaxPieceHeight>
+  [425] jmpifz [432] ............................ if tHeight > tMaxPieceHeight then
+  [428] getlocal 19 ............................. <tHeight>
+  [430] setlocal 9 .............................. tMaxPieceHeight = tHeight
+  [432] getlocal 5 .............................. <tWallPieceStruct>
+  [434] getlocal 16 ............................. <tItem>
+  [436] pusharglistnoret 2 ...................... <tWallPieceStruct, tItem>
+  [438] objcall 378 ............................. tWallPieceStruct.append(tItem)
+  [441] getlocal 19 ............................. <tHeight>
+  [443] getlocal 20 ............................. <tWidth>
+  [445] pushint8 2 .............................. <2>
+  [447] div ..................................... <tWidth / 2>
+  [448] sub ..................................... <tHeight - (tWidth / 2)>
+  [449] setlocal 19 ............................. tHeight = tHeight - (tWidth / 2)
+  [451] getlocal 19 ............................. <tHeight>
+  [453] getlocal 8 .............................. <tWallHeight>
+  [455] gt ...................................... <tHeight > tWallHeight>
+  [456] jmpifz [463] ............................ if tHeight > tWallHeight then
+  [459] getlocal 19 ............................. <tHeight>
+  [461] setlocal 8 .............................. tWallHeight = tHeight
+  [463] pushint8 1
+  [465] add
+  [466] endrepeat [169]
+  [469] pop 3
+  [471] pusharglist 0 ........................... <>
+  [473] extcall 135 ............................. <VOID>
+  [475] setlocal 21 ............................. tSideLeftH = VOID
+  [477] getlocal 5 .............................. <tWallPieceStruct>
+  [479] pushint8 1 .............................. <1>
+  [481] pusharglist 2 ........................... <tWallPieceStruct, 1>
+  [483] objcall 151 ............................. <tWallPieceStruct[1]>
+  [485] setlocal 16 ............................. tItem = tWallPieceStruct[1]
+  [487] pushint8 1 .............................. <1>
+  [489] setlocal 22 ............................. tWallDefIndex = 1
+  [491] pushsymb 339 ............................ <#left>
+  [494] setlocal 23 ............................. tside = #left
+  [496] pusharglist 0 ........................... <>
+  [498] extcall 135 ............................. <VOID>
+  [500] setlocal 24 ............................. tSideRight = VOID
+  [502] getlocal 16 ............................. <tItem>
+  [504] pushzero ................................ <0>
+  [505] nteq .................................... <tItem <> 0>
+  [506] jmpifz [748] ............................ repeat while tItem <> 0
+  [509] getlocal 22 ............................. <tWallDefIndex>
+  [511] getlocal 5 .............................. <tWallPieceStruct>
+  [513] getobjprop 150 .......................... <tWallPieceStruct.count>
+  [515] gt ...................................... <tWallDefIndex > tWallPieceStruct.count>
+  [516] jmpifz [522] ............................ if tWallDefIndex > tWallPieceStruct.count then
+  [519] jmp [748] ............................... exit repeat
+  [522] getlocal 5 .............................. <tWallPieceStruct>
+  [524] getlocal 22 ............................. <tWallDefIndex>
+  [526] pusharglist 2 ........................... <tWallPieceStruct, tWallDefIndex>
+  [528] objcall 151 ............................. <tWallPieceStruct[tWallDefIndex]>
+  [530] setlocal 16 ............................. tItem = tWallPieceStruct[tWallDefIndex]
+  [532] getlocal 16 ............................. <tItem>
+  [534] pushsymb 58 ............................. <#member>
+  [536] pusharglist 2 ........................... <tItem, #member>
+  [538] objcall 282 ............................. <tItem.getaProp(#member)>
+  [541] setlocal 17 ............................. tMemName = tItem.getaProp(#member)
+  [543] getlocal 17 ............................. <tMemName>
+  [545] pusharglist 1 ........................... <tMemName>
+  [547] extcall 154 ............................. <getmemnum(tMemName)>
+  [549] pusharglist 1 ........................... <getmemnum(tMemName)>
+  [551] extcall 58 .............................. <member(getmemnum(tMemName))>
+  [553] setlocal 15 ............................. tmember = member(getmemnum(tMemName))
+  [555] getlocal 17 ............................. <tMemName>
+  [557] pushcons 17 ............................. <"right">
+  [559] containsstr ............................. <tMemName contains "right">
+  [560] jmpifz [571] ............................ if tMemName contains "right" then / else
+  [563] pushsymb 340 ............................ <#right>
+  [566] setlocal 25 ............................. tPieceSide = #right
+  [568] jmp [576]
+  [571] pushsymb 339 ............................ <#left>
+  [574] setlocal 25 ............................. tPieceSide = #left
+  [576] getlocal 25 ............................. <tPieceSide>
+  [578] getlocal 23 ............................. <tside>
+  [580] eq ...................................... <tPieceSide = tside>
+  [581] jmpifz [671] ............................ if tPieceSide = tside then
+  [584] getlocal 16 ............................. <tItem>
+  [586] pushsymb 62 ............................. <#locH>
+  [588] pusharglist 2 ........................... <tItem, #locH>
+  [590] objcall 282 ............................. <tItem.getaProp(#locH)>
+  [593] getlocal 15 ............................. <tmember>
+  [595] getchainedprop 65 ....................... <tmember.regPoint>
+  [597] getobjprop 62 ........................... <tmember.regPoint.locH>
+  [599] sub ..................................... <tItem.getaProp(#locH) - tmember.regPoint.locH>
+  [600] setlocal 18 ............................. tLocH = tItem.getaProp(#locH) - tmember.regPoint.locH
+  [602] getlocal 16 ............................. <tItem>
+  [604] pushsymb 63 ............................. <#locV>
+  [606] pusharglist 2 ........................... <tItem, #locV>
+  [608] objcall 282 ............................. <tItem.getaProp(#locV)>
+  [611] getlocal 15 ............................. <tmember>
+  [613] getchainedprop 65 ....................... <tmember.regPoint>
+  [615] getobjprop 63 ........................... <tmember.regPoint.locV>
+  [617] sub ..................................... <tItem.getaProp(#locV) - tmember.regPoint.locV>
+  [618] setlocal 26 ............................. tLocV = tItem.getaProp(#locV) - tmember.regPoint.locV
+  [620] getlocal 21 ............................. <tSideLeftH>
+  [622] pusharglist 1 ........................... <tSideLeftH>
+  [624] extcall 341 ............................. <voidp(tSideLeftH)>
+  [627] getlocal 21 ............................. <tSideLeftH>
+  [629] pusharglist 1 ........................... <tSideLeftH>
+  [631] extcall 341 ............................. <voidp(tSideLeftH)>
+  [634] not ..................................... <not voidp(tSideLeftH)>
+  [635] getlocal 18 ............................. <tLocH>
+  [637] getlocal 21 ............................. <tSideLeftH>
+  [639] lt ...................................... <tLocH < tSideLeftH>
+  [640] and ..................................... <not voidp(tSideLeftH) and (tLocH < tSideLeftH)>
+  [641] or ...................................... <voidp(tSideLeftH) or (not voidp(tSideLeftH) and (tLocH < tSideLeftH))>
+  [642] jmpifz [664] ............................ if voidp(tSideLeftH) or (not voidp(tSideLeftH) and (tLocH < tSideLeftH)) then
+  [645] getlocal 18 ............................. <tLocH>
+  [647] setlocal 21 ............................. tSideLeftH = tLocH
+  [649] getlocal 26 ............................. <tLocV>
+  [651] setlocal 27 ............................. tSideLeftV = tLocV
+  [653] getlocal 16 ............................. <tItem>
+  [655] pushsymb 60 ............................. <#width>
+  [657] pusharglist 2 ........................... <tItem, #width>
+  [659] objcall 282 ............................. <tItem.getaProp(#width)>
+  [662] setlocal 28 ............................. tSideLeftElemWidth = tItem.getaProp(#width)
+  [664] getlocal 22 ............................. <tWallDefIndex>
+  [666] pushint8 1 .............................. <1>
+  [668] add ..................................... <tWallDefIndex + 1>
+  [669] setlocal 22 ............................. tWallDefIndex = tWallDefIndex + 1
+  [671] getlocal 25 ............................. <tPieceSide>
+  [673] getlocal 23 ............................. <tside>
+  [675] nteq .................................... <tPieceSide <> tside>
+  [676] getlocal 22 ............................. <tWallDefIndex>
+  [678] getlocal 5 .............................. <tWallPieceStruct>
+  [680] getobjprop 150 .......................... <tWallPieceStruct.count>
+  [682] gt ...................................... <tWallDefIndex > tWallPieceStruct.count>
+  [683] or ...................................... <(tPieceSide <> tside) or (tWallDefIndex > tWallPieceStruct.count)>
+  [684] jmpifz [746] ............................ if (tPieceSide <> tside) or (tWallDefIndex > tWallPieceStruct.count) then
+  [687] getlocal 23 ............................. <tside>
+  [689] pushsymb 340 ............................ <#right>
+  [692] eq ...................................... <tside = #right>
+  [693] jmpifz [706] ............................ if tside = #right then / else
+  [696] getlocal 27 ............................. <tSideLeftV>
+  [698] pushint8 1 .............................. <1>
+  [700] add ..................................... <tSideLeftV + 1>
+  [701] setlocal 27 ............................. tSideLeftV = tSideLeftV + 1
+  [703] jmp [716]
+  [706] getlocal 27 ............................. <tSideLeftV>
+  [708] getlocal 28 ............................. <tSideLeftElemWidth>
+  [710] pushint8 2 .............................. <2>
+  [712] div ..................................... <tSideLeftElemWidth / 2>
+  [713] add ..................................... <tSideLeftV + (tSideLeftElemWidth / 2)>
+  [714] setlocal 27 ............................. tSideLeftV = tSideLeftV + (tSideLeftElemWidth / 2)
+  [716] getprop 465 ............................. <pTurnPointList>
+  [719] getlocal 21 ............................. <tSideLeftH>
+  [721] getprop 15 .............................. <pWideScreenOffset>
+  [723] add ..................................... <tSideLeftH + pWideScreenOffset>
+  [724] getlocal 27 ............................. <tSideLeftV>
+  [726] pusharglist 2 ........................... <tSideLeftH + pWideScreenOffset, tSideLeftV>
+  [728] extcall 64 .............................. <point(tSideLeftH + pWideScreenOffset, tSideLeftV)>
+  [730] getlocal 23 ............................. <tside>
+  [732] pusharglistnoret 3 ...................... <pTurnPointList, point(tSideLeftH + pWideScreenOffset, tSideLeftV), tside>
+  [734] objcall 239 ............................. pTurnPointList.setaProp(point(tSideLeftH + pWideScreenOffset, tSideLeftV), tside)
+  [736] pusharglist 0 ........................... <>
+  [738] extcall 135 ............................. <VOID>
+  [740] setlocal 21 ............................. tSideLeftH = VOID
+  [742] getlocal 25 ............................. <tPieceSide>
+  [744] setlocal 23 ............................. tside = tPieceSide
+  [746] endrepeat [502]
+  [748] getprop 460 ............................. <pWallStruct>
+  [751] pushsymb 551 ............................ <#struct>
+  [754] getlocal 5 .............................. <tWallPieceStruct>
+  [756] pusharglistnoret 3 ...................... <pWallStruct, #struct, tWallPieceStruct>
+  [758] objcall 239 ............................. pWallStruct.setaProp(#struct, tWallPieceStruct)
+  [760] getprop 460 ............................. <pWallStruct>
+  [763] pushsymb 336 ............................ <#factorx>
+  [766] getlocal 3 .............................. <tRoomData>
+  [768] pushsymb 336 ............................ <#factorx>
+  [771] pusharglist 2 ........................... <tRoomData, #factorx>
+  [773] objcall 282 ............................. <tRoomData.getaProp(#factorx)>
+  [776] pusharglistnoret 3 ...................... <pWallStruct, #factorx, tRoomData.getaProp(#factorx)>
+  [778] objcall 239 ............................. pWallStruct.setaProp(#factorx, tRoomData.getaProp(#factorx))
+  [780] getprop 460 ............................. <pWallStruct>
+  [783] pushsymb 61 ............................. <#height>
+  [785] getlocal 8 .............................. <tWallHeight>
+  [787] pusharglistnoret 3 ...................... <pWallStruct, #height, tWallHeight>
+  [789] objcall 239 ............................. pWallStruct.setaProp(#height, tWallHeight)
+  [791] getprop 460 ............................. <pWallStruct>
+  [794] pushsymb 555 ............................ <#max_piece_height>
+  [797] getlocal 9 .............................. <tMaxPieceHeight>
+  [799] pusharglistnoret 3 ...................... <pWallStruct, #max_piece_height, tMaxPieceHeight>
+  [801] objcall 239 ............................. pWallStruct.setaProp(#max_piece_height, tMaxPieceHeight)
+  [803] pushint8 1 .............................. <1>
+  [805] pusharglistnoret 1 ...................... <1>
+  [807] extcall 36 .............................. return 1
+  [809] ret
+end
+
+on getLandscapeProps me, tLandscapeID, tFactorX
+  [  0] pushcons 18 ............................. <"lsd_">
+  [  2] getparam 1 .............................. <tLandscapeID>
+  [  4] joinstr ................................. <"lsd_" & tLandscapeID>
+  [  5] pushcons 19 ............................. <".props">
+  [  7] joinstr ................................. <"lsd_" & tLandscapeID & ".props">
+  [  8] setlocal 0 .............................. tMemName = "lsd_" & tLandscapeID & ".props"
+  [ 10] getparam 2 .............................. <tFactorX>
+  [ 12] pushint8 32 ............................. <32>
+  [ 14] eq ...................................... <tFactorX = 32>
+  [ 15] jmpifz [ 25] ............................ if tFactorX = 32 then
+  [ 18] pushcons 20 ............................. <"s_">
+  [ 20] getlocal 0 .............................. <tMemName>
+  [ 22] joinstr ................................. <"s_" & tMemName>
+  [ 23] setlocal 0 .............................. tMemName = "s_" & tMemName
+  [ 25] getlocal 0 .............................. <tMemName>
+  [ 27] pusharglist 1 ........................... <tMemName>
+  [ 29] extcall 28 .............................. <memberExists(tMemName)>
+  [ 31] not ..................................... <not memberExists(tMemName)>
+  [ 32] jmpifz [ 42] ............................ if not memberExists(tMemName) then
+  [ 35] pusharglist 0 ........................... <[:]>
+  [ 37] pushproplist ............................ <[:]>
+  [ 38] pusharglistnoret 1 ...................... <[:]>
+  [ 40] extcall 36 .............................. return [:]
+  [ 42] getlocal 0 .............................. <tMemName>
+  [ 44] pushzero ................................ <0>
+  [ 45] getfield ................................ <field(tMemName)>
+  [ 46] pusharglist 1 ........................... <field(tMemName)>
+  [ 48] extcall 426 ............................. <value(field(tMemName))>
+  [ 51] setlocal 1 .............................. tPropList = value(field(tMemName))
+  [ 53] getlocal 1 .............................. <tPropList>
+  [ 55] pusharglistnoret 1 ...................... <tPropList>
+  [ 57] extcall 36 .............................. return tPropList
+  [ 59] ret
+end
+
+on getWallMaskCount me
+  [  0] getprop 13 .............................. <pWallMaskMngr>
+  [  2] pusharglist 1 ........................... <pWallMaskMngr>
+  [  4] extcall 54 .............................. <objectp(pWallMaskMngr)>
+  [  6] jmpifz [ 19] ............................ if objectp(pWallMaskMngr) then
+  [  9] getprop 13 .............................. <pWallMaskMngr>
+  [ 11] pusharglist 1 ........................... <pWallMaskMngr>
+  [ 13] objcall 46 .............................. <pWallMaskMngr.getItemCount()>
+  [ 15] pusharglistnoret 1 ...................... <pWallMaskMngr.getItemCount()>
+  [ 17] extcall 36 .............................. return pWallMaskMngr.getItemCount()
+  [ 19] ret
+end

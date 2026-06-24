@@ -1,0 +1,288 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 65 .............................. <me.regMsgList(1)>
+  [  8] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 10] extcall 16 .............................. return me.regMsgList(1)
+  [ 12] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 65 .............................. <me.regMsgList(0)>
+  [  7] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [  9] extcall 16 .............................. return me.regMsgList(0)
+  [ 11] ret
+end
+
+on handleInvitation me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 111 .......................... <tMsg.connection>
+  [  4] setlocal 0 .............................. tConn = tMsg.connection
+  [  6] getlocal 0 .............................. <tConn>
+  [  8] pushzero ................................ <0>
+  [  9] eq ...................................... <tConn = 0>
+  [ 10] jmpifz [ 18] ............................ if tConn = 0 then
+  [ 13] pushzero ................................ <0>
+  [ 14] pusharglistnoret 1 ...................... <0>
+  [ 16] extcall 16 .............................. return 0
+  [ 18] pusharglist 0 ........................... <[:]>
+  [ 20] pushproplist ............................ <[:]>
+  [ 21] setlocal 1 .............................. tInvitationData = [:]
+  [ 23] getlocal 1 .............................. <tInvitationData>
+  [ 25] pushsymb 112 ............................ <#userID>
+  [ 27] getlocal 0 .............................. <tConn>
+  [ 29] pusharglist 1 ........................... <tConn>
+  [ 31] objcall 113 ............................. <tConn.GetStrFrom()>
+  [ 33] pusharglistnoret 3 ...................... <tInvitationData, #userID, tConn.GetStrFrom()>
+  [ 35] objcall 114 ............................. tInvitationData.setaProp(#userID, tConn.GetStrFrom())
+  [ 37] getlocal 1 .............................. <tInvitationData>
+  [ 39] pushsymb 98 ............................. <#name>
+  [ 41] getlocal 0 .............................. <tConn>
+  [ 43] pusharglist 1 ........................... <tConn>
+  [ 45] objcall 113 ............................. <tConn.GetStrFrom()>
+  [ 47] pusharglistnoret 3 ...................... <tInvitationData, #name, tConn.GetStrFrom()>
+  [ 49] objcall 114 ............................. tInvitationData.setaProp(#name, tConn.GetStrFrom())
+  [ 51] getparam 0 .............................. <me>
+  [ 53] pusharglist 1 ........................... <me>
+  [ 55] objcall 27 .............................. <me.getComponent()>
+  [ 57] getlocal 1 .............................. <tInvitationData>
+  [ 59] pusharglistnoret 2 ...................... <me.getComponent(), tInvitationData>
+  [ 61] objcall 130 ............................. me.getComponent().setInvitation(tInvitationData)
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] pusharglistnoret 1 ...................... <1>
+  [ 67] extcall 16 .............................. return 1
+  [ 69] ret
+end
+
+on handleInvitationFollowFailed me, tMsg
+  [  0] pushsymb 117 ............................ <#alert>
+  [  2] pushcons 0 .............................. <"invitation_follow_failed">
+  [  4] pusharglistnoret 2 ...................... <#alert, "invitation_follow_failed">
+  [  6] extcall 90 .............................. executeMessage(#alert, "invitation_follow_failed")
+  [  8] ret
+end
+
+on handleInvitationCancelled me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 27 .............................. <me.getComponent()>
+  [  6] pusharglistnoret 1 ...................... <me.getComponent()>
+  [  8] objcall 138 ............................. me.getComponent().cancelInvitation()
+  [ 10] ret
+end
+
+on handleInitTutorServiceStatus me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 111 ............................ <#connection>
+  [  4] pusharglist 2 ........................... <tMsg, #connection>
+  [  6] objcall 122 ............................. <tMsg.getaProp(#connection)>
+  [  8] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 10] getlocal 0 .............................. <tConn>
+  [ 12] pusharglist 1 ........................... <tConn>
+  [ 14] objcall 140 ............................. <tConn.GetIntFrom()>
+  [ 16] setlocal 1 .............................. tstate = tConn.GetIntFrom()
+  [ 18] getlocal 1 .............................. <tstate>
+  [ 20] peek 0 .................................. case tstate of
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] eq
+  [ 25] jmpifz [ 43] ............................ (case) 1:
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 27 .............................. <me.getComponent()>
+  [ 34] pushsymb 33 ............................. <#enabled>
+  [ 36] pusharglistnoret 2 ...................... <me.getComponent(), #enabled>
+  [ 38] objcall 56 .............................. me.getComponent().setState(#enabled)
+  [ 40] jmp [ 86]
+  [ 43] peek 0
+  [ 45] pushint8 2 .............................. <2>
+  [ 47] eq
+  [ 48] jmpifz [ 66] ............................ (case) 2:
+  [ 51] getparam 0 .............................. <me>
+  [ 53] pusharglist 1 ........................... <me>
+  [ 55] objcall 27 .............................. <me.getComponent()>
+  [ 57] pushsymb 32 ............................. <#disabled>
+  [ 59] pusharglistnoret 2 ...................... <me.getComponent(), #disabled>
+  [ 61] objcall 56 .............................. me.getComponent().setState(#disabled)
+  [ 63] jmp [ 86]
+  [ 66] peek 0
+  [ 68] pushint8 3 .............................. <3>
+  [ 70] eq
+  [ 71] jmpifz [ 86] ............................ (case) 3:
+  [ 74] getparam 0 .............................. <me>
+  [ 76] pusharglist 1 ........................... <me>
+  [ 78] objcall 27 .............................. <me.getComponent()>
+  [ 80] pushsymb 32 ............................. <#disabled>
+  [ 82] pusharglistnoret 2 ...................... <me.getComponent(), #disabled>
+  [ 84] objcall 56 .............................. me.getComponent().setState(#disabled)
+  [ 86] pop 1 ................................... end case
+  [ 88] ret
+end
+
+on handleEnableTutorServiceStatus me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 111 ............................ <#connection>
+  [  4] pusharglist 2 ........................... <tMsg, #connection>
+  [  6] objcall 122 ............................. <tMsg.getaProp(#connection)>
+  [  8] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 10] getlocal 0 .............................. <tConn>
+  [ 12] pusharglist 1 ........................... <tConn>
+  [ 14] objcall 140 ............................. <tConn.GetIntFrom()>
+  [ 16] setlocal 1 .............................. tstate = tConn.GetIntFrom()
+  [ 18] getlocal 1 .............................. <tstate>
+  [ 20] peek 0 .................................. case tstate of
+  [ 22] pushint8 2 .............................. <2>
+  [ 24] eq
+  [ 25] jmpifz [ 51] ............................ (case) 2:
+  [ 28] pushsymb 117 ............................ <#alert>
+  [ 30] pushcons 1 .............................. <"guide_tool_friendlist_full">
+  [ 32] pusharglistnoret 2 ...................... <#alert, "guide_tool_friendlist_full">
+  [ 34] extcall 90 .............................. executeMessage(#alert, "guide_tool_friendlist_full")
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pusharglist 1 ........................... <me>
+  [ 40] objcall 27 .............................. <me.getComponent()>
+  [ 42] pushsymb 33 ............................. <#enabled>
+  [ 44] pusharglistnoret 2 ...................... <me.getComponent(), #enabled>
+  [ 46] objcall 56 .............................. me.getComponent().setState(#enabled)
+  [ 48] jmp [110]
+  [ 51] peek 0
+  [ 53] pushint8 3 .............................. <3>
+  [ 55] eq
+  [ 56] jmpifz [ 82] ............................ (case) 3:
+  [ 59] pushsymb 117 ............................ <#alert>
+  [ 61] pushcons 2 .............................. <"guide_tool_service_disabled">
+  [ 63] pusharglistnoret 2 ...................... <#alert, "guide_tool_service_disabled">
+  [ 65] extcall 90 .............................. executeMessage(#alert, "guide_tool_service_disabled")
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglist 1 ........................... <me>
+  [ 71] objcall 27 .............................. <me.getComponent()>
+  [ 73] pushsymb 32 ............................. <#disabled>
+  [ 75] pusharglistnoret 2 ...................... <me.getComponent(), #disabled>
+  [ 77] objcall 56 .............................. me.getComponent().setState(#disabled)
+  [ 79] jmp [110]
+  [ 82] peek 0
+  [ 84] pushint8 4 .............................. <4>
+  [ 86] eq
+  [ 87] jmpifz [110] ............................ (case) 4:
+  [ 90] pushsymb 117 ............................ <#alert>
+  [ 92] pushcons 3 .............................. <"guide_tool_max_newbies">
+  [ 94] pusharglistnoret 2 ...................... <#alert, "guide_tool_max_newbies">
+  [ 96] extcall 90 .............................. executeMessage(#alert, "guide_tool_max_newbies")
+  [ 98] getparam 0 .............................. <me>
+  [100] pusharglist 1 ........................... <me>
+  [102] objcall 27 .............................. <me.getComponent()>
+  [104] pushsymb 32 ............................. <#disabled>
+  [106] pusharglistnoret 2 ...................... <me.getComponent(), #disabled>
+  [108] objcall 56 .............................. me.getComponent().setState(#disabled)
+  [110] pop 1 ................................... end case
+  [112] getlocal 0 .............................. <tConn>
+  [114] pusharglist 1 ........................... <tConn>
+  [116] objcall 140 ............................. <tConn.GetIntFrom()>
+  [118] setlocal 2 .............................. tGuidePoints = tConn.GetIntFrom()
+  [120] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 355 ........................... <355>
+  [ 10] pushsymb 108 ............................ <#handleInvitation>
+  [ 12] pusharglistnoret 3 ...................... <tMsgs, 355, #handleInvitation>
+  [ 14] objcall 114 ............................. tMsgs.setaProp(355, #handleInvitation)
+  [ 16] getlocal 0 .............................. <tMsgs>
+  [ 18] pushint16 359 ........................... <359>
+  [ 21] pushsymb 109 ............................ <#handleInvitationFollowFailed>
+  [ 23] pusharglistnoret 3 ...................... <tMsgs, 359, #handleInvitationFollowFailed>
+  [ 25] objcall 114 ............................. tMsgs.setaProp(359, #handleInvitationFollowFailed)
+  [ 27] getlocal 0 .............................. <tMsgs>
+  [ 29] pushint16 360 ........................... <360>
+  [ 32] pushsymb 137 ............................ <#handleInvitationCancelled>
+  [ 34] pusharglistnoret 3 ...................... <tMsgs, 360, #handleInvitationCancelled>
+  [ 36] objcall 114 ............................. tMsgs.setaProp(360, #handleInvitationCancelled)
+  [ 38] getlocal 0 .............................. <tMsgs>
+  [ 40] pushint16 425 ........................... <425>
+  [ 43] pushsymb 135 ............................ <#handleInitTutorServiceStatus>
+  [ 45] pusharglistnoret 3 ...................... <tMsgs, 425, #handleInitTutorServiceStatus>
+  [ 47] objcall 114 ............................. tMsgs.setaProp(425, #handleInitTutorServiceStatus)
+  [ 49] getlocal 0 .............................. <tMsgs>
+  [ 51] pushint16 426 ........................... <426>
+  [ 54] pushsymb 136 ............................ <#handleEnableTutorServiceStatus>
+  [ 56] pusharglistnoret 3 ...................... <tMsgs, 426, #handleEnableTutorServiceStatus>
+  [ 58] objcall 114 ............................. tMsgs.setaProp(426, #handleEnableTutorServiceStatus)
+  [ 60] pusharglist 0 ........................... <[:]>
+  [ 62] pushproplist ............................ <[:]>
+  [ 63] setlocal 1 .............................. tCmds = [:]
+  [ 65] getlocal 1 .............................. <tCmds>
+  [ 67] pushcons 4 .............................. <"MSG_ACCEPT_TUTOR_INVITATION">
+  [ 69] pushint16 357 ........................... <357>
+  [ 72] pusharglistnoret 3 ...................... <tCmds, "MSG_ACCEPT_TUTOR_INVITATION", 357>
+  [ 74] objcall 114 ............................. tCmds.setaProp("MSG_ACCEPT_TUTOR_INVITATION", 357)
+  [ 76] getlocal 1 .............................. <tCmds>
+  [ 78] pushcons 5 .............................. <"MSG_REJECT_TUTOR_INVITATION">
+  [ 80] pushint16 358 ........................... <358>
+  [ 83] pusharglistnoret 3 ...................... <tCmds, "MSG_REJECT_TUTOR_INVITATION", 358>
+  [ 85] objcall 114 ............................. tCmds.setaProp("MSG_REJECT_TUTOR_INVITATION", 358)
+  [ 87] getlocal 1 .............................. <tCmds>
+  [ 89] pushcons 6 .............................. <"MSG_INIT_TUTORSERVICE">
+  [ 91] pushint16 360 ........................... <360>
+  [ 94] pusharglistnoret 3 ...................... <tCmds, "MSG_INIT_TUTORSERVICE", 360>
+  [ 96] objcall 114 ............................. tCmds.setaProp("MSG_INIT_TUTORSERVICE", 360)
+  [ 98] getlocal 1 .............................. <tCmds>
+  [100] pushcons 7 .............................. <"MSG_WAIT_FOR_TUTOR_INVITATIONS">
+  [102] pushint16 362 ........................... <362>
+  [105] pusharglistnoret 3 ...................... <tCmds, "MSG_WAIT_FOR_TUTOR_INVITATIONS", 362>
+  [107] objcall 114 ............................. tCmds.setaProp("MSG_WAIT_FOR_TUTOR_INVITATIONS", 362)
+  [109] getlocal 1 .............................. <tCmds>
+  [111] pushcons 8 .............................. <"MSG_CANCEL_WAIT_FOR_TUTOR_INVITATIONS">
+  [113] pushint16 363 ........................... <363>
+  [116] pusharglistnoret 3 ...................... <tCmds, "MSG_CANCEL_WAIT_FOR_TUTOR_INVITATIONS", 363>
+  [118] objcall 114 ............................. tCmds.setaProp("MSG_CANCEL_WAIT_FOR_TUTOR_INVITATIONS", 363)
+  [120] getparam 1 .............................. <tBool>
+  [122] jmpifz [164] ............................ if tBool then / else
+  [125] pushcons 9 .............................. <"connection.info.id">
+  [127] pusharglist 1 ........................... <"connection.info.id">
+  [129] extcall 67 .............................. <getVariable("connection.info.id")>
+  [131] getparam 0 .............................. <me>
+  [133] pusharglist 1 ........................... <me>
+  [135] objcall 15 .............................. <me.getID()>
+  [137] getlocal 0 .............................. <tMsgs>
+  [139] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [141] extcall 66 .............................. registerListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [143] pushcons 9 .............................. <"connection.info.id">
+  [145] pusharglist 1 ........................... <"connection.info.id">
+  [147] extcall 67 .............................. <getVariable("connection.info.id")>
+  [149] getparam 0 .............................. <me>
+  [151] pusharglist 1 ........................... <me>
+  [153] objcall 15 .............................. <me.getID()>
+  [155] getlocal 1 .............................. <tCmds>
+  [157] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [159] extcall 68 .............................. registerCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [161] jmp [200]
+  [164] pushcons 9 .............................. <"connection.info.id">
+  [166] pusharglist 1 ........................... <"connection.info.id">
+  [168] extcall 67 .............................. <getVariable("connection.info.id")>
+  [170] getparam 0 .............................. <me>
+  [172] pusharglist 1 ........................... <me>
+  [174] objcall 15 .............................. <me.getID()>
+  [176] getlocal 0 .............................. <tMsgs>
+  [178] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [180] extcall 69 .............................. unregisterListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [182] pushcons 9 .............................. <"connection.info.id">
+  [184] pusharglist 1 ........................... <"connection.info.id">
+  [186] extcall 67 .............................. <getVariable("connection.info.id")>
+  [188] getparam 0 .............................. <me>
+  [190] pusharglist 1 ........................... <me>
+  [192] objcall 15 .............................. <me.getID()>
+  [194] getlocal 1 .............................. <tCmds>
+  [196] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [198] extcall 70 .............................. unregisterCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [200] pushint8 1 .............................. <1>
+  [202] pusharglistnoret 1 ...................... <1>
+  [204] extcall 16 .............................. return 1
+  [206] ret
+end

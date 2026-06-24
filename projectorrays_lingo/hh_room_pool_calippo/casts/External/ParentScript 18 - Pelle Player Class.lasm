@@ -1,0 +1,341 @@
+property pKeyAcceptTime, pKeycounter, pJumpData, pName, pJumpDone, pReplayAnimWnd, pPlayBackAnimR
+
+on construct me
+  [  0] pushcons 0 .............................. <"playBackR">
+  [  2] setprop 642 ............................. pReplayAnimWnd = "playBackR"
+  [  5] pushint8 1 .............................. <1>
+  [  7] setprop 643 ............................. pPlayBackAnimR = 1
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 32 .............................. return 1
+  [ 16] ret
+end
+
+on deconstruct me
+  [  0] getprop 642 ............................. <pReplayAnimWnd>
+  [  3] pusharglist 1 ........................... <pReplayAnimWnd>
+  [  5] extcall 42 .............................. <windowExists(pReplayAnimWnd)>
+  [  7] jmpifz [ 17] ............................ if windowExists(pReplayAnimWnd) then
+  [ 10] getprop 642 ............................. <pReplayAnimWnd>
+  [ 13] pusharglistnoret 1 ...................... <pReplayAnimWnd>
+  [ 15] extcall 33 .............................. removeWindow(pReplayAnimWnd)
+  [ 17] getparam 0 .............................. <me>
+  [ 19] getobjprop 521 .......................... <me.pSpr>
+  [ 22] pusharglist 1 ........................... <me.pSpr>
+  [ 24] extcall 92 .............................. <ilk(me.pSpr)>
+  [ 26] pushsymb 153 ............................ <#sprite>
+  [ 28] eq ...................................... <ilk(me.pSpr) = #sprite>
+  [ 29] jmpifz [ 45] ............................ if ilk(me.pSpr) = #sprite then
+  [ 32] getparam 0 .............................. <me>
+  [ 34] getchainedprop 521 ...................... <me.pSpr>
+  [ 37] getobjprop 446 .......................... <me.pSpr.spriteNum>
+  [ 40] pusharglistnoret 1 ...................... <me.pSpr.spriteNum>
+  [ 42] extcall 522 ............................. releaseSprite(me.pSpr.spriteNum)
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 47 .............................. <me.getID()>
+  [ 51] pusharglistnoret 1 ...................... <me.getID()>
+  [ 53] extcall 314 ............................. removeUpdate(me.getID())
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] pusharglistnoret 1 ...................... <1>
+  [ 60] extcall 32 .............................. return 1
+  [ 62] ret
+end
+
+on initPlayer me, jname, jdata
+  [  0] pushzero ................................ <0>
+  [  1] setprop 644 ............................. pJumpDone = 0
+  [  4] getparam 1 .............................. <jname>
+  [  6] setprop 645 ............................. pName = jname
+  [  9] getparam 2 .............................. <jdata>
+  [ 11] pusharglist 1 ........................... <jdata>
+  [ 13] extcall 282 ............................. <decompressString(jdata)>
+  [ 16] setprop 584 ............................. pJumpData = decompressString(jdata)
+  [ 19] pushcons 1 .............................. <"0000">
+  [ 21] getprop 584 ............................. <pJumpData>
+  [ 24] joinstr ................................. <"0000" & pJumpData>
+  [ 25] pushcons 2 .............................. <"0000000000">
+  [ 27] joinstr ................................. <"0000" & pJumpData & "0000000000">
+  [ 28] setprop 584 ............................. pJumpData = "0000" & pJumpData & "0000000000"
+  [ 31] pusharglist 0 ........................... <>
+  [ 33] extcall 24 .............................. <VOID>
+  [ 35] setlocal 0 .............................. plastPressKey = VOID
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pusharglistnoret 1 ...................... <me>
+  [ 41] objcall 640 ............................. me.openHidePlayBackWindow()
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglist 1 ........................... <me>
+  [ 48] objcall 47 .............................. <me.getID()>
+  [ 50] pusharglistnoret 1 ...................... <me.getID()>
+  [ 52] extcall 329 ............................. receiveUpdate(me.getID())
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] pusharglistnoret 1 ...................... <1>
+  [ 59] extcall 32 .............................. return 1
+  [ 61] ret
+end
+
+on openHidePlayBackWindow me
+  [  0] getprop 645 ............................. <pName>
+  [  3] pushsymb 39 ............................. <#session>
+  [  5] pusharglist 1 ........................... <#session>
+  [  7] extcall 30 .............................. <getObject(#session)>
+  [  9] pushcons 3 .............................. <"user_name">
+  [ 11] pusharglist 2 ........................... <getObject(#session), "user_name">
+  [ 13] objcall 40 .............................. <getObject(#session).GET("user_name")>
+  [ 15] nteq .................................... <pName <> getObject(#session).GET("user_name")>
+  [ 16] jmpifz [ 24] ............................ if pName <> getObject(#session).GET("user_name") then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 32 .............................. return 0
+  [ 24] getprop 642 ............................. <pReplayAnimWnd>
+  [ 27] pusharglist 1 ........................... <pReplayAnimWnd>
+  [ 29] extcall 42 .............................. <windowExists(pReplayAnimWnd)>
+  [ 31] jmpifz [ 44] ............................ if windowExists(pReplayAnimWnd) then / else
+  [ 34] getprop 642 ............................. <pReplayAnimWnd>
+  [ 37] pusharglistnoret 1 ...................... <pReplayAnimWnd>
+  [ 39] extcall 33 .............................. removeWindow(pReplayAnimWnd)
+  [ 41] jmp [105]
+  [ 44] getprop 642 ............................. <pReplayAnimWnd>
+  [ 47] pushcons 4 .............................. <"ph_playback.window">
+  [ 49] pushint8 15 ............................. <15>
+  [ 51] pushint8 10 ............................. <10>
+  [ 53] pusharglistnoret 4 ...................... <pReplayAnimWnd, "ph_playback.window", 15, 10>
+  [ 55] extcall 44 .............................. createWindow(pReplayAnimWnd, "ph_playback.window", 15, 10)
+  [ 57] getprop 642 ............................. <pReplayAnimWnd>
+  [ 60] pusharglist 1 ........................... <pReplayAnimWnd>
+  [ 62] extcall 45 .............................. <getWindow(pReplayAnimWnd)>
+  [ 64] pushint8 56 ............................. <56>
+  [ 66] pushint8 64 ............................. <64>
+  [ 68] pusharglistnoret 3 ...................... <getWindow(pReplayAnimWnd), 56, 64>
+  [ 70] objcall 648 ............................. getWindow(pReplayAnimWnd).resizeTo(56, 64)
+  [ 73] getprop 642 ............................. <pReplayAnimWnd>
+  [ 76] pusharglist 1 ........................... <pReplayAnimWnd>
+  [ 78] extcall 45 .............................. <getWindow(pReplayAnimWnd)>
+  [ 80] pushint32 19000020 ...................... <19000020>
+  [ 85] pusharglistnoret 2 ...................... <getWindow(pReplayAnimWnd), 19000020>
+  [ 87] objcall 228 ............................. getWindow(pReplayAnimWnd).moveZ(19000020)
+  [ 89] getprop 642 ............................. <pReplayAnimWnd>
+  [ 92] pusharglist 1 ........................... <pReplayAnimWnd>
+  [ 94] extcall 45 .............................. <getWindow(pReplayAnimWnd)>
+  [ 96] pusharglistnoret 1 ...................... <getWindow(pReplayAnimWnd)>
+  [ 98] objcall 126 ............................. getWindow(pReplayAnimWnd).lock()
+  [100] pushint8 1 .............................. <1>
+  [102] setprop 643 ............................. pPlayBackAnimR = 1
+  [105] ret
+end
+
+on animatePlayBackR me
+  [  0] getprop 642 ............................. <pReplayAnimWnd>
+  [  3] pusharglist 1 ........................... <pReplayAnimWnd>
+  [  5] extcall 45 .............................. <getWindow(pReplayAnimWnd)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pReplayAnimWnd)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 32 .............................. return 0
+  [ 21] pushzero ................................ <0>
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] pushint8 2 .............................. <2>
+  [ 26] pushint8 3 .............................. <3>
+  [ 28] pushint8 4 .............................. <4>
+  [ 30] pushint8 5 .............................. <5>
+  [ 32] pushint8 5 .............................. <5>
+  [ 34] pushint8 4 .............................. <4>
+  [ 36] pushint8 3 .............................. <3>
+  [ 38] pushint8 2 .............................. <2>
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] pushzero ................................ <0>
+  [ 43] pusharglist 12 .......................... <[0, 1, 2, 3, 4, 5, 5, 4, 3, 2, 1, 0]>
+  [ 45] pushlist ................................ <[0, 1, 2, 3, 4, 5, 5, 4, 3, 2, 1, 0]>
+  [ 46] setlocal 1 .............................. tAnim = [0, 1, 2, 3, 4, 5, 5, 4, 3, 2, 1, 0]
+  [ 48] pushcons 5 .............................. <"R_">
+  [ 50] getlocal 1 .............................. <tAnim>
+  [ 52] getprop 643 ............................. <pPlayBackAnimR>
+  [ 55] pusharglist 2 ........................... <tAnim, pPlayBackAnimR>
+  [ 57] objcall 59 .............................. <tAnim[pPlayBackAnimR]>
+  [ 59] joinstr ................................. <"R_" & tAnim[pPlayBackAnimR]>
+  [ 60] pusharglist 1 ........................... <"R_" & tAnim[pPlayBackAnimR]>
+  [ 62] extcall 135 ............................. <getmemnum("R_" & tAnim[pPlayBackAnimR])>
+  [ 64] pusharglist 1 ........................... <getmemnum("R_" & tAnim[pPlayBackAnimR])>
+  [ 66] extcall 134 ............................. <member(getmemnum("R_" & tAnim[pPlayBackAnimR]))>
+  [ 68] getchainedprop 72 ....................... <member(getmemnum("R_" & tAnim[pPlayBackAnimR])).image>
+  [ 70] pusharglist 1 ........................... <member(getmemnum("R_" & tAnim[pPlayBackAnimR])).image>
+  [ 72] objcall 57 .............................. <member(getmemnum("R_" & tAnim[pPlayBackAnimR])).image.duplicate()>
+  [ 74] setlocal 2 .............................. tImg = member(getmemnum("R_" & tAnim[pPlayBackAnimR])).image.duplicate()
+  [ 76] getlocal 0 .............................. <tWndObj>
+  [ 78] pushcons 6 .............................. <"ph_playback_r_img">
+  [ 80] pusharglist 2 ........................... <tWndObj, "ph_playback_r_img">
+  [ 82] objcall 68 .............................. <tWndObj.getElement("ph_playback_r_img")>
+  [ 84] getlocal 2 .............................. <tImg>
+  [ 86] pusharglistnoret 2 ...................... <tWndObj.getElement("ph_playback_r_img"), tImg>
+  [ 88] objcall 75 .............................. tWndObj.getElement("ph_playback_r_img").feedImage(tImg)
+  [ 90] getprop 643 ............................. <pPlayBackAnimR>
+  [ 93] pushint8 1 .............................. <1>
+  [ 95] add ..................................... <pPlayBackAnimR + 1>
+  [ 96] setprop 643 ............................. pPlayBackAnimR = pPlayBackAnimR + 1
+  [ 99] getprop 643 ............................. <pPlayBackAnimR>
+  [102] getlocal 1 .............................. <tAnim>
+  [104] getobjprop 58 ........................... <tAnim.count>
+  [106] gt ...................................... <pPlayBackAnimR > tAnim.count>
+  [107] jmpifz [115] ............................ if pPlayBackAnimR > tAnim.count then
+  [110] pushint8 1 .............................. <1>
+  [112] setprop 643 ............................. pPlayBackAnimR = 1
+  [115] ret
+end
+
+on update me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 641 ............................. me.animatePlayBackR()
+  [  7] getprop 651 ............................. <pKeyAcceptTime>
+  [ 10] pusharglist 1 ........................... <pKeyAcceptTime>
+  [ 12] extcall 43 .............................. <voidp(pKeyAcceptTime)>
+  [ 14] jmpifz [ 39] ............................ if voidp(pKeyAcceptTime) then
+  [ 17] getprop 652 ............................. <pKeycounter>
+  [ 20] pusharglist 1 ........................... <pKeycounter>
+  [ 22] extcall 43 .............................. <voidp(pKeycounter)>
+  [ 24] jmpifz [ 31] ............................ if voidp(pKeycounter) then
+  [ 27] pushzero ................................ <0>
+  [ 28] setprop 652 ............................. pKeycounter = 0
+  [ 31] getmovieprop 166 ........................ <the milliSeconds>
+  [ 33] pushint8 101 ............................ <101>
+  [ 35] sub ..................................... <the milliSeconds - 101>
+  [ 36] setprop 651 ............................. pKeyAcceptTime = the milliSeconds - 101
+  [ 39] getmovieprop 166 ........................ <the milliSeconds>
+  [ 41] getprop 651 ............................. <pKeyAcceptTime>
+  [ 44] gteq .................................... <the milliSeconds >= pKeyAcceptTime>
+  [ 45] jmpifz [324] ............................ if the milliSeconds >= pKeyAcceptTime then
+  [ 48] getprop 652 ............................. <pKeycounter>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] add ..................................... <pKeycounter + 1>
+  [ 54] setprop 652 ............................. pKeycounter = pKeycounter + 1
+  [ 57] getprop 652 ............................. <pKeycounter>
+  [ 60] getprop 584 ............................. <pJumpData>
+  [ 63] getobjprop 110 .......................... <pJumpData.length>
+  [ 65] lteq .................................... <pKeycounter <= pJumpData.length>
+  [ 66] jmpifz [150] ............................ if pKeycounter <= pJumpData.length then / else
+  [ 69] getprop 584 ............................. <pJumpData>
+  [ 72] pushsymb 109 ............................ <#char>
+  [ 74] getprop 652 ............................. <pKeycounter>
+  [ 77] pusharglist 3 ........................... <pJumpData, #char, pKeycounter>
+  [ 79] objcall 111 ............................. <pJumpData.char[pKeycounter]>
+  [ 81] pushcons 7 .............................. <"0">
+  [ 83] nteq .................................... <pJumpData.char[pKeycounter] <> "0">
+  [ 84] jmpifz [117] ............................ if pJumpData.char[pKeycounter] <> "0" then / else
+  [ 87] getparam 0 .............................. <me>
+  [ 89] getprop 584 ............................. <pJumpData>
+  [ 92] pushsymb 109 ............................ <#char>
+  [ 94] getprop 652 ............................. <pKeycounter>
+  [ 97] pusharglist 3 ........................... <pJumpData, #char, pKeycounter>
+  [ 99] objcall 111 ............................. <pJumpData.char[pKeycounter]>
+  [101] getmovieprop 166 ........................ <the milliSeconds>
+  [103] getprop 651 ............................. <pKeyAcceptTime>
+  [106] sub ..................................... <the milliSeconds - pKeyAcceptTime>
+  [107] pushint8 1 .............................. <1>
+  [109] pusharglistnoret 4 ...................... <me, pJumpData.char[pKeycounter], the milliSeconds - pKeyAcceptTime, 1>
+  [111] objcall 519 ............................. me.MykeyDown(pJumpData.char[pKeycounter], the milliSeconds - pKeyAcceptTime, 1)
+  [114] jmp [132]
+  [117] getparam 0 .............................. <me>
+  [119] getmovieprop 166 ........................ <the milliSeconds>
+  [121] getprop 651 ............................. <pKeyAcceptTime>
+  [124] sub ..................................... <the milliSeconds - pKeyAcceptTime>
+  [125] pushint8 1 .............................. <1>
+  [127] pusharglistnoret 3 ...................... <me, the milliSeconds - pKeyAcceptTime, 1>
+  [129] objcall 520 ............................. me.NotKeyDown(the milliSeconds - pKeyAcceptTime, 1)
+  [132] getmovieprop 166 ........................ <the milliSeconds>
+  [134] pushint8 100 ............................ <100>
+  [136] getmovieprop 166 ........................ <the milliSeconds>
+  [138] getprop 651 ............................. <pKeyAcceptTime>
+  [141] sub ..................................... <the milliSeconds - pKeyAcceptTime>
+  [142] sub ..................................... <100 - (the milliSeconds - pKeyAcceptTime)>
+  [143] add ..................................... <the milliSeconds + (100 - (the milliSeconds - pKeyAcceptTime))>
+  [144] setprop 651 ............................. pKeyAcceptTime = the milliSeconds + (100 - (the milliSeconds - pKeyAcceptTime))
+  [147] jmp [324]
+  [150] getprop 644 ............................. <pJumpDone>
+  [153] pushzero ................................ <0>
+  [154] eq ...................................... <pJumpDone = 0>
+  [155] getprop 645 ............................. <pName>
+  [158] pushsymb 39 ............................. <#session>
+  [160] pusharglist 1 ........................... <#session>
+  [162] extcall 30 .............................. <getObject(#session)>
+  [164] pushcons 3 .............................. <"user_name">
+  [166] pusharglist 2 ........................... <getObject(#session), "user_name">
+  [168] objcall 40 .............................. <getObject(#session).GET("user_name")>
+  [170] eq ...................................... <pName = getObject(#session).GET("user_name")>
+  [171] and ..................................... <(pJumpDone = 0) and (pName = getObject(#session).GET("user_name"))>
+  [172] jmpifz [292] ............................ if (pJumpDone = 0) and (pName = getObject(#session).GET("user_name")) then
+  [175] pushint8 1 .............................. <1>
+  [177] setprop 644 ............................. pJumpDone = 1
+  [180] pushsymb 121 ............................ <#room>
+  [182] pusharglist 1 ........................... <#room>
+  [184] extcall 120 ............................. <getThread(#room)>
+  [186] pusharglist 1 ........................... <getThread(#room)>
+  [188] objcall 122 ............................. <getThread(#room).getInterface()>
+  [190] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [192] objcall 341 ............................. <getThread(#room).getInterface().getGeometry()>
+  [195] getparam 0 .............................. <me>
+  [197] getchainedprop 452 ...................... <me.pMyLoc>
+  [200] getobjprop 457 .......................... <me.pMyLoc.locH>
+  [203] getparam 0 .............................. <me>
+  [205] getchainedprop 452 ...................... <me.pMyLoc>
+  [208] getobjprop 458 .......................... <me.pMyLoc.locV>
+  [211] pusharglist 3 ........................... <getThread(#room).getInterface().getGeometry(), me.pMyLoc.locH, me.pMyLoc.locV>
+  [213] objcall 342 ............................. <getThread(#room).getInterface().getGeometry().getWorldCoordinate(me.pMyLoc.locH, me.pMyLoc.locV)>
+  [216] setlocal 0 .............................. tSplashPos = getThread(#room).getInterface().getGeometry().getWorldCoordinate(me.pMyLoc.locH, me.pMyLoc.locV)
+  [218] getlocal 0 .............................. <tSplashPos>
+  [220] pushzero ................................ <0>
+  [221] eq ...................................... <tSplashPos = 0>
+  [222] jmpifz [251] ............................ if tSplashPos = 0 then / else
+  [225] pushsymb 121 ............................ <#room>
+  [227] pusharglist 1 ........................... <#room>
+  [229] extcall 120 ............................. <getThread(#room)>
+  [231] pusharglist 1 ........................... <getThread(#room)>
+  [233] objcall 170 ............................. <getThread(#room).getComponent()>
+  [235] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [237] objcall 653 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [240] pushcons 8 .............................. <"SPLASH_POSITION">
+  [242] pushcons 9 .............................. <"21,19">
+  [244] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "SPLASH_POSITION", "21,19">
+  [246] objcall 103 ............................. getThread(#room).getComponent().getRoomConnection().send("SPLASH_POSITION", "21,19")
+  [248] jmp [292]
+  [251] pushsymb 121 ............................ <#room>
+  [253] pusharglist 1 ........................... <#room>
+  [255] extcall 120 ............................. <getThread(#room)>
+  [257] pusharglist 1 ........................... <getThread(#room)>
+  [259] objcall 170 ............................. <getThread(#room).getComponent()>
+  [261] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [263] objcall 653 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [266] pushcons 8 .............................. <"SPLASH_POSITION">
+  [268] getlocal 0 .............................. <tSplashPos>
+  [270] pushint8 1 .............................. <1>
+  [272] pusharglist 2 ........................... <tSplashPos, 1>
+  [274] objcall 59 .............................. <tSplashPos[1]>
+  [276] pushcons 10 ............................. <",">
+  [278] joinstr ................................. <tSplashPos[1] & ",">
+  [279] getlocal 0 .............................. <tSplashPos>
+  [281] pushint8 2 .............................. <2>
+  [283] pusharglist 2 ........................... <tSplashPos, 2>
+  [285] objcall 59 .............................. <tSplashPos[2]>
+  [287] joinstr ................................. <tSplashPos[1] & "," & tSplashPos[2]>
+  [288] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "SPLASH_POSITION", tSplashPos[1] & "," & tSplashPos[2]>
+  [290] objcall 103 ............................. getThread(#room).getComponent().getRoomConnection().send("SPLASH_POSITION", tSplashPos[1] & "," & tSplashPos[2])
+  [292] getparam 0 .............................. <me>
+  [294] pusharglistnoret 1 ...................... <me>
+  [296] objcall 640 ............................. me.openHidePlayBackWindow()
+  [299] pushsymb 313 ............................ <#pellehyppy>
+  [302] pusharglist 1 ........................... <#pellehyppy>
+  [304] extcall 120 ............................. <getThread(#pellehyppy)>
+  [306] pusharglist 1 ........................... <getThread(#pellehyppy)>
+  [308] objcall 122 ............................. <getThread(#pellehyppy).getInterface()>
+  [310] pusharglistnoret 1 ...................... <getThread(#pellehyppy).getInterface()>
+  [312] objcall 12 .............................. getThread(#pellehyppy).getInterface().activateChatField()
+  [314] getparam 0 .............................. <me>
+  [316] pusharglist 1 ........................... <me>
+  [318] objcall 47 .............................. <me.getID()>
+  [320] pusharglistnoret 1 ...................... <me.getID()>
+  [322] extcall 37 .............................. removeObject(me.getID())
+  [324] ret
+end

@@ -1,0 +1,1580 @@
+property pMUXtra, pServer, pPort, pDestination, pData, pMaxBytes, pCRLF, pNetDone, pNetResult, pNetError, pNetRequest, pUserAgent, pHttpVersion, pResponseCbHandler, pResponseCbObj, pCookies, pType, pStatus, pMemName, pMemNum, pCallBack, pRedirectNetID, pRedirectUrl, pRedirectType, pTarget
+
+on define me, tMemName, tdata
+  [  0] pushsymb 1313 ........................... <#initializing>
+  [  3] setprop 1312 ............................ pStatus = #initializing
+  [  6] getparam 1 .............................. <tMemName>
+  [  8] setprop 938 ............................. pMemName = tMemName
+  [ 11] getparam 2 .............................. <tdata>
+  [ 13] pushsymb 908 ............................ <#memNum>
+  [ 16] pusharglist 2 ........................... <tdata, #memNum>
+  [ 18] objcall 29 .............................. <tdata[#memNum]>
+  [ 20] setprop 1314 ............................ pMemNum = tdata[#memNum]
+  [ 23] getparam 2 .............................. <tdata>
+  [ 25] pushsymb 552 ............................ <#type>
+  [ 28] pusharglist 2 ........................... <tdata, #type>
+  [ 30] objcall 29 .............................. <tdata[#type]>
+  [ 32] setprop 1316 ............................ pType = tdata[#type]
+  [ 35] getparam 2 .............................. <tdata>
+  [ 37] pushsymb 909 ............................ <#callback>
+  [ 40] pusharglist 2 ........................... <tdata, #callback>
+  [ 42] objcall 29 .............................. <tdata[#callback]>
+  [ 44] setprop 1317 ............................ pCallBack = tdata[#callback]
+  [ 47] getparam 2 .............................. <tdata>
+  [ 49] pushsymb 912 ............................ <#target>
+  [ 52] pusharglist 2 ........................... <tdata, #target>
+  [ 54] objcall 29 .............................. <tdata[#target]>
+  [ 56] setprop 2004 ............................ pTarget = tdata[#target]
+  [ 59] getparam 2 .............................. <tdata>
+  [ 61] pushsymb 911 ............................ <#redirectType>
+  [ 64] pusharglist 2 ........................... <tdata, #redirectType>
+  [ 66] objcall 29 .............................. <tdata[#redirectType]>
+  [ 68] pusharglist 1 ........................... <tdata[#redirectType]>
+  [ 70] extcall 14 .............................. <voidp(tdata[#redirectType])>
+  [ 72] jmpifz [ 84] ............................ if voidp(tdata[#redirectType]) then / else
+  [ 75] pushsymb 2006 ........................... <#follow>
+  [ 78] setprop 2005 ............................ pRedirectType = #follow
+  [ 81] jmp [ 96]
+  [ 84] getparam 2 .............................. <tdata>
+  [ 86] pushsymb 911 ............................ <#redirectType>
+  [ 89] pusharglist 2 ........................... <tdata, #redirectType>
+  [ 91] objcall 29 .............................. <tdata[#redirectType]>
+  [ 93] setprop 2005 ............................ pRedirectType = tdata[#redirectType]
+  [ 96] getparam 0 .............................. <me>
+  [ 98] getparam 2 .............................. <tdata>
+  [100] pushsymb 907 ............................ <#url>
+  [103] pusharglist 2 ........................... <tdata, #url>
+  [105] objcall 29 .............................. <tdata[#url]>
+  [107] pusharglist 2 ........................... <me, tdata[#url]>
+  [109] objcall 1990 ............................ <me.separateURL(tdata[#url])>
+  [112] setlocal 0 .............................. tSeparatedURL = me.separateURL(tdata[#url])
+  [114] getlocal 0 .............................. <tSeparatedURL>
+  [116] pushsymb 2008 ........................... <#server>
+  [119] pusharglist 2 ........................... <tSeparatedURL, #server>
+  [121] objcall 29 .............................. <tSeparatedURL[#server]>
+  [123] setprop 2007 ............................ pServer = tSeparatedURL[#server]
+  [126] getlocal 0 .............................. <tSeparatedURL>
+  [128] pushsymb 2010 ........................... <#destination>
+  [131] pusharglist 2 ........................... <tSeparatedURL, #destination>
+  [133] objcall 29 .............................. <tSeparatedURL[#destination]>
+  [135] setprop 2009 ............................ pDestination = tSeparatedURL[#destination]
+  [138] getlocal 0 .............................. <tSeparatedURL>
+  [140] pushsymb 809 ............................ <#port>
+  [143] pusharglist 2 ........................... <tSeparatedURL, #port>
+  [145] objcall 29 .............................. <tSeparatedURL[#port]>
+  [147] setprop 1390 ............................ pPort = tSeparatedURL[#port]
+  [150] getprop 2009 ............................ <pDestination>
+  [153] pusharglist 1 ........................... <pDestination>
+  [155] extcall 14 .............................. <voidp(pDestination)>
+  [157] jmpifz [165] ............................ if voidp(pDestination) then
+  [160] pushcons 0 .............................. <"/">
+  [162] setprop 2009 ............................ pDestination = "/"
+  [165] getprop 2009 ............................ <pDestination>
+  [168] pushcons 0 .............................. <"/">
+  [170] contains0str ............................ <pDestination starts "/">
+  [171] not ..................................... <not (pDestination starts "/")>
+  [172] jmpifz [182] ............................ if not (pDestination starts "/") then
+  [175] pushcons 0 .............................. <"/">
+  [177] pushvarref 2009 ......................... <pDestination>
+  [180] put 51 .................................. put "/" before pDestination
+  [182] getprop 1390 ............................ <pPort>
+  [185] pusharglist 1 ........................... <pPort>
+  [187] extcall 14 .............................. <voidp(pPort)>
+  [189] jmpifz [197] ............................ if voidp(pPort) then
+  [192] pushint8 80 ............................. <80>
+  [194] setprop 1390 ............................ pPort = 80
+  [197] pushint8 13 ............................. <13>
+  [199] pusharglist 1 ........................... <13>
+  [201] extcall 33 .............................. <numToChar(13)>
+  [203] pushint8 10 ............................. <10>
+  [205] pusharglist 1 ........................... <10>
+  [207] extcall 33 .............................. <numToChar(10)>
+  [209] joinstr ................................. <numToChar(13) & numToChar(10)>
+  [210] setprop 2011 ............................ pCRLF = numToChar(13) & numToChar(10)
+  [213] pushcons 1 .............................. <"0.1">
+  [215] setlocal 1 .............................. pVERSION = "0.1"
+  [217] pushcons 2 .............................. <"HTTP-CLASS/">
+  [219] getlocal 1 .............................. <pVERSION>
+  [221] joinstr ................................. <"HTTP-CLASS/" & pVERSION>
+  [222] setprop 2012 ............................ pUserAgent = "HTTP-CLASS/" & pVERSION
+  [225] pushcons 3 .............................. <"1.1">
+  [227] setprop 2013 ............................ pHttpVersion = "1.1"
+  [230] pushint8 16 ............................. <16>
+  [232] pushint16 1024 .......................... <1024>
+  [235] mul ..................................... <16 * 1024>
+  [236] setprop 2014 ............................ pMaxBytes = 16 * 1024
+  [239] pusharglist 0 ........................... <[:]>
+  [241] pushproplist ............................ <[:]>
+  [242] setprop 2015 ............................ pData = [:]
+  [245] pushzero ................................ <0>
+  [246] setprop 2016 ............................ pNetDone = 0
+  [249] getprop 2017 ............................ <pCookies>
+  [252] pusharglist 0 ........................... <>
+  [254] extcall 9 ............................... <VOID>
+  [256] eq ...................................... <pCookies = VOID>
+  [257] jmpifz [266] ............................ if pCookies = VOID then
+  [260] pusharglist 0 ........................... <[:]>
+  [262] pushproplist ............................ <[:]>
+  [263] setprop 2017 ............................ pCookies = [:]
+  [266] pusharglist 0 ........................... <>
+  [268] extcall 9 ............................... <VOID>
+  [270] setprop 2018 ............................ pRedirectNetID = VOID
+  [273] getparam 0 .............................. <me>
+  [275] pusharglist 1 ........................... <me>
+  [277] objcall 1991 ............................ <me.sendRequest()>
+  [280] pusharglistnoret 1 ...................... <me.sendRequest()>
+  [282] extcall 11 .............................. return me.sendRequest()
+  [284] ret
+end
+
+on separateURL me, tURL
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tUrlParts = [:]
+  [  5] getparam 1 .............................. <tURL>
+  [  7] pushcons 4 .............................. <"http://">
+  [  9] pushcons 5 .............................. <EMPTY>
+  [ 11] pusharglist 3 ........................... <tURL, "http://", EMPTY>
+  [ 13] extcall 369 ............................. <replaceChunks(tURL, "http://", EMPTY)>
+  [ 16] setparam 1 .............................. tURL = replaceChunks(tURL, "http://", EMPTY)
+  [ 18] pushcons 0 .............................. <"/">
+  [ 20] getparam 1 .............................. <tURL>
+  [ 22] pusharglist 2 ........................... <"/", tURL>
+  [ 24] extcall 380 ............................. <offset("/", tURL)>
+  [ 27] setlocal 1 .............................. tDestinationOffset = offset("/", tURL)
+  [ 29] getparam 1 .............................. <tURL>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] getlocal 1 .............................. <tDestinationOffset>
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] sub ..................................... <tDestinationOffset - 1>
+  [ 38] pusharglist 3 ........................... <tURL, 1, tDestinationOffset - 1>
+  [ 40] extcall 34 .............................. <chars(tURL, 1, tDestinationOffset - 1)>
+  [ 42] setlocal 2 .............................. tServerURL = chars(tURL, 1, tDestinationOffset - 1)
+  [ 44] getparam 1 .............................. <tURL>
+  [ 46] getlocal 1 .............................. <tDestinationOffset>
+  [ 48] getparam 1 .............................. <tURL>
+  [ 50] getobjprop 21 ........................... <tURL.length>
+  [ 52] pusharglist 3 ........................... <tURL, tDestinationOffset, tURL.length>
+  [ 54] extcall 34 .............................. <chars(tURL, tDestinationOffset, tURL.length)>
+  [ 56] setlocal 3 .............................. tDestination = chars(tURL, tDestinationOffset, tURL.length)
+  [ 58] pushint8 80 ............................. <80>
+  [ 60] setlocal 4 .............................. tPort = 80
+  [ 62] getlocal 2 .............................. <tServerURL>
+  [ 64] setlocal 5 .............................. tServer = tServerURL
+  [ 66] getlocal 2 .............................. <tServerURL>
+  [ 68] pushcons 6 .............................. <":">
+  [ 70] containsstr ............................. <tServerURL contains ":">
+  [ 71] jmpifz [121] ............................ if tServerURL contains ":" then
+  [ 74] pushcons 6 .............................. <":">
+  [ 76] getlocal 2 .............................. <tServerURL>
+  [ 78] pusharglist 2 ........................... <":", tServerURL>
+  [ 80] extcall 380 ............................. <offset(":", tServerURL)>
+  [ 83] setlocal 6 .............................. tPortOffset = offset(":", tServerURL)
+  [ 85] getlocal 2 .............................. <tServerURL>
+  [ 87] pushint8 1 .............................. <1>
+  [ 89] getlocal 6 .............................. <tPortOffset>
+  [ 91] pushint8 1 .............................. <1>
+  [ 93] sub ..................................... <tPortOffset - 1>
+  [ 94] pusharglist 3 ........................... <tServerURL, 1, tPortOffset - 1>
+  [ 96] extcall 34 .............................. <chars(tServerURL, 1, tPortOffset - 1)>
+  [ 98] setlocal 5 .............................. tServer = chars(tServerURL, 1, tPortOffset - 1)
+  [100] getlocal 2 .............................. <tServerURL>
+  [102] getlocal 6 .............................. <tPortOffset>
+  [104] pushint8 1 .............................. <1>
+  [106] add ..................................... <tPortOffset + 1>
+  [107] getlocal 2 .............................. <tServerURL>
+  [109] getobjprop 21 ........................... <tServerURL.length>
+  [111] pusharglist 3 ........................... <tServerURL, tPortOffset + 1, tServerURL.length>
+  [113] extcall 34 .............................. <chars(tServerURL, tPortOffset + 1, tServerURL.length)>
+  [115] pusharglist 1 ........................... <chars(tServerURL, tPortOffset + 1, tServerURL.length)>
+  [117] extcall 15 .............................. <value(chars(tServerURL, tPortOffset + 1, tServerURL.length))>
+  [119] setlocal 4 .............................. tPort = value(chars(tServerURL, tPortOffset + 1, tServerURL.length))
+  [121] pushsymb 2008 ........................... <#server>
+  [124] getlocal 5 .............................. <tServer>
+  [126] pushsymb 2010 ........................... <#destination>
+  [129] getlocal 3 .............................. <tDestination>
+  [131] pushsymb 809 ............................ <#port>
+  [134] getlocal 4 .............................. <tPort>
+  [136] pusharglist 6 ........................... <[#server: tServer, #destination: tDestination, #port: tPort]>
+  [138] pushproplist ............................ <[#server: tServer, #destination: tDestination, #port: tPort]>
+  [139] pusharglistnoret 1 ...................... <[#server: tServer, #destination: tDestination, #port: tPort]>
+  [141] extcall 11 .............................. return [#server: tServer, #destination: tDestination, #port: tPort]
+  [143] ret
+end
+
+on addCallBack me, tMemName, tCallback
+  [  0] getparam 1 .............................. <tMemName>
+  [  2] getprop 938 ............................. <pMemName>
+  [  5] eq ...................................... <tMemName = pMemName>
+  [  6] jmpifz [ 23] ............................ if tMemName = pMemName then / else
+  [  9] getparam 2 .............................. <tCallback>
+  [ 11] setprop 1317 ............................ pCallBack = tCallback
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 11 .............................. return 1
+  [ 20] jmp [ 28]
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 11 .............................. return 0
+  [ 28] ret
+end
+
+on getProperty me, tProp
+  [  0] getparam 1 .............................. <tProp>
+  [  2] peek 0 .................................. case tProp of
+  [  4] pushsymb 920 ............................ <#status>
+  [  7] eq
+  [  8] jmpifz [ 23] ............................ (case) #status:
+  [ 11] pop 1
+  [ 13] getprop 1312 ............................ <pStatus>
+  [ 16] pusharglistnoret 1 ...................... <pStatus>
+  [ 18] extcall 11 .............................. return pStatus
+  [ 20] jmp [116]
+  [ 23] peek 0
+  [ 25] pushsymb 907 ............................ <#url>
+  [ 28] eq
+  [ 29] jmpifz [ 48] ............................ (case) #url:
+  [ 32] pop 1
+  [ 34] getprop 2007 ............................ <pServer>
+  [ 37] getprop 2009 ............................ <pDestination>
+  [ 40] joinstr ................................. <pServer & pDestination>
+  [ 41] pusharglistnoret 1 ...................... <pServer & pDestination>
+  [ 43] extcall 11 .............................. return pServer & pDestination
+  [ 45] jmp [116]
+  [ 48] peek 0
+  [ 50] pushsymb 552 ............................ <#type>
+  [ 53] eq
+  [ 54] jmpifz [ 69] ............................ (case) #type:
+  [ 57] pop 1
+  [ 59] getprop 1316 ............................ <pType>
+  [ 62] pusharglistnoret 1 ...................... <pType>
+  [ 64] extcall 11 .............................. return pType
+  [ 66] jmp [116]
+  [ 69] peek 0
+  [ 71] pushsymb 928 ............................ <#Percent>
+  [ 74] eq
+  [ 75] jmpifz [109] ............................ (case) #Percent:
+  [ 78] getprop 2016 ............................ <pNetDone>
+  [ 81] jmpifz [ 95] ............................ if pNetDone then / else
+  [ 84] pop 1
+  [ 86] pushint8 100 ............................ <100>
+  [ 88] pusharglistnoret 1 ...................... <100>
+  [ 90] extcall 11 .............................. return 100
+  [ 92] jmp [106]
+  [ 95] pop 1
+  [ 97] pushfloat32 0.0 ......................... <0.0>
+  [102] pusharglistnoret 1 ...................... <0.0>
+  [104] extcall 11 .............................. return 0.0
+  [106] jmp [116] ............................... (case) otherwise:
+  [109] pop 1
+  [111] pushzero ................................ <0>
+  [112] pusharglistnoret 1 ...................... <0>
+  [114] extcall 11 .............................. return 0
+  [116] pop 1 ................................... end case
+  [118] ret
+end
+
+on update me
+  [  0] getprop 2016 ............................ <pNetDone>
+  [  3] jmpifz [ 51] ............................ if pNetDone then
+  [  6] getprop 1312 ............................ <pStatus>
+  [  9] pushsymb 122 ............................ <#error>
+  [ 11] eq ...................................... <pStatus = #error>
+  [ 12] getprop 1312 ............................ <pStatus>
+  [ 15] pushsymb 971 ............................ <#LOADING>
+  [ 18] eq ...................................... <pStatus = #LOADING>
+  [ 19] or ...................................... <(pStatus = #error) or (pStatus = #LOADING)>
+  [ 20] jmpifz [ 51] ............................ if (pStatus = #error) or (pStatus = #LOADING) then
+  [ 23] pushsymb 921 ............................ <#complete>
+  [ 26] setprop 1312 ............................ pStatus = #complete
+  [ 29] pusharglist 0 ........................... <>
+  [ 31] extcall 289 ............................. <getDownloadManager()>
+  [ 34] getprop 938 ............................. <pMemName>
+  [ 37] getprop 1317 ............................ <pCallBack>
+  [ 40] pusharglistnoret 3 ...................... <getDownloadManager(), pMemName, pCallBack>
+  [ 42] objcall 894 ............................. getDownloadManager().removeActiveTask(pMemName, pCallBack)
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglistnoret 1 ...................... <1>
+  [ 49] extcall 11 .............................. return 1
+  [ 51] getprop 2018 ............................ <pRedirectNetID>
+  [ 54] pusharglist 1 ........................... <pRedirectNetID>
+  [ 56] extcall 14 .............................. <voidp(pRedirectNetID)>
+  [ 58] not ..................................... <not voidp(pRedirectNetID)>
+  [ 59] jmpifz [133] ............................ if not voidp(pRedirectNetID) then
+  [ 62] getprop 2018 ............................ <pRedirectNetID>
+  [ 65] pusharglist 1 ........................... <pRedirectNetID>
+  [ 67] extcall 1326 ............................ <netDone(pRedirectNetID)>
+  [ 70] jmpifz [133] ............................ if netDone(pRedirectNetID) then
+  [ 73] getprop 938 ............................. <pMemName>
+  [ 76] pusharglist 1 ........................... <pMemName>
+  [ 78] extcall 257 ............................. <memberExists(pMemName)>
+  [ 81] not ..................................... <not memberExists(pMemName)>
+  [ 82] jmpifz [ 95] ............................ if not memberExists(pMemName) then
+  [ 85] getprop 938 ............................. <pMemName>
+  [ 88] pushsymb 863 ............................ <#bitmap>
+  [ 91] pusharglistnoret 2 ...................... <pMemName, #bitmap>
+  [ 93] extcall 251 ............................. createMember(pMemName, #bitmap)
+  [ 95] getprop 938 ............................. <pMemName>
+  [ 98] pusharglist 1 ........................... <pMemName>
+  [100] extcall 125 ............................. <member(pMemName)>
+  [102] getprop 2027 ............................ <pRedirectUrl>
+  [105] pushsymb 1335 ........................... <#dither>
+  [108] pushzero ................................ <0>
+  [109] pushsymb 1336 ........................... <#trimWhiteSpace>
+  [112] pushzero ................................ <0>
+  [113] pusharglist 4 ........................... <[#dither: 0, #trimWhiteSpace: 0]>
+  [115] pushproplist ............................ <[#dither: 0, #trimWhiteSpace: 0]>
+  [116] pusharglistnoret 3 ...................... <member(pMemName), pRedirectUrl, [#dither: 0, #trimWhiteSpace: 0]>
+  [118] extcall 1334 ............................ importFileInto(member(pMemName), pRedirectUrl, [#dither: 0, #trimWhiteSpace: 0])
+  [121] pushint8 1 .............................. <1>
+  [123] setprop 2016 ............................ pNetDone = 1
+  [126] pusharglist 0 ........................... <>
+  [128] extcall 9 ............................... <VOID>
+  [130] setprop 2018 ............................ pRedirectNetID = VOID
+  [133] pushzero ................................ <0>
+  [134] pusharglistnoret 1 ...................... <0>
+  [136] extcall 11 .............................. return 0
+  [138] ret
+end
+
+on sendRequest me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 9 ............................... <VOID>
+  [  4] setprop 2028 ............................ pNetResult = VOID
+  [  7] pushzero ................................ <0>
+  [  8] setprop 2016 ............................ pNetDone = 0
+  [ 11] pushzero ................................ <0>
+  [ 12] setprop 2029 ............................ pNetError = 0
+  [ 15] pushsymb 971 ............................ <#LOADING>
+  [ 18] setprop 1312 ............................ pStatus = #LOADING
+  [ 21] pushcons 7 .............................. <"multiuser">
+  [ 23] pusharglist 1 ........................... <"multiuser">
+  [ 25] extcall 1392 ............................ <xtra("multiuser")>
+  [ 28] pusharglist 1 ........................... <xtra("multiuser")>
+  [ 30] objcall 31 .............................. <xtra("multiuser").new()>
+  [ 32] setprop 2030 ............................ pMUXtra = xtra("multiuser").new()
+  [ 35] getprop 2030 ............................ <pMUXtra>
+  [ 38] pushint8 16 ............................. <16>
+  [ 40] pushint16 1024 .......................... <1024>
+  [ 43] mul ..................................... <16 * 1024>
+  [ 44] pushint8 2 .............................. <2>
+  [ 46] mul ..................................... <16 * 1024 * 2>
+  [ 47] getprop 2014 ............................ <pMaxBytes>
+  [ 50] pushint8 100 ............................ <100>
+  [ 52] pusharglistnoret 4 ...................... <pMUXtra, 16 * 1024 * 2, pMaxBytes, 100>
+  [ 54] objcall 1393 ............................ pMUXtra.setNetBufferLimits(16 * 1024 * 2, pMaxBytes, 100)
+  [ 57] getprop 2030 ............................ <pMUXtra>
+  [ 60] pushsymb 1995 ........................... <#messageHandler>
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pusharglist 3 ........................... <pMUXtra, #messageHandler, me>
+  [ 67] objcall 1394 ............................ <pMUXtra.setNetMessageHandler(#messageHandler, me)>
+  [ 70] setlocal 0 .............................. tErrCode = pMUXtra.setNetMessageHandler(#messageHandler, me)
+  [ 72] getlocal 0 .............................. <tErrCode>
+  [ 74] pushzero ................................ <0>
+  [ 75] nteq .................................... <tErrCode <> 0>
+  [ 76] jmpifz [ 92] ............................ if tErrCode <> 0 then
+  [ 79] getparam 0 .............................. <me>
+  [ 81] pushcons 8 .............................. <"Error with setNetMessageHandler">
+  [ 83] pushsymb 1991 ........................... <#sendRequest>
+  [ 86] pushsymb 123 ............................ <#major>
+  [ 88] pusharglistnoret 4 ...................... <me, "Error with setNetMessageHandler", #sendRequest, #major>
+  [ 90] extcall 122 ............................. error(me, "Error with setNetMessageHandler", #sendRequest, #major)
+  [ 92] getprop 2030 ............................ <pMUXtra>
+  [ 95] pushcons 9 .............................. <"*">
+  [ 97] pushcons 9 .............................. <"*">
+  [ 99] getprop 2007 ............................ <pServer>
+  [102] getprop 1390 ............................ <pPort>
+  [105] pushcons 10 ............................. <"HTTP_CLASS">
+  [107] pushint8 1 .............................. <1>
+  [109] pusharglist 7 ........................... <pMUXtra, "*", "*", pServer, pPort, "HTTP_CLASS", 1>
+  [111] objcall 1395 ............................ <pMUXtra.connectToNetServer("*", "*", pServer, pPort, "HTTP_CLASS", 1)>
+  [114] setlocal 0 .............................. tErrCode = pMUXtra.connectToNetServer("*", "*", pServer, pPort, "HTTP_CLASS", 1)
+  [116] getlocal 0 .............................. <tErrCode>
+  [118] pushzero ................................ <0>
+  [119] nteq .................................... <tErrCode <> 0>
+  [120] jmpifz [151] ............................ if tErrCode <> 0 then
+  [123] getparam 0 .............................. <me>
+  [125] pushcons 11 ............................. <"Error sending ConnectToNetServer to server">
+  [127] pushsymb 1991 ........................... <#sendRequest>
+  [130] pushsymb 123 ............................ <#major>
+  [132] pusharglistnoret 4 ...................... <me, "Error sending ConnectToNetServer to server", #sendRequest, #major>
+  [134] extcall 122 ............................. error(me, "Error sending ConnectToNetServer to server", #sendRequest, #major)
+  [136] pushsymb 122 ............................ <#error>
+  [138] setprop 1312 ............................ pStatus = #error
+  [141] pushint8 1 .............................. <1>
+  [143] setprop 2016 ............................ pNetDone = 1
+  [146] pushzero ................................ <0>
+  [147] pusharglistnoret 1 ...................... <0>
+  [149] extcall 11 .............................. return 0
+  [151] ret
+end
+
+on getStoredCookies tDomain
+  [  0] getparam 0 .............................. <tDomain>
+  [  2] pusharglist 1 ........................... <tDomain>
+  [  4] extcall 14 .............................. <voidp(tDomain)>
+  [  6] jmpifz [ 14] ............................ if voidp(tDomain) then
+  [  9] getprop 2007 ............................ <pServer>
+  [ 12] setparam 0 .............................. tDomain = pServer
+  [ 14] getmovieprop 376 ........................ <the itemDelimiter>
+  [ 17] setlocal 0 .............................. tDelim = the itemDelimiter
+  [ 19] pushcons 12 ............................. <".">
+  [ 21] setmovieprop 376 ........................ the itemDelimiter = "."
+  [ 24] getparam 0 .............................. <tDomain>
+  [ 26] pushsymb 377 ............................ <#item>
+  [ 29] pusharglist 2 ........................... <tDomain, #item>
+  [ 31] objcall 28 .............................. <tDomain.item.count>
+  [ 33] setlocal 1 .............................. tDomainItemCount = tDomain.item.count
+  [ 35] getparam 0 .............................. <tDomain>
+  [ 37] pushsymb 377 ............................ <#item>
+  [ 40] getlocal 1 .............................. <tDomainItemCount>
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] sub ..................................... <tDomainItemCount - 1>
+  [ 45] pusharglist 3 ........................... <tDomain, #item, tDomainItemCount - 1>
+  [ 47] objcall 22 .............................. <tDomain.item[tDomainItemCount - 1]>
+  [ 49] getparam 0 .............................. <tDomain>
+  [ 51] pushsymb 377 ............................ <#item>
+  [ 54] getlocal 1 .............................. <tDomainItemCount>
+  [ 56] pusharglist 3 ........................... <tDomain, #item, tDomainItemCount>
+  [ 58] objcall 22 .............................. <tDomain.item[tDomainItemCount]>
+  [ 60] joinstr ................................. <tDomain.item[tDomainItemCount - 1] & tDomain.item[tDomainItemCount]>
+  [ 61] setparam 0 .............................. tDomain = tDomain.item[tDomainItemCount - 1] & tDomain.item[tDomainItemCount]
+  [ 63] getlocal 0 .............................. <tDelim>
+  [ 65] setmovieprop 376 ........................ the itemDelimiter = tDelim
+  [ 68] pushcons 13 ............................. <"httpcookie.pref.name">
+  [ 70] pusharglist 1 ........................... <"httpcookie.pref.name">
+  [ 72] extcall 461 ............................. <getVariable("httpcookie.pref.name")>
+  [ 75] setlocal 2 .............................. tCookiePrefLoc = getVariable("httpcookie.pref.name")
+  [ 77] getlocal 2 .............................. <tCookiePrefLoc>
+  [ 79] pusharglist 1 ........................... <tCookiePrefLoc>
+  [ 81] extcall 906 ............................. <getPref(tCookiePrefLoc)>
+  [ 84] pusharglist 1 ........................... <getPref(tCookiePrefLoc)>
+  [ 86] extcall 15 .............................. <value(getPref(tCookiePrefLoc))>
+  [ 88] setlocal 3 .............................. tAllCookies = value(getPref(tCookiePrefLoc))
+  [ 90] getlocal 3 .............................. <tAllCookies>
+  [ 92] pusharglist 1 ........................... <tAllCookies>
+  [ 94] extcall 586 ............................. <ilk(tAllCookies)>
+  [ 97] pushsymb 787 ............................ <#propList>
+  [100] nteq .................................... <ilk(tAllCookies) <> #propList>
+  [101] jmpifz [109] ............................ if ilk(tAllCookies) <> #propList then
+  [104] pusharglist 0 ........................... <[:]>
+  [106] pushproplist ............................ <[:]>
+  [107] setlocal 3 .............................. tAllCookies = [:]
+  [109] getlocal 3 .............................. <tAllCookies>
+  [111] getparam 0 .............................. <tDomain>
+  [113] pusharglist 2 ........................... <tAllCookies, tDomain>
+  [115] objcall 29 .............................. <tAllCookies[tDomain]>
+  [117] setlocal 4 .............................. tThisDomainCookies = tAllCookies[tDomain]
+  [119] getlocal 4 .............................. <tThisDomainCookies>
+  [121] pusharglist 1 ........................... <tThisDomainCookies>
+  [123] extcall 586 ............................. <ilk(tThisDomainCookies)>
+  [126] pushsymb 787 ............................ <#propList>
+  [129] nteq .................................... <ilk(tThisDomainCookies) <> #propList>
+  [130] jmpifz [138] ............................ if ilk(tThisDomainCookies) <> #propList then
+  [133] pusharglist 0 ........................... <[:]>
+  [135] pushproplist ............................ <[:]>
+  [136] setlocal 4 .............................. tThisDomainCookies = [:]
+  [138] pusharglist 0 ........................... <[]>
+  [140] pushlist ................................ <[]>
+  [141] setlocal 5 .............................. tFlatCookieList = []
+  [143] getlocal 4 .............................. <tThisDomainCookies>
+  [145] peek 0
+  [147] pusharglist 1
+  [149] extcall 28
+  [151] pushint8 1
+  [153] peek 0
+  [155] peek 2
+  [157] lteq
+  [158] jmpifz [184] ............................ repeat with tUniqueCookie in tThisDomainCookies
+  [161] peek 2
+  [163] peek 1
+  [165] pusharglist 2
+  [167] extcall 29
+  [169] setlocal 6
+  [171] getlocal 5 .............................. <tFlatCookieList>
+  [173] getlocal 6 .............................. <tUniqueCookie>
+  [175] pusharglistnoret 2 ...................... <tFlatCookieList, tUniqueCookie>
+  [177] objcall 60 .............................. tFlatCookieList.add(tUniqueCookie)
+  [179] pushint8 1
+  [181] add
+  [182] endrepeat [153]
+  [184] pop 3
+  [186] getlocal 5 .............................. <tFlatCookieList>
+  [188] pusharglistnoret 1 ...................... <tFlatCookieList>
+  [190] extcall 11 .............................. return tFlatCookieList
+  [192] ret
+end
+
+on setStoredCookies tDomain, tNewCookies
+  [  0] getparam 0 .............................. <tDomain>
+  [  2] pusharglist 1 ........................... <tDomain>
+  [  4] extcall 14 .............................. <voidp(tDomain)>
+  [  6] getparam 1 .............................. <tNewCookies>
+  [  8] pusharglist 1 ........................... <tNewCookies>
+  [ 10] extcall 14 .............................. <voidp(tNewCookies)>
+  [ 12] or ...................................... <voidp(tDomain) or voidp(tNewCookies)>
+  [ 13] jmpifz [ 21] ............................ if voidp(tDomain) or voidp(tNewCookies) then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 11 .............................. return 0
+  [ 21] getmovieprop 376 ........................ <the itemDelimiter>
+  [ 24] setlocal 0 .............................. tDelim = the itemDelimiter
+  [ 26] pushcons 12 ............................. <".">
+  [ 28] setmovieprop 376 ........................ the itemDelimiter = "."
+  [ 31] getparam 0 .............................. <tDomain>
+  [ 33] pushsymb 377 ............................ <#item>
+  [ 36] pusharglist 2 ........................... <tDomain, #item>
+  [ 38] objcall 28 .............................. <tDomain.item.count>
+  [ 40] setlocal 1 .............................. tDomainItemCount = tDomain.item.count
+  [ 42] getparam 0 .............................. <tDomain>
+  [ 44] pushsymb 377 ............................ <#item>
+  [ 47] getlocal 1 .............................. <tDomainItemCount>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] sub ..................................... <tDomainItemCount - 1>
+  [ 52] pusharglist 3 ........................... <tDomain, #item, tDomainItemCount - 1>
+  [ 54] objcall 22 .............................. <tDomain.item[tDomainItemCount - 1]>
+  [ 56] getparam 0 .............................. <tDomain>
+  [ 58] pushsymb 377 ............................ <#item>
+  [ 61] getlocal 1 .............................. <tDomainItemCount>
+  [ 63] pusharglist 3 ........................... <tDomain, #item, tDomainItemCount>
+  [ 65] objcall 22 .............................. <tDomain.item[tDomainItemCount]>
+  [ 67] joinstr ................................. <tDomain.item[tDomainItemCount - 1] & tDomain.item[tDomainItemCount]>
+  [ 68] setparam 0 .............................. tDomain = tDomain.item[tDomainItemCount - 1] & tDomain.item[tDomainItemCount]
+  [ 70] getlocal 0 .............................. <tDelim>
+  [ 72] setmovieprop 376 ........................ the itemDelimiter = tDelim
+  [ 75] pushcons 13 ............................. <"httpcookie.pref.name">
+  [ 77] pusharglist 1 ........................... <"httpcookie.pref.name">
+  [ 79] extcall 461 ............................. <getVariable("httpcookie.pref.name")>
+  [ 82] setlocal 2 .............................. tCookiePrefLoc = getVariable("httpcookie.pref.name")
+  [ 84] getlocal 2 .............................. <tCookiePrefLoc>
+  [ 86] pusharglist 1 ........................... <tCookiePrefLoc>
+  [ 88] extcall 906 ............................. <getPref(tCookiePrefLoc)>
+  [ 91] pusharglist 1 ........................... <getPref(tCookiePrefLoc)>
+  [ 93] extcall 15 .............................. <value(getPref(tCookiePrefLoc))>
+  [ 95] setlocal 3 .............................. tAllCookies = value(getPref(tCookiePrefLoc))
+  [ 97] getlocal 3 .............................. <tAllCookies>
+  [ 99] pusharglist 1 ........................... <tAllCookies>
+  [101] extcall 586 ............................. <ilk(tAllCookies)>
+  [104] pushsymb 787 ............................ <#propList>
+  [107] nteq .................................... <ilk(tAllCookies) <> #propList>
+  [108] jmpifz [116] ............................ if ilk(tAllCookies) <> #propList then
+  [111] pusharglist 0 ........................... <[:]>
+  [113] pushproplist ............................ <[:]>
+  [114] setlocal 3 .............................. tAllCookies = [:]
+  [116] getlocal 3 .............................. <tAllCookies>
+  [118] getparam 0 .............................. <tDomain>
+  [120] pusharglist 2 ........................... <tAllCookies, tDomain>
+  [122] objcall 29 .............................. <tAllCookies[tDomain]>
+  [124] setlocal 4 .............................. tThisDomainCookies = tAllCookies[tDomain]
+  [126] getlocal 4 .............................. <tThisDomainCookies>
+  [128] pusharglist 1 ........................... <tThisDomainCookies>
+  [130] extcall 586 ............................. <ilk(tThisDomainCookies)>
+  [133] pushsymb 787 ............................ <#propList>
+  [136] nteq .................................... <ilk(tThisDomainCookies) <> #propList>
+  [137] jmpifz [145] ............................ if ilk(tThisDomainCookies) <> #propList then
+  [140] pusharglist 0 ........................... <[:]>
+  [142] pushproplist ............................ <[:]>
+  [143] setlocal 4 .............................. tThisDomainCookies = [:]
+  [145] getparam 1 .............................. <tNewCookies>
+  [147] peek 0
+  [149] pusharglist 1
+  [151] extcall 28
+  [153] pushint8 1
+  [155] peek 0
+  [157] peek 2
+  [159] lteq
+  [160] jmpifz [198] ............................ repeat with tNewCookie in tNewCookies
+  [163] peek 2
+  [165] peek 1
+  [167] pusharglist 2
+  [169] extcall 29
+  [171] setlocal 5
+  [173] getlocal 5 .............................. <tNewCookie>
+  [175] pushint8 1 .............................. <1>
+  [177] pusharglist 2 ........................... <tNewCookie, 1>
+  [179] objcall 29 .............................. <tNewCookie[1]>
+  [181] setlocal 6 .............................. tNewCookieID = tNewCookie[1]
+  [183] getlocal 4 .............................. <tThisDomainCookies>
+  [185] getlocal 6 .............................. <tNewCookieID>
+  [187] getlocal 5 .............................. <tNewCookie>
+  [189] pusharglistnoret 3 ...................... <tThisDomainCookies, tNewCookieID, tNewCookie>
+  [191] objcall 23 .............................. tThisDomainCookies[tNewCookieID] = tNewCookie
+  [193] pushint8 1
+  [195] add
+  [196] endrepeat [155]
+  [198] pop 3
+  [200] getlocal 3 .............................. <tAllCookies>
+  [202] getparam 0 .............................. <tDomain>
+  [204] getlocal 4 .............................. <tThisDomainCookies>
+  [206] pusharglistnoret 3 ...................... <tAllCookies, tDomain, tThisDomainCookies>
+  [208] objcall 23 .............................. tAllCookies[tDomain] = tThisDomainCookies
+  [210] getlocal 2 .............................. <tCookiePrefLoc>
+  [212] getlocal 3 .............................. <tAllCookies>
+  [214] pushcons 5 .............................. <EMPTY>
+  [216] joinstr ................................. <tAllCookies & EMPTY>
+  [217] pusharglistnoret 2 ...................... <tCookiePrefLoc, tAllCookies & EMPTY>
+  [219] extcall 815 ............................. setPref(tCookiePrefLoc, tAllCookies & EMPTY)
+  [222] ret
+end
+
+on createNetRequest me
+  [  0] pushcons 5 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. tCmd = EMPTY
+  [  4] pusharglist 0 ........................... <[]>
+  [  6] pushlist ................................ <[]>
+  [  7] setlocal 1 .............................. tHeaders = []
+  [  9] pushcons 5 .............................. <EMPTY>
+  [ 11] setlocal 2 .............................. tBody = EMPTY
+  [ 13] pushcons 6 .............................. <":">
+  [ 15] getprop 1390 ............................ <pPort>
+  [ 18] joinstr ................................. <":" & pPort>
+  [ 19] setlocal 3 .............................. tPort = ":" & pPort
+  [ 21] getlocal 3 .............................. <tPort>
+  [ 23] pushcons 14 ............................. <":80">
+  [ 25] eq ...................................... <tPort = ":80">
+  [ 26] jmpifz [ 33] ............................ if tPort = ":80" then
+  [ 29] pushcons 5 .............................. <EMPTY>
+  [ 31] setlocal 3 .............................. tPort = EMPTY
+  [ 33] getlocal 1 .............................. <tHeaders>
+  [ 35] pushcons 15 ............................. <"Host: ">
+  [ 37] getprop 2007 ............................ <pServer>
+  [ 40] joinstr ................................. <"Host: " & pServer>
+  [ 41] getlocal 3 .............................. <tPort>
+  [ 43] joinstr ................................. <"Host: " & pServer & tPort>
+  [ 44] pusharglistnoret 2 ...................... <tHeaders, "Host: " & pServer & tPort>
+  [ 46] objcall 60 .............................. tHeaders.add("Host: " & pServer & tPort)
+  [ 48] getlocal 1 .............................. <tHeaders>
+  [ 50] pushcons 16 ............................. <"User-Agent:">
+  [ 52] getprop 2012 ............................ <pUserAgent>
+  [ 55] joinpadstr .............................. <"User-Agent:" && pUserAgent>
+  [ 56] pusharglistnoret 2 ...................... <tHeaders, "User-Agent:" && pUserAgent>
+  [ 58] objcall 60 .............................. tHeaders.add("User-Agent:" && pUserAgent)
+  [ 60] getlocal 1 .............................. <tHeaders>
+  [ 62] pushcons 17 ............................. <"Accept: text/*">
+  [ 64] pusharglistnoret 2 ...................... <tHeaders, "Accept: text/*">
+  [ 66] objcall 60 .............................. tHeaders.add("Accept: text/*")
+  [ 68] getlocal 1 .............................. <tHeaders>
+  [ 70] pushcons 18 ............................. <"Accept-Charset: ISO-8859-1">
+  [ 72] pusharglistnoret 2 ...................... <tHeaders, "Accept-Charset: ISO-8859-1">
+  [ 74] objcall 60 .............................. tHeaders.add("Accept-Charset: ISO-8859-1")
+  [ 76] getprop 2007 ............................ <pServer>
+  [ 79] pusharglist 1 ........................... <pServer>
+  [ 81] localcall 6 ............................. <getStoredCookies(pServer)>
+  [ 83] setprop 2017 ............................ pCookies = getStoredCookies(pServer)
+  [ 86] pushcons 5 .............................. <EMPTY>
+  [ 88] setlocal 4 .............................. tCookieString = EMPTY
+  [ 90] getprop 2017 ............................ <pCookies>
+  [ 93] peek 0
+  [ 95] pusharglist 1
+  [ 97] extcall 28
+  [ 99] pushint8 1
+  [101] peek 0
+  [103] peek 2
+  [105] lteq
+  [106] jmpifz [177] ............................ repeat with tCookie in pCookies
+  [109] peek 2
+  [111] peek 1
+  [113] pusharglist 2
+  [115] extcall 29
+  [117] setlocal 5
+  [119] getprop 2009 ............................ <pDestination>
+  [122] getlocal 5 .............................. <tCookie>
+  [124] pushcons 19 ............................. <"path">
+  [126] pusharglist 2 ........................... <tCookie, "path">
+  [128] objcall 29 .............................. <tCookie["path"]>
+  [130] contains0str ............................ <pDestination starts tCookie["path"]>
+  [131] jmpifz [172] ............................ if pDestination starts tCookie["path"] then
+  [134] getlocal 4 .............................. <tCookieString>
+  [136] pushcons 5 .............................. <EMPTY>
+  [138] nteq .................................... <tCookieString <> EMPTY>
+  [139] jmpifz [148] ............................ if tCookieString <> EMPTY then
+  [142] pushcons 20 ............................. <"; ">
+  [144] pushint8 4 .............................. <4>
+  [146] put 37 .................................. put "; " after tCookieString
+  [148] getlocal 5 .............................. <tCookie>
+  [150] pushcons 21 ............................. <"name">
+  [152] pusharglist 2 ........................... <tCookie, "name">
+  [154] objcall 29 .............................. <tCookie["name"]>
+  [156] pushcons 22 ............................. <"=">
+  [158] joinstr ................................. <tCookie["name"] & "=">
+  [159] getlocal 5 .............................. <tCookie>
+  [161] pushcons 23 ............................. <"value">
+  [163] pusharglist 2 ........................... <tCookie, "value">
+  [165] objcall 29 .............................. <tCookie["value"]>
+  [167] joinstr ................................. <tCookie["name"] & "=" & tCookie["value"]>
+  [168] pushint8 4 .............................. <4>
+  [170] put 37 .................................. put tCookie["name"] & "=" & tCookie["value"] after tCookieString
+  [172] pushint8 1
+  [174] add
+  [175] endrepeat [101]
+  [177] pop 3
+  [179] getlocal 4 .............................. <tCookieString>
+  [181] pushcons 5 .............................. <EMPTY>
+  [183] nteq .................................... <tCookieString <> EMPTY>
+  [184] jmpifz [198] ............................ if tCookieString <> EMPTY then
+  [187] getlocal 1 .............................. <tHeaders>
+  [189] pushcons 24 ............................. <"Cookie:">
+  [191] getlocal 4 .............................. <tCookieString>
+  [193] joinpadstr .............................. <"Cookie:" && tCookieString>
+  [194] pusharglistnoret 2 ...................... <tHeaders, "Cookie:" && tCookieString>
+  [196] objcall 60 .............................. tHeaders.add("Cookie:" && tCookieString)
+  [198] getprop 2009 ............................ <pDestination>
+  [201] setlocal 6 .............................. tDestination = pDestination
+  [203] getprop 2015 ............................ <pData>
+  [206] pusharglist 1 ........................... <pData>
+  [208] extcall 28 .............................. <count(pData)>
+  [210] jmpifz [230] ............................ if count(pData) then
+  [213] pushcons 25 ............................. <"?">
+  [215] getparam 0 .............................. <me>
+  [217] getprop 2015 ............................ <pData>
+  [220] pusharglist 2 ........................... <me, pData>
+  [222] objcall 2002 ............................ <me.getDataString(pData)>
+  [225] joinstr ................................. <"?" & me.getDataString(pData)>
+  [226] pushint8 6 .............................. <6>
+  [228] put 37 .................................. put "?" & me.getDataString(pData) after tDestination
+  [230] pushcons 26 ............................. <"GET">
+  [232] setlocal 7 .............................. tMethod = "GET"
+  [234] getlocal 7 .............................. <tMethod>
+  [236] getlocal 6 .............................. <tDestination>
+  [238] joinpadstr .............................. <tMethod && tDestination>
+  [239] pushcons 27 ............................. <"HTTP/">
+  [241] joinpadstr .............................. <tMethod && tDestination && "HTTP/">
+  [242] getprop 2013 ............................ <pHttpVersion>
+  [245] joinstr ................................. <tMethod && tDestination && "HTTP/" & pHttpVersion>
+  [246] setlocal 0 .............................. tCmd = tMethod && tDestination && "HTTP/" & pHttpVersion
+  [248] pushcons 28 ............................. <"cmd">
+  [250] getlocal 0 .............................. <tCmd>
+  [252] pushcons 29 ............................. <"headers">
+  [254] getlocal 1 .............................. <tHeaders>
+  [256] pushcons 30 ............................. <"body">
+  [258] getlocal 2 .............................. <tBody>
+  [260] pusharglist 6 ........................... <["cmd": tCmd, "headers": tHeaders, "body": tBody]>
+  [262] pushproplist ............................ <["cmd": tCmd, "headers": tHeaders, "body": tBody]>
+  [263] pusharglistnoret 1 ...................... <["cmd": tCmd, "headers": tHeaders, "body": tBody]>
+  [265] extcall 11 .............................. return ["cmd": tCmd, "headers": tHeaders, "body": tBody]
+  [267] ret
+end
+
+on messageHandler me
+  [  0] getprop 2030 ............................ <pMUXtra>
+  [  3] pusharglist 1 ........................... <pMUXtra>
+  [  5] objcall 1430 ............................ <pMUXtra.getNetMessage()>
+  [  8] setlocal 0 .............................. tMsg = pMUXtra.getNetMessage()
+  [ 10] getlocal 0 .............................. <tMsg>
+  [ 12] getobjprop 1431 ......................... <tMsg.errorCode>
+  [ 15] setprop 2029 ............................ pNetError = tMsg.errorCode
+  [ 18] getlocal 0 .............................. <tMsg>
+  [ 20] getobjprop 2044 ......................... <tMsg.senderID>
+  [ 23] setlocal 1 .............................. tSenderId = tMsg.senderID
+  [ 25] getlocal 0 .............................. <tMsg>
+  [ 27] getobjprop 1432 ......................... <tMsg.subject>
+  [ 30] setlocal 2 .............................. tSubject = tMsg.subject
+  [ 32] getlocal 0 .............................. <tMsg>
+  [ 34] getobjprop 583 .......................... <tMsg.content>
+  [ 37] setlocal 3 .............................. tContent = tMsg.content
+  [ 39] getprop 2029 ............................ <pNetError>
+  [ 42] pushzero ................................ <0>
+  [ 43] eq ...................................... <pNetError = 0>
+  [ 44] not ..................................... <not (pNetError = 0)>
+  [ 45] jmpifz [106] ............................ if not (pNetError = 0) then
+  [ 48] getlocal 1 .............................. <tSenderId>
+  [ 50] pushcons 31 ............................. <"System">
+  [ 52] eq ...................................... <tSenderId = "System">
+  [ 53] getlocal 2 .............................. <tSubject>
+  [ 55] pushcons 32 ............................. <"ConnectionProblem">
+  [ 57] eq ...................................... <tSubject = "ConnectionProblem">
+  [ 58] and ..................................... <(tSenderId = "System") and (tSubject = "ConnectionProblem")>
+  [ 59] jmpifz [ 70] ............................ if (tSenderId = "System") and (tSubject = "ConnectionProblem") then / else
+  [ 62] pusharglistnoret 0 ...................... <>
+  [ 64] extcall 1327 ............................ nothing()
+  [ 67] jmp [100]
+  [ 70] getprop 2030 ............................ <pMUXtra>
+  [ 73] getprop 2029 ............................ <pNetError>
+  [ 76] pusharglist 2 ........................... <pMUXtra, pNetError>
+  [ 78] objcall 2045 ............................ <pMUXtra.getNetErrorString(pNetError)>
+  [ 81] setlocal 4 .............................. tErrStr = pMUXtra.getNetErrorString(pNetError)
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] setprop 2016 ............................ pNetDone = 1
+  [ 88] pushsymb 122 ............................ <#error>
+  [ 90] setprop 1312 ............................ pStatus = #error
+  [ 93] getparam 0 .............................. <me>
+  [ 95] pusharglistnoret 1 ...................... <me>
+  [ 97] objcall 1998 ............................ me.clearMU()
+  [100] pushint8 1 .............................. <1>
+  [102] pusharglistnoret 1 ...................... <1>
+  [104] extcall 11 .............................. return 1
+  [106] getlocal 1 .............................. <tSenderId>
+  [108] pushcons 31 ............................. <"System">
+  [110] eq ...................................... <tSenderId = "System">
+  [111] getlocal 2 .............................. <tSubject>
+  [113] pushcons 33 ............................. <"ConnectToNetServer">
+  [115] eq ...................................... <tSubject = "ConnectToNetServer">
+  [116] and ..................................... <(tSenderId = "System") and (tSubject = "ConnectToNetServer")>
+  [117] jmpifz [132] ............................ if (tSenderId = "System") and (tSubject = "ConnectToNetServer") then / else
+  [120] getparam 0 .............................. <me>
+  [122] getlocal 0 .............................. <tMsg>
+  [124] pusharglistnoret 2 ...................... <me, tMsg>
+  [126] objcall 1996 ............................ me.handleHelloResponse(tMsg)
+  [129] jmp [143]
+  [132] getparam 0 .............................. <me>
+  [134] getlocal 0 .............................. <tMsg>
+  [136] getlocal 3 .............................. <tContent>
+  [138] pusharglistnoret 3 ...................... <me, tMsg, tContent>
+  [140] objcall 1997 ............................ me.handleContentResponse(tMsg, tContent)
+  [143] ret
+end
+
+on handleHelloResponse me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 1994 ............................ <me.createNetRequest()>
+  [  7] setprop 2048 ............................ pNetRequest = me.createNetRequest()
+  [ 10] getprop 2048 ............................ <pNetRequest>
+  [ 13] pushcons 28 ............................. <"cmd">
+  [ 15] pusharglist 2 ........................... <pNetRequest, "cmd">
+  [ 17] objcall 29 .............................. <pNetRequest["cmd"]>
+  [ 19] getprop 2011 ............................ <pCRLF>
+  [ 22] joinstr ................................. <pNetRequest["cmd"] & pCRLF>
+  [ 23] setlocal 0 .............................. tHttpStr = pNetRequest["cmd"] & pCRLF
+  [ 25] getprop 2048 ............................ <pNetRequest>
+  [ 28] pushcons 29 ............................. <"headers">
+  [ 30] pusharglist 2 ........................... <pNetRequest, "headers">
+  [ 32] objcall 29 .............................. <pNetRequest["headers"]>
+  [ 34] peek 0
+  [ 36] pusharglist 1
+  [ 38] extcall 28
+  [ 40] pushint8 1
+  [ 42] peek 0
+  [ 44] peek 2
+  [ 46] lteq
+  [ 47] jmpifz [ 74] ............................ repeat with tHeader in pNetRequest["headers"]
+  [ 50] peek 2
+  [ 52] peek 1
+  [ 54] pusharglist 2
+  [ 56] extcall 29
+  [ 58] setlocal 1
+  [ 60] getlocal 1 .............................. <tHeader>
+  [ 62] getprop 2011 ............................ <pCRLF>
+  [ 65] joinstr ................................. <tHeader & pCRLF>
+  [ 66] pushzero ................................ <0>
+  [ 67] put 37 .................................. put tHeader & pCRLF after tHttpStr
+  [ 69] pushint8 1
+  [ 71] add
+  [ 72] endrepeat [ 42]
+  [ 74] pop 3
+  [ 76] getprop 2011 ............................ <pCRLF>
+  [ 79] pushzero ................................ <0>
+  [ 80] put 37 .................................. put pCRLF after tHttpStr
+  [ 82] getprop 2048 ............................ <pNetRequest>
+  [ 85] pushcons 30 ............................. <"body">
+  [ 87] pusharglist 2 ........................... <pNetRequest, "body">
+  [ 89] objcall 29 .............................. <pNetRequest["body"]>
+  [ 91] pushzero ................................ <0>
+  [ 92] put 37 .................................. put pNetRequest["body"] after tHttpStr
+  [ 94] getprop 2030 ............................ <pMUXtra>
+  [ 97] pushcons 34 ............................. <"system">
+  [ 99] pushcons 5 .............................. <EMPTY>
+  [101] getlocal 0 .............................. <tHttpStr>
+  [103] pusharglistnoret 4 ...................... <pMUXtra, "system", EMPTY, tHttpStr>
+  [105] objcall 1399 ............................ pMUXtra.sendNetMessage("system", EMPTY, tHttpStr)
+  [108] ret
+end
+
+on handleContentResponse me, tMsg, tContent
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tFinished = 0
+  [  3] getparam 2 .............................. <tContent>
+  [  5] pushcons 27 ............................. <"HTTP/">
+  [  7] contains0str ............................ <tContent starts "HTTP/">
+  [  8] jmpifz [227] ............................ if tContent starts "HTTP/" then / else
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getparam 2 .............................. <tContent>
+  [ 15] pusharglist 2 ........................... <me, tContent>
+  [ 17] objcall 1999 ............................ <me.parseResponse(tContent)>
+  [ 20] setprop 2028 ............................ pNetResult = me.parseResponse(tContent)
+  [ 23] getprop 2028 ............................ <pNetResult>
+  [ 26] pushcons 30 ............................. <"body">
+  [ 28] pusharglist 2 ........................... <pNetResult, "body">
+  [ 30] objcall 29 .............................. <pNetResult["body"]>
+  [ 32] setlocal 1 .............................. tBody = pNetResult["body"]
+  [ 34] getprop 2028 ............................ <pNetResult>
+  [ 37] pushcons 29 ............................. <"headers">
+  [ 39] pusharglist 2 ........................... <pNetResult, "headers">
+  [ 41] objcall 29 .............................. <pNetResult["headers"]>
+  [ 43] pushcons 35 ............................. <"Transfer-Encoding">
+  [ 45] pusharglist 2 ........................... <pNetResult["headers"], "Transfer-Encoding">
+  [ 47] objcall 29 .............................. <pNetResult["headers"]["Transfer-Encoding"]>
+  [ 49] pushcons 36 ............................. <"chunked">
+  [ 51] nteq .................................... <pNetResult["headers"]["Transfer-Encoding"] <> "chunked">
+  [ 52] setlocal 2 .............................. tNotChunkedResult = pNetResult["headers"]["Transfer-Encoding"] <> "chunked"
+  [ 54] getlocal 1 .............................. <tBody>
+  [ 56] pushsymb 20 ............................. <#char>
+  [ 58] getlocal 1 .............................. <tBody>
+  [ 60] getobjprop 21 ........................... <tBody.length>
+  [ 62] pushint8 4 .............................. <4>
+  [ 64] sub ..................................... <tBody.length - 4>
+  [ 65] getlocal 1 .............................. <tBody>
+  [ 67] getobjprop 21 ........................... <tBody.length>
+  [ 69] pusharglist 4 ........................... <tBody, #char, tBody.length - 4, tBody.length>
+  [ 71] objcall 22 .............................. <tBody.char[tBody.length - 4..tBody.length]>
+  [ 73] pushcons 37 ............................. <"0">
+  [ 75] getprop 2011 ............................ <pCRLF>
+  [ 78] joinstr ................................. <"0" & pCRLF>
+  [ 79] getprop 2011 ............................ <pCRLF>
+  [ 82] joinstr ................................. <"0" & pCRLF & pCRLF>
+  [ 83] eq ...................................... <tBody.char[tBody.length - 4..tBody.length] = ("0" & pCRLF & pCRLF)>
+  [ 84] setlocal 3 .............................. tEndOfResult = tBody.char[tBody.length - 4..tBody.length] = ("0" & pCRLF & pCRLF)
+  [ 86] getlocal 2 .............................. <tNotChunkedResult>
+  [ 88] getlocal 3 .............................. <tEndOfResult>
+  [ 90] or ...................................... <tNotChunkedResult or tEndOfResult>
+  [ 91] jmpifz [ 98] ............................ if tNotChunkedResult or tEndOfResult then
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] setlocal 0 .............................. tFinished = 1
+  [ 98] getprop 2028 ............................ <pNetResult>
+  [101] pushcons 30 ............................. <"body">
+  [103] getlocal 1 .............................. <tBody>
+  [105] pusharglistnoret 3 ...................... <pNetResult, "body", tBody>
+  [107] objcall 23 .............................. pNetResult["body"] = tBody
+  [109] getprop 2028 ............................ <pNetResult>
+  [112] getchainedprop 1888 ..................... <pNetResult.headers>
+  [115] pushcons 38 ............................. <"Set-Cookie">
+  [117] pusharglist 2 ........................... <pNetResult.headers, "Set-Cookie">
+  [119] objcall 781 ............................. <pNetResult.headers.findPos("Set-Cookie")>
+  [122] setlocal 4 .............................. tPos = pNetResult.headers.findPos("Set-Cookie")
+  [124] getlocal 4 .............................. <tPos>
+  [126] pusharglist 1 ........................... <tPos>
+  [128] extcall 14 .............................. <voidp(tPos)>
+  [130] not ..................................... <not voidp(tPos)>
+  [131] jmpifz [224] ............................ if not voidp(tPos) then
+  [134] pushint8 1 .............................. <1>
+  [136] jmpifz [214] ............................ repeat while 1
+  [139] getprop 2017 ............................ <pCookies>
+  [142] getparam 0 .............................. <me>
+  [144] getprop 2028 ............................ <pNetResult>
+  [147] pushsymb 1888 ........................... <#headers>
+  [150] getlocal 4 .............................. <tPos>
+  [152] pusharglist 3 ........................... <pNetResult, #headers, tPos>
+  [154] objcall 22 .............................. <pNetResult.headers[tPos]>
+  [156] pusharglist 2 ........................... <me, pNetResult.headers[tPos]>
+  [158] objcall 2001 ............................ <me.parseCookieString(pNetResult.headers[tPos])>
+  [161] pusharglistnoret 2 ...................... <pCookies, me.parseCookieString(pNetResult.headers[tPos])>
+  [163] objcall 60 .............................. pCookies.add(me.parseCookieString(pNetResult.headers[tPos]))
+  [165] getlocal 4 .............................. <tPos>
+  [167] pushint8 1 .............................. <1>
+  [169] add ..................................... <tPos + 1>
+  [170] setlocal 4 .............................. tPos = tPos + 1
+  [172] getlocal 4 .............................. <tPos>
+  [174] getprop 2028 ............................ <pNetResult>
+  [177] pushsymb 1888 ........................... <#headers>
+  [180] pusharglist 2 ........................... <pNetResult, #headers>
+  [182] objcall 28 .............................. <pNetResult.headers.count>
+  [184] gt ...................................... <tPos > pNetResult.headers.count>
+  [185] jmpifz [191] ............................ if tPos > pNetResult.headers.count then
+  [188] jmp [214] ............................... exit repeat
+  [191] getprop 2028 ............................ <pNetResult>
+  [194] getchainedprop 1888 ..................... <pNetResult.headers>
+  [197] getlocal 4 .............................. <tPos>
+  [199] pusharglist 2 ........................... <pNetResult.headers, tPos>
+  [201] objcall 111 ............................. <pNetResult.headers.getPropAt(tPos)>
+  [203] pushcons 38 ............................. <"Set-Cookie">
+  [205] nteq .................................... <pNetResult.headers.getPropAt(tPos) <> "Set-Cookie">
+  [206] jmpifz [212] ............................ if pNetResult.headers.getPropAt(tPos) <> "Set-Cookie" then
+  [209] jmp [214] ............................... exit repeat
+  [212] endrepeat [134]
+  [214] getprop 2007 ............................ <pServer>
+  [217] getprop 2017 ............................ <pCookies>
+  [220] pusharglistnoret 2 ...................... <pServer, pCookies>
+  [222] localcall 7 ............................. setStoredCookies(pServer, pCookies)
+  [224] jmp [304]
+  [227] getparam 2 .............................. <tContent>
+  [229] pushsymb 20 ............................. <#char>
+  [231] getparam 2 .............................. <tContent>
+  [233] getobjprop 21 ........................... <tContent.length>
+  [235] pushint8 4 .............................. <4>
+  [237] sub ..................................... <tContent.length - 4>
+  [238] getparam 2 .............................. <tContent>
+  [240] getobjprop 21 ........................... <tContent.length>
+  [242] pusharglist 4 ........................... <tContent, #char, tContent.length - 4, tContent.length>
+  [244] objcall 22 .............................. <tContent.char[tContent.length - 4..tContent.length]>
+  [246] pushcons 37 ............................. <"0">
+  [248] getprop 2011 ............................ <pCRLF>
+  [251] joinstr ................................. <"0" & pCRLF>
+  [252] getprop 2011 ............................ <pCRLF>
+  [255] joinstr ................................. <"0" & pCRLF & pCRLF>
+  [256] eq ...................................... <tContent.char[tContent.length - 4..tContent.length] = ("0" & pCRLF & pCRLF)>
+  [257] jmpifz [283] ............................ if tContent.char[tContent.length - 4..tContent.length] = ("0" & pCRLF & pCRLF) then
+  [260] getparam 2 .............................. <tContent>
+  [262] pushsymb 20 ............................. <#char>
+  [264] pushint8 1 .............................. <1>
+  [266] getparam 2 .............................. <tContent>
+  [268] getobjprop 21 ........................... <tContent.length>
+  [270] pushint8 7 .............................. <7>
+  [272] sub ..................................... <tContent.length - 7>
+  [273] pusharglist 4 ........................... <tContent, #char, 1, tContent.length - 7>
+  [275] objcall 22 .............................. <tContent.char[1..tContent.length - 7]>
+  [277] setparam 2 .............................. tContent = tContent.char[1..tContent.length - 7]
+  [279] pushint8 1 .............................. <1>
+  [281] setlocal 0 .............................. tFinished = 1
+  [283] getprop 2028 ............................ <pNetResult>
+  [286] pushcons 30 ............................. <"body">
+  [288] getprop 2028 ............................ <pNetResult>
+  [291] pushcons 30 ............................. <"body">
+  [293] pusharglist 2 ........................... <pNetResult, "body">
+  [295] objcall 29 .............................. <pNetResult["body"]>
+  [297] getparam 2 .............................. <tContent>
+  [299] joinstr ................................. <pNetResult["body"] & tContent>
+  [300] pusharglistnoret 3 ...................... <pNetResult, "body", pNetResult["body"] & tContent>
+  [302] objcall 23 .............................. pNetResult["body"] = pNetResult["body"] & tContent
+  [304] getlocal 0 .............................. <tFinished>
+  [306] jmpifz [749] ............................ if tFinished then
+  [309] getprop 2028 ............................ <pNetResult>
+  [312] pushcons 29 ............................. <"headers">
+  [314] pusharglist 2 ........................... <pNetResult, "headers">
+  [316] objcall 29 .............................. <pNetResult["headers"]>
+  [318] pushcons 35 ............................. <"Transfer-Encoding">
+  [320] pusharglist 2 ........................... <pNetResult["headers"], "Transfer-Encoding">
+  [322] objcall 29 .............................. <pNetResult["headers"]["Transfer-Encoding"]>
+  [324] pushcons 36 ............................. <"chunked">
+  [326] eq ...................................... <pNetResult["headers"]["Transfer-Encoding"] = "chunked">
+  [327] jmpifz [355] ............................ if pNetResult["headers"]["Transfer-Encoding"] = "chunked" then
+  [330] getprop 2028 ............................ <pNetResult>
+  [333] pushcons 30 ............................. <"body">
+  [335] getparam 0 .............................. <me>
+  [337] getprop 2028 ............................ <pNetResult>
+  [340] pushcons 30 ............................. <"body">
+  [342] pusharglist 2 ........................... <pNetResult, "body">
+  [344] objcall 29 .............................. <pNetResult["body"]>
+  [346] pusharglist 2 ........................... <me, pNetResult["body"]>
+  [348] objcall 2000 ............................ <me.parseRawBody(pNetResult["body"])>
+  [351] pusharglistnoret 3 ...................... <pNetResult, "body", me.parseRawBody(pNetResult["body"])>
+  [353] objcall 23 .............................. pNetResult["body"] = me.parseRawBody(pNetResult["body"])
+  [355] getprop 2028 ............................ <pNetResult>
+  [358] pushcons 29 ............................. <"headers">
+  [360] pusharglist 2 ........................... <pNetResult, "headers">
+  [362] objcall 29 .............................. <pNetResult["headers"]>
+  [364] pushcons 39 ............................. <"Location">
+  [366] pusharglist 2 ........................... <pNetResult["headers"], "Location">
+  [368] objcall 29 .............................. <pNetResult["headers"]["Location"]>
+  [370] setlocal 5 .............................. tRedirectUrl = pNetResult["headers"]["Location"]
+  [372] getlocal 5 .............................. <tRedirectUrl>
+  [374] pusharglist 1 ........................... <tRedirectUrl>
+  [376] extcall 14 .............................. <voidp(tRedirectUrl)>
+  [378] jmpifz [446] ............................ if voidp(tRedirectUrl) then / else
+  [381] getprop 938 ............................. <pMemName>
+  [384] pusharglist 1 ........................... <pMemName>
+  [386] extcall 125 ............................. <member(pMemName)>
+  [388] setlocal 6 .............................. tmember = member(pMemName)
+  [390] getlocal 6 .............................. <tmember>
+  [392] getobjprop 552 .......................... <tmember.type>
+  [395] pushsymb 612 ............................ <#text>
+  [398] nteq .................................... <tmember.type <> #text>
+  [399] jmpifz [419] ............................ if tmember.type <> #text then / else
+  [402] getparam 0 .............................. <me>
+  [404] pushcons 40 ............................. <"Incompatible download type. Maybe not redirected.">
+  [406] pushsymb 1997 ........................... <#handleContentResponse>
+  [409] pushsymb 764 ............................ <#minor>
+  [412] pusharglistnoret 4 ...................... <me, "Incompatible download type. Maybe not redirected.", #handleContentResponse, #minor>
+  [414] extcall 122 ............................. error(me, "Incompatible download type. Maybe not redirected.", #handleContentResponse, #minor)
+  [416] jmp [443]
+  [419] getprop 938 ............................. <pMemName>
+  [422] pusharglist 1 ........................... <pMemName>
+  [424] extcall 125 ............................. <member(pMemName)>
+  [426] getprop 2028 ............................ <pNetResult>
+  [429] pushcons 30 ............................. <"body">
+  [431] pusharglist 2 ........................... <pNetResult, "body">
+  [433] objcall 29 .............................. <pNetResult["body"]>
+  [435] setobjprop 612 .......................... member(pMemName).text = pNetResult["body"]
+  [438] pushint8 1 .............................. <1>
+  [440] setprop 2016 ............................ pNetDone = 1
+  [443] jmp [749]
+  [446] getlocal 5 .............................. <tRedirectUrl>
+  [448] setlocal 7 .............................. tCompleteUrl = tRedirectUrl
+  [450] getlocal 5 .............................. <tRedirectUrl>
+  [452] pushcons 4 .............................. <"http://">
+  [454] containsstr ............................. <tRedirectUrl contains "http://">
+  [455] not ..................................... <not (tRedirectUrl contains "http://")>
+  [456] jmpifz [485] ............................ if not (tRedirectUrl contains "http://") then
+  [459] getlocal 5 .............................. <tRedirectUrl>
+  [461] pushcons 0 .............................. <"/">
+  [463] contains0str ............................ <tRedirectUrl starts "/">
+  [464] not ..................................... <not (tRedirectUrl starts "/")>
+  [465] jmpifz [474] ............................ if not (tRedirectUrl starts "/") then
+  [468] pushcons 0 .............................. <"/">
+  [470] pushint8 5 .............................. <5>
+  [472] put 53 .................................. put "/" before tRedirectUrl
+  [474] pushcons 4 .............................. <"http://">
+  [476] getprop 2007 ............................ <pServer>
+  [479] joinstr ................................. <"http://" & pServer>
+  [480] getlocal 5 .............................. <tRedirectUrl>
+  [482] joinstr ................................. <"http://" & pServer & tRedirectUrl>
+  [483] setlocal 7 .............................. tCompleteUrl = "http://" & pServer & tRedirectUrl
+  [485] getprop 2005 ............................ <pRedirectType>
+  [488] pushsymb 2006 ........................... <#follow>
+  [491] eq ...................................... <pRedirectType = #follow>
+  [492] jmpifz [714] ............................ if pRedirectType = #follow then / else
+  [495] pusharglist 0 ........................... <>
+  [497] extcall 170 ............................. <getMoviePath()>
+  [499] pusharglist 1 ........................... <getMoviePath()>
+  [501] extcall 500 ............................. <getDomainPart(getMoviePath())>
+  [504] setlocal 8 .............................. tOwnDomain = getDomainPart(getMoviePath())
+  [506] getlocal 7 .............................. <tCompleteUrl>
+  [508] pusharglist 1 ........................... <tCompleteUrl>
+  [510] extcall 500 ............................. <getDomainPart(tCompleteUrl)>
+  [513] setlocal 9 .............................. tDownloadDomain = getDomainPart(tCompleteUrl)
+  [515] getlocal 8 .............................. <tOwnDomain>
+  [517] getlocal 9 .............................. <tDownloadDomain>
+  [519] nteq .................................... <tOwnDomain <> tDownloadDomain>
+  [520] getlocal 7 .............................. <tCompleteUrl>
+  [522] pushcons 4 .............................. <"http://">
+  [524] containsstr ............................. <tCompleteUrl contains "http://">
+  [525] getlocal 7 .............................. <tCompleteUrl>
+  [527] pushcons 41 ............................. <"https://">
+  [529] containsstr ............................. <tCompleteUrl contains "https://">
+  [530] or ...................................... <(tCompleteUrl contains "http://") or (tCompleteUrl contains "https://")>
+  [531] and ..................................... <(tOwnDomain <> tDownloadDomain) and ((tCompleteUrl contains "http://") or (tCompleteUrl contains "https://"))>
+  [532] getlocal 7 .............................. <tCompleteUrl>
+  [534] pushcons 42 ............................. <"://localhost">
+  [536] containsstr ............................. <tCompleteUrl contains "://localhost">
+  [537] not ..................................... <not (tCompleteUrl contains "://localhost")>
+  [538] and ..................................... <(tOwnDomain <> tDownloadDomain) and ((tCompleteUrl contains "http://") or (tCompleteUrl contains "https://")) and not (tCompleteUrl contains "://localhost")>
+  [539] jmpifz [637] ............................ if (tOwnDomain <> tDownloadDomain) and ((tCompleteUrl contains "http://") or (tCompleteUrl contains "https://")) and not (tCompleteUrl contains "://localhost") then
+  [542] pushzero ................................ <0>
+  [543] setlocal 10 ............................. tAllowCrossDomain = 0
+  [545] pushcons 43 ............................. <"client.allow.cross.domain">
+  [547] pusharglist 1 ........................... <"client.allow.cross.domain">
+  [549] extcall 465 ............................. <variableExists("client.allow.cross.domain")>
+  [552] jmpifz [564] ............................ if variableExists("client.allow.cross.domain") then
+  [555] pushcons 43 ............................. <"client.allow.cross.domain">
+  [557] pusharglist 1 ........................... <"client.allow.cross.domain">
+  [559] extcall 461 ............................. <getVariable("client.allow.cross.domain")>
+  [562] setlocal 10 ............................. tAllowCrossDomain = getVariable("client.allow.cross.domain")
+  [564] pushint8 1 .............................. <1>
+  [566] setlocal 11 ............................. tNotifyCrossDomain = 1
+  [568] pushcons 44 ............................. <"client.notify.cross.domain">
+  [570] pusharglist 1 ........................... <"client.notify.cross.domain">
+  [572] extcall 465 ............................. <variableExists("client.notify.cross.domain")>
+  [575] jmpifz [591] ............................ if variableExists("client.notify.cross.domain") then
+  [578] pushcons 44 ............................. <"client.notify.cross.domain">
+  [580] pusharglist 1 ........................... <"client.notify.cross.domain">
+  [582] extcall 461 ............................. <getVariable("client.notify.cross.domain")>
+  [585] pusharglist 1 ........................... <getVariable("client.notify.cross.domain")>
+  [587] extcall 15 .............................. <value(getVariable("client.notify.cross.domain"))>
+  [589] setlocal 11 ............................. tNotifyCrossDomain = value(getVariable("client.notify.cross.domain"))
+  [591] getlocal 11 ............................. <tNotifyCrossDomain>
+  [593] jmpifz [605] ............................ if tNotifyCrossDomain then
+  [596] pushcons 45 ............................. <"crossDomainDownload">
+  [598] getlocal 7 .............................. <tCompleteUrl>
+  [600] pusharglistnoret 2 ...................... <"crossDomainDownload", tCompleteUrl>
+  [602] extcall 446 ............................. executeMessage("crossDomainDownload", tCompleteUrl)
+  [605] getlocal 10 ............................. <tAllowCrossDomain>
+  [607] not ..................................... <not tAllowCrossDomain>
+  [608] jmpifz [637] ............................ if not tAllowCrossDomain then
+  [611] pushint8 1 .............................. <1>
+  [613] setprop 2016 ............................ pNetDone = 1
+  [616] getparam 0 .............................. <me>
+  [618] pushcons 46 ............................. <"Cross domain download not allowed:">
+  [620] getlocal 7 .............................. <tCompleteUrl>
+  [622] joinpadstr .............................. <"Cross domain download not allowed:" && tCompleteUrl>
+  [623] pushsymb 1997 ........................... <#handleContentResponse>
+  [626] pushsymb 764 ............................ <#minor>
+  [629] pusharglist 4 ........................... <me, "Cross domain download not allowed:" && tCompleteUrl, #handleContentResponse, #minor>
+  [631] extcall 122 ............................. <error(me, "Cross domain download not allowed:" && tCompleteUrl, #handleContentResponse, #minor)>
+  [633] pusharglistnoret 1 ...................... <error(me, "Cross domain download not allowed:" && tCompleteUrl, #handleContentResponse, #minor)>
+  [635] extcall 11 .............................. return error(me, "Cross domain download not allowed:" && tCompleteUrl, #handleContentResponse, #minor)
+  [637] getprop 1316 ............................ <pType>
+  [640] pushsymb 863 ............................ <#bitmap>
+  [643] eq ...................................... <pType = #bitmap>
+  [644] jmpifz [665] ............................ if pType = #bitmap then / else
+  [647] getlocal 7 .............................. <tCompleteUrl>
+  [649] setprop 2027 ............................ pRedirectUrl = tCompleteUrl
+  [652] getlocal 7 .............................. <tCompleteUrl>
+  [654] pusharglist 1 ........................... <tCompleteUrl>
+  [656] extcall 1320 ............................ <preloadNetThing(tCompleteUrl)>
+  [659] setprop 2018 ............................ pRedirectNetID = preloadNetThing(tCompleteUrl)
+  [662] jmp [711]
+  [665] getprop 1316 ............................ <pType>
+  [668] pushsymb 612 ............................ <#text>
+  [671] eq ...................................... <pType = #text>
+  [672] jmpifz [711] ............................ if pType = #text then
+  [675] getparam 0 .............................. <me>
+  [677] getprop 938 ............................. <pMemName>
+  [680] pushsymb 907 ............................ <#url>
+  [683] getlocal 7 .............................. <tCompleteUrl>
+  [685] pushsymb 908 ............................ <#memNum>
+  [688] getprop 1314 ............................ <pMemNum>
+  [691] pushsymb 552 ............................ <#type>
+  [694] getprop 1316 ............................ <pType>
+  [697] pushsymb 909 ............................ <#callback>
+  [700] getprop 1317 ............................ <pCallBack>
+  [703] pusharglist 8 ........................... <[#url: tCompleteUrl, #memNum: pMemNum, #type: pType, #callback: pCallBack]>
+  [705] pushproplist ............................ <[#url: tCompleteUrl, #memNum: pMemNum, #type: pType, #callback: pCallBack]>
+  [706] pusharglistnoret 3 ...................... <me, pMemName, [#url: tCompleteUrl, #memNum: pMemNum, #type: pType, #callback: pCallBack]>
+  [708] objcall 532 ............................. me.define(pMemName, [#url: tCompleteUrl, #memNum: pMemNum, #type: pType, #callback: pCallBack])
+  [711] jmp [749]
+  [714] getprop 2004 ............................ <pTarget>
+  [717] pusharglist 1 ........................... <pTarget>
+  [719] extcall 14 .............................. <voidp(pTarget)>
+  [721] jmpifz [735] ............................ if voidp(pTarget) then / else
+  [724] getlocal 7 .............................. <tCompleteUrl>
+  [726] pushcons 47 ............................. <"_new">
+  [728] pusharglistnoret 2 ...................... <tCompleteUrl, "_new">
+  [730] extcall 147 ............................. openNetPage(tCompleteUrl, "_new")
+  [732] jmp [744]
+  [735] getlocal 7 .............................. <tCompleteUrl>
+  [737] getprop 2004 ............................ <pTarget>
+  [740] pusharglistnoret 2 ...................... <tCompleteUrl, pTarget>
+  [742] extcall 147 ............................. openNetPage(tCompleteUrl, pTarget)
+  [744] pushint8 1 .............................. <1>
+  [746] setprop 2016 ............................ pNetDone = 1
+  [749] ret
+end
+
+on clearMU me
+  [  0] getprop 2030 ............................ <pMUXtra>
+  [  3] pusharglist 1 ........................... <pMUXtra>
+  [  5] extcall 195 ............................. <objectp(pMUXtra)>
+  [  7] jmpifz [ 38] ............................ if objectp(pMUXtra) then
+  [ 10] getprop 2030 ............................ <pMUXtra>
+  [ 13] pushzero ................................ <0>
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 3 ........................... <pMUXtra, 0, me>
+  [ 18] objcall 1394 ............................ <pMUXtra.setNetMessageHandler(0, me)>
+  [ 21] setlocal 0 .............................. tErrCode = pMUXtra.setNetMessageHandler(0, me)
+  [ 23] getprop 2030 ............................ <pMUXtra>
+  [ 26] pushzero ................................ <0>
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pushcons 33 ............................. <"ConnectToNetServer">
+  [ 31] pusharglist 4 ........................... <pMUXtra, 0, me, "ConnectToNetServer">
+  [ 33] objcall 1394 ............................ <pMUXtra.setNetMessageHandler(0, me, "ConnectToNetServer")>
+  [ 36] setlocal 0 .............................. tErrCode = pMUXtra.setNetMessageHandler(0, me, "ConnectToNetServer")
+  [ 38] pusharglist 0 ........................... <>
+  [ 40] extcall 9 ............................... <VOID>
+  [ 42] setprop 2030 ............................ pMUXtra = VOID
+  [ 45] ret
+end
+
+on parseResponse me, tResponse
+  [  0] getparam 1 .............................. <tResponse>
+  [  2] getprop 2011 ............................ <pCRLF>
+  [  5] getprop 2011 ............................ <pCRLF>
+  [  8] joinstr ................................. <pCRLF & pCRLF>
+  [  9] pushint8 2 .............................. <2>
+  [ 11] pusharglist 3 ........................... <tResponse, pCRLF & pCRLF, 2>
+  [ 13] extcall 366 ............................. <explode(tResponse, pCRLF & pCRLF, 2)>
+  [ 16] setlocal 0 .............................. tTemp = explode(tResponse, pCRLF & pCRLF, 2)
+  [ 18] getlocal 0 .............................. <tTemp>
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglist 2 ........................... <tTemp, 1>
+  [ 24] objcall 29 .............................. <tTemp[1]>
+  [ 26] setlocal 1 .............................. tResponseHeaders = tTemp[1]
+  [ 28] getlocal 0 .............................. <tTemp>
+  [ 30] pushint8 2 .............................. <2>
+  [ 32] pusharglist 2 ........................... <tTemp, 2>
+  [ 34] objcall 29 .............................. <tTemp[2]>
+  [ 36] setlocal 2 .............................. tResponseBody = tTemp[2]
+  [ 38] getlocal 1 .............................. <tResponseHeaders>
+  [ 40] getprop 2011 ............................ <pCRLF>
+  [ 43] pusharglist 2 ........................... <tResponseHeaders, pCRLF>
+  [ 45] extcall 366 ............................. <explode(tResponseHeaders, pCRLF)>
+  [ 48] setlocal 3 .............................. tResponseHeaderLines = explode(tResponseHeaders, pCRLF)
+  [ 50] getlocal 3 .............................. <tResponseHeaderLines>
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] pusharglist 2 ........................... <tResponseHeaderLines, 1>
+  [ 56] objcall 29 .............................. <tResponseHeaderLines[1]>
+  [ 58] setlocal 4 .............................. tHttpResponseLine = tResponseHeaderLines[1]
+  [ 60] getlocal 4 .............................. <tHttpResponseLine>
+  [ 62] setlocal 5 .............................. tResponseCode = tHttpResponseLine
+  [ 64] getlocal 5 .............................. <tResponseCode>
+  [ 66] pushsymb 379 ............................ <#word>
+  [ 69] pushint8 2 .............................. <2>
+  [ 71] pusharglist 3 ........................... <tResponseCode, #word, 2>
+  [ 73] objcall 22 .............................. <tResponseCode.word[2]>
+  [ 75] pusharglist 1 ........................... <tResponseCode.word[2]>
+  [ 77] extcall 1132 ............................ <integer(tResponseCode.word[2])>
+  [ 80] setlocal 6 .............................. tResponseCodeNum = integer(tResponseCode.word[2])
+  [ 82] pusharglist 0 ........................... <[:]>
+  [ 84] pushproplist ............................ <[:]>
+  [ 85] setlocal 7 .............................. tResponseHeaderArray = [:]
+  [ 87] pushint8 2 .............................. <2>
+  [ 89] setlocal 8
+  [ 91] getlocal 8
+  [ 93] getlocal 3 .............................. <tResponseHeaderLines>
+  [ 95] getobjprop 28 ........................... <tResponseHeaderLines.count>
+  [ 97] lteq
+  [ 98] jmpifz [164] ............................ repeat with i = 2 to tResponseHeaderLines.count
+  [101] getlocal 3 .............................. <tResponseHeaderLines>
+  [103] getlocal 8 .............................. <i>
+  [105] pusharglist 2 ........................... <tResponseHeaderLines, i>
+  [107] objcall 29 .............................. <tResponseHeaderLines[i]>
+  [109] setlocal 9 .............................. tHeaderLine = tResponseHeaderLines[i]
+  [111] getlocal 9 .............................. <tHeaderLine>
+  [113] pushcons 48 ............................. <": ">
+  [115] pushint8 2 .............................. <2>
+  [117] pusharglist 3 ........................... <tHeaderLine, ": ", 2>
+  [119] extcall 366 ............................. <explode(tHeaderLine, ": ", 2)>
+  [122] setlocal 0 .............................. tTemp = explode(tHeaderLine, ": ", 2)
+  [124] getlocal 0 .............................. <tTemp>
+  [126] pushint8 1 .............................. <1>
+  [128] pusharglist 2 ........................... <tTemp, 1>
+  [130] objcall 29 .............................. <tTemp[1]>
+  [132] setlocal 10 ............................. tHeader = tTemp[1]
+  [134] getlocal 0 .............................. <tTemp>
+  [136] pushint8 2 .............................. <2>
+  [138] pusharglist 2 ........................... <tTemp, 2>
+  [140] objcall 29 .............................. <tTemp[2]>
+  [142] setlocal 11 ............................. tValue = tTemp[2]
+  [144] getlocal 7 .............................. <tResponseHeaderArray>
+  [146] getlocal 10 ............................. <tHeader>
+  [148] getlocal 11 ............................. <tValue>
+  [150] pusharglistnoret 3 ...................... <tResponseHeaderArray, tHeader, tValue>
+  [152] objcall 670 ............................. tResponseHeaderArray.addProp(tHeader, tValue)
+  [155] pushint8 1
+  [157] getlocal 8
+  [159] add
+  [160] setlocal 8
+  [162] endrepeat [ 91]
+  [164] getlocal 7 .............................. <tResponseHeaderArray>
+  [166] pusharglistnoret 1 ...................... <tResponseHeaderArray>
+  [168] objcall 736 ............................. tResponseHeaderArray.sort()
+  [171] pusharglist 0 ........................... <[:]>
+  [173] pushproplist ............................ <[:]>
+  [174] setlocal 12 ............................. tReturnArr = [:]
+  [176] getlocal 12 ............................. <tReturnArr>
+  [178] pushcons 49 ............................. <"status_code">
+  [180] getlocal 5 .............................. <tResponseCode>
+  [182] pusharglistnoret 3 ...................... <tReturnArr, "status_code", tResponseCode>
+  [184] objcall 23 .............................. tReturnArr["status_code"] = tResponseCode
+  [186] getlocal 12 ............................. <tReturnArr>
+  [188] pushcons 50 ............................. <"status_num">
+  [190] getlocal 6 .............................. <tResponseCodeNum>
+  [192] pusharglistnoret 3 ...................... <tReturnArr, "status_num", tResponseCodeNum>
+  [194] objcall 23 .............................. tReturnArr["status_num"] = tResponseCodeNum
+  [196] getlocal 12 ............................. <tReturnArr>
+  [198] pushcons 29 ............................. <"headers">
+  [200] getlocal 7 .............................. <tResponseHeaderArray>
+  [202] pusharglistnoret 3 ...................... <tReturnArr, "headers", tResponseHeaderArray>
+  [204] objcall 23 .............................. tReturnArr["headers"] = tResponseHeaderArray
+  [206] getlocal 12 ............................. <tReturnArr>
+  [208] pushcons 30 ............................. <"body">
+  [210] getlocal 2 .............................. <tResponseBody>
+  [212] pusharglistnoret 3 ...................... <tReturnArr, "body", tResponseBody>
+  [214] objcall 23 .............................. tReturnArr["body"] = tResponseBody
+  [216] getlocal 12 ............................. <tReturnArr>
+  [218] pusharglistnoret 1 ...................... <tReturnArr>
+  [220] extcall 11 .............................. return tReturnArr
+  [222] ret
+end
+
+on parseRawBody me, tRawbody
+  [  0] pushcons 5 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. tBody = EMPTY
+  [  4] pushint8 1 .............................. <1>
+  [  6] jmpifz [102] ............................ repeat while 1
+  [  9] getparam 1 .............................. <tRawbody>
+  [ 11] getprop 2011 ............................ <pCRLF>
+  [ 14] pushint8 2 .............................. <2>
+  [ 16] pusharglist 3 ........................... <tRawbody, pCRLF, 2>
+  [ 18] extcall 366 ............................. <explode(tRawbody, pCRLF, 2)>
+  [ 21] setlocal 1 .............................. tTemp = explode(tRawbody, pCRLF, 2)
+  [ 23] getlocal 1 .............................. <tTemp>
+  [ 25] getobjprop 28 ........................... <tTemp.count>
+  [ 27] pushint8 2 .............................. <2>
+  [ 29] lt ...................................... <tTemp.count < 2>
+  [ 30] jmpifz [ 41] ............................ if tTemp.count < 2 then
+  [ 33] getparam 1 .............................. <tRawbody>
+  [ 35] pushzero ................................ <0>
+  [ 36] put 37 .................................. put tRawbody after tBody
+  [ 38] jmp [102] ............................... exit repeat
+  [ 41] getparam 0 .............................. <me>
+  [ 43] getlocal 1 .............................. <tTemp>
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglist 2 ........................... <tTemp, 1>
+  [ 49] objcall 29 .............................. <tTemp[1]>
+  [ 51] pusharglist 2 ........................... <me, tTemp[1]>
+  [ 53] objcall 2003 ............................ <me.hex2dec(tTemp[1])>
+  [ 56] setlocal 2 .............................. tLen = me.hex2dec(tTemp[1])
+  [ 58] getlocal 1 .............................. <tTemp>
+  [ 60] pushint8 2 .............................. <2>
+  [ 62] pusharglist 2 ........................... <tTemp, 2>
+  [ 64] objcall 29 .............................. <tTemp[2]>
+  [ 66] setparam 1 .............................. tRawbody = tTemp[2]
+  [ 68] getparam 1 .............................. <tRawbody>
+  [ 70] pushsymb 20 ............................. <#char>
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] getlocal 2 .............................. <tLen>
+  [ 76] pusharglist 4 ........................... <tRawbody, #char, 1, tLen>
+  [ 78] objcall 22 .............................. <tRawbody.char[1..tLen]>
+  [ 80] pushzero ................................ <0>
+  [ 81] put 37 .................................. put tRawbody.char[1..tLen] after tBody
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] getlocal 2 .............................. <tLen>
+  [ 87] pushint8 2 .............................. <2>
+  [ 89] add ..................................... <tLen + 2>
+  [ 90] pushzero ................................ <0>
+  [ 91] pushzero ................................ <0>
+  [ 92] pushzero ................................ <0>
+  [ 93] pushzero ................................ <0>
+  [ 94] pushzero ................................ <0>
+  [ 95] pushzero ................................ <0>
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] deletechunk 4 ........................... delete char 1 to (tLen + 2) of tRawbody
+  [100] endrepeat [  4]
+  [102] getlocal 0 .............................. <tBody>
+  [104] pusharglistnoret 1 ...................... <tBody>
+  [106] extcall 11 .............................. return tBody
+  [108] ret
+end
+
+on parseCookieString me, tStr
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tCookie = [:]
+  [  5] getparam 1 .............................. <tStr>
+  [  7] pushcons 20 ............................. <"; ">
+  [  9] pusharglist 2 ........................... <tStr, "; ">
+  [ 11] extcall 366 ............................. <explode(tStr, "; ")>
+  [ 14] setlocal 1 .............................. tParts = explode(tStr, "; ")
+  [ 16] getlocal 1 .............................. <tParts>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglist 2 ........................... <tParts, 1>
+  [ 22] objcall 29 .............................. <tParts[1]>
+  [ 24] pushcons 22 ............................. <"=">
+  [ 26] pusharglist 2 ........................... <tParts[1], "=">
+  [ 28] extcall 366 ............................. <explode(tParts[1], "=")>
+  [ 31] setlocal 2 .............................. tTemp = explode(tParts[1], "=")
+  [ 33] getlocal 0 .............................. <tCookie>
+  [ 35] pushcons 21 ............................. <"name">
+  [ 37] getlocal 2 .............................. <tTemp>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pusharglist 2 ........................... <tTemp, 1>
+  [ 43] objcall 29 .............................. <tTemp[1]>
+  [ 45] pusharglistnoret 3 ...................... <tCookie, "name", tTemp[1]>
+  [ 47] objcall 23 .............................. tCookie["name"] = tTemp[1]
+  [ 49] getlocal 0 .............................. <tCookie>
+  [ 51] pushcons 23 ............................. <"value">
+  [ 53] getlocal 2 .............................. <tTemp>
+  [ 55] pushint8 2 .............................. <2>
+  [ 57] pusharglist 2 ........................... <tTemp, 2>
+  [ 59] objcall 29 .............................. <tTemp[2]>
+  [ 61] pusharglistnoret 3 ...................... <tCookie, "value", tTemp[2]>
+  [ 63] objcall 23 .............................. tCookie["value"] = tTemp[2]
+  [ 65] pushint8 2 .............................. <2>
+  [ 67] setlocal 3
+  [ 69] getlocal 3
+  [ 71] getlocal 1 .............................. <tParts>
+  [ 73] getobjprop 28 ........................... <tParts.count>
+  [ 75] lteq
+  [ 76] jmpifz [135] ............................ repeat with i = 2 to tParts.count
+  [ 79] getlocal 1 .............................. <tParts>
+  [ 81] getlocal 3 .............................. <i>
+  [ 83] pusharglist 2 ........................... <tParts, i>
+  [ 85] objcall 29 .............................. <tParts[i]>
+  [ 87] pushcons 22 ............................. <"=">
+  [ 89] pusharglist 2 ........................... <tParts[i], "=">
+  [ 91] extcall 366 ............................. <explode(tParts[i], "=")>
+  [ 94] setlocal 2 .............................. tTemp = explode(tParts[i], "=")
+  [ 96] getlocal 2 .............................. <tTemp>
+  [ 98] pushint8 1 .............................. <1>
+  [100] pusharglist 2 ........................... <tTemp, 1>
+  [102] objcall 29 .............................. <tTemp[1]>
+  [104] pushcons 19 ............................. <"path">
+  [106] eq ...................................... <tTemp[1] = "path">
+  [107] jmpifz [126] ............................ if tTemp[1] = "path" then
+  [110] getlocal 0 .............................. <tCookie>
+  [112] pushcons 19 ............................. <"path">
+  [114] getlocal 2 .............................. <tTemp>
+  [116] pushint8 2 .............................. <2>
+  [118] pusharglist 2 ........................... <tTemp, 2>
+  [120] objcall 29 .............................. <tTemp[2]>
+  [122] pusharglistnoret 3 ...................... <tCookie, "path", tTemp[2]>
+  [124] objcall 23 .............................. tCookie["path"] = tTemp[2]
+  [126] pushint8 1
+  [128] getlocal 3
+  [130] add
+  [131] setlocal 3
+  [133] endrepeat [ 69]
+  [135] getlocal 0 .............................. <tCookie>
+  [137] pushcons 19 ............................. <"path">
+  [139] pusharglist 2 ........................... <tCookie, "path">
+  [141] objcall 29 .............................. <tCookie["path"]>
+  [143] pusharglist 1 ........................... <tCookie["path"]>
+  [145] extcall 14 .............................. <voidp(tCookie["path"])>
+  [147] jmpifz [160] ............................ if voidp(tCookie["path"]) then
+  [150] getlocal 0 .............................. <tCookie>
+  [152] pushcons 19 ............................. <"path">
+  [154] pushcons 0 .............................. <"/">
+  [156] pusharglistnoret 3 ...................... <tCookie, "path", "/">
+  [158] objcall 23 .............................. tCookie["path"] = "/"
+  [160] getlocal 0 .............................. <tCookie>
+  [162] pusharglistnoret 1 ...................... <tCookie>
+  [164] extcall 11 .............................. return tCookie
+  [166] ret
+end
+
+on getDataString me, tdata
+  [  0] pushcons 5 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. tDataStr = EMPTY
+  [  4] pushint8 1 .............................. <1>
+  [  6] setlocal 1
+  [  8] getlocal 1
+  [ 10] getparam 1 .............................. <tdata>
+  [ 12] getobjprop 28 ........................... <tdata.count>
+  [ 14] lteq
+  [ 15] jmpifz [ 75] ............................ repeat with i = 1 to tdata.count
+  [ 18] getparam 1 .............................. <tdata>
+  [ 20] getlocal 1 .............................. <i>
+  [ 22] pusharglist 2 ........................... <tdata, i>
+  [ 24] objcall 111 ............................. <tdata.getPropAt(i)>
+  [ 26] pusharglist 1 ........................... <tdata.getPropAt(i)>
+  [ 28] extcall 370 ............................. <urlEncode(tdata.getPropAt(i))>
+  [ 31] pushcons 22 ............................. <"=">
+  [ 33] joinstr ................................. <urlEncode(tdata.getPropAt(i)) & "=">
+  [ 34] getparam 1 .............................. <tdata>
+  [ 36] getlocal 1 .............................. <i>
+  [ 38] pusharglist 2 ........................... <tdata, i>
+  [ 40] objcall 29 .............................. <tdata[i]>
+  [ 42] pusharglist 1 ........................... <tdata[i]>
+  [ 44] extcall 370 ............................. <urlEncode(tdata[i])>
+  [ 47] joinstr ................................. <urlEncode(tdata.getPropAt(i)) & "=" & urlEncode(tdata[i])>
+  [ 48] pushzero ................................ <0>
+  [ 49] put 37 .................................. put urlEncode(tdata.getPropAt(i)) & "=" & urlEncode(tdata[i]) after tDataStr
+  [ 51] getlocal 1 .............................. <i>
+  [ 53] getparam 1 .............................. <tdata>
+  [ 55] getobjprop 28 ........................... <tdata.count>
+  [ 57] lt ...................................... <i < tdata.count>
+  [ 58] jmpifz [ 66] ............................ if i < tdata.count then
+  [ 61] pushcons 51 ............................. <"&">
+  [ 63] pushzero ................................ <0>
+  [ 64] put 37 .................................. put "&" after tDataStr
+  [ 66] pushint8 1
+  [ 68] getlocal 1
+  [ 70] add
+  [ 71] setlocal 1
+  [ 73] endrepeat [  8]
+  [ 75] getlocal 0 .............................. <tDataStr>
+  [ 77] pusharglistnoret 1 ...................... <tDataStr>
+  [ 79] extcall 11 .............................. return tDataStr
+  [ 81] ret
+end
+
+on hex2dec me, tHex
+  [  0] getparam 1 .............................. <tHex>
+  [  2] pusharglist 1 ........................... <tHex>
+  [  4] extcall 673 ............................. <rgb(tHex)>
+  [  7] setlocal 0 .............................. tCol = rgb(tHex)
+  [  9] getlocal 0 .............................. <tCol>
+  [ 11] getobjprop 1551 ......................... <tCol.red>
+  [ 14] pushint32 65536 ......................... <65536>
+  [ 19] mul ..................................... <tCol.red * 65536>
+  [ 20] getlocal 0 .............................. <tCol>
+  [ 22] getobjprop 1552 ......................... <tCol.green>
+  [ 25] pushint16 256 ........................... <256>
+  [ 28] mul ..................................... <tCol.green * 256>
+  [ 29] add ..................................... <(tCol.red * 65536) + (tCol.green * 256)>
+  [ 30] getlocal 0 .............................. <tCol>
+  [ 32] getobjprop 1553 ......................... <tCol.blue>
+  [ 35] add ..................................... <(tCol.red * 65536) + (tCol.green * 256) + tCol.blue>
+  [ 36] pusharglistnoret 1 ...................... <(tCol.red * 65536) + (tCol.green * 256) + tCol.blue>
+  [ 38] extcall 11 .............................. return (tCol.red * 65536) + (tCol.green * 256) + tCol.blue
+  [ 40] ret
+end

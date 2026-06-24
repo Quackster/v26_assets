@@ -1,0 +1,523 @@
+property pRequestList, pRequestsPerPage, pWindowID, pCurrentPageIndex, pPageCount
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 563 ............................. pRequestList = []
+  [  6] pushcons 0 .............................. <EMPTY>
+  [  8] setprop 564 ............................. pWindowID = EMPTY
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] setprop 565 ............................. pCurrentPageIndex = 1
+  [ 16] pushint8 5 .............................. <5>
+  [ 18] setprop 566 ............................. pRequestsPerPage = 5
+  [ 21] pushzero ................................ <0>
+  [ 22] setprop 567 ............................. pPageCount = 0
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] pusharglistnoret 1 ...................... <1>
+  [ 29] extcall 81 .............................. return 1
+  [ 31] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 81 .............................. return 1
+  [  6] ret
+end
+
+on Init me, tWindowName
+  [  0] getparam 1 .............................. <tWindowName>
+  [  2] setprop 564 ............................. pWindowID = tWindowName
+  [  5] pushint8 1 .............................. <1>
+  [  7] setprop 565 ............................. pCurrentPageIndex = 1
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 196 ............................. me.updateView()
+  [ 16] ret
+end
+
+on showNextPage me
+  [  0] getprop 565 ............................. <pCurrentPageIndex>
+  [  3] pushint8 1 .............................. <1>
+  [  5] add ..................................... <pCurrentPageIndex + 1>
+  [  6] setprop 565 ............................. pCurrentPageIndex = pCurrentPageIndex + 1
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglistnoret 1 ...................... <me>
+  [ 13] objcall 196 ............................. me.updateView()
+  [ 15] ret
+end
+
+on showPreviousPage me
+  [  0] getprop 565 ............................. <pCurrentPageIndex>
+  [  3] pushint8 1 .............................. <1>
+  [  5] sub ..................................... <pCurrentPageIndex - 1>
+  [  6] setprop 565 ............................. pCurrentPageIndex = pCurrentPageIndex - 1
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglistnoret 1 ...................... <me>
+  [ 13] objcall 196 ............................. me.updateView()
+  [ 15] ret
+end
+
+on clearRequests me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 563 ............................. pRequestList = []
+  [  6] pushint8 1 .............................. <1>
+  [  8] setprop 565 ............................. pCurrentPageIndex = 1
+  [ 11] ret
+end
+
+on isBuddyListFull me
+  [  0] pushsymb 398 ............................ <#messenger>
+  [  3] pusharglist 1 ........................... <#messenger>
+  [  5] extcall 404 ............................. <getThread(#messenger)>
+  [  8] pusharglist 1 ........................... <getThread(#messenger)>
+  [ 10] objcall 396 ............................. <getThread(#messenger).getInterface()>
+  [ 13] pusharglist 1 ........................... <getThread(#messenger).getInterface()>
+  [ 15] objcall 6 ............................... <getThread(#messenger).getInterface().getBuddyListLimits()>
+  [ 17] setlocal 0 .............................. tListLimits = getThread(#messenger).getInterface().getBuddyListLimits()
+  [ 19] getlocal 0 .............................. <tListLimits>
+  [ 21] pushsymb 61 ............................. <#own>
+  [ 23] pusharglist 2 ........................... <tListLimits, #own>
+  [ 25] objcall 116 ............................. <tListLimits[#own]>
+  [ 27] setlocal 1 .............................. tOwnLimit = tListLimits[#own]
+  [ 29] pushsymb 398 ............................ <#messenger>
+  [ 32] pusharglist 1 ........................... <#messenger>
+  [ 34] extcall 404 ............................. <getThread(#messenger)>
+  [ 37] pusharglist 1 ........................... <getThread(#messenger)>
+  [ 39] objcall 98 .............................. <getThread(#messenger).getComponent()>
+  [ 41] pusharglist 1 ........................... <getThread(#messenger).getComponent()>
+  [ 43] objcall 156 ............................. <getThread(#messenger).getComponent().getBuddyData()>
+  [ 45] setlocal 2 .............................. tBuddyData = getThread(#messenger).getComponent().getBuddyData()
+  [ 47] getlocal 2 .............................. <tBuddyData>
+  [ 49] pushsymb 115 ............................ <#buddies>
+  [ 51] pusharglist 2 ........................... <tBuddyData, #buddies>
+  [ 53] objcall 116 ............................. <tBuddyData[#buddies]>
+  [ 55] getobjprop 113 .......................... <tBuddyData[#buddies].count>
+  [ 57] setlocal 3 .............................. tBuddyCount = tBuddyData[#buddies].count
+  [ 59] getlocal 1 .............................. <tOwnLimit>
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] inv ..................................... <-1>
+  [ 64] eq ...................................... <tOwnLimit = -1>
+  [ 65] getlocal 3 .............................. <tBuddyCount>
+  [ 67] getlocal 1 .............................. <tOwnLimit>
+  [ 69] lt ...................................... <tBuddyCount < tOwnLimit>
+  [ 70] or ...................................... <(tOwnLimit = -1) or (tBuddyCount < tOwnLimit)>
+  [ 71] jmpifz [ 79] ............................ if (tOwnLimit = -1) or (tBuddyCount < tOwnLimit) then
+  [ 74] pushzero ................................ <0>
+  [ 75] pusharglistnoret 1 ...................... <0>
+  [ 77] extcall 81 .............................. return 0
+  [ 79] pushint8 1 .............................. <1>
+  [ 81] pusharglistnoret 1 ...................... <1>
+  [ 83] extcall 81 .............................. return 1
+  [ 85] ret
+end
+
+on updateView me
+  [  0] getprop 564 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 87 .............................. <windowExists(pWindowID)>
+  [  7] not ..................................... <not windowExists(pWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 81 .............................. return 0
+  [ 16] getprop 565 ............................. <pCurrentPageIndex>
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] lt ...................................... <pCurrentPageIndex < 1>
+  [ 22] jmpifz [ 30] ............................ if pCurrentPageIndex < 1 then
+  [ 25] pushzero ................................ <0>
+  [ 26] pusharglistnoret 1 ...................... <0>
+  [ 28] extcall 81 .............................. return 0
+  [ 30] getprop 564 ............................. <pWindowID>
+  [ 33] pusharglist 1 ........................... <pWindowID>
+  [ 35] extcall 149 ............................. <getWindow(pWindowID)>
+  [ 37] setlocal 0 .............................. tWindowObj = getWindow(pWindowID)
+  [ 39] pushsymb 398 ............................ <#messenger>
+  [ 42] pusharglist 1 ........................... <#messenger>
+  [ 44] extcall 404 ............................. <getThread(#messenger)>
+  [ 47] pusharglist 1 ........................... <getThread(#messenger)>
+  [ 49] objcall 98 .............................. <getThread(#messenger).getComponent()>
+  [ 51] setlocal 1 .............................. tComponent = getThread(#messenger).getComponent()
+  [ 53] getlocal 1 .............................. <tComponent>
+  [ 55] pusharglist 1 ........................... <tComponent>
+  [ 57] objcall 339 ............................. <tComponent.getRequestCount()>
+  [ 60] setlocal 2 .............................. tRequestCount = tComponent.getRequestCount()
+  [ 62] getlocal 2 .............................. <tRequestCount>
+  [ 64] getprop 566 ............................. <pRequestsPerPage>
+  [ 67] div ..................................... <tRequestCount / pRequestsPerPage>
+  [ 68] setprop 567 ............................. pPageCount = tRequestCount / pRequestsPerPage
+  [ 71] getlocal 2 .............................. <tRequestCount>
+  [ 73] getprop 566 ............................. <pRequestsPerPage>
+  [ 76] mod ..................................... <tRequestCount mod pRequestsPerPage>
+  [ 77] pushzero ................................ <0>
+  [ 78] gt ...................................... <(tRequestCount mod pRequestsPerPage) > 0>
+  [ 79] jmpifz [ 91] ............................ if (tRequestCount mod pRequestsPerPage) > 0 then
+  [ 82] getprop 567 ............................. <pPageCount>
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] add ..................................... <pPageCount + 1>
+  [ 88] setprop 567 ............................. pPageCount = pPageCount + 1
+  [ 91] getlocal 1 .............................. <tComponent>
+  [ 93] getprop 565 ............................. <pCurrentPageIndex>
+  [ 96] getprop 566 ............................. <pRequestsPerPage>
+  [ 99] pusharglist 3 ........................... <tComponent, pCurrentPageIndex, pRequestsPerPage>
+  [101] objcall 337 ............................. <tComponent.getRequestSet(pCurrentPageIndex, pRequestsPerPage)>
+  [104] setprop 563 ............................. pRequestList = tComponent.getRequestSet(pCurrentPageIndex, pRequestsPerPage)
+  [107] pushint8 1 .............................. <1>
+  [109] setlocal 3
+  [111] getlocal 3
+  [113] getprop 566 ............................. <pRequestsPerPage>
+  [116] lteq
+  [117] jmpifz [138] ............................ repeat with tScreenIndex = 1 to pRequestsPerPage
+  [120] getparam 0 .............................. <me>
+  [122] getlocal 3 .............................. <tScreenIndex>
+  [124] pusharglistnoret 2 ...................... <me, tScreenIndex>
+  [126] objcall 562 ............................. me.updateListItemView(tScreenIndex)
+  [129] pushint8 1
+  [131] getlocal 3
+  [133] add
+  [134] setlocal 3
+  [136] endrepeat [111]
+  [138] getlocal 0 .............................. <tWindowObj>
+  [140] pushcons 1 .............................. <"console_fr_next">
+  [142] pusharglist 2 ........................... <tWindowObj, "console_fr_next">
+  [144] objcall 150 ............................. <tWindowObj.getElement("console_fr_next")>
+  [146] setlocal 4 .............................. tNextElem = tWindowObj.getElement("console_fr_next")
+  [148] getlocal 0 .............................. <tWindowObj>
+  [150] pushcons 2 .............................. <"console_fr_previous">
+  [152] pusharglist 2 ........................... <tWindowObj, "console_fr_previous">
+  [154] objcall 150 ............................. <tWindowObj.getElement("console_fr_previous")>
+  [156] setlocal 5 .............................. tPrevElem = tWindowObj.getElement("console_fr_previous")
+  [158] getprop 567 ............................. <pPageCount>
+  [161] getprop 565 ............................. <pCurrentPageIndex>
+  [164] gt ...................................... <pPageCount > pCurrentPageIndex>
+  [165] jmpifz [182] ............................ if pPageCount > pCurrentPageIndex then / else
+  [168] getlocal 4 .............................. <tNextElem>
+  [170] pushsymb 569 ............................ <#visible>
+  [173] pushint8 1 .............................. <1>
+  [175] pusharglistnoret 3 ...................... <tNextElem, #visible, 1>
+  [177] objcall 164 ............................. tNextElem.setProperty(#visible, 1)
+  [179] jmp [192]
+  [182] getlocal 4 .............................. <tNextElem>
+  [184] pushsymb 569 ............................ <#visible>
+  [187] pushzero ................................ <0>
+  [188] pusharglistnoret 3 ...................... <tNextElem, #visible, 0>
+  [190] objcall 164 ............................. tNextElem.setProperty(#visible, 0)
+  [192] getprop 565 ............................. <pCurrentPageIndex>
+  [195] pushint8 1 .............................. <1>
+  [197] eq ...................................... <pCurrentPageIndex = 1>
+  [198] jmpifz [214] ............................ if pCurrentPageIndex = 1 then / else
+  [201] getlocal 5 .............................. <tPrevElem>
+  [203] pushsymb 569 ............................ <#visible>
+  [206] pushzero ................................ <0>
+  [207] pusharglistnoret 3 ...................... <tPrevElem, #visible, 0>
+  [209] objcall 164 ............................. tPrevElem.setProperty(#visible, 0)
+  [211] jmp [225]
+  [214] getlocal 5 .............................. <tPrevElem>
+  [216] pushsymb 569 ............................ <#visible>
+  [219] pushint8 1 .............................. <1>
+  [221] pusharglistnoret 3 ...................... <tPrevElem, #visible, 1>
+  [223] objcall 164 ............................. tPrevElem.setProperty(#visible, 1)
+  [225] getlocal 1 .............................. <tComponent>
+  [227] pusharglist 1 ........................... <tComponent>
+  [229] objcall 148 ............................. <tComponent.getPendingRequestCount()>
+  [231] setlocal 6 .............................. tPendingRequestCount = tComponent.getPendingRequestCount()
+  [233] getlocal 0 .............................. <tWindowObj>
+  [235] pushcons 3 .............................. <"friend_request_options_button">
+  [237] pusharglist 2 ........................... <tWindowObj, "friend_request_options_button">
+  [239] objcall 150 ............................. <tWindowObj.getElement("friend_request_options_button")>
+  [241] setlocal 7 .............................. tOptionsElem = tWindowObj.getElement("friend_request_options_button")
+  [243] getlocal 6 .............................. <tPendingRequestCount>
+  [245] getprop 566 ............................. <pRequestsPerPage>
+  [248] gt ...................................... <tPendingRequestCount > pRequestsPerPage>
+  [249] jmpifz [266] ............................ if tPendingRequestCount > pRequestsPerPage then / else
+  [252] getlocal 7 .............................. <tOptionsElem>
+  [254] pushsymb 569 ............................ <#visible>
+  [257] pushint8 1 .............................. <1>
+  [259] pusharglistnoret 3 ...................... <tOptionsElem, #visible, 1>
+  [261] objcall 164 ............................. tOptionsElem.setProperty(#visible, 1)
+  [263] jmp [276]
+  [266] getlocal 7 .............................. <tOptionsElem>
+  [268] pushsymb 569 ............................ <#visible>
+  [271] pushzero ................................ <0>
+  [272] pusharglistnoret 3 ...................... <tOptionsElem, #visible, 0>
+  [274] objcall 164 ............................. tOptionsElem.setProperty(#visible, 0)
+  [276] pushint8 1 .............................. <1>
+  [278] pusharglistnoret 1 ...................... <1>
+  [280] extcall 81 .............................. return 1
+  [282] ret
+end
+
+on updateListItemView me, tItemNumber
+  [  0] getprop 564 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 87 .............................. <windowExists(pWindowID)>
+  [  7] not ..................................... <not windowExists(pWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 81 .............................. return 0
+  [ 16] getprop 564 ............................. <pWindowID>
+  [ 19] pusharglist 1 ........................... <pWindowID>
+  [ 21] extcall 149 ............................. <getWindow(pWindowID)>
+  [ 23] setlocal 0 .............................. tWindowObj = getWindow(pWindowID)
+  [ 25] getlocal 0 .............................. <tWindowObj>
+  [ 27] pushcons 4 .............................. <"request_name">
+  [ 29] getparam 1 .............................. <tItemNumber>
+  [ 31] joinstr ................................. <"request_name" & tItemNumber>
+  [ 32] pusharglist 2 ........................... <tWindowObj, "request_name" & tItemNumber>
+  [ 34] objcall 150 ............................. <tWindowObj.getElement("request_name" & tItemNumber)>
+  [ 36] setlocal 1 .............................. tNameElem = tWindowObj.getElement("request_name" & tItemNumber)
+  [ 38] getlocal 0 .............................. <tWindowObj>
+  [ 40] pushcons 5 .............................. <"request_decision">
+  [ 42] getparam 1 .............................. <tItemNumber>
+  [ 44] joinstr ................................. <"request_decision" & tItemNumber>
+  [ 45] pusharglist 2 ........................... <tWindowObj, "request_decision" & tItemNumber>
+  [ 47] objcall 150 ............................. <tWindowObj.getElement("request_decision" & tItemNumber)>
+  [ 49] setlocal 2 .............................. tDecisionElem = tWindowObj.getElement("request_decision" & tItemNumber)
+  [ 51] getlocal 0 .............................. <tWindowObj>
+  [ 53] pushcons 6 .............................. <"request_accept">
+  [ 55] getparam 1 .............................. <tItemNumber>
+  [ 57] joinstr ................................. <"request_accept" & tItemNumber>
+  [ 58] pusharglist 2 ........................... <tWindowObj, "request_accept" & tItemNumber>
+  [ 60] objcall 150 ............................. <tWindowObj.getElement("request_accept" & tItemNumber)>
+  [ 62] setlocal 3 .............................. tAcceptElem = tWindowObj.getElement("request_accept" & tItemNumber)
+  [ 64] getlocal 0 .............................. <tWindowObj>
+  [ 66] pushcons 7 .............................. <"request_decline">
+  [ 68] getparam 1 .............................. <tItemNumber>
+  [ 70] joinstr ................................. <"request_decline" & tItemNumber>
+  [ 71] pusharglist 2 ........................... <tWindowObj, "request_decline" & tItemNumber>
+  [ 73] objcall 150 ............................. <tWindowObj.getElement("request_decline" & tItemNumber)>
+  [ 75] setlocal 4 .............................. tDeclineElem = tWindowObj.getElement("request_decline" & tItemNumber)
+  [ 77] getparam 1 .............................. <tItemNumber>
+  [ 79] getprop 563 ............................. <pRequestList>
+  [ 82] getobjprop 113 .......................... <pRequestList.count>
+  [ 84] lteq .................................... <tItemNumber <= pRequestList.count>
+  [ 85] jmpifz [331] ............................ if tItemNumber <= pRequestList.count then / else
+  [ 88] getprop 563 ............................. <pRequestList>
+  [ 91] getparam 1 .............................. <tItemNumber>
+  [ 93] pusharglist 2 ........................... <pRequestList, tItemNumber>
+  [ 95] objcall 116 ............................. <pRequestList[tItemNumber]>
+  [ 97] setlocal 5 .............................. tRequest = pRequestList[tItemNumber]
+  [ 99] getlocal 1 .............................. <tNameElem>
+  [101] pushsymb 569 ............................ <#visible>
+  [104] pushint8 1 .............................. <1>
+  [106] pusharglistnoret 3 ...................... <tNameElem, #visible, 1>
+  [108] objcall 164 ............................. tNameElem.setProperty(#visible, 1)
+  [110] getlocal 1 .............................. <tNameElem>
+  [112] getlocal 5 .............................. <tRequest>
+  [114] pushsymb 117 ............................ <#name>
+  [116] pusharglist 2 ........................... <tRequest, #name>
+  [118] objcall 116 ............................. <tRequest[#name]>
+  [120] pusharglistnoret 2 ...................... <tNameElem, tRequest[#name]>
+  [122] objcall 151 ............................. tNameElem.setText(tRequest[#name])
+  [124] getprop 563 ............................. <pRequestList>
+  [127] getparam 1 .............................. <tItemNumber>
+  [129] pusharglist 2 ........................... <pRequestList, tItemNumber>
+  [131] objcall 116 ............................. <pRequestList[tItemNumber]>
+  [133] pushsymb 406 ............................ <#state>
+  [136] pusharglist 2 ........................... <pRequestList[tItemNumber], #state>
+  [138] objcall 73 .............................. <pRequestList[tItemNumber].getaProp(#state)>
+  [140] setlocal 6 .............................. tstate = pRequestList[tItemNumber].getaProp(#state)
+  [142] getlocal 6 .............................. <tstate>
+  [144] pushsymb 407 ............................ <#pending>
+  [147] eq ...................................... <tstate = #pending>
+  [148] jmpifz [186] ............................ if tstate = #pending then / else
+  [151] getlocal 3 .............................. <tAcceptElem>
+  [153] pushsymb 569 ............................ <#visible>
+  [156] pushint8 1 .............................. <1>
+  [158] pusharglistnoret 3 ...................... <tAcceptElem, #visible, 1>
+  [160] objcall 164 ............................. tAcceptElem.setProperty(#visible, 1)
+  [162] getlocal 4 .............................. <tDeclineElem>
+  [164] pushsymb 569 ............................ <#visible>
+  [167] pushint8 1 .............................. <1>
+  [169] pusharglistnoret 3 ...................... <tDeclineElem, #visible, 1>
+  [171] objcall 164 ............................. tDeclineElem.setProperty(#visible, 1)
+  [173] getlocal 2 .............................. <tDecisionElem>
+  [175] pushsymb 569 ............................ <#visible>
+  [178] pushzero ................................ <0>
+  [179] pusharglistnoret 3 ...................... <tDecisionElem, #visible, 0>
+  [181] objcall 164 ............................. tDecisionElem.setProperty(#visible, 0)
+  [183] jmp [328]
+  [186] getlocal 3 .............................. <tAcceptElem>
+  [188] pushsymb 569 ............................ <#visible>
+  [191] pushzero ................................ <0>
+  [192] pusharglistnoret 3 ...................... <tAcceptElem, #visible, 0>
+  [194] objcall 164 ............................. tAcceptElem.setProperty(#visible, 0)
+  [196] getlocal 4 .............................. <tDeclineElem>
+  [198] pushsymb 569 ............................ <#visible>
+  [201] pushzero ................................ <0>
+  [202] pusharglistnoret 3 ...................... <tDeclineElem, #visible, 0>
+  [204] objcall 164 ............................. tDeclineElem.setProperty(#visible, 0)
+  [206] getlocal 2 .............................. <tDecisionElem>
+  [208] pushsymb 569 ............................ <#visible>
+  [211] pushint8 1 .............................. <1>
+  [213] pusharglistnoret 3 ...................... <tDecisionElem, #visible, 1>
+  [215] objcall 164 ............................. tDecisionElem.setProperty(#visible, 1)
+  [217] getlocal 6 .............................. <tstate>
+  [219] peek 0 .................................. case tstate of
+  [221] pushsymb 420 ............................ <#accepted>
+  [224] eq
+  [225] jmpifz [243] ............................ (case) #accepted:
+  [228] getlocal 2 .............................. <tDecisionElem>
+  [230] pushcons 8 .............................. <"friend_request_accepted">
+  [232] pusharglist 1 ........................... <"friend_request_accepted">
+  [234] extcall 38 .............................. <getText("friend_request_accepted")>
+  [236] pusharglistnoret 2 ...................... <tDecisionElem, getText("friend_request_accepted")>
+  [238] objcall 151 ............................. tDecisionElem.setText(getText("friend_request_accepted"))
+  [240] jmp [326]
+  [243] peek 0
+  [245] pushsymb 421 ............................ <#declined>
+  [248] eq
+  [249] jmpifz [267] ............................ (case) #declined:
+  [252] getlocal 2 .............................. <tDecisionElem>
+  [254] pushcons 9 .............................. <"friend_request_declined">
+  [256] pusharglist 1 ........................... <"friend_request_declined">
+  [258] extcall 38 .............................. <getText("friend_request_declined")>
+  [260] pusharglistnoret 2 ...................... <tDecisionElem, getText("friend_request_declined")>
+  [262] objcall 151 ............................. tDecisionElem.setText(getText("friend_request_declined"))
+  [264] jmp [326]
+  [267] peek 0
+  [269] pushsymb 422 ............................ <#failed>
+  [272] eq
+  [273] jmpifz [291] ............................ (case) #failed:
+  [276] getlocal 2 .............................. <tDecisionElem>
+  [278] pushcons 10 ............................. <"friend_request_failed">
+  [280] pusharglist 1 ........................... <"friend_request_failed">
+  [282] extcall 38 .............................. <getText("friend_request_failed")>
+  [284] pusharglistnoret 2 ...................... <tDecisionElem, getText("friend_request_failed")>
+  [286] objcall 151 ............................. tDecisionElem.setText(getText("friend_request_failed"))
+  [288] jmp [326]
+  [291] peek 0
+  [293] pushsymb 460 ............................ <#sent>
+  [296] eq
+  [297] jmpifz [313] ............................ (case) #sent:
+  [300] getlocal 2 .............................. <tDecisionElem>
+  [302] pushsymb 569 ............................ <#visible>
+  [305] pushzero ................................ <0>
+  [306] pusharglistnoret 3 ...................... <tDecisionElem, #visible, 0>
+  [308] objcall 164 ............................. tDecisionElem.setProperty(#visible, 0)
+  [310] jmp [326] ............................... (case) otherwise:
+  [313] getparam 0 .............................. <me>
+  [315] pushcons 11 ............................. <"Unknown request state">
+  [317] pushsymb 562 ............................ <#updateListItemView>
+  [320] pushsymb 124 ............................ <#minor>
+  [322] pusharglistnoret 4 ...................... <me, "Unknown request state", #updateListItemView, #minor>
+  [324] extcall 123 ............................. error(me, "Unknown request state", #updateListItemView, #minor)
+  [326] pop 1 ................................... end case
+  [328] jmp [371]
+  [331] getlocal 1 .............................. <tNameElem>
+  [333] pushsymb 569 ............................ <#visible>
+  [336] pushzero ................................ <0>
+  [337] pusharglistnoret 3 ...................... <tNameElem, #visible, 0>
+  [339] objcall 164 ............................. tNameElem.setProperty(#visible, 0)
+  [341] getlocal 2 .............................. <tDecisionElem>
+  [343] pushsymb 569 ............................ <#visible>
+  [346] pushzero ................................ <0>
+  [347] pusharglistnoret 3 ...................... <tDecisionElem, #visible, 0>
+  [349] objcall 164 ............................. tDecisionElem.setProperty(#visible, 0)
+  [351] getlocal 3 .............................. <tAcceptElem>
+  [353] pushsymb 569 ............................ <#visible>
+  [356] pushzero ................................ <0>
+  [357] pusharglistnoret 3 ...................... <tAcceptElem, #visible, 0>
+  [359] objcall 164 ............................. tAcceptElem.setProperty(#visible, 0)
+  [361] getlocal 4 .............................. <tDeclineElem>
+  [363] pushsymb 569 ............................ <#visible>
+  [366] pushzero ................................ <0>
+  [367] pusharglistnoret 3 ...................... <tDeclineElem, #visible, 0>
+  [369] objcall 164 ............................. tDeclineElem.setProperty(#visible, 0)
+  [371] ret
+end
+
+on confirmRequest me, tItemNo, tAccept
+  [  0] getprop 563 ............................. <pRequestList>
+  [  3] getparam 1 .............................. <tItemNo>
+  [  5] pusharglist 2 ........................... <pRequestList, tItemNo>
+  [  7] objcall 116 ............................. <pRequestList[tItemNo]>
+  [  9] pushsymb 406 ............................ <#state>
+  [ 12] pusharglist 2 ........................... <pRequestList[tItemNo], #state>
+  [ 14] objcall 73 .............................. <pRequestList[tItemNo].getaProp(#state)>
+  [ 16] setlocal 0 .............................. tstate = pRequestList[tItemNo].getaProp(#state)
+  [ 18] getlocal 0 .............................. <tstate>
+  [ 20] pushsymb 407 ............................ <#pending>
+  [ 23] nteq .................................... <tstate <> #pending>
+  [ 24] jmpifz [ 44] ............................ if tstate <> #pending then
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pushcons 12 ............................. <"Friend request already confirmed.">
+  [ 31] pushsymb 582 ............................ <#confirm>
+  [ 34] pushsymb 218 ............................ <#major>
+  [ 36] pusharglist 4 ........................... <me, "Friend request already confirmed.", #confirm, #major>
+  [ 38] extcall 123 ............................. <error(me, "Friend request already confirmed.", #confirm, #major)>
+  [ 40] pusharglistnoret 1 ...................... <error(me, "Friend request already confirmed.", #confirm, #major)>
+  [ 42] extcall 81 .............................. return error(me, "Friend request already confirmed.", #confirm, #major)
+  [ 44] pushsymb 398 ............................ <#messenger>
+  [ 47] pusharglist 1 ........................... <#messenger>
+  [ 49] extcall 404 ............................. <getThread(#messenger)>
+  [ 52] pusharglist 1 ........................... <getThread(#messenger)>
+  [ 54] objcall 98 .............................. <getThread(#messenger).getComponent()>
+  [ 56] setlocal 1 .............................. tComponent = getThread(#messenger).getComponent()
+  [ 58] getprop 563 ............................. <pRequestList>
+  [ 61] getparam 1 .............................. <tItemNo>
+  [ 63] pusharglist 2 ........................... <pRequestList, tItemNo>
+  [ 65] objcall 116 ............................. <pRequestList[tItemNo]>
+  [ 67] pushsymb 125 ............................ <#id>
+  [ 69] pusharglist 2 ........................... <pRequestList[tItemNo], #id>
+  [ 71] objcall 73 .............................. <pRequestList[tItemNo].getaProp(#id)>
+  [ 73] setlocal 2 .............................. tRequestId = pRequestList[tItemNo].getaProp(#id)
+  [ 75] getparam 2 .............................. <tAccept>
+  [ 77] jmpifz [115] ............................ if tAccept then / else
+  [ 80] getparam 0 .............................. <me>
+  [ 82] pusharglist 1 ........................... <me>
+  [ 84] objcall 561 ............................. <me.isBuddyListFull()>
+  [ 87] jmpifz [103] ............................ if me.isBuddyListFull() then
+  [ 90] pushsymb 97 ............................. <#alert>
+  [ 92] pushcons 13 ............................. <"console_fr_limit_exceeded_error">
+  [ 94] pusharglistnoret 2 ...................... <#alert, "console_fr_limit_exceeded_error">
+  [ 96] extcall 96 .............................. executeMessage(#alert, "console_fr_limit_exceeded_error")
+  [ 98] pushzero ................................ <0>
+  [ 99] pusharglistnoret 1 ...................... <0>
+  [101] extcall 81 .............................. return 0
+  [103] getlocal 1 .............................. <tComponent>
+  [105] getlocal 2 .............................. <tRequestId>
+  [107] pusharglistnoret 2 ...................... <tComponent, tRequestId>
+  [109] objcall 355 ............................. tComponent.acceptRequest(tRequestId)
+  [112] jmp [124]
+  [115] getlocal 1 .............................. <tComponent>
+  [117] getlocal 2 .............................. <tRequestId>
+  [119] pusharglistnoret 2 ...................... <tComponent, tRequestId>
+  [121] objcall 356 ............................. tComponent.declineRequest(tRequestId)
+  [124] getparam 0 .............................. <me>
+  [126] pusharglistnoret 1 ...................... <me>
+  [128] objcall 196 ............................. me.updateView()
+  [130] pushint8 1 .............................. <1>
+  [132] pusharglistnoret 1 ...................... <1>
+  [134] extcall 81 .............................. return 1
+  [136] ret
+end
+
+on getUserId me, tItemNo
+  [  0] getparam 1 .............................. <tItemNo>
+  [  2] pushint8 1 .............................. <1>
+  [  4] lt ...................................... <tItemNo < 1>
+  [  5] getparam 1 .............................. <tItemNo>
+  [  7] getprop 563 ............................. <pRequestList>
+  [ 10] getobjprop 113 .......................... <pRequestList.count>
+  [ 12] gt ...................................... <tItemNo > pRequestList.count>
+  [ 13] or ...................................... <(tItemNo < 1) or (tItemNo > pRequestList.count)>
+  [ 14] jmpifz [ 22] ............................ if (tItemNo < 1) or (tItemNo > pRequestList.count) then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 81 .............................. return 0
+  [ 22] getprop 563 ............................. <pRequestList>
+  [ 25] getparam 1 .............................. <tItemNo>
+  [ 27] pusharglist 2 ........................... <pRequestList, tItemNo>
+  [ 29] objcall 116 ............................. <pRequestList[tItemNo]>
+  [ 31] pushsymb 438 ............................ <#webID>
+  [ 34] pusharglist 2 ........................... <pRequestList[tItemNo], #webID>
+  [ 36] objcall 73 .............................. <pRequestList[tItemNo].getaProp(#webID)>
+  [ 38] setlocal 0 .............................. tUserID = pRequestList[tItemNo].getaProp(#webID)
+  [ 40] getlocal 0 .............................. <tUserID>
+  [ 42] pusharglistnoret 1 ...................... <tUserID>
+  [ 44] extcall 81 .............................. return tUserID
+  [ 46] ret
+end

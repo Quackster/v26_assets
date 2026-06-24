@@ -1,0 +1,927 @@
+property pTeamCount, pTeamScoreCache, pOwnScoreWindowId, pTeamScoreWindowId, pTimeWindowId, pTimeOutID, pBuffer, pTimerEndTime, pTimerDurationSec, pCountdownObjId
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 728 ............................. pTeamScoreCache = []
+  [  6] pushcons 0 .............................. <"game_countdown">
+  [  8] setprop 729 ............................. pCountdownObjId = "game_countdown"
+  [ 11] pushcons 1 .............................. <"game_finalscores">
+  [ 13] setlocal 0 .............................. pFinalScoresObjId = "game_finalscores"
+  [ 15] pushcons 2 .............................. <"game_win_own_score">
+  [ 17] setprop 730 ............................. pOwnScoreWindowId = "game_win_own_score"
+  [ 20] pushcons 3 .............................. <"game_win_team_score">
+  [ 22] setprop 731 ............................. pTeamScoreWindowId = "game_win_team_score"
+  [ 25] pushcons 4 .............................. <"game_win_time">
+  [ 27] setprop 732 ............................. pTimeWindowId = "game_win_time"
+  [ 30] pushcons 5 .............................. <"game_score_updateGameTimeout">
+  [ 32] setprop 733 ............................. pTimeOutID = "game_score_updateGameTimeout"
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] pusharglistnoret 1 ...................... <1>
+  [ 39] extcall 35 .............................. return 1
+  [ 41] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 727 ............................. me.removeGameScoreWindows()
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 35 .............................. return 1
+  [ 13] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 224 ............................ <#set_number_of_teams>
+  [  6] eq
+  [  7] jmpifz [ 28] ............................ (case) #set_number_of_teams:
+  [ 10] pop 1
+  [ 12] getparam 0 .............................. <me>
+  [ 14] getparam 2 .............................. <tdata>
+  [ 16] pusharglist 2 ........................... <me, tdata>
+  [ 18] objcall 716 ............................. <me.setTeamNumber(tdata)>
+  [ 21] pusharglistnoret 1 ...................... <me.setTeamNumber(tdata)>
+  [ 23] extcall 35 .............................. return me.setTeamNumber(tdata)
+  [ 25] jmp [287]
+  [ 28] peek 0
+  [ 30] pushsymb 661 ............................ <#team_score_updated>
+  [ 33] eq
+  [ 34] jmpifz [ 55] ............................ (case) #team_score_updated:
+  [ 37] pop 1
+  [ 39] getparam 0 .............................. <me>
+  [ 41] getparam 2 .............................. <tdata>
+  [ 43] pusharglist 2 ........................... <me, tdata>
+  [ 45] objcall 723 ............................. <me.updateTeamScores(tdata)>
+  [ 48] pusharglistnoret 1 ...................... <me.updateTeamScores(tdata)>
+  [ 50] extcall 35 .............................. return me.updateTeamScores(tdata)
+  [ 52] jmp [287]
+  [ 55] peek 0
+  [ 57] pushsymb 663 ............................ <#personal_score_updated>
+  [ 60] eq
+  [ 61] jmpifz [ 82] ............................ (case) #personal_score_updated:
+  [ 64] pop 1
+  [ 66] getparam 0 .............................. <me>
+  [ 68] getparam 2 .............................. <tdata>
+  [ 70] pusharglist 2 ........................... <me, tdata>
+  [ 72] objcall 721 ............................. <me.renderPersonalScores(tdata)>
+  [ 75] pusharglistnoret 1 ...................... <me.renderPersonalScores(tdata)>
+  [ 77] extcall 35 .............................. return me.renderPersonalScores(tdata)
+  [ 79] jmp [287]
+  [ 82] peek 0
+  [ 84] pushsymb 483 ............................ <#update_game_visuals>
+  [ 87] eq
+  [ 88] jmpifz [123] ............................ (case) #update_game_visuals:
+  [ 91] getparam 0 .............................. <me>
+  [ 93] pusharglistnoret 1 ...................... <me>
+  [ 95] objcall 722 ............................. me.cacheTeamScores()
+  [ 98] getparam 0 .............................. <me>
+  [100] getparam 0 .............................. <me>
+  [102] pusharglist 1 ........................... <me>
+  [104] objcall 717 ............................. <me.getOwnScore()>
+  [107] pusharglistnoret 2 ...................... <me, me.getOwnScore()>
+  [109] objcall 721 ............................. me.renderPersonalScores(me.getOwnScore())
+  [112] pop 1
+  [114] pushint8 1 .............................. <1>
+  [116] pusharglistnoret 1 ...................... <1>
+  [118] extcall 35 .............................. return 1
+  [120] jmp [287]
+  [123] peek 0
+  [125] pushsymb 488 ............................ <#gamestart>
+  [128] eq
+  [129] jmpifz [182] ............................ (case) #gamestart:
+  [132] getparam 0 .............................. <me>
+  [134] getparam 2 .............................. <tdata>
+  [136] pushsymb 487 ............................ <#time_until_game_end>
+  [139] pusharglist 2 ........................... <tdata, #time_until_game_end>
+  [141] objcall 44 .............................. <tdata[#time_until_game_end]>
+  [143] getparam 2 .............................. <tdata>
+  [145] pushsymb 487 ............................ <#time_until_game_end>
+  [148] pusharglist 2 ........................... <tdata, #time_until_game_end>
+  [150] objcall 44 .............................. <tdata[#time_until_game_end]>
+  [152] getparam 2 .............................. <tdata>
+  [154] pushsymb 487 ............................ <#time_until_game_end>
+  [157] pusharglist 2 ........................... <tdata, #time_until_game_end>
+  [159] objcall 44 .............................. <tdata[#time_until_game_end]>
+  [161] pusharglistnoret 4 ...................... <me, tdata[#time_until_game_end], tdata[#time_until_game_end], tdata[#time_until_game_end]>
+  [163] objcall 718 ............................. me.startGameTimer(tdata[#time_until_game_end], tdata[#time_until_game_end], tdata[#time_until_game_end])
+  [166] pop 1
+  [168] getparam 0 .............................. <me>
+  [170] pusharglist 1 ........................... <me>
+  [172] objcall 725 ............................. <me.showGameScoreWindows()>
+  [175] pusharglistnoret 1 ...................... <me.showGameScoreWindows()>
+  [177] extcall 35 .............................. return me.showGameScoreWindows()
+  [179] jmp [287]
+  [182] peek 0
+  [184] pushsymb 292 ............................ <#gameend>
+  [187] eq
+  [188] jmpifz [207] ............................ (case) #gameend:
+  [191] pop 1
+  [193] getparam 0 .............................. <me>
+  [195] pusharglist 1 ........................... <me>
+  [197] objcall 727 ............................. <me.removeGameScoreWindows()>
+  [200] pusharglistnoret 1 ...................... <me.removeGameScoreWindows()>
+  [202] extcall 35 .............................. return me.removeGameScoreWindows()
+  [204] jmp [287]
+  [207] peek 0
+  [209] pushsymb 481 ............................ <#fullgamestatus_time>
+  [212] eq
+  [213] jmpifz [287] ............................ (case) #fullgamestatus_time:
+  [216] getparam 2 .............................. <tdata>
+  [218] pushsymb 463 ............................ <#state>
+  [221] pusharglist 2 ........................... <tdata, #state>
+  [223] objcall 44 .............................. <tdata[#state]>
+  [225] pushsymb 456 ............................ <#started>
+  [228] nteq .................................... <tdata[#state] <> #started>
+  [229] jmpifz [240] ............................ if tdata[#state] <> #started then
+  [232] pop 1
+  [234] pushint8 1 .............................. <1>
+  [236] pusharglistnoret 1 ...................... <1>
+  [238] extcall 35 .............................. return 1
+  [240] getparam 0 .............................. <me>
+  [242] getparam 2 .............................. <tdata>
+  [244] pushsymb 475 ............................ <#time_to_next_state>
+  [247] pusharglist 2 ........................... <tdata, #time_to_next_state>
+  [249] objcall 44 .............................. <tdata[#time_to_next_state]>
+  [251] getparam 2 .............................. <tdata>
+  [253] pushsymb 476 ............................ <#state_duration>
+  [256] pusharglist 2 ........................... <tdata, #state_duration>
+  [258] objcall 44 .............................. <tdata[#state_duration]>
+  [260] getparam 2 .............................. <tdata>
+  [262] pushsymb 487 ............................ <#time_until_game_end>
+  [265] pusharglist 2 ........................... <tdata, #time_until_game_end>
+  [267] objcall 44 .............................. <tdata[#time_until_game_end]>
+  [269] pusharglistnoret 4 ...................... <me, tdata[#time_to_next_state], tdata[#state_duration], tdata[#time_until_game_end]>
+  [271] objcall 718 ............................. me.startGameTimer(tdata[#time_to_next_state], tdata[#state_duration], tdata[#time_until_game_end])
+  [274] pop 1
+  [276] getparam 0 .............................. <me>
+  [278] pusharglist 1 ........................... <me>
+  [280] objcall 725 ............................. <me.showGameScoreWindows()>
+  [283] pusharglistnoret 1 ...................... <me.showGameScoreWindows()>
+  [285] extcall 35 .............................. return me.showGameScoreWindows()
+  [287] pop 1 ................................... end case
+  [289] pushint8 1 .............................. <1>
+  [291] pusharglistnoret 1 ...................... <1>
+  [293] extcall 35 .............................. return 1
+  [295] ret
+end
+
+on setTeamNumber me, tTeamNum
+  [  0] getparam 1 .............................. <tTeamNum>
+  [  2] setprop 735 ............................. pTeamCount = tTeamNum
+  [  5] pusharglist 0 ........................... <[]>
+  [  7] pushlist ................................ <[]>
+  [  8] setprop 728 ............................. pTeamScoreCache = []
+  [ 11] getprop 728 ............................. <pTeamScoreCache>
+  [ 14] getprop 735 ............................. <pTeamCount>
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 3 ...................... <pTeamScoreCache, pTeamCount, 0>
+  [ 20] objcall 32 .............................. pTeamScoreCache[pTeamCount] = 0
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] pusharglistnoret 1 ...................... <1>
+  [ 26] extcall 35 .............................. return 1
+  [ 28] ret
+end
+
+on getOwnScore me
+  [  0] pushsymb 61 ............................. <#session>
+  [  2] pusharglist 1 ........................... <#session>
+  [  4] extcall 56 .............................. <getObject(#session)>
+  [  6] pushcons 6 .............................. <"user_game_index">
+  [  8] pusharglist 2 ........................... <getObject(#session), "user_game_index">
+  [ 10] objcall 62 .............................. <getObject(#session).exists("user_game_index")>
+  [ 12] not ..................................... <not getObject(#session).exists("user_game_index")>
+  [ 13] jmpifz [ 21] ............................ if not getObject(#session).exists("user_game_index") then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 35 .............................. return 0
+  [ 21] pushsymb 61 ............................. <#session>
+  [ 23] pusharglist 1 ........................... <#session>
+  [ 25] extcall 56 .............................. <getObject(#session)>
+  [ 27] pushcons 6 .............................. <"user_game_index">
+  [ 29] pusharglist 2 ........................... <getObject(#session), "user_game_index">
+  [ 31] objcall 63 .............................. <getObject(#session).GET("user_game_index")>
+  [ 33] setlocal 0 .............................. tObjectID = getObject(#session).GET("user_game_index")
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 228 ............................. <me.getGameSystem()>
+  [ 41] getlocal 0 .............................. <tObjectID>
+  [ 43] pushsymb 268 ............................ <#score>
+  [ 46] pusharglist 3 ........................... <me.getGameSystem(), tObjectID, #score>
+  [ 48] objcall 239 ............................. <me.getGameSystem().getGameObjectProperty(tObjectID, #score)>
+  [ 50] setlocal 1 .............................. tScore = me.getGameSystem().getGameObjectProperty(tObjectID, #score)
+  [ 52] getlocal 1 .............................. <tScore>
+  [ 54] pusharglistnoret 1 ...................... <tScore>
+  [ 56] extcall 35 .............................. return tScore
+  [ 58] ret
+end
+
+on startGameTimer me, tTimeUntilNextState, tStateDuration, tTimeUntilGameEnd
+  [  0] getparam 1 .............................. <tTimeUntilNextState>
+  [  2] pushzero ................................ <0>
+  [  3] lteq .................................... <tTimeUntilNextState <= 0>
+  [  4] jmpifz [ 12] ............................ if tTimeUntilNextState <= 0 then
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 35 .............................. return 0
+  [ 12] getmovieprop 100 ........................ <the milliSeconds>
+  [ 14] getparam 1 .............................. <tTimeUntilNextState>
+  [ 16] pushint16 1000 .......................... <1000>
+  [ 19] mul ..................................... <tTimeUntilNextState * 1000>
+  [ 20] add ..................................... <the milliSeconds + (tTimeUntilNextState * 1000)>
+  [ 21] setprop 736 ............................. pTimerEndTime = the milliSeconds + (tTimeUntilNextState * 1000)
+  [ 24] getparam 2 .............................. <tStateDuration>
+  [ 26] setprop 737 ............................. pTimerDurationSec = tStateDuration
+  [ 29] getprop 733 ............................. <pTimeOutID>
+  [ 32] pusharglist 1 ........................... <pTimeOutID>
+  [ 34] extcall 738 ............................. <timeoutExists(pTimeOutID)>
+  [ 37] jmpifz [ 48] ............................ if timeoutExists(pTimeOutID) then
+  [ 40] getprop 733 ............................. <pTimeOutID>
+  [ 43] pusharglistnoret 1 ...................... <pTimeOutID>
+  [ 45] extcall 739 ............................. removeTimeout(pTimeOutID)
+  [ 48] getprop 733 ............................. <pTimeOutID>
+  [ 51] pushint16 1000 .......................... <1000>
+  [ 54] pushsymb 720 ............................ <#renderGameTimer>
+  [ 57] getparam 0 .............................. <me>
+  [ 59] pusharglist 1 ........................... <me>
+  [ 61] objcall 197 ............................. <me.getID()>
+  [ 63] getprop 736 ............................. <pTimerEndTime>
+  [ 66] getparam 3 .............................. <tTimeUntilGameEnd>
+  [ 68] pusharglistnoret 6 ...................... <pTimeOutID, 1000, #renderGameTimer, me.getID(), pTimerEndTime, tTimeUntilGameEnd>
+  [ 70] extcall 740 ............................. createTimeout(pTimeOutID, 1000, #renderGameTimer, me.getID(), pTimerEndTime, tTimeUntilGameEnd)
+  [ 73] getparam 0 .............................. <me>
+  [ 75] getprop 736 ............................. <pTimerEndTime>
+  [ 78] pusharglist 2 ........................... <me, pTimerEndTime>
+  [ 80] objcall 720 ............................. <me.renderGameTimer(pTimerEndTime)>
+  [ 83] pusharglistnoret 1 ...................... <me.renderGameTimer(pTimerEndTime)>
+  [ 85] extcall 35 .............................. return me.renderGameTimer(pTimerEndTime)
+  [ 87] ret
+end
+
+on convertToMinSec me, tTime
+  [  0] getparam 1 .............................. <tTime>
+  [  2] pushint32 60000 ......................... <60000>
+  [  7] div ..................................... <tTime / 60000>
+  [  8] setlocal 0 .............................. tMin = tTime / 60000
+  [ 10] getparam 1 .............................. <tTime>
+  [ 12] pushint32 60000 ......................... <60000>
+  [ 17] mod ..................................... <tTime mod 60000>
+  [ 18] pushint16 1000 .......................... <1000>
+  [ 21] div ..................................... <tTime mod 60000 / 1000>
+  [ 22] setlocal 1 .............................. tSec = tTime mod 60000 / 1000
+  [ 24] getlocal 1 .............................. <tSec>
+  [ 26] pushint8 10 ............................. <10>
+  [ 28] lt ...................................... <tSec < 10>
+  [ 29] jmpifz [ 39] ............................ if tSec < 10 then
+  [ 32] pushcons 7 .............................. <"0">
+  [ 34] getlocal 1 .............................. <tSec>
+  [ 36] joinstr ................................. <"0" & tSec>
+  [ 37] setlocal 1 .............................. tSec = "0" & tSec
+  [ 39] getlocal 0 .............................. <tMin>
+  [ 41] getlocal 1 .............................. <tSec>
+  [ 43] pusharglist 2 ........................... <[tMin, tSec]>
+  [ 45] pushlist ................................ <[tMin, tSec]>
+  [ 46] pusharglistnoret 1 ...................... <[tMin, tSec]>
+  [ 48] extcall 35 .............................. return [tMin, tSec]
+  [ 50] ret
+end
+
+on renderGameTimer me, tEndTime
+  [  0] getprop 732 ............................. <pTimeWindowId>
+  [  3] pusharglist 1 ........................... <pTimeWindowId>
+  [  5] extcall 747 ............................. <getWindow(pTimeWindowId)>
+  [  8] setlocal 0 .............................. tWndObj = getWindow(pTimeWindowId)
+  [ 10] getlocal 0 .............................. <tWndObj>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tWndObj = 0>
+  [ 14] jmpifz [ 22] ............................ if tWndObj = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 35 .............................. return 0
+  [ 22] getlocal 0 .............................. <tWndObj>
+  [ 24] pushcons 8 .............................. <"snowwar_sd_timeleft">
+  [ 26] pusharglist 2 ........................... <tWndObj, "snowwar_sd_timeleft">
+  [ 28] objcall 748 ............................. <tWndObj.getElement("snowwar_sd_timeleft")>
+  [ 31] setlocal 1 .............................. tElem = tWndObj.getElement("snowwar_sd_timeleft")
+  [ 33] getlocal 1 .............................. <tElem>
+  [ 35] pushzero ................................ <0>
+  [ 36] eq ...................................... <tElem = 0>
+  [ 37] jmpifz [ 45] ............................ if tElem = 0 then
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglistnoret 1 ...................... <0>
+  [ 43] extcall 35 .............................. return 0
+  [ 45] getparam 1 .............................. <tEndTime>
+  [ 47] getmovieprop 100 ........................ <the milliSeconds>
+  [ 49] lt ...................................... <tEndTime < the milliSeconds>
+  [ 50] jmpifz [ 58] ............................ if tEndTime < the milliSeconds then
+  [ 53] pushzero ................................ <0>
+  [ 54] pusharglistnoret 1 ...................... <0>
+  [ 56] extcall 35 .............................. return 0
+  [ 58] getparam 0 .............................. <me>
+  [ 60] getparam 1 .............................. <tEndTime>
+  [ 62] getmovieprop 100 ........................ <the milliSeconds>
+  [ 64] sub ..................................... <tEndTime - the milliSeconds>
+  [ 65] pusharglist 2 ........................... <me, tEndTime - the milliSeconds>
+  [ 67] objcall 719 ............................. <me.convertToMinSec(tEndTime - the milliSeconds)>
+  [ 70] setlocal 2 .............................. tTime = me.convertToMinSec(tEndTime - the milliSeconds)
+  [ 72] getlocal 2 .............................. <tTime>
+  [ 74] pushint8 1 .............................. <1>
+  [ 76] pusharglist 2 ........................... <tTime, 1>
+  [ 78] objcall 44 .............................. <tTime[1]>
+  [ 80] pushcons 9 .............................. <":">
+  [ 82] joinstr ................................. <tTime[1] & ":">
+  [ 83] getlocal 2 .............................. <tTime>
+  [ 85] pushint8 2 .............................. <2>
+  [ 87] pusharglist 2 ........................... <tTime, 2>
+  [ 89] objcall 44 .............................. <tTime[2]>
+  [ 91] joinstr ................................. <tTime[1] & ":" & tTime[2]>
+  [ 92] setlocal 3 .............................. tTimeStr = tTime[1] & ":" & tTime[2]
+  [ 94] getlocal 1 .............................. <tElem>
+  [ 96] getlocal 3 .............................. <tTimeStr>
+  [ 98] pusharglistnoret 2 ...................... <tElem, tTimeStr>
+  [100] objcall 749 ............................. tElem.setText(tTimeStr)
+  [103] getlocal 0 .............................. <tWndObj>
+  [105] pushcons 10 ............................. <"snowwar_timeleft">
+  [107] pusharglist 2 ........................... <tWndObj, "snowwar_timeleft">
+  [109] objcall 748 ............................. <tWndObj.getElement("snowwar_timeleft")>
+  [112] setlocal 1 .............................. tElem = tWndObj.getElement("snowwar_timeleft")
+  [114] getlocal 1 .............................. <tElem>
+  [116] pushzero ................................ <0>
+  [117] eq ...................................... <tElem = 0>
+  [118] jmpifz [126] ............................ if tElem = 0 then
+  [121] pushzero ................................ <0>
+  [122] pusharglistnoret 1 ...................... <0>
+  [124] extcall 35 .............................. return 0
+  [126] getlocal 1 .............................. <tElem>
+  [128] getlocal 3 .............................. <tTimeStr>
+  [130] pusharglistnoret 2 ...................... <tElem, tTimeStr>
+  [132] objcall 749 ............................. tElem.setText(tTimeStr)
+  [135] pushint8 1 .............................. <1>
+  [137] pusharglistnoret 1 ...................... <1>
+  [139] extcall 35 .............................. return 1
+  [141] ret
+end
+
+on renderPersonalScores me, tdata
+  [  0] getprop 730 ............................. <pOwnScoreWindowId>
+  [  3] pusharglist 1 ........................... <pOwnScoreWindowId>
+  [  5] extcall 747 ............................. <getWindow(pOwnScoreWindowId)>
+  [  8] setlocal 0 .............................. tWndObj = getWindow(pOwnScoreWindowId)
+  [ 10] getlocal 0 .............................. <tWndObj>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tWndObj = 0>
+  [ 14] jmpifz [ 22] ............................ if tWndObj = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 35 .............................. return 0
+  [ 22] getparam 1 .............................. <tdata>
+  [ 24] pusharglist 1 ........................... <tdata>
+  [ 26] extcall 754 ............................. <integerp(tdata)>
+  [ 29] not ..................................... <not integerp(tdata)>
+  [ 30] jmpifz [ 38] ............................ if not integerp(tdata) then
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 1 ...................... <0>
+  [ 36] extcall 35 .............................. return 0
+  [ 38] getlocal 0 .............................. <tWndObj>
+  [ 40] pushcons 11 ............................. <"snowwar_score_sd_self">
+  [ 42] pusharglist 2 ........................... <tWndObj, "snowwar_score_sd_self">
+  [ 44] objcall 748 ............................. <tWndObj.getElement("snowwar_score_sd_self")>
+  [ 47] setlocal 1 .............................. tElem = tWndObj.getElement("snowwar_score_sd_self")
+  [ 49] getlocal 1 .............................. <tElem>
+  [ 51] pushzero ................................ <0>
+  [ 52] eq ...................................... <tElem = 0>
+  [ 53] jmpifz [ 61] ............................ if tElem = 0 then
+  [ 56] pushzero ................................ <0>
+  [ 57] pusharglistnoret 1 ...................... <0>
+  [ 59] extcall 35 .............................. return 0
+  [ 61] getlocal 1 .............................. <tElem>
+  [ 63] getparam 1 .............................. <tdata>
+  [ 65] pusharglistnoret 2 ...................... <tElem, tdata>
+  [ 67] objcall 749 ............................. tElem.setText(tdata)
+  [ 70] getlocal 0 .............................. <tWndObj>
+  [ 72] pushcons 12 ............................. <"snowwar_score_self">
+  [ 74] pusharglist 2 ........................... <tWndObj, "snowwar_score_self">
+  [ 76] objcall 748 ............................. <tWndObj.getElement("snowwar_score_self")>
+  [ 79] setlocal 1 .............................. tElem = tWndObj.getElement("snowwar_score_self")
+  [ 81] getlocal 1 .............................. <tElem>
+  [ 83] pushzero ................................ <0>
+  [ 84] eq ...................................... <tElem = 0>
+  [ 85] jmpifz [ 93] ............................ if tElem = 0 then
+  [ 88] pushzero ................................ <0>
+  [ 89] pusharglistnoret 1 ...................... <0>
+  [ 91] extcall 35 .............................. return 0
+  [ 93] getlocal 1 .............................. <tElem>
+  [ 95] getparam 1 .............................. <tdata>
+  [ 97] pusharglistnoret 2 ...................... <tElem, tdata>
+  [ 99] objcall 749 ............................. tElem.setText(tdata)
+  [102] pushint8 1 .............................. <1>
+  [104] pusharglistnoret 1 ...................... <1>
+  [106] extcall 35 .............................. return 1
+  [108] ret
+end
+
+on cacheTeamScores me
+  [  0] getprop 735 ............................. <pTeamCount>
+  [  3] pushint8 1 .............................. <1>
+  [  5] lt ...................................... <pTeamCount < 1>
+  [  6] jmpifz [ 24] ............................ if pTeamCount < 1 then
+  [  9] getparam 0 .............................. <me>
+  [ 11] pushcons 13 ............................. <"Team count has not been set!">
+  [ 13] pushsymb 722 ............................ <#cacheTeamScores>
+  [ 16] pusharglist 3 ........................... <me, "Team count has not been set!", #cacheTeamScores>
+  [ 18] extcall 64 .............................. <error(me, "Team count has not been set!", #cacheTeamScores)>
+  [ 20] pusharglistnoret 1 ...................... <error(me, "Team count has not been set!", #cacheTeamScores)>
+  [ 22] extcall 35 .............................. return error(me, "Team count has not been set!", #cacheTeamScores)
+  [ 24] pusharglist 0 ........................... <[]>
+  [ 26] pushlist ................................ <[]>
+  [ 27] setprop 728 ............................. pTeamScoreCache = []
+  [ 30] getprop 728 ............................. <pTeamScoreCache>
+  [ 33] getprop 735 ............................. <pTeamCount>
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 3 ...................... <pTeamScoreCache, pTeamCount, 0>
+  [ 39] objcall 32 .............................. pTeamScoreCache[pTeamCount] = 0
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglist 1 ........................... <me>
+  [ 45] objcall 228 ............................. <me.getGameSystem()>
+  [ 47] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [ 49] getlocal 0 .............................. <tGameSystem>
+  [ 51] pushcons 14 ............................. <"avatar">
+  [ 53] pusharglist 2 ........................... <tGameSystem, "avatar">
+  [ 55] objcall 315 ............................. <tGameSystem.getGameObjectIdsOfType("avatar")>
+  [ 58] setlocal 1 .............................. tIDList = tGameSystem.getGameObjectIdsOfType("avatar")
+  [ 60] getlocal 1 .............................. <tIDList>
+  [ 62] peek 0
+  [ 64] pusharglist 1
+  [ 66] extcall 123
+  [ 68] pushint8 1
+  [ 70] peek 0
+  [ 72] peek 2
+  [ 74] lteq
+  [ 75] jmpifz [155] ............................ repeat with tID in tIDList
+  [ 78] peek 2
+  [ 80] peek 1
+  [ 82] pusharglist 2
+  [ 84] extcall 44
+  [ 86] setlocal 2
+  [ 88] getlocal 0 .............................. <tGameSystem>
+  [ 90] getlocal 2 .............................. <tID>
+  [ 92] pusharglist 2 ........................... <tGameSystem, tID>
+  [ 94] objcall 305 ............................. <tGameSystem.getGameObject(tID)>
+  [ 97] setlocal 3 .............................. tObject = tGameSystem.getGameObject(tID)
+  [ 99] getlocal 3 .............................. <tObject>
+  [101] pushzero ................................ <0>
+  [102] nteq .................................... <tObject <> 0>
+  [103] jmpifz [150] ............................ if tObject <> 0 then
+  [106] getlocal 3 .............................. <tObject>
+  [108] pushcons 15 ............................. <"team_id">
+  [110] pusharglist 2 ........................... <tObject, "team_id">
+  [112] objcall 239 ............................. <tObject.getGameObjectProperty("team_id")>
+  [114] pushint8 1 .............................. <1>
+  [116] add ..................................... <tObject.getGameObjectProperty("team_id") + 1>
+  [117] setlocal 4 .............................. tTeamId = tObject.getGameObjectProperty("team_id") + 1
+  [119] getlocal 3 .............................. <tObject>
+  [121] pushcons 16 ............................. <"score">
+  [123] pusharglist 2 ........................... <tObject, "score">
+  [125] objcall 239 ............................. <tObject.getGameObjectProperty("score")>
+  [127] setlocal 5 .............................. tScore = tObject.getGameObjectProperty("score")
+  [129] getprop 728 ............................. <pTeamScoreCache>
+  [132] getlocal 4 .............................. <tTeamId>
+  [134] getprop 728 ............................. <pTeamScoreCache>
+  [137] getlocal 4 .............................. <tTeamId>
+  [139] pusharglist 2 ........................... <pTeamScoreCache, tTeamId>
+  [141] objcall 44 .............................. <pTeamScoreCache[tTeamId]>
+  [143] getlocal 5 .............................. <tScore>
+  [145] add ..................................... <pTeamScoreCache[tTeamId] + tScore>
+  [146] pusharglistnoret 3 ...................... <pTeamScoreCache, tTeamId, pTeamScoreCache[tTeamId] + tScore>
+  [148] objcall 32 .............................. pTeamScoreCache[tTeamId] = pTeamScoreCache[tTeamId] + tScore
+  [150] pushint8 1
+  [152] add
+  [153] endrepeat [ 70]
+  [155] pop 3
+  [157] getparam 0 .............................. <me>
+  [159] pusharglist 1 ........................... <me>
+  [161] objcall 724 ............................. <me.renderTeamScores()>
+  [164] pusharglistnoret 1 ...................... <me.renderTeamScores()>
+  [166] extcall 35 .............................. return me.renderTeamScores()
+  [168] ret
+end
+
+on updateTeamScores me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 367 ............................. <listp(tdata)>
+  [  7] not ..................................... <not listp(tdata)>
+  [  8] jmpifz [ 16] ............................ if not listp(tdata) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 35 .............................. return 0
+  [ 16] getparam 1 .............................. <tdata>
+  [ 18] peek 0
+  [ 20] pusharglist 1
+  [ 22] extcall 123
+  [ 24] pushint8 1
+  [ 26] peek 0
+  [ 28] peek 2
+  [ 30] lteq
+  [ 31] jmpifz [111] ............................ repeat with tTeam in tdata
+  [ 34] peek 2
+  [ 36] peek 1
+  [ 38] pusharglist 2
+  [ 40] extcall 44
+  [ 42] setlocal 0
+  [ 44] getlocal 0 .............................. <tTeam>
+  [ 46] pushsymb 43 ............................. <#team_id>
+  [ 48] pusharglist 2 ........................... <tTeam, #team_id>
+  [ 50] objcall 44 .............................. <tTeam[#team_id]>
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] add ..................................... <tTeam[#team_id] + 1>
+  [ 55] setlocal 1 .............................. tTeamId = tTeam[#team_id] + 1
+  [ 57] getprop 728 ............................. <pTeamScoreCache>
+  [ 60] getobjprop 123 .......................... <pTeamScoreCache.count>
+  [ 62] getlocal 1 .............................. <tTeamId>
+  [ 64] lt ...................................... <pTeamScoreCache.count < tTeamId>
+  [ 65] jmpifz [ 78] ............................ if pTeamScoreCache.count < tTeamId then
+  [ 68] getprop 728 ............................. <pTeamScoreCache>
+  [ 71] getlocal 1 .............................. <tTeamId>
+  [ 73] pushzero ................................ <0>
+  [ 74] pusharglistnoret 3 ...................... <pTeamScoreCache, tTeamId, 0>
+  [ 76] objcall 32 .............................. pTeamScoreCache[tTeamId] = 0
+  [ 78] getprop 728 ............................. <pTeamScoreCache>
+  [ 81] getlocal 1 .............................. <tTeamId>
+  [ 83] getprop 728 ............................. <pTeamScoreCache>
+  [ 86] getlocal 1 .............................. <tTeamId>
+  [ 88] pusharglist 2 ........................... <pTeamScoreCache, tTeamId>
+  [ 90] objcall 44 .............................. <pTeamScoreCache[tTeamId]>
+  [ 92] getlocal 0 .............................. <tTeam>
+  [ 94] pushsymb 662 ............................ <#score_add>
+  [ 97] pusharglist 2 ........................... <tTeam, #score_add>
+  [ 99] objcall 44 .............................. <tTeam[#score_add]>
+  [101] add ..................................... <pTeamScoreCache[tTeamId] + tTeam[#score_add]>
+  [102] pusharglistnoret 3 ...................... <pTeamScoreCache, tTeamId, pTeamScoreCache[tTeamId] + tTeam[#score_add]>
+  [104] objcall 32 .............................. pTeamScoreCache[tTeamId] = pTeamScoreCache[tTeamId] + tTeam[#score_add]
+  [106] pushint8 1
+  [108] add
+  [109] endrepeat [ 26]
+  [111] pop 3
+  [113] getparam 0 .............................. <me>
+  [115] pusharglist 1 ........................... <me>
+  [117] objcall 724 ............................. <me.renderTeamScores()>
+  [120] pusharglistnoret 1 ...................... <me.renderTeamScores()>
+  [122] extcall 35 .............................. return me.renderTeamScores()
+  [124] ret
+end
+
+on renderTeamScores me
+  [  0] getprop 731 ............................. <pTeamScoreWindowId>
+  [  3] pusharglist 1 ........................... <pTeamScoreWindowId>
+  [  5] extcall 747 ............................. <getWindow(pTeamScoreWindowId)>
+  [  8] setlocal 0 .............................. tWndObj = getWindow(pTeamScoreWindowId)
+  [ 10] getlocal 0 .............................. <tWndObj>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tWndObj = 0>
+  [ 14] jmpifz [ 22] ............................ if tWndObj = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 35 .............................. return 0
+  [ 22] getprop 728 ............................. <pTeamScoreCache>
+  [ 25] pusharglist 1 ........................... <pTeamScoreCache>
+  [ 27] extcall 367 ............................. <listp(pTeamScoreCache)>
+  [ 30] not ..................................... <not listp(pTeamScoreCache)>
+  [ 31] jmpifz [ 39] ............................ if not listp(pTeamScoreCache) then
+  [ 34] pushzero ................................ <0>
+  [ 35] pusharglistnoret 1 ...................... <0>
+  [ 37] extcall 35 .............................. return 0
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] setlocal 1
+  [ 43] getlocal 1
+  [ 45] getprop 728 ............................. <pTeamScoreCache>
+  [ 48] getobjprop 123 .......................... <pTeamScoreCache.count>
+  [ 50] lteq
+  [ 51] jmpifz [140] ............................ repeat with tTeamId = 1 to pTeamScoreCache.count
+  [ 54] getprop 728 ............................. <pTeamScoreCache>
+  [ 57] getlocal 1 .............................. <tTeamId>
+  [ 59] pusharglist 2 ........................... <pTeamScoreCache, tTeamId>
+  [ 61] objcall 44 .............................. <pTeamScoreCache[tTeamId]>
+  [ 63] pusharglist 1 ........................... <pTeamScoreCache[tTeamId]>
+  [ 65] extcall 42 .............................. <string(pTeamScoreCache[tTeamId])>
+  [ 67] setlocal 2 .............................. tTeamScore = string(pTeamScoreCache[tTeamId])
+  [ 69] getlocal 0 .............................. <tWndObj>
+  [ 71] pushcons 17 ............................. <"snowwar_score_sd_team">
+  [ 73] getlocal 1 .............................. <tTeamId>
+  [ 75] joinstr ................................. <"snowwar_score_sd_team" & tTeamId>
+  [ 76] pusharglist 2 ........................... <tWndObj, "snowwar_score_sd_team" & tTeamId>
+  [ 78] objcall 748 ............................. <tWndObj.getElement("snowwar_score_sd_team" & tTeamId)>
+  [ 81] setlocal 3 .............................. tElem = tWndObj.getElement("snowwar_score_sd_team" & tTeamId)
+  [ 83] getlocal 3 .............................. <tElem>
+  [ 85] pushzero ................................ <0>
+  [ 86] nteq .................................... <tElem <> 0>
+  [ 87] jmpifz [131] ............................ if tElem <> 0 then
+  [ 90] getlocal 2 .............................. <tTeamScore>
+  [ 92] getlocal 3 .............................. <tElem>
+  [ 94] pusharglist 1 ........................... <tElem>
+  [ 96] objcall 757 ............................. <tElem.getText()>
+  [ 99] nteq .................................... <tTeamScore <> tElem.getText()>
+  [100] jmpifz [131] ............................ if tTeamScore <> tElem.getText() then
+  [103] getlocal 3 .............................. <tElem>
+  [105] getlocal 2 .............................. <tTeamScore>
+  [107] pusharglistnoret 2 ...................... <tElem, tTeamScore>
+  [109] objcall 749 ............................. tElem.setText(tTeamScore)
+  [112] getlocal 0 .............................. <tWndObj>
+  [114] pushcons 18 ............................. <"snowwar_score_team">
+  [116] getlocal 1 .............................. <tTeamId>
+  [118] joinstr ................................. <"snowwar_score_team" & tTeamId>
+  [119] pusharglist 2 ........................... <tWndObj, "snowwar_score_team" & tTeamId>
+  [121] objcall 748 ............................. <tWndObj.getElement("snowwar_score_team" & tTeamId)>
+  [124] getlocal 2 .............................. <tTeamScore>
+  [126] pusharglistnoret 2 ...................... <tWndObj.getElement("snowwar_score_team" & tTeamId), tTeamScore>
+  [128] objcall 749 ............................. tWndObj.getElement("snowwar_score_team" & tTeamId).setText(tTeamScore)
+  [131] pushint8 1
+  [133] getlocal 1
+  [135] add
+  [136] setlocal 1
+  [138] endrepeat [ 43]
+  [140] pushint8 1 .............................. <1>
+  [142] pusharglistnoret 1 ...................... <1>
+  [144] extcall 35 .............................. return 1
+  [146] ret
+end
+
+on showGameScoreWindows me
+  [  0] getprop 731 ............................. <pTeamScoreWindowId>
+  [  3] pusharglist 1 ........................... <pTeamScoreWindowId>
+  [  5] extcall 758 ............................. <windowExists(pTeamScoreWindowId)>
+  [  8] not ..................................... <not windowExists(pTeamScoreWindowId)>
+  [  9] jmpifz [163] ............................ if not windowExists(pTeamScoreWindowId) then
+  [ 12] getprop 731 ............................. <pTeamScoreWindowId>
+  [ 15] pushcons 19 ............................. <"team_stats.window">
+  [ 17] pusharglist 2 ........................... <pTeamScoreWindowId, "team_stats.window">
+  [ 19] extcall 759 ............................. <createWindow(pTeamScoreWindowId, "team_stats.window")>
+  [ 22] jmpifz [148] ............................ if createWindow(pTeamScoreWindowId, "team_stats.window") then / else
+  [ 25] getprop 731 ............................. <pTeamScoreWindowId>
+  [ 28] pusharglist 1 ........................... <pTeamScoreWindowId>
+  [ 30] extcall 747 ............................. <getWindow(pTeamScoreWindowId)>
+  [ 33] setlocal 0 .............................. tWndObj = getWindow(pTeamScoreWindowId)
+  [ 35] getmovieprop 1209 ....................... <the stage>
+  [ 38] getchainedprop 164 ...................... <(the stage).rect>
+  [ 40] getobjprop 152 .......................... <(the stage).rect.width>
+  [ 42] pushint8 54 ............................. <54>
+  [ 44] sub ..................................... <(the stage).rect.width - 54>
+  [ 45] setlocal 1 .............................. tLocH = (the stage).rect.width - 54
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglist 1 ........................... <me>
+  [ 51] objcall 228 ............................. <me.getGameSystem()>
+  [ 53] pusharglist 1 ........................... <me.getGameSystem()>
+  [ 55] objcall 60 .............................. <me.getGameSystem().getSpectatorModeFlag()>
+  [ 57] jmpifz [ 77] ............................ if me.getGameSystem().getSpectatorModeFlag() then / else
+  [ 60] getlocal 0 .............................. <tWndObj>
+  [ 62] getlocal 1 .............................. <tLocH>
+  [ 64] pushint8 30 ............................. <30>
+  [ 66] sub ..................................... <tLocH - 30>
+  [ 67] pushint8 40 ............................. <40>
+  [ 69] pusharglistnoret 3 ...................... <tWndObj, tLocH - 30, 40>
+  [ 71] objcall 760 ............................. tWndObj.moveTo(tLocH - 30, 40)
+  [ 74] jmp [ 88]
+  [ 77] getlocal 0 .............................. <tWndObj>
+  [ 79] getlocal 1 .............................. <tLocH>
+  [ 81] pushint8 70 ............................. <70>
+  [ 83] pusharglistnoret 3 ...................... <tWndObj, tLocH, 70>
+  [ 85] objcall 760 ............................. tWndObj.moveTo(tLocH, 70)
+  [ 88] getlocal 0 .............................. <tWndObj>
+  [ 90] pusharglistnoret 1 ...................... <tWndObj>
+  [ 92] objcall 761 ............................. tWndObj.lock()
+  [ 95] pushint8 1 .............................. <1>
+  [ 97] setlocal 2
+  [ 99] getlocal 2
+  [101] pushint8 4 .............................. <4>
+  [103] lteq
+  [104] jmpifz [138] ............................ repeat with tTeamId = 1 to 4
+  [107] getparam 0 .............................. <me>
+  [109] getlocal 2 .............................. <tTeamId>
+  [111] getlocal 2 .............................. <tTeamId>
+  [113] getprop 735 ............................. <pTeamCount>
+  [116] lteq .................................... <tTeamId <= pTeamCount>
+  [117] getprop 735 ............................. <pTeamCount>
+  [120] pushint8 1 .............................. <1>
+  [122] gt ...................................... <pTeamCount > 1>
+  [123] and ..................................... <(tTeamId <= pTeamCount) and (pTeamCount > 1)>
+  [124] pusharglistnoret 3 ...................... <me, tTeamId, (tTeamId <= pTeamCount) and (pTeamCount > 1)>
+  [126] objcall 726 ............................. me.setTeamScoreVisible(tTeamId, (tTeamId <= pTeamCount) and (pTeamCount > 1))
+  [129] pushint8 1
+  [131] getlocal 2
+  [133] add
+  [134] setlocal 2
+  [136] endrepeat [ 99]
+  [138] getparam 0 .............................. <me>
+  [140] pusharglistnoret 1 ...................... <me>
+  [142] objcall 724 ............................. me.renderTeamScores()
+  [145] jmp [163]
+  [148] getparam 0 .............................. <me>
+  [150] pushcons 20 ............................. <"Cannot open team score window.">
+  [152] pushsymb 725 ............................ <#showGameScoreWindows>
+  [155] pusharglist 3 ........................... <me, "Cannot open team score window.", #showGameScoreWindows>
+  [157] extcall 64 .............................. <error(me, "Cannot open team score window.", #showGameScoreWindows)>
+  [159] pusharglistnoret 1 ...................... <error(me, "Cannot open team score window.", #showGameScoreWindows)>
+  [161] extcall 35 .............................. return error(me, "Cannot open team score window.", #showGameScoreWindows)
+  [163] getprop 730 ............................. <pOwnScoreWindowId>
+  [166] pusharglist 1 ........................... <pOwnScoreWindowId>
+  [168] extcall 758 ............................. <windowExists(pOwnScoreWindowId)>
+  [171] not ..................................... <not windowExists(pOwnScoreWindowId)>
+  [172] getparam 0 .............................. <me>
+  [174] pusharglist 1 ........................... <me>
+  [176] objcall 228 ............................. <me.getGameSystem()>
+  [178] pusharglist 1 ........................... <me.getGameSystem()>
+  [180] objcall 60 .............................. <me.getGameSystem().getSpectatorModeFlag()>
+  [182] not ..................................... <not me.getGameSystem().getSpectatorModeFlag()>
+  [183] and ..................................... <not windowExists(pOwnScoreWindowId) and not me.getGameSystem().getSpectatorModeFlag()>
+  [184] jmpifz [272] ............................ if not windowExists(pOwnScoreWindowId) and not me.getGameSystem().getSpectatorModeFlag() then
+  [187] getprop 730 ............................. <pOwnScoreWindowId>
+  [190] pushcons 21 ............................. <"personal_stats.window">
+  [192] pusharglist 2 ........................... <pOwnScoreWindowId, "personal_stats.window">
+  [194] extcall 759 ............................. <createWindow(pOwnScoreWindowId, "personal_stats.window")>
+  [197] jmpifz [257] ............................ if createWindow(pOwnScoreWindowId, "personal_stats.window") then / else
+  [200] getprop 730 ............................. <pOwnScoreWindowId>
+  [203] pusharglist 1 ........................... <pOwnScoreWindowId>
+  [205] extcall 747 ............................. <getWindow(pOwnScoreWindowId)>
+  [208] setlocal 0 .............................. tWndObj = getWindow(pOwnScoreWindowId)
+  [210] getmovieprop 1209 ....................... <the stage>
+  [213] getchainedprop 164 ...................... <(the stage).rect>
+  [215] getobjprop 152 .......................... <(the stage).rect.width>
+  [217] pushint8 54 ............................. <54>
+  [219] sub ..................................... <(the stage).rect.width - 54>
+  [220] setlocal 1 .............................. tLocH = (the stage).rect.width - 54
+  [222] getlocal 0 .............................. <tWndObj>
+  [224] getlocal 1 .............................. <tLocH>
+  [226] pushint8 10 ............................. <10>
+  [228] pusharglistnoret 3 ...................... <tWndObj, tLocH, 10>
+  [230] objcall 760 ............................. tWndObj.moveTo(tLocH, 10)
+  [233] getlocal 0 .............................. <tWndObj>
+  [235] pusharglistnoret 1 ...................... <tWndObj>
+  [237] objcall 761 ............................. tWndObj.lock()
+  [240] getparam 0 .............................. <me>
+  [242] getparam 0 .............................. <me>
+  [244] pusharglist 1 ........................... <me>
+  [246] objcall 717 ............................. <me.getOwnScore()>
+  [249] pusharglistnoret 2 ...................... <me, me.getOwnScore()>
+  [251] objcall 721 ............................. me.renderPersonalScores(me.getOwnScore())
+  [254] jmp [272]
+  [257] getparam 0 .............................. <me>
+  [259] pushcons 22 ............................. <"Cannot open personal score window.">
+  [261] pushsymb 725 ............................ <#showGameScoreWindows>
+  [264] pusharglist 3 ........................... <me, "Cannot open personal score window.", #showGameScoreWindows>
+  [266] extcall 64 .............................. <error(me, "Cannot open personal score window.", #showGameScoreWindows)>
+  [268] pusharglistnoret 1 ...................... <error(me, "Cannot open personal score window.", #showGameScoreWindows)>
+  [270] extcall 35 .............................. return error(me, "Cannot open personal score window.", #showGameScoreWindows)
+  [272] getprop 732 ............................. <pTimeWindowId>
+  [275] pusharglist 1 ........................... <pTimeWindowId>
+  [277] extcall 758 ............................. <windowExists(pTimeWindowId)>
+  [280] not ..................................... <not windowExists(pTimeWindowId)>
+  [281] jmpifz [379] ............................ if not windowExists(pTimeWindowId) then
+  [284] getprop 732 ............................. <pTimeWindowId>
+  [287] pushcons 23 ............................. <"habbo_simple.window">
+  [289] pusharglist 2 ........................... <pTimeWindowId, "habbo_simple.window">
+  [291] extcall 759 ............................. <createWindow(pTimeWindowId, "habbo_simple.window")>
+  [294] jmpifz [364] ............................ if createWindow(pTimeWindowId, "habbo_simple.window") then / else
+  [297] getprop 732 ............................. <pTimeWindowId>
+  [300] pusharglist 1 ........................... <pTimeWindowId>
+  [302] extcall 747 ............................. <getWindow(pTimeWindowId)>
+  [305] setlocal 0 .............................. tWndObj = getWindow(pTimeWindowId)
+  [307] getlocal 0 .............................. <tWndObj>
+  [309] pushcons 24 ............................. <"sw_timeleft.window">
+  [311] pusharglistnoret 2 ...................... <tWndObj, "sw_timeleft.window">
+  [313] objcall 762 ............................. tWndObj.merge("sw_timeleft.window")
+  [316] getparam 0 .............................. <me>
+  [318] pusharglist 1 ........................... <me>
+  [320] objcall 228 ............................. <me.getGameSystem()>
+  [322] pusharglist 1 ........................... <me.getGameSystem()>
+  [324] objcall 60 .............................. <me.getGameSystem().getSpectatorModeFlag()>
+  [326] jmpifz [343] ............................ if me.getGameSystem().getSpectatorModeFlag() then / else
+  [329] getlocal 0 .............................. <tWndObj>
+  [331] pushint8 26 ............................. <26>
+  [333] pushint8 36 ............................. <36>
+  [335] pusharglistnoret 3 ...................... <tWndObj, 26, 36>
+  [337] objcall 760 ............................. tWndObj.moveTo(26, 36)
+  [340] jmp [354]
+  [343] getlocal 0 .............................. <tWndObj>
+  [345] pushint8 10 ............................. <10>
+  [347] pushint8 15 ............................. <15>
+  [349] pusharglistnoret 3 ...................... <tWndObj, 10, 15>
+  [351] objcall 760 ............................. tWndObj.moveTo(10, 15)
+  [354] getlocal 0 .............................. <tWndObj>
+  [356] pusharglistnoret 1 ...................... <tWndObj>
+  [358] objcall 761 ............................. tWndObj.lock()
+  [361] jmp [379]
+  [364] getparam 0 .............................. <me>
+  [366] pushcons 25 ............................. <"Cannot open timeleft window.">
+  [368] pushsymb 725 ............................ <#showGameScoreWindows>
+  [371] pusharglist 3 ........................... <me, "Cannot open timeleft window.", #showGameScoreWindows>
+  [373] extcall 64 .............................. <error(me, "Cannot open timeleft window.", #showGameScoreWindows)>
+  [375] pusharglistnoret 1 ...................... <error(me, "Cannot open timeleft window.", #showGameScoreWindows)>
+  [377] extcall 35 .............................. return error(me, "Cannot open timeleft window.", #showGameScoreWindows)
+  [379] pushint8 1 .............................. <1>
+  [381] pusharglistnoret 1 ...................... <1>
+  [383] extcall 35 .............................. return 1
+  [385] ret
+end
+
+on setTeamScoreVisible me, tTeamId, tstate
+  [  0] getprop 731 ............................. <pTeamScoreWindowId>
+  [  3] pusharglist 1 ........................... <pTeamScoreWindowId>
+  [  5] extcall 747 ............................. <getWindow(pTeamScoreWindowId)>
+  [  8] setlocal 0 .............................. tWndObj = getWindow(pTeamScoreWindowId)
+  [ 10] getlocal 0 .............................. <tWndObj>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tWndObj = 0>
+  [ 14] jmpifz [ 22] ............................ if tWndObj = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 35 .............................. return 0
+  [ 22] getlocal 0 .............................. <tWndObj>
+  [ 24] pushcons 26 ............................. <"snowwar_scorebg_team">
+  [ 26] getparam 1 .............................. <tTeamId>
+  [ 28] joinstr ................................. <"snowwar_scorebg_team" & tTeamId>
+  [ 29] pusharglist 2 ........................... <tWndObj, "snowwar_scorebg_team" & tTeamId>
+  [ 31] objcall 748 ............................. <tWndObj.getElement("snowwar_scorebg_team" & tTeamId)>
+  [ 34] setlocal 1 .............................. tElement = tWndObj.getElement("snowwar_scorebg_team" & tTeamId)
+  [ 36] getlocal 1 .............................. <tElement>
+  [ 38] pushzero ................................ <0>
+  [ 39] nteq .................................... <tElement <> 0>
+  [ 40] jmpifz [ 54] ............................ if tElement <> 0 then
+  [ 43] getlocal 1 .............................. <tElement>
+  [ 45] pushsymb 201 ............................ <#visible>
+  [ 47] getparam 2 .............................. <tstate>
+  [ 49] pusharglistnoret 3 ...................... <tElement, #visible, tstate>
+  [ 51] objcall 763 ............................. tElement.setProperty(#visible, tstate)
+  [ 54] getlocal 0 .............................. <tWndObj>
+  [ 56] pushcons 17 ............................. <"snowwar_score_sd_team">
+  [ 58] getparam 1 .............................. <tTeamId>
+  [ 60] joinstr ................................. <"snowwar_score_sd_team" & tTeamId>
+  [ 61] pusharglist 2 ........................... <tWndObj, "snowwar_score_sd_team" & tTeamId>
+  [ 63] objcall 748 ............................. <tWndObj.getElement("snowwar_score_sd_team" & tTeamId)>
+  [ 66] setlocal 1 .............................. tElement = tWndObj.getElement("snowwar_score_sd_team" & tTeamId)
+  [ 68] getlocal 1 .............................. <tElement>
+  [ 70] pushzero ................................ <0>
+  [ 71] nteq .................................... <tElement <> 0>
+  [ 72] jmpifz [ 86] ............................ if tElement <> 0 then
+  [ 75] getlocal 1 .............................. <tElement>
+  [ 77] pushsymb 201 ............................ <#visible>
+  [ 79] getparam 2 .............................. <tstate>
+  [ 81] pusharglistnoret 3 ...................... <tElement, #visible, tstate>
+  [ 83] objcall 763 ............................. tElement.setProperty(#visible, tstate)
+  [ 86] getlocal 0 .............................. <tWndObj>
+  [ 88] pushcons 18 ............................. <"snowwar_score_team">
+  [ 90] getparam 1 .............................. <tTeamId>
+  [ 92] joinstr ................................. <"snowwar_score_team" & tTeamId>
+  [ 93] pusharglist 2 ........................... <tWndObj, "snowwar_score_team" & tTeamId>
+  [ 95] objcall 748 ............................. <tWndObj.getElement("snowwar_score_team" & tTeamId)>
+  [ 98] setlocal 1 .............................. tElement = tWndObj.getElement("snowwar_score_team" & tTeamId)
+  [100] getlocal 1 .............................. <tElement>
+  [102] pushzero ................................ <0>
+  [103] nteq .................................... <tElement <> 0>
+  [104] jmpifz [118] ............................ if tElement <> 0 then
+  [107] getlocal 1 .............................. <tElement>
+  [109] pushsymb 201 ............................ <#visible>
+  [111] getparam 2 .............................. <tstate>
+  [113] pusharglistnoret 3 ...................... <tElement, #visible, tstate>
+  [115] objcall 763 ............................. tElement.setProperty(#visible, tstate)
+  [118] pushint8 1 .............................. <1>
+  [120] pusharglistnoret 1 ...................... <1>
+  [122] extcall 35 .............................. return 1
+  [124] ret
+end
+
+on removeGameScoreWindows me
+  [  0] getprop 731 ............................. <pTeamScoreWindowId>
+  [  3] pusharglist 1 ........................... <pTeamScoreWindowId>
+  [  5] extcall 758 ............................. <windowExists(pTeamScoreWindowId)>
+  [  8] jmpifz [ 19] ............................ if windowExists(pTeamScoreWindowId) then
+  [ 11] getprop 731 ............................. <pTeamScoreWindowId>
+  [ 14] pusharglistnoret 1 ...................... <pTeamScoreWindowId>
+  [ 16] extcall 765 ............................. removeWindow(pTeamScoreWindowId)
+  [ 19] getprop 730 ............................. <pOwnScoreWindowId>
+  [ 22] pusharglist 1 ........................... <pOwnScoreWindowId>
+  [ 24] extcall 758 ............................. <windowExists(pOwnScoreWindowId)>
+  [ 27] jmpifz [ 38] ............................ if windowExists(pOwnScoreWindowId) then
+  [ 30] getprop 730 ............................. <pOwnScoreWindowId>
+  [ 33] pusharglistnoret 1 ...................... <pOwnScoreWindowId>
+  [ 35] extcall 765 ............................. removeWindow(pOwnScoreWindowId)
+  [ 38] getprop 732 ............................. <pTimeWindowId>
+  [ 41] pusharglist 1 ........................... <pTimeWindowId>
+  [ 43] extcall 758 ............................. <windowExists(pTimeWindowId)>
+  [ 46] jmpifz [ 57] ............................ if windowExists(pTimeWindowId) then
+  [ 49] getprop 732 ............................. <pTimeWindowId>
+  [ 52] pusharglistnoret 1 ...................... <pTimeWindowId>
+  [ 54] extcall 765 ............................. removeWindow(pTimeWindowId)
+  [ 57] getprop 733 ............................. <pTimeOutID>
+  [ 60] pusharglist 1 ........................... <pTimeOutID>
+  [ 62] extcall 738 ............................. <timeoutExists(pTimeOutID)>
+  [ 65] jmpifz [ 76] ............................ if timeoutExists(pTimeOutID) then
+  [ 68] getprop 733 ............................. <pTimeOutID>
+  [ 71] pusharglistnoret 1 ...................... <pTimeOutID>
+  [ 73] extcall 739 ............................. removeTimeout(pTimeOutID)
+  [ 76] pushint8 1 .............................. <1>
+  [ 78] pusharglistnoret 1 ...................... <1>
+  [ 80] extcall 35 .............................. return 1
+  [ 82] ret
+end
